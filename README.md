@@ -5,4 +5,4 @@
 
 #### npm run dev ( to launch app )
 
-### made with nextjs/typescript/tailwind
+### made with nextjs/typescript/tailwind using Nodejs v20
