@@ -12,16 +12,17 @@ function TopBar() {
         location.href = "/settings";
     }
     return (
+       
         <nav className="topbar backdrop-blur-3xl">
             <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
                 <Image src="./svgs/logo.svg" alt="logo" width=
-                    {45} height={45} className="opacity-85 hover:opacity-100" />
+                    {45} height={45} className="opacity-85 hover:opacity-100 " />
 
 
             </Link>
-            <div className="flex justify-center items-center gap-20">
-                <Link href="/" className="hover:scale-105 transition-all duration-200 ">
+            <div className="flex justify-center items-center gap-10 md:gap-20">
+                <Link href="/" className="hover:scale-105 transition-all duration-200 md: ">
 
                     <Image src="./svgs/home.svg" alt="logo" width=
                         {30} height={30} className="opacity-45 hover:opacity-100 transition-all duration-150" />
@@ -130,6 +131,7 @@ function TopBar() {
                 </DropdownMenu>
             </Dropdown>
         </nav >
+        
     )
 }
 export default TopBar;
