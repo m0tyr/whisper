@@ -23,7 +23,18 @@ export default function User() {
                 <h2 className="text-white text-heading3-bold mt-2 ">www</h2>
                 <p className=" text-slate-200 text-body1-normal ">m0tyr</p>
                 <button className=" text-white opacity-50 text-small-semibold my-6 mx-2 hover:opacity-100 transition-all duration-175 ">2 K followers</button>
-                <button className=" w-full outline-solid rounded-xl py-1 px-2 hover:bg-stone-900 transition-all duration-150 text-white border-2 border-zinc-600">Modifier le profil</button>
+                <button className=" w-full outline-solid rounded-xl py-1 px-2 hover:bg-stone-900 transition-all duration-150 text-gray-2 border-2 border-zinc-600 mb-3">Modifier le profil</button>
+                <div className=" text-center text-gray-2 h-16 flex items-center text-base-regular  ">
+                <div className="w-48 border-b  border-solid border-white pb-4">
+                <a href="./user" className="hover:text-white transition-all duration-150 text-white ">Whispers</a>
+                </div>
+                <div className="w-48 border-b  border-solid border-gray-2 pb-4">
+                <a href="./replies" className="hover:text-gray transition-all duration-150">Réponses</a>
+                </div>
+                <div className="w-48 border-b  border-solid border-gray-2 pb-4">
+                <a href="./reposts" className="hover:text-gray transition-all duration-150">Republications</a>
+                </div>
+                </div>
             </div>
 
             <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-12">

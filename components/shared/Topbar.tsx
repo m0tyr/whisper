@@ -21,32 +21,32 @@ function TopBar() {
 
 
             </Link>
-            <div className="flex justify-center items-center gap-10 md:gap-20">
+            <div className="flex justify-center items-center gap-16 md:gap-20">
                 <Link href="/" className="hover:scale-105 transition-all duration-200 md: ">
 
                     <Image src="./svgs/home.svg" alt="logo" width=
-                        {30} height={30} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                 </Link>
                 <Link href="/search" className="hover:scale-105 transition-all duration-200 ">
 
                     <Image src="./svgs/search.svg" alt="logo" width=
-                        {35} height={35} className="opacity-45 hover:opacity-100 transition-all duration-150 " />
+                        {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150 " />
 
 
                 </Link>
                 <Link href="/create" className="hover:scale-105 transition-all duration-200 ">
 
                     <Image src="./svgs/create.svg" alt="logo" width=
-                        {30} height={30} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                 </Link>
                 <Link href="/activity" className="hover:scale-105 transition-all duration-200 ">
 
                     <Image src="./svgs/favorite.svg" alt="logo" width=
-                        {30} height={30} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                 </Link>
@@ -54,7 +54,7 @@ function TopBar() {
                 <Link href="/user" className="hover:scale-105 transition-all duration-200 ">
 
                     <Image src="./svgs/profil.svg" alt="logo" width=
-                        {30} height={30} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                 </Link>
