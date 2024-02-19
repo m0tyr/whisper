@@ -28,7 +28,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <TopBar />
           <section className="main-container">
-            <div className=" w-2/5 max-w-xl max-lg:w-full">
+            <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full">
               {children}
 
             </div>

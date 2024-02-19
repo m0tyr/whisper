@@ -13,7 +13,7 @@ function TopBar() {
     }
     return (
        
-        <nav className="topbar backdrop-blur-3xl">
+        <nav className="topbar backdrop-blur-xl my-0">
             <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
                 <Image src="./svgs/logo.svg" alt="logo" width=
@@ -21,29 +21,29 @@ function TopBar() {
 
 
             </Link>
-            <div className="flex justify-center items-center gap-16 md:gap-20">
-                <Link href="/" className="hover:scale-105 transition-all duration-200 md: ">
+            <div className="flex justify-center items-center gap-12 md:gap-16">
+                <Link href="/" className=" transition-all duration-200 md: ">
 
                     <Image src="./svgs/home.svg" alt="logo" width=
                         {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                 </Link>
-                <Link href="/search" className="hover:scale-105 transition-all duration-200 ">
+                <Link href="/search" className=" transition-all duration-200 ">
 
                     <Image src="./svgs/search.svg" alt="logo" width=
                         {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150 " />
 
 
                 </Link>
-                <Link href="/create" className="hover:scale-105 transition-all duration-200 ">
+                <Link href="/create" className=" transition-all duration-200 ">
 
                     <Image src="./svgs/create.svg" alt="logo" width=
                         {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                 </Link>
-                <Link href="/activity" className="hover:scale-105 transition-all duration-200 ">
+                <Link href="/activity" className=" transition-all duration-200 ">
 
                     <Image src="./svgs/favorite.svg" alt="logo" width=
                         {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
@@ -51,7 +51,7 @@ function TopBar() {
 
                 </Link>
 
-                <Link href="/user" className="hover:scale-105 transition-all duration-200 ">
+                <Link href="/user" className=" transition-all duration-200 ">
 
                     <Image src="./svgs/profil.svg" alt="logo" width=
                         {29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
