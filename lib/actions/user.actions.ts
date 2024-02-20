@@ -5,14 +5,23 @@ import { connectToDB } from "../mongoose"
 import User from "../models/user.model";
 import { revalidatePath } from "next/cache";
 
-export async function updateUser(
+interface Params { 
     userId: string,
     username: string,
     name: string,
     bio: string,
     image: string,
     path: string,
-): Promise<void> {
+}
+
+export async function updateUser({
+    userId,
+    username,
+    name,
+    bio,
+    image,
+    path,
+}: Params): Promise<void> {
     connectToDB();
 
    try {
@@ -31,7 +40,7 @@ export async function updateUser(
          }
      );
  
-     if(path === '/profile/edit') {
+     if(path === '/profil/edit') {
          revalidatePath(path);
      }
    } catch (error :any) {

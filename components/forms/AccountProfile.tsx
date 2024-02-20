@@ -16,15 +16,23 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
+
 import { Textarea } from "@/components/ui/textarea";
+
 import { CalendarIcon } from "@radix-ui/react-icons"
+
 import { format } from "date-fns"
 
 import { Calendar } from "@/components/ui/calendar"
+
 import { UserValidation } from "@/lib/validations/user";
+
 import { updateUser } from "@/lib/actions/user.actions";
+
 
 interface Props {
   user: {
@@ -37,15 +45,28 @@ interface Props {
   };
   btnTitle: string;
 }
+
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { toast } from "@/components/ui/use-toast"
+import { isBase64Image } from "@/lib/utils";
+import { useUploadThing } from '@/lib/uploadthing';
+
+
 
 const AccountProfile = ({ user, btnTitle }: Props) => {
 
+  const [files, setFiles] = useState<File[]>([]);
+
+  const { startUpload } = useUploadThing('imageUploader')
+
+  const router = useRouter();
+
+  const pathname = usePathname();
 
   const form = useForm<z.infer<typeof UserValidation>>({
     resolver: zodResolver(UserValidation),
@@ -58,23 +79,65 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
   });
 
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
-    console.log(values)
+    const blob = values.profile_photo;
+
+    const hasimageChanged = isBase64Image(blob);
+
+    if (hasimageChanged) {
+      const imgRes = await startUpload(files)
+
+      if (imgRes && imgRes[0].url) {
+        values.profile_photo = imgRes[0].url;
+      }
+
+      await updateUser({
+        userId: user.id,
+        username: values.username,
+        name: values.name,
+        bio: values.bio,
+        image: values.profile_photo,
+        path: pathname,
+      })
+      if (pathname === '/profil/edit') {
+        router.back();
+      } else {
+        router.push('/');
+      }
+    }
   }
+
+
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
     fieldChange: (value: string) => void
   ) => {
     e.preventDefault();
 
+    const fileReader = new FileReader();
+
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFiles(Array.from(e.target.files));
+
+      if (!file.type.includes("image")) return;
+
+      fileReader.onload = async (event) => {
+        const imageDataUrl = event.target?.result?.toString() || "";
+        fieldChange(imageDataUrl);
+      };
+
+      fileReader.readAsDataURL(file);
     }
-  
+  };
+
+
   return (
     <Form {...form}>
-      <form 
-      onSubmit={form.handleSubmit(onSubmit)} 
-      className="space-y-8"
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8"
       >
-      <FormField
+        <FormField
           control={form.control}
           name='profile_photo'
           render={({ field }) => (
@@ -100,7 +163,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                 )}
               </FormLabel>
               <FormControl className='flex-1 text-base-semibold text-gray-200'>
-              <Input
+                <Input
                   type='file'
                   accept='image/*'
                   placeholder='Photo de profil'
@@ -121,7 +184,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
               <FormControl>
                 <Input placeholder="user" {...field} />
               </FormControl>
-            
+
               <FormMessage />
             </FormItem>
 
@@ -137,7 +200,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
               <FormControl>
                 <Input placeholder="user124151253" {...field} />
               </FormControl>
-            
+
               <FormMessage />
             </FormItem>
 
@@ -156,13 +219,13 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   {...field}
                 />
               </FormControl>
-           
+
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className=" bg-neutral-900 hover:bg-neutral-800">Commencer</Button>
+        <Button type="submit" className=" bg-neutral-900 hover:bg-neutral-800 rounded-full text-small-semibold "><p className="text-white">Commencer</p></Button>
       </form>
     </Form>
   );
