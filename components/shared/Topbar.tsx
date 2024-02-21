@@ -3,35 +3,26 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Dropdown, DropdownTrigger, DropdownSection, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import CreateWhisper from "@/components/forms/CreateWhisper";
-import { currentUser } from "@clerk/nextjs";
 
 import { SignedIn, SignOutButton, OrganizationSwitcher } from "@clerk/nextjs";
- function TopBar() {
+import CreateWhisper from "../forms/CreateWhisper";
+
+  
+  const TopBar = () => {
     const isUserLoggedIn = true;
     function handleConfirm() {
         location.href = "/settings";
     }
-    const [showCreateWhisper, setShowCreateWhisper] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
 
+    const togglePopup = () => {
+      setShowPopup(!showPopup);
+    };
  
-    const whisperData = {
-        id: "1",
-        author: {
-          name: "John Doe",
-          username: "@johndoe",
-          image: "https://example.com/avatar.jpg"
-        },
-        content: "This is a test whisper!",
-        date: "2024-02-20T12:00:00Z",
-        likes: 10,
-        retweets: 5,
-        replies: 3,
-        media: ["https://example.com/media1.jpg", "https://example.com/media2.jpg"]
-      };
+
     return (
-       
-        <><nav className="topbar backdrop-blur-xl my-0">
+        <>
+        <nav className="topbar backdrop-blur-xl my-0">
             <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
                 <Image src="./svgs/logo.svg" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
@@ -51,8 +42,8 @@ import { SignedIn, SignOutButton, OrganizationSwitcher } from "@clerk/nextjs";
 
 
                 </Link>
-                <Button onClick={() => setShowCreateWhisper(!showCreateWhisper)} className=" transition-all duration-200 ">
-
+                <Button onClick={togglePopup} className=" transition-all duration-200 ">
+                    
                     <Image src="./svgs/create.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
@@ -142,9 +133,14 @@ import { SignedIn, SignOutButton, OrganizationSwitcher } from "@clerk/nextjs";
                 </DropdownMenu>
             </Dropdown>
         </nav>
-        <><div>
-            {showCreateWhisper ? <CreateWhisper {...whisperData} /> : ''}
-        </div></></>
+       
+        {showPopup && <CreateWhisper id={""} author={{
+            name: "",
+            username: "",
+            image: ""
+          }} content={""} date={""} />}
+          </>
+       
 
     )
 }
