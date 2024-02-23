@@ -22,6 +22,12 @@ import CreateWhisper from "../forms/CreateWhisper";
 
     return (
         <>
+         {showPopup && <CreateWhisper id={""} author={{
+            name: "",
+            username: "",
+            image: ""
+          }} content={""} date={""} />}
+          
         <nav className="topbar backdrop-blur-xl my-0">
             <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
@@ -133,13 +139,8 @@ import CreateWhisper from "../forms/CreateWhisper";
                 </DropdownMenu>
             </Dropdown>
         </nav>
+        </>
        
-        {showPopup && <CreateWhisper id={""} author={{
-            name: "",
-            username: "",
-            image: ""
-          }} content={""} date={""} />}
-          </>
        
 
     )

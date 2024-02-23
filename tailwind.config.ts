@@ -172,6 +172,12 @@ module.exports = {
       ],
     },
     extend: {
+      width: {
+        basic: '620px',
+      },
+      height: {
+        basic : '239px',
+      },
       colors: {
         "primary-500": "#877EFF",
         "secondary-500": "#FFB620",
@@ -191,7 +197,7 @@ module.exports = {
         "gray-1": "#697C89",
         "gray-2": "#777777",
         "good-gray" : "#181818",
-        "border" : "rgba(243, 245, 247, 0.7)",
+        "border" : "rgba(243, 245, 247, .2)",
         glassmorphism: "rgba(16, 16, 18, 0.60)",
       },
       boxShadow: {

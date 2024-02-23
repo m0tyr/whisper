@@ -40,6 +40,7 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+import Link from "next/link";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -63,25 +64,30 @@ const CreateWhisper = ({ author }: WhisperProps) => {
   return (
 
     <div className="fixed inset-0 bg-black bg-opacity-65 flex justify-center items-center z-0 w-full ">
-      <div className="flex flex-col items-center w-1/2">
+      <div className="flex flex-col items-center w-basic h-basic mb-16">
 
         <p className="text-white my-2 text-base-semibold">Nouveau Whisper</p>
 
-        <div className="w-full px-12 py-12 bg-good-gray rounded-2xl border-x border-y border-x-border border-y-border flex justify-center items-center">
-          <Form {...form}>
+        <div className=" flex-wrap	 relative w-full h-full py-12 bg-good-gray rounded-2xl border-x border-y border-x-border border-y-border border flex justify-center items-center">
+
+          <Form {...form} >
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-8"
+              className=""
             >
               <FormField
                 control={form.control}
                 name="username"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem >
 
-                    <FormLabel className="text-white">Pseudo</FormLabel>
-                    <FormControl>
-                      <Input placeholder="user124151253" {...field} />
+                    <FormLabel>
+
+                        <Image src="./svgs/user.svg" alt="logo" width={37} height={37} className="absolute left-6 top-6 opacity-85 hover:opacity-100  transition-all duration-300  float-left gap-3  mt-1.5 " />
+                    </FormLabel>
+                    <FormControl className="outline-none">
+                    {/* NOT GOOD CHANGE THAT !!! */}
+                      <textarea  {...field} placeholder="Commencer un Whisper.."     className="grow absolute left-16 top-7 w-10/12 bg-good-gray text-small-regular pl-3 pr-px  outline-none font text-gray-300 opacity-65"></textarea>
                     </FormControl>
 
                     <FormMessage />
@@ -89,7 +95,7 @@ const CreateWhisper = ({ author }: WhisperProps) => {
 
                 )}
               />
-              <Button type="submit" className=" bg-neutral-900 hover:bg-neutral-800 rounded-full text-small-semibold "><p className="text-white">Commencer</p></Button>
+              <Button type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5">Publier</Button>
             </form>
           </Form>
         </div>
