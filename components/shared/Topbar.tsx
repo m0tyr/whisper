@@ -23,12 +23,8 @@ const TopBar = () => {
 
     return (
         <>
-            {showPopup && <CreateWhisper id={""} author={{
-                name: "",
-                username: "",
-                image: ""
-            }} content={""} date={""} />}
 
+            
             <nav className="topbar backdrop-blur-xl my-0 z-0">
                 <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
@@ -140,7 +136,14 @@ const TopBar = () => {
                     </DropdownMenu>
                 </Dropdown>
             </nav>
+            {showPopup && (
+                <>
+                    <div className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 z-40 w-full transition-all duration-100" onClick={togglePopup}></div>
+                    <CreateWhisper id={""} author={{ name: "", username: "", image: "" }} content={""} date={""} />
+                </>
+            )}
         </>
+
 
 
 

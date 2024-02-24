@@ -176,10 +176,10 @@ module.exports = {
         basic: '620px',
       },
       height: {
-        basic : '239px',
+        basic: '239px',
       },
-    
-      
+
+
       colors: {
         "primary-500": "#877EFF",
         "secondary-500": "#FFB620",
@@ -190,7 +190,7 @@ module.exports = {
         "dark-2": "#121417",
         "dark-3": "#101012",
         "dark-4": "#1F1F22",
-        "insanedark":"#101010",
+        "insanedark": "#101010",
         "navcolor": "rgba(16, 16, 16, 0.85)",
         "light-1": "#FFFFFF",
         "light-2": "#EFEFEF",
@@ -198,9 +198,9 @@ module.exports = {
         "light-4": "#5C5C7B",
         "gray-1": "#697C89",
         "gray-2": "#777777",
-        "good-gray" : "#181818",
+        "good-gray": "#181818",
         "test": "#181818",
-        "border" : "rgba(243, 245, 247, .2)",
+        "border": "rgba(243, 245, 247, .2)",
         glassmorphism: "rgba(16, 16, 18, 0.60)",
         "logo-color": "#344FFF",
       },
