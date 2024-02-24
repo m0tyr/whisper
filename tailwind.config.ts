@@ -178,6 +178,8 @@ module.exports = {
       height: {
         basic : '239px',
       },
+    
+      
       colors: {
         "primary-500": "#877EFF",
         "secondary-500": "#FFB620",
@@ -197,8 +199,16 @@ module.exports = {
         "gray-1": "#697C89",
         "gray-2": "#777777",
         "good-gray" : "#181818",
+        "test": "#181818",
         "border" : "rgba(243, 245, 247, .2)",
         glassmorphism: "rgba(16, 16, 18, 0.60)",
+        "logo-color": "#344FFF",
+      },
+      dropShadow: {
+        glow: [
+          "0 0px 15px rgba(255,255, 255, 0.255)",
+          "0 0px 65px rgba(255,255,255, 0.1)"
+        ]
       },
       boxShadow: {
         "count-badge": "0px 0px 6px 2px rgba(219, 188, 159, 0.30)",

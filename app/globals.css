@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer components {
+
   /* main */
   .main-container {
     @apply flex min-h-screen flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20 max-md:pb-32 sm:px-10;
@@ -57,12 +58,15 @@
   .searchbar_input {
     @apply border-none bg-dark-3 text-base-regular text-light-4 outline-none !important;
   }
-  .filter-green{
-   @apply filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
-}
+
+
+
+  .filter-green {
+    @apply filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+  }
 
   .topbar {
-    @apply fixed top-0 z-30 left-0 flex w-full items-center justify-between bg-navcolor px-10 py-3 mx-auto;
+    @apply fixed top-0 z-10 left-0 flex w-full items-center justify-between bg-navcolor px-10 py-3 mx-auto;
   }
 
   .bottombar {
@@ -124,9 +128,7 @@
   @apply max-sm:hidden;
 }
 
-.cl-organizationSwitcherTrigger
-  .cl-organizationPreview
-  .cl-organizationPreviewTextContainer {
+.cl-organizationSwitcherTrigger .cl-organizationPreview .cl-organizationPreviewTextContainer {
   @apply max-sm:hidden;
 }
 
