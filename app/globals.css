@@ -14,6 +14,10 @@
     @apply text-heading2-bold text-light-1;
   }
 
+  #editable-span[contenteditable]:empty::before {
+    content: "Commencer un whisper...";
+    color: gray;
+  }
   /* Activity */
   .activity-card {
     @apply flex items-center gap-2 rounded-md bg-dark-2 px-7 py-4;

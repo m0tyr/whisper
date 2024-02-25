@@ -176,8 +176,9 @@ module.exports = {
         basic: '620px',
       },
       height: {
-        basic: '239px',
+        basic: '189px',
       },
+    
 
 
       colors: {

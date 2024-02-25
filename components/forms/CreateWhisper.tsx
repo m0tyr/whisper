@@ -4,7 +4,7 @@ import * as z from "zod";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
@@ -60,12 +60,12 @@ const CreateWhisper = ({ author }: WhisperProps) => {
     },
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+    const spanText = document.getElementById('editable-span')?.textContent || '';
+    values.whisper = spanText;
     console.log(values)
   }
   const handleKeyboardEvent = (e: any) => {
-    var getText = document.getElementById("textarea")?.textContent;
+    var getText = document.getElementById("editable-span")?.textContent;
     var result = getText;
     if (result?.trim() === "") {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;
@@ -75,29 +75,18 @@ const CreateWhisper = ({ author }: WhisperProps) => {
   }
 
 
-
-
   return (
 
     <>
+      <Form {...form} >
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div id='upper-div'
+            className="fixed top-0 left-0 inset-0 
+            w-basic min-h-[169px] h-[229px] flex-wrap z-50 overflow-auto  
+            mx-auto bg-good-gray rounded-t-2xl  border-x border-t border-x-border border-t-border  mt-[160px] justify-center items-center">
 
-
-
-      <div className="fixed top-0 left-0 inset-0 
-            w-basic h-basic  flex-wrap z-50   
-            mx-auto
-            
-              bg-good-gray rounded-2xl border-x border-y border-x-border border-y-border border my-auto justify-center items-center">
-        <p
-          className=" text-small-medium  ml-4 mt-4 absolute bottom-4 text-cyan-500  drop-shadow-glow 
-          ">
-          Nouveau Whisper
-        </p>
-
-        <Form {...form} >
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
             <FormField
               control={form.control}
               name="whisper"
@@ -110,15 +99,14 @@ const CreateWhisper = ({ author }: WhisperProps) => {
                   </FormLabel>
                   <FormControl className="outline-none">
 
-                    <div className="break-words whitespace-pre-wrap">
-
-                      <textarea  {...field}
+                    <div className="relative w-full">
+                      <span
+                        {...field}
                         onKeyUp={handleKeyboardEvent}
-                        id="textarea"
-                        placeholder="Commencer un Whisper..."
-                        className="bg-good-gray h-24 resize-none absolute left-16 top-12 w-10/12  text-small-regular  pr-px text-white outline-none   
+                        id="editable-span"
+                        className=" bg-good-gray block h-auto resize-none absolute left-16 top-12 w-10/12  text-small-regular  pr-px text-white outline-none   
                            rounded-md ring-offset-background placeholder:text-neutral-400  disabled:cursor-not-allowed disabled:opacity-50"
-                      ></textarea>
+                        contentEditable></span>
                     </div>
                   </FormControl>
 
@@ -127,13 +115,22 @@ const CreateWhisper = ({ author }: WhisperProps) => {
 
               )}
             />
-            <Button id="button" type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5" disabled>
-              Publier
-            </Button>
-          </form>
-        </Form>
+
+    </div >
+      <div id='lower-div' className="fixed top-0 left-0 inset-0 flex-wrap z-50  w-basic h-20 mx-auto mt-[24.3333333rem] rounded-b-2xl justify-center items-center
+       bg-good-gray  border-x border-b border-x-border border-b-border">
+        <p
+          className=" text-small-medium  ml-4 mt-4 absolute bottom-4 text-cyan-500  drop-shadow-glow 
+          ">
+          Nouveau Whisper
+        </p>
+        <Button id="button" type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5" disabled>
+          Publier
+        </Button>
       </div>
 
+      </form>
+      </Form>
     </>
   )
 
