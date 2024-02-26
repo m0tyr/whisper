@@ -4,11 +4,19 @@ import Link from "next/link";
 import { Dropdown, DropdownTrigger, DropdownSection, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import TopBar from "@/components/shared/Topbar";
 import CreateWhisper from "@/components/forms/CreateWhisper";
+import { currentUser } from "@clerk/nextjs";
+import { fetchUser } from "@/lib/actions/user.actions";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+async function  Page() {
   let showPopup = false;
+  const user = await currentUser();
+  if (!user) redirect('/sign-in');
 
-   
+  const userInfo = await fetchUser(user.id);
+  if(!userInfo?.onboarded) redirect('/onboarding');
+
+   console.log(userInfo)
   return (
     <>
 
@@ -310,8 +318,9 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <TopBar  />
+      <TopBar userId={userInfo._id}  />
 
     </>
   )
 }
+export default Page;
