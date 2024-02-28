@@ -8,18 +8,25 @@ import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 
-async function  Page() {
+async function Page() {
   let showPopup = false;
   const user = await currentUser();
   if (!user) redirect('/sign-in');
 
   const userInfo = await fetchUser(user.id);
-  if(!userInfo?.onboarded) redirect('/onboarding');
+  if (!userInfo?.onboarded) redirect('/onboarding');
+  const userData = {
+    id: user?.id,
+    username: userInfo?.username || user.username,
+    name: userInfo?.name || user.firstName,
+    bio: userInfo?.bio || "",
+    image: userInfo?.image || user.imageUrl,
+  };
 
   return (
     <>
 
-<section className="main-container">
+      <section className="main-container">
 
         <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
           <div className="">
@@ -30,8 +37,8 @@ async function  Page() {
               </Link>
 
 
-              <input type="text" name="" placeholder="Commencer un Whisper.." className="bg-navcolor text-small-regular  rounded-full pl-3 pr-12 pt-3 outline-none font text-gray-300 opacity-65 px-12 "  />
-              <button  className="float-right right-2 bg-white rounded-full py-1 h-9 px-4  transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>Publier</button>
+              <input type="text" name="" placeholder="Commencer un Whisper.." className="bg-navcolor text-small-regular  rounded-full pl-3 pr-12 pt-3 outline-none font text-gray-300 opacity-65 px-12 " />
+              <button className="float-right right-2 bg-white rounded-full py-1 h-9 px-4  transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>Publier</button>
             </div>
             <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-2">
               <hr className="border-x-2 opacity-20 " />
@@ -308,16 +315,16 @@ async function  Page() {
 
               </div>
             </div>
-           
-           
-           
-            
-           
+
+
+
+
+
 
           </div>
         </div>
       </section>
-      <TopBar user={userInfo}  />
+      <TopBar user={userData} />
 
     </>
   )

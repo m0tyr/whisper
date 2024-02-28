@@ -16,7 +16,6 @@ const TopBar = ({ user }: any) => {
     const [showPopup, setShowPopup] = useState(false);
 
     const togglePopup = () => {
-        console.log("test")
         setShowPopup(!showPopup);
     };
 
