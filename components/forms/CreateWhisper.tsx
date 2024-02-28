@@ -4,7 +4,7 @@ import * as z from "zod";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
@@ -118,6 +118,62 @@ const CreateWhisper = ({ userId }: { userId: string }) => {
       fileReader.readAsDataURL(file);
     }
   };
+  useEffect(() => {
+    document.body.classList.add('stop-scrolling');
+
+    return () => {
+      document.body.classList.remove('stop-scrolling');
+    };
+  }, []);
+
+
+  const [spanClientHeight, setSpanClientHeight] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [margintopTWO, setMargintopTWO] = useState(0);
+
+  const [margintop, setMargintop] = useState(0);
+
+
+  const spanRef = useRef(null);
+
+  
+  useLayoutEffect(() => {
+    if (spanRef.current) {
+      console.log(spanRef.current['clientHeight'])
+      setSpanClientHeight(spanRef.current['clientHeight']);
+      setHeight(205 + spanRef.current['clientHeight']);
+      setMargintop(136 + spanRef.current['clientHeight']);
+    }
+  }, []);
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const { height } = entry.contentRect;
+        console.log(window.innerHeight/ 2)
+        if(height >= window.innerHeight /2){
+          return;
+        }
+        console.log(height);
+        setHeight(217 + (height)); 
+        setMargintopTWO(5.333 + (height/2))
+        setMargintop(-200 - (height/2)); 
+
+      }
+    });
+
+    if (spanRef.current) {
+      resizeObserver.observe(spanRef.current);
+    }
+
+    return () => {
+      if (spanRef.current) {
+        resizeObserver.unobserve(spanRef.current);
+      }
+    };
+  }, []);
+
+
+
 
 
 
@@ -125,16 +181,18 @@ const CreateWhisper = ({ userId }: { userId: string }) => {
   return (
 
     <>
-    
-        <Form {...form} >
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="pt-8"
-          >
-            <div id='upper-div'
-              className="fixed top-0 left-0 inset-0 
-            w-basic min-h-[169px] h-[229px] flex-wrap z-50 overflow-auto  
-            mx-auto bg-good-gray rounded-t-2xl  border-x border-t border-x-border border-t-border  mt-[160px] justify-center items-center">
+
+      <Form {...form} >
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="pt-8"
+        >
+          <div className=" mx-10">
+            <div id='upper-div' 
+            style={{ height: `${height}px`, marginTop: `${margintop}px` }}
+              className="fixed top-1/2 left-0 inset-0 
+            w-basic  flex-wrap z-50 overflow-auto  
+            mx-auto bg-good-gray rounded-t-2xl  border-x border-t border-x-border border-t-border  justify-center items-center">
 
               <FormField
                 control={form.control}
@@ -149,7 +207,7 @@ const CreateWhisper = ({ userId }: { userId: string }) => {
                     <FormControl className="outline-none">
 
                       <div className="relative w-full">
-                        <div className="absolute left-16 top-11 w-10/12">
+                        <div className="absolute left-16 top-11 w-10/12" ref={spanRef}>
                           <span
                             {...field}
                             onKeyUp={handleKeyboardEvent}
@@ -176,48 +234,52 @@ const CreateWhisper = ({ userId }: { userId: string }) => {
               />
 
 
-            </div >
-            <div id='lower-div' className="fixed top-0 left-0 inset-0 flex-wrap z-50  w-basic h-20 mx-auto mt-[24.3333333rem] rounded-b-2xl justify-center items-center
-       bg-good-gray  border-x border-b border-x-border border-b-border">
-              <p
-                className=" text-small-medium  ml-4 mt-4 absolute bottom-4 text-cyan-500  drop-shadow-glow 
-          ">
-                Nouveau Whisper
-              </p>
-              <FormField
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                  <FormItem >
-                    <FormLabel>
-
-                    </FormLabel>
-
-                    <FormControl className="outline-none">
-
-                      <div className="absolute top-0 left-16 w-6 h-3 mt-5" role="button">
-                        <Input type="file"
-                          className="absolute bottom-0 top-0 cursor-pointer w-6 h-6 bg-good-gray bg-contain bg-no-repeat !outline-none border-opacity-0 bg-add-image "
-                          aria-label="Joindre un fichier"
-                          {...register("image")}
-                          onChange={(e) => handleImage(e, field.onChange)}
-
-                        />
-                      </div>
-
-                    </FormControl>
-
-                  </FormItem>
-
-                )}
-              />
-              <Button id="button" type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5" disabled>
-                Publier
-              </Button>
             </div>
+          </div>
 
-          </form>
-        </Form>
+          <div id='lower-div'
+           style={{ marginTop: `${margintopTWO}px` }}
+            className="fixed top-1/2 left-0  inset-0 flex flex-wrap z-50  w-basic h-20 mx-auto  rounded-b-2xl  items-center
+       bg-good-gray  border-x border-b border-x-border border-b-border">
+            <p
+              className=" text-small-medium  ml-4 mt-4 absolute bottom-4 text-cyan-500  drop-shadow-glow 
+          ">
+              Nouveau Whisper
+            </p>
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem >
+                  <FormLabel>
+
+                  </FormLabel>
+
+                  <FormControl className="outline-none">
+
+                    <div className="absolute top-0 left-16 w-6 h-3 mt-5" role="button">
+                      <Input type="file"
+                        className="absolute bottom-0 top-0 cursor-pointer w-6 h-6 bg-good-gray bg-contain bg-no-repeat !outline-none border-opacity-0 bg-add-image "
+                        aria-label="Joindre un fichier"
+                        {...register("image")}
+                        onChange={(e) => handleImage(e, field.onChange)}
+
+                      />
+                    </div>
+
+                  </FormControl>
+
+                </FormItem>
+
+              )}
+            />
+            <Button id="button" type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5" disabled>
+              Publier
+            </Button>
+          </div>
+
+        </form>
+      </Form>
     </>
   )
 
