@@ -16,7 +16,6 @@ async function  Page() {
   const userInfo = await fetchUser(user.id);
   if(!userInfo?.onboarded) redirect('/onboarding');
 
-   console.log(userInfo)
   return (
     <>
 
@@ -318,7 +317,7 @@ async function  Page() {
           </div>
         </div>
       </section>
-      <TopBar userId={userInfo._id}  />
+      <TopBar user={userInfo}  />
 
     </>
   )

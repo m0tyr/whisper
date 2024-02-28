@@ -8,8 +8,7 @@ import { SignedIn, SignOutButton, OrganizationSwitcher } from "@clerk/nextjs";
 import CreateWhisper from "../forms/CreateWhisper";
 
 
-const TopBar = ({ userId }: any) => {
-    console.log(userId)
+const TopBar = ({ user }: any) => {
     const isUserLoggedIn = true;
     function handleConfirm() {
         location.href = "/settings";
@@ -140,7 +139,7 @@ const TopBar = ({ userId }: any) => {
             {showPopup && (
                 <>
                     <div className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 z-40 w-full transition-all duration-100" onClick={togglePopup}></div>
-                        <CreateWhisper userId={userId} />
+                        <CreateWhisper user={user} />
                 </>
             )}
         </>

@@ -55,9 +55,8 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
 
 
-const CreateWhisper = ({ userId }: { userId: string }) => {
+const CreateWhisper = ({ user }: { user: any }) => {
   const [files, setFiles] = useState<File[]>([]);
-
 
   const { startUpload } = useUploadThing('imageUploader')
 
@@ -71,7 +70,7 @@ const CreateWhisper = ({ userId }: { userId: string }) => {
       defaultValues: {
         whisper: "",
         image: "",
-        accoundId: userId,
+        accoundId: "user._id",
       },
     })
   const { register, handleSubmit, formState: { errors }, watch } = form;
