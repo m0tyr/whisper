@@ -32,6 +32,7 @@ import Link from "next/link";
 
 
 interface Props {
+  _id:string;
   user: {
     id: string;
     username: string;
@@ -43,9 +44,11 @@ interface Props {
 import { WhisperValidation } from "@/lib/validations/whisper";
 import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
+import { createWhisper } from "@/lib/actions/whisper.actions";
+import { isBase64Image } from "@/lib/utils";
 
 
-const CreateWhisper = ({ user }: Props) => {
+const CreateWhisper = ({ user, _id }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const { startUpload } = useUploadThing('imageUploader')
@@ -55,11 +58,13 @@ const CreateWhisper = ({ user }: Props) => {
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
 
   const pathname = usePathname();
+
   const form = useForm<z.infer<typeof WhisperValidation>>({
     resolver: zodResolver(WhisperValidation),
     defaultValues: {
       content: "",
       media: "",
+      accoundId: _id,
     },
   });
 
@@ -154,10 +159,29 @@ const CreateWhisper = ({ user }: Props) => {
     }; 
 
   }, [hasConditionMet]);
-  function onSubmit(values: z.infer<typeof WhisperValidation>) {
+  async function onSubmit(values: z.infer<typeof WhisperValidation>) {
     const spanText = document.getElementById('editable-span')?.textContent || '';
     values.content = spanText;
     console.log(values)
+    const blob = values.media;
+
+    const hasimageChanged = isBase64Image(blob);
+
+    if (hasimageChanged) {
+      const imgRes = await startUpload(files)
+
+      if (imgRes && imgRes[0].url) {
+        values.media = imgRes[0].url;
+      }
+    }
+    await createWhisper({
+      content: values.content,
+      author: values.accoundId,
+      media: values.media,
+      path:pathname,
+    });
+
+    router.push("/")
 
   }
   return (
@@ -165,7 +189,7 @@ const CreateWhisper = ({ user }: Props) => {
       <Form {...form} >
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="pt-8"
+         
         >
           <div className=" mx-10">
             <div id='upper-div'

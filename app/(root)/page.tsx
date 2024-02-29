@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Dropdown, DropdownTrigger, DropdownSection, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import TopBar from "@/components/shared/Topbar";
+import TopChat from "@/components/shared/TopChat";
 import CreateWhisper from "@/components/forms/CreateWhisper";
 import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
@@ -30,16 +31,7 @@ async function Page() {
 
         <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
           <div className="">
-            <div className="mt-2 mb-3.5">
-              <Link href="/user">
-
-                <Image src="./svgs/user.svg" alt="logo" width={37} height={37} className="opacity-85 hover:opacity-100  transition-all duration-300  float-left gap-3  mt-0.5 cursor-pointer " />
-              </Link>
-
-
-              <input type="text" name="" placeholder="Commencer un Whisper.." className="bg-navcolor text-small-regular  rounded-full pl-3 pr-12 pt-3 outline-none font text-gray-300 opacity-65 px-12 " />
-              <button className="float-right right-2 bg-white rounded-full py-1 h-9 px-4  transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>Publier</button>
-            </div>
+          <TopChat user={userData} _id={userInfo._id} />
             <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-2">
               <hr className="border-x-2 opacity-20 " />
               <div className="pt-3 mr-3">
@@ -324,7 +316,7 @@ async function Page() {
           </div>
         </div>
       </section>
-      <TopBar user={userData} />
+      <TopBar user={userInfo} _id={userInfo._id} />
 
     </>
   )
