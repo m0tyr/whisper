@@ -52,16 +52,17 @@ const CreateWhisper = ({ user }: Props) => {
 
   const router = useRouter();
 
+  const [imageDataURL, setImageDataURL] = useState<string | null>(null);
+
   const pathname = usePathname();
-  const { setValue } = useForm<z.infer<typeof WhisperValidation>>();
   const form = useForm<z.infer<typeof WhisperValidation>>({
     resolver: zodResolver(WhisperValidation),
     defaultValues: {
-      whisper: {
-        content: "", 
-      },
+      content: "",
+      media: "",
     },
   });
+
   const handleKeyboardEvent = (e: any) => {
     var getText = document.getElementById("editable-span")?.textContent;
     var result = getText;
@@ -72,24 +73,29 @@ const CreateWhisper = ({ user }: Props) => {
     }
   }
 
-  const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImage = (
+    e: ChangeEvent<HTMLInputElement>,
+    fieldChange: (value: string) => void
+  ) => {
     e.preventDefault();
+
     const fileReader = new FileReader();
 
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      setFiles(Array.from(e.target.files));
 
       if (!file.type.includes("image")) return;
 
-      fileReader.onload = () => {
-        const imageDataUrl = fileReader.result as string;
-/*         setValue("whisper.media", imageDataUrl); 
- */      };
+      fileReader.onload = async (event) => {
+        const imageDataUrl = event.target?.result?.toString() || "";
+        setImageDataURL(imageDataUrl); 
+        fieldChange(imageDataUrl);
+      };
 
       fileReader.readAsDataURL(file);
     }
   };
-
   useEffect(() => {
     document.body.classList.add('stop-scrolling');
 
@@ -102,12 +108,12 @@ const CreateWhisper = ({ user }: Props) => {
   const [spanClientHeight, setSpanClientHeight] = useState(0);
   const [height, setHeight] = useState(0);
   const [margintopTWO, setMargintopTWO] = useState(0);
-
+  const [hasConditionMet, setHasConditionMet] = useState(false);
   const [margintop, setMargintop] = useState(0);
 
 
   const spanRef = useRef(null);
-  
+
 
   useLayoutEffect(() => {
     if (spanRef.current) {
@@ -120,13 +126,18 @@ const CreateWhisper = ({ user }: Props) => {
     const resizeObserver = new ResizeObserver(entries => {
       for (let entry of entries) {
         const { height } = entry.contentRect;
-        if (height >= window.innerHeight / 2) {
-          return;
+        if (height >= window.innerHeight / 2 && !hasConditionMet) {
+          setHeight(185 + (window.innerHeight / 2));
+          setMargintopTWO(85.333 + (window.innerHeight / 5))
+          setMargintop(-130 - (window.innerHeight / 4));
+          setHasConditionMet(true); // Set the condition as met
         }
-        setHeight(217 + (height));
-        setMargintopTWO(85.333 + (height / 2))
-        setMargintop(-130 - (height / 2));
-
+        else if (height < window.innerHeight/2) {
+          setHeight(185 + (height));
+          setMargintopTWO(45.333 + (height / 2))
+          setMargintop(-130 - (height / 2));
+          setHasConditionMet(false); 
+        }
       }
     });
 
@@ -137,13 +148,15 @@ const CreateWhisper = ({ user }: Props) => {
     return () => {
       if (spanRef.current) {
         resizeObserver.unobserve(spanRef.current);
-      }
-    };
-  }, []);
+        resizeObserver.disconnect(); 
 
+      }
+    }; 
+
+  }, [hasConditionMet]);
   function onSubmit(values: z.infer<typeof WhisperValidation>) {
     const spanText = document.getElementById('editable-span')?.textContent || '';
-    values.whisper.content = spanText;
+    values.content = spanText;
     console.log(values)
 
   }
@@ -161,40 +174,38 @@ const CreateWhisper = ({ user }: Props) => {
             w-basic  flex-wrap z-50 overflow-auto  
             mx-auto bg-good-gray rounded-t-2xl  border-x border-t border-x-border border-t-border  justify-center items-center">
 
-<FormField
-  control={form.control}
-  name="whisper"  
-  render={({ field }: { field: FieldValues }) => (
-    <FormItem>
-      <FormLabel>
-        <span className="absolute left-16 top-7 text-white text-small-semibold tracking-wide  ">{user?.username}</span>
-        <Image src={user?.image} alt="logo" width={40} height={40} className=" absolute left-4 top-8 float-left gap-3 rounded-full  " />
-      </FormLabel>
-      <FormControl className="outline-none">
-        <div className="relative w-full">
-          <div className="absolute left-16 top-11 w-10/12" ref={spanRef}>
-            <span
-              {...field.content}  // Access the content property directly
-              onKeyUp={handleKeyboardEvent}
-              id="editable-span"
-              className=" bg-good-gray h-auto resize-none w-10/12  text-small-regular  pr-px text-white outline-none   
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }: { field: FieldValues }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <span className="absolute left-16 top-7 text-white text-small-semibold tracking-wide  ">{user?.username}</span>
+                      <Image src={user?.image} alt="logo" width={40} height={40} className=" absolute left-4 top-8 float-left gap-3 rounded-full  " />
+                    </FormLabel>
+                    <FormControl className="outline-none">
+                      <div className="relative w-full">
+                        <div className="absolute left-16 top-11 w-10/12" ref={spanRef}>
+                          <span
+                            {...field}
+                            onKeyUp={handleKeyboardEvent}
+                            id="editable-span"
+                            className=" bg-good-gray h-auto resize-none w-10/12  text-small-regular  pr-px text-white outline-none   
                            rounded-md ring-offset-background cursor-text placeholder:text-neutral-400  disabled:cursor-not-allowed disabled:opacity-50"
-              contentEditable
-            ></span>
-          </div>
-          <div className="absolute top-0 left-16 w-6 h-3 mt-5" role="button">
-            <Input
-              type="file"
-              className="absolute bottom-0 top-0 cursor-pointer w-6 h-6 bg-good-gray bg-contain bg-no-repeat !outline-none border-opacity-0 bg-add-image "
-              aria-label="Joindre un fichier"
-              onChange={(e) => handleImage(e)}
-            />
-          </div>
-        </div>
-      </FormControl>
-    </FormItem>
-  )}
-/>
+                            contentEditable
+                          ></span>
+                          {imageDataURL && (
+                              <img src={imageDataURL} className="rounded-xl" />
+
+
+                          )}
+                        </div>
+
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
 
             </div>
@@ -209,7 +220,33 @@ const CreateWhisper = ({ user }: Props) => {
           ">
               Nouveau Whisper
             </p>
-       
+            <FormField
+              control={form.control}
+              name="media"
+              render={({ field }: { field: FieldValues }) => (
+                <FormItem >
+                  <FormLabel>
+
+                  </FormLabel>
+
+                  <FormControl className="outline-none">
+
+                    <div className="absolute top-0 left-16 w-6 h-3 mt-5" role="button">
+                      <Input type="file"
+                        className="absolute bottom-0 top-0 cursor-pointer w-6 h-6 bg-good-gray bg-contain bg-no-repeat !outline-none border-opacity-0 bg-add-image "
+                        aria-label="Joindre un fichier"
+                        onChange={(e) => handleImage(e, field.onChange)}
+
+                      />
+                    </div>
+
+                  </FormControl>
+
+                </FormItem>
+
+              )}
+            />
+
             <Button id="button" type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5" disabled>
               Publier
             </Button>
