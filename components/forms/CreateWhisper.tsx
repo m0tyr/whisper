@@ -95,6 +95,7 @@ const CreateWhisper = ({ user, _id }: Props) => {
       fileReader.onload = async (event) => {
         const imageDataUrl = event.target?.result?.toString() || "";
         setImageDataURL(imageDataUrl); 
+        (document.getElementById('button') as HTMLButtonElement).disabled = false;
         fieldChange(imageDataUrl);
       };
 

@@ -19,13 +19,16 @@ const whisperSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    children: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Whisper',
+        }
+    ],
     parentId: {
         type: String,
     },
-    children: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Whisper',
-    }
+  
 });
 
 
