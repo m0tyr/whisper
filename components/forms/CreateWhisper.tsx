@@ -32,7 +32,7 @@ import Link from "next/link";
 
 
 interface Props {
-  _id:string;
+  _id: string;
   user: {
     id: string;
     username: string;
@@ -94,7 +94,7 @@ const CreateWhisper = ({ user, _id }: Props) => {
 
       fileReader.onload = async (event) => {
         const imageDataUrl = event.target?.result?.toString() || "";
-        setImageDataURL(imageDataUrl); 
+        setImageDataURL(imageDataUrl);
         (document.getElementById('button') as HTMLButtonElement).disabled = false;
         fieldChange(imageDataUrl);
       };
@@ -138,11 +138,11 @@ const CreateWhisper = ({ user, _id }: Props) => {
           setMargintop(-130 - (window.innerHeight / 4));
           setHasConditionMet(true); // Set the condition as met
         }
-        else if (height < window.innerHeight/2) {
+        else if (height < window.innerHeight / 2) {
           setHeight(185 + (height));
           setMargintopTWO(45.333 + (height / 2))
           setMargintop(-130 - (height / 2));
-          setHasConditionMet(false); 
+          setHasConditionMet(false);
         }
       }
     });
@@ -154,20 +154,28 @@ const CreateWhisper = ({ user, _id }: Props) => {
     return () => {
       if (spanRef.current) {
         resizeObserver.unobserve(spanRef.current);
-        resizeObserver.disconnect(); 
+        resizeObserver.disconnect();
 
       }
-    }; 
+    };
 
   }, [hasConditionMet]);
+  function abortimage() {
+
+    setImageDataURL(null); 
+  }
+  console.log(form.formState.errors)
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
     const spanText = document.getElementById('editable-span')?.textContent || '';
     values.content = spanText;
     console.log(values)
-    const blob = values.media;
+    let hasimageChanged = false;
+    let blob: string | undefined;
 
-    const hasimageChanged = isBase64Image(blob);
-
+    if (values.media) {
+      blob = values.media;
+      hasimageChanged = isBase64Image(blob);
+    }
     if (hasimageChanged) {
       const imgRes = await startUpload(files)
 
@@ -179,7 +187,7 @@ const CreateWhisper = ({ user, _id }: Props) => {
       content: values.content,
       author: values.accoundId,
       media: values.media,
-      path:pathname,
+      path: pathname,
     });
 
     router.push("/")
@@ -190,7 +198,7 @@ const CreateWhisper = ({ user, _id }: Props) => {
       <Form {...form} >
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-         
+
         >
           <div className=" mx-10">
             <div id='upper-div'
@@ -202,6 +210,7 @@ const CreateWhisper = ({ user, _id }: Props) => {
               <FormField
                 control={form.control}
                 name="content"
+
                 render={({ field }: { field: FieldValues }) => (
                   <FormItem>
                     <FormLabel>
@@ -220,7 +229,13 @@ const CreateWhisper = ({ user, _id }: Props) => {
                             contentEditable
                           ></span>
                           {imageDataURL && (
-                              <img src={imageDataURL} className="rounded-xl" />
+
+                            <>
+                              <div className="min-w-sm max-w-md relative">
+                                <Image src="svgs/close.svg" width={20} height={20} alt="" className=" absolute top-2 ml-2 invert-0 bg-dark-4 bg-opacity-55 rounded-full cursor-pointer" onClick={abortimage} />
+                                <img src={imageDataURL} className="rounded-xl max-w-md" />
+                              </div>
+                            </>
 
 
                           )}

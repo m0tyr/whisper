@@ -24,7 +24,7 @@ const TopBar = ({ user,_id }: any) => {
         <>
 
 
-            <nav className="topbar backdrop-blur-xl my-0 z-0">
+            <nav className="topbar backdrop-blur-2xl my-0 z-0">
                 <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
                     <Image src="./svgs/logo.svg" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />

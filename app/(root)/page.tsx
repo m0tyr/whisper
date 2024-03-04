@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Dropdown, DropdownTrigger, DropdownSection, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import TopBar from "@/components/shared/Topbar";
 import TopChat from "@/components/shared/TopChat";
-import CreateWhisper from "@/components/forms/CreateWhisper";
 import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";

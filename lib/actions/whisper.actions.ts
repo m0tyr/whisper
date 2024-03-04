@@ -6,9 +6,9 @@ import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
 
 interface Params{
-    content:string,
+    content:string | undefined,
     author:string,
-    media:string,
+    media:string | undefined,
     path:string,
 }
 export async function createWhisper({content,author,media,path}: Params){
@@ -32,30 +32,38 @@ export async function createWhisper({content,author,media,path}: Params){
 };
 export async function fetchwhispers(pagenumber=1 , pagesize=15) {
 
-    const skipamount = (pagenumber - 1) * pagesize;
+   try {
+     connectToDB();
 
-    const posts_query = Whisper.find({
-        parentId: {$in: [null,undefined]}
-    })
-    .sort({createdAt: 'desc'})
-    .skip(skipamount)
-    .limit(pagesize)
-    .populate({ path: 'author', model: User})
-    .populate({
-        path: 'children',
-        populate:{
-            path:'author',
-            model: User,
-            select: "_id username parentId image"
-        }
-    })
-    const allposts_count = await Whisper.countDocuments({ parentId: {
-        $in : [null,undefined]
-    }})
+     const skipamount = (pagenumber - 1) * pagesize;
+ 
+     const posts_query = Whisper.find({
+         parentId: {$in: [null,undefined]}
+     })
+     .sort({createdAt: 'desc'})
+     .skip(skipamount)
+     .limit(pagesize)
+     .populate({ path: 'author', model: User})
+     .populate({
+         path: 'children',
+         populate:{
+             path:'author',
+             model: User,
+             select: "_id username parentId image"
+         }
+     })
+     const allposts_count = await Whisper.countDocuments({ parentId: {
+         $in : [null,undefined]
+     }})
+ 
+     const posts_exec = await posts_query.exec();
+ 
+     const isnext = allposts_count> skipamount + posts_exec.length;
+ 
+     return { posts_exec, isnext};
+   } catch (error:any) {    
+    throw new Error(`error onfetchpots: ${error.message} `)
 
-    const posts_exec = await posts_query.exec();
-
-    const isnext = allposts_count> skipamount + posts_exec.length;
-
-    return { posts_exec, isnext};
+    
+   }
 }
