@@ -46,6 +46,8 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
 import { createWhisper } from "@/lib/actions/whisper.actions";
 import { isBase64Image } from "@/lib/utils";
+import { AnimatePresence } from 'framer-motion'
+import { motion } from "framer-motion"
 
 
 const CreateWhisper = ({ user, _id }: Props) => {
@@ -162,7 +164,7 @@ const CreateWhisper = ({ user, _id }: Props) => {
   }, [hasConditionMet]);
   function abortimage() {
 
-    setImageDataURL(null); 
+    setImageDataURL(null);
   }
   console.log(form.formState.errors)
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
@@ -193,107 +195,119 @@ const CreateWhisper = ({ user, _id }: Props) => {
     router.push("/")
 
   }
+
   return (
     <>
       <Form {...form} >
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
+        <AnimatePresence>
 
-        >
-          <div className=" mx-10">
-            <div id='upper-div'
-              style={{ height: `${height}px`, marginTop: `${margintop}px` }}
-              className="fixed top-1/2 left-0 inset-0 
+          <motion.div
+            initial={{ opacity: 0}}
+            animate={{ opacity: 1}}
+            exit={{ opacity: 0}}
+            transition={{ delay: .01 }}
+            >
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <div className=" mx-10">
+
+                <div id='upper-div'
+                  style={{ height: `${height}px`, marginTop: `${margintop}px` }}
+                  className="fixed top-1/2 left-0 inset-0 
             w-basic  flex-wrap z-50 overflow-auto  
             mx-auto bg-good-gray rounded-t-2xl  border-x border-t border-x-border border-t-border  justify-center items-center">
 
-              <FormField
-                control={form.control}
-                name="content"
+                  <FormField
+                    control={form.control}
+                    name="content"
 
-                render={({ field }: { field: FieldValues }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span className="absolute left-16 top-7 text-white text-small-semibold tracking-wide  ">{user?.username}</span>
-                      <Image src={user?.image} alt="logo" width={40} height={40} className=" absolute left-4 top-8 float-left gap-3 rounded-full  " />
-                    </FormLabel>
-                    <FormControl className="outline-none">
-                      <div className="relative w-full">
-                        <div className="absolute left-16 top-11 w-10/12" ref={spanRef}>
-                          <span
-                            {...field}
-                            onKeyUp={handleKeyboardEvent}
-                            id="editable-span"
-                            className=" bg-good-gray h-auto resize-none w-10/12  text-small-regular  pr-px text-white outline-none   
+                    render={({ field }: { field: FieldValues }) => (
+                      <FormItem>
+                        <FormLabel>
+                          <span className="absolute left-16 top-7 text-white text-small-semibold tracking-wide  ">{user?.username}</span>
+                          <Image src={user?.image} alt="logo" width={40} height={40} className=" absolute left-4 top-8 float-left gap-3 rounded-full  " />
+                        </FormLabel>
+                        <FormControl className="outline-none">
+                          <div className="relative w-full">
+                            <div className="absolute left-16 top-11 w-10/12" ref={spanRef}>
+                              <span
+                                {...field}
+                                onKeyUp={handleKeyboardEvent}
+                                id="editable-span"
+                                className=" bg-good-gray h-auto resize-none w-10/12  text-small-regular  pr-px text-white outline-none   
                            rounded-md ring-offset-background cursor-text placeholder:text-neutral-400  disabled:cursor-not-allowed disabled:opacity-50"
-                            contentEditable
-                          ></span>
-                          {imageDataURL && (
+                                contentEditable
+                              ></span>
+                              {imageDataURL && (
 
-                            <>
-                              <div className="min-w-sm max-w-md relative">
-                                <Image src="svgs/close.svg" width={20} height={20} alt="" className=" absolute top-2 ml-2 invert-0 bg-dark-4 bg-opacity-55 rounded-full cursor-pointer" onClick={abortimage} />
-                                <img src={imageDataURL} className="rounded-xl max-w-md" />
-                              </div>
-                            </>
+                                <>
+                                  <div className="min-w-sm max-w-md relative">
+                                    <Image src="svgs/close.svg" width={20} height={20} alt="" className=" absolute top-2 ml-2 invert-0 bg-dark-4 bg-opacity-55 rounded-full cursor-pointer" onClick={abortimage} />
+                                    <img src={imageDataURL} className="rounded-xl max-w-md" />
+                                  </div>
+                                </>
 
 
-                          )}
+                              )}
+                            </div>
+
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+
+                </div>
+              </div>
+              <div id='lower-div'
+                style={{ marginTop: `${margintopTWO}px` }}
+                className="fixed top-1/2 left-0  inset-0 flex flex-wrap z-50  w-basic h-20 mx-auto  rounded-b-2xl  items-center
+       bg-good-gray  border-x border-b border-x-border border-b-border">
+                <p
+                  className=" text-small-medium  ml-4 mt-4 absolute bottom-4 text-cyan-500  drop-shadow-glow 
+          ">
+                  Nouveau Whisper
+                </p>
+                <FormField
+                  control={form.control}
+                  name="media"
+                  render={({ field }: { field: FieldValues }) => (
+                    <FormItem >
+                      <FormLabel>
+
+                      </FormLabel>
+
+                      <FormControl className="outline-none">
+
+                        <div className="absolute top-0 left-16 w-6 h-3 mt-5" role="button">
+                          <Input type="file"
+                            className="absolute bottom-0 top-0 cursor-pointer w-6 h-6 bg-good-gray bg-contain bg-no-repeat !outline-none border-opacity-0 bg-add-image "
+                            aria-label="Joindre un fichier"
+                            onChange={(e) => handleImage(e, field.onChange)}
+
+                          />
                         </div>
 
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                      </FormControl>
+
+                    </FormItem>
+
+                  )}
+                />
+
+                <Button id="button" type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5" disabled>
+                  Publier
+                </Button>
+              </div>
 
 
-            </div>
-          </div>
+            </form>
+          </motion.div>
 
-          <div id='lower-div'
-            style={{ marginTop: `${margintopTWO}px` }}
-            className="fixed top-1/2 left-0  inset-0 flex flex-wrap z-50  w-basic h-20 mx-auto  rounded-b-2xl  items-center
-       bg-good-gray  border-x border-b border-x-border border-b-border">
-            <p
-              className=" text-small-medium  ml-4 mt-4 absolute bottom-4 text-cyan-500  drop-shadow-glow 
-          ">
-              Nouveau Whisper
-            </p>
-            <FormField
-              control={form.control}
-              name="media"
-              render={({ field }: { field: FieldValues }) => (
-                <FormItem >
-                  <FormLabel>
-
-                  </FormLabel>
-
-                  <FormControl className="outline-none">
-
-                    <div className="absolute top-0 left-16 w-6 h-3 mt-5" role="button">
-                      <Input type="file"
-                        className="absolute bottom-0 top-0 cursor-pointer w-6 h-6 bg-good-gray bg-contain bg-no-repeat !outline-none border-opacity-0 bg-add-image "
-                        aria-label="Joindre un fichier"
-                        onChange={(e) => handleImage(e, field.onChange)}
-
-                      />
-                    </div>
-
-                  </FormControl>
-
-                </FormItem>
-
-              )}
-            />
-
-            <Button id="button" type="submit" className="absolute right-6 bottom-6 bg-white rounded-full py-1 h-9 px-4 hover:bg-slate-200 transition-all duration-150 !text-small-semibold text-black mt-0.5" disabled>
-              Publier
-            </Button>
-          </div>
-
-        </form>
-      </Form>
+        </AnimatePresence>
+      </Form >
     </>
   )
 
