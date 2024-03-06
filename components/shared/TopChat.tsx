@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import CreateWhisper from "../forms/CreateWhisper";
 import { motion } from 'framer-motion';
+import { useToast } from '../ui/use-toast';
+import { ToastAction } from '../ui/toast';
 
 const TopChat = ({ user, _id }: any) => {
     const [showPopup, setShowPopup] = useState(false);
@@ -13,6 +15,7 @@ const TopChat = ({ user, _id }: any) => {
         console.log("test")
 
     };
+  const { toast } = useToast()
 
     return (
         <>
@@ -29,7 +32,9 @@ const TopChat = ({ user, _id }: any) => {
                     readOnly
                     className="bg-navcolor text-small-regular rounded-full pl-3 pr-12 pt-3 outline-none font text-gray-300 opacity-65 px-12"
                 />
-                <button className="float-right right-2 bg-white rounded-full py-1 h-9 px-4 transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>
+                <button 
+               
+                className="float-right right-2 bg-white rounded-full py-1 h-9 px-4 transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>
                     Publier
                 </button>
             </div>

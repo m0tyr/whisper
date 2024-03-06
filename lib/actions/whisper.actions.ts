@@ -30,6 +30,17 @@ export async function createWhisper({content,author,media,path}: Params){
         throw new Error(`error oncreate: ${error.message} `)
     }
 };
+
+export async function GetLastestWhisperfromUserId({author}: any){
+    try {
+        connectToDB(); 
+
+        const lastWhisper = await Whisper.findOne({ author }).sort({ createdAt: -1 }).limit(1);
+        return lastWhisper;
+    } catch (error:any) {
+        throw new Error(`Error retrieving last whisper: ${error.message}`);
+    }
+}
 export async function fetchwhispers(pagenumber=1 , pagesize=15) {
 
    try {

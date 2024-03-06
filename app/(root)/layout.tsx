@@ -3,8 +3,8 @@ import { ClerkProvider } from "@clerk/nextjs"
 
 import { Inter } from "next/font/google";
 import "../globals.css";
-import TopBar from "@/components/shared/Topbar";
-import CreateWhisper from "@/components/forms/CreateWhisper";
+
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,6 +29,7 @@ export default function RootLayout({
         <body className={inter.className}>
          
               {children}
+              <Toaster />
 
             
         </body>

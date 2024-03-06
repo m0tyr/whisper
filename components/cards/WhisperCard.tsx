@@ -1,3 +1,4 @@
+import { calculateTimeAgo } from "@/lib/utils";
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,8 +52,8 @@ function WhisperCard({
 
 
                 <div className="w-full">
-                    <div className="float-right  text-white text-small-regular mr-1.5 opacity-50 flex">
-                        <p className="opacity-50">15 h</p>
+                    <div className="float-right  text-white text-small-regular font-light mr-1.5 opacity-50 flex">
+                        <p className="opacity-50 ">{calculateTimeAgo(createdAt.toString())}</p>
                         <Dropdown>
 
                             <DropdownTrigger>
