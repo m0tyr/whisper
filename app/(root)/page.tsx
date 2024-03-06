@@ -28,17 +28,20 @@ async function Page() {
     bio: userInfo?.bio || "",
     image: userInfo?.image || user.imageUrl,
   };
-
+  
   return (
     <>
+      <TopBar user={userData} _id={`${userInfo._id}`} />
 
       <section className="main-container">
 
-        <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
-          <div className="">
+        <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full " aria-hidden="true">
+          <div>
+            <div className="">
             <TopChat user={userData} _id={`${userInfo._id}`} />
+            </div>
             {allposts.posts_exec.length === 0 ? (
-              <p>No Whispers found...</p>
+              <p className="text-white text-body1-bold ">No Whispers found...</p>
             ) : (
               <>
               {allposts.posts_exec.map((post) => (
@@ -61,7 +64,6 @@ async function Page() {
           </div>
         </div>
       </section>
-      <TopBar user={userData} _id={`${userInfo._id}`} />
 
     </>
   )

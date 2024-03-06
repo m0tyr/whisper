@@ -201,7 +201,7 @@ module.exports = {
         "gray-2": "#777777",
         "good-gray": "#181818",
         "test": "#181818",
-        "border": "rgba(243, 245, 247, .2)",
+        "border": "rgba(243, 245, 247, .13333)",
         glassmorphism: "rgba(16, 16, 18, 0.60)",
         "logo-color": "#344FFF",
       },

@@ -27,7 +27,7 @@ const TopBar = ({ user, _id }: any) => {
         <>
 
 
-            <nav className="topbar backdrop-blur-2xl my-0 z-0">
+            <nav className="topbar backdrop-blur-2xl my-0">
                 <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
                     <Image src="./svgs/logo.svg" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
@@ -141,9 +141,15 @@ const TopBar = ({ user, _id }: any) => {
 
                 {showPopup && (
                     <>
-                        <div className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full transition-all duration-100" onClick={togglePopup}></div>
+                        <motion.div
+                         initial={{ opacity: 0, zIndex:0}}
+                         animate={{ opacity: 1 , zIndex: 51}}
+                          exit={{ opacity: 0}}
+                          transition={{  }}
+                         id='top' 
+                         className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
                        
-                            <CreateWhisper user={user} _id={_id} />
+                            <CreateWhisper user={user} _id={_id} toclose={togglePopup}  />
 
                     </>
 

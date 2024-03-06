@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import CreateWhisper from "../forms/CreateWhisper";
+import { motion } from 'framer-motion';
 
 const TopChat = ({ user, _id }: any) => {
     const [showPopup, setShowPopup] = useState(false);
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
+        console.log("test")
 
     };
 
@@ -33,9 +35,15 @@ const TopChat = ({ user, _id }: any) => {
             </div>
             {showPopup && (
                 <>
-                    <div className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 z-40 w-full transition-all duration-100" onClick={togglePopup}></div>
-
-                    <CreateWhisper user={user} _id={_id} />
+                    <motion.div
+                        initial={{ opacity: 0, zIndex:0}}
+                        animate={{ opacity: 1 , zIndex: 51}}
+                        exit={{ opacity: 0 }}
+                        transition={{}}
+                        id='top'
+                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full 
+                         " onClick={togglePopup}></motion.div>
+                    <CreateWhisper user={user} _id={_id} toclose={togglePopup} />
 
                 </>
             )}
