@@ -16,7 +16,7 @@ async function Page() {
 
   if (!user) redirect('/sign-in');
 
-  const allposts = await fetchwhispers(1, 30);
+  const allposts = await fetchwhispers(1, 60);
 
 
   const userInfo = await fetchUser(user.id);

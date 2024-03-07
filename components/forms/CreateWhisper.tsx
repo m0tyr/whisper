@@ -130,20 +130,21 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   useEffect(() => {
     const resizeObserver = new ResizeObserver(entries => {
       for (let entry of entries) {
-        const { height } = entry.contentRect;
-        if (height >= window.innerHeight / 2  && !hasConditionMet) {
-          setHeight(185 + (window.innerHeight / 2 ));
+        let { height } = entry.contentRect;
+        height = height / 1.3333;
+        if (height >= window.innerHeight / 1.666666667  && !hasConditionMet) {
+          setHeight(174 + (window.innerHeight / 1.66666667 ));
           setMargintopTWO(85.333 + (window.innerHeight / 5))
-          setMargintop(-130 - (window.innerHeight / 4));
+          setMargintop(-130 - (window.innerHeight / 3));
           setHasConditionMet(true); 
           console.log(height)
           console.log("insecond now")
 
         }
-        else if (height < window.innerHeight / 2) {
-          setHeight(181 + (height/1.3333));
-          setMargintopTWO(39.333 + (height / 3.66666666666666667))
-          setMargintop(-130 - (height / 2));
+        else if (height <= window.innerHeight / 2.1333333333333 ) {
+          setHeight(140 + (height * 1.333333));
+          setMargintopTWO(1.333 + (height / 1.3333333))
+          setMargintop(-110 - (height / 1.33333));
           setHasConditionMet(false);
           console.log(height)
 
