@@ -133,18 +133,18 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
         let { height } = entry.contentRect;
         height = height / 1.3333;
         if (height >= window.innerHeight / 1.666666667  && !hasConditionMet) {
-          setHeight(174 + (window.innerHeight / 1.66666667 ));
-          setMargintopTWO(85.333 + (window.innerHeight / 5))
-          setMargintop(-130 - (window.innerHeight / 3));
+          setHeight(120 + (window.innerHeight / 1.66666667 ));
+          setMargintopTWO(89.333 + (window.innerHeight / 5))
+          setMargintop(-70 - (window.innerHeight / 3));
           setHasConditionMet(true); 
           console.log(height)
           console.log("insecond now")
 
         }
-        else if (height <= window.innerHeight / 2.1333333333333 ) {
+        else if (height <= window.innerHeight / 2 || !hasConditionMet ) {
           setHeight(140 + (height * 1.333333));
-          setMargintopTWO(1.333 + (height / 1.3333333))
-          setMargintop(-110 - (height / 1.33333));
+          setMargintopTWO((height / 1.3333333))
+          setMargintop(-80 - (height / 1.33333));
           setHasConditionMet(false);
           console.log(height)
 
@@ -260,7 +260,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                     render={({ field }: { field: FieldValues }) => (
                       <FormItem>
                         <FormLabel>
-                          <span className="absolute left-16 top-7 text-white text-small-semibold tracking-wide  ">{user?.username}</span>
+                          <span className="absolute left-16 top-7  text-white text-small-semibold tracking-wide  ">{user?.username}</span>
                           <Image src={user?.image} alt="logo" width={40} height={40} className=" absolute left-4 top-8 float-left gap-3 rounded-full  " />
                         </FormLabel>
                         <FormControl className="outline-none">
