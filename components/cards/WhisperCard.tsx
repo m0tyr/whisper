@@ -1,7 +1,22 @@
 import { calculateTimeAgo } from "@/lib/utils";
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from "@nextui-org/react";
+import { Button } from "@/components/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion"
 
 interface Props {
     id: string;
@@ -52,85 +67,63 @@ function WhisperCard({
 
 
                 <div className="w-full">
-                    <div className="float-right  text-white text-small-regular font-light mr-1.5 opacity-50 flex">
+                    <div className="float-right  text-white text-small-regular font-light opacity-50 flex">
+
                         <p className="opacity-50 ">{calculateTimeAgo(createdAt.toString())}</p>
-                        <Dropdown>
+                        <DropdownMenu modal={false} >
+                        <DropdownMenuTrigger asChild className=" cursor-pointer ">
 
-                            <DropdownTrigger>
+                            <div className="ml-2 relative bottom-1 left-0  text-sm align-middle group hover:bg-[#6262624c] transition-all duration-100 rounded-full w-7 h-7  flex items-center justify-center">
 
-                                <Button
-                                    variant="bordered"
-                                >
-                                    <svg className="ml-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256"><path fill="#fff" d="M138 128a10 10 0 1 1-10-10a10 10 0 0 1 10 10m-78-10a10 10 0 1 0 10 10a10 10 0 0 0-10-10m136 0a10 10 0 1 0 10 10a10 10 0 0 0-10-10" /></svg>
+                                    <svg className="h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        
+                                        viewBox="0 0 256 256"
+                                        stroke="currentColor"
+                                        fill="currentColor"
+                                    ><path
+                                            fill="#fff"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2" d="M138 128a10 10 0 1 1-10-10a10 10 0 0 1 10 10m-78-10a10 10 0 1 0 10 10a10 10 0 0 0-10-10m136 0a10 10 0 1 0 10 10a10 10 0 0 0-10-10" /></svg>
+                            </div>
+                            </DropdownMenuTrigger>
 
+                            <DropdownMenuContent className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                                <DropdownMenuGroup className="text-white text-[14px]">
+                                    <DropdownMenuItem >
+                                        Enregistrer
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
 
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                aria-label="Custom item styles"
+                                    <DropdownMenuItem>
+                                        Bloquer
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
 
-                                variant="faded"
-                                className="flex-col bg-glassmorphism mx-0 my-0 pt-4 px-4 rounded-3xl float-right right-0 outline-none w-auto gap-3"
-                                disabledKeys={["edit", "delete"]}
+                                    <DropdownMenuItem className="!text-[rgb(255,48,64)]">
+                                        Signaler
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
 
-                            >
-                                <DropdownSection showDivider className="bg-insanedark">
-                                    <DropdownItem className="py-2" textValue="look">
+                                    <DropdownMenuItem className="!text-[rgb(255,48,64)]">
+                                        Supprimer
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
-                                        <Button className="text-white"
-                                        >
-
-                                            Apparence
-
-
-                                        </Button>
-
-
-
-                                    </DropdownItem>
-
-
-                                    <DropdownItem className="py-2" textValue="settings">
-
-
-                                        <Button className="text-white">
-                                            Paramètres
-
-                                        </Button>
-
-
-
-                                    </DropdownItem>
-                                </DropdownSection>
-                                <DropdownItem className="py-2 text-red-600" showDivider={true} color="danger" textValue="disconnect">
-
-
-                                    <Button className="text-white"
-                                    >
-
-                                        Apparence
-
-
-                                    </Button>
-
-
-
-                                </DropdownItem>
-
-
-                            </DropdownMenu>
-                        </Dropdown>
                     </div>
                     <Link href={`/@${author.username}`}>
-
                         <p className="text-white text-small-semibold hover:underline">{author.username}</p>
                     </Link>
                     <Link href={`/${author.username}/${id}`}>
-                    <div className=" break-words max-w-lg">
-                        <p className="text-white text-small-regular pb-1.5 pt-1.5">{content}</p>
-                    </div>
-                    <img src={media} alt="" className="rounded-xl max-w-sm" />
+                        <div className=" break-words max-w-lg">
+                            <p className="text-white text-small-regular my-2.5">{content}</p>
+                        </div>
                     </Link>
+                    <img src={media} alt="" className="rounded-xl max-w-sm" />
+
                     <div className="flex w-full justify-normal my-3 gap-3">
                         <Link href='/'>
                             <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24">

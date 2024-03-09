@@ -9,9 +9,7 @@
     @apply flex min-h-screen flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20 max-md:pb-32 sm:px-10;
   }
   .stop-scrolling {
-    position: fixed; 
-    overflow-y: scroll;
-    width: 100%;
+    overflow-y: visible;
   }
 
   .head-text {
@@ -69,7 +67,7 @@
   .searchbar_input {
     @apply border-none bg-dark-3 text-base-regular text-light-4 outline-none !important;
   }
-  #upper-div{
+  #editableDiv{
     z-index: 51;
   }
   #lower-div{
@@ -77,6 +75,9 @@
   }
   #top{
     z-index: 9999;
+  }
+  input[type=file]::file-selector-button {
+    color: #181818;
   }
 
 

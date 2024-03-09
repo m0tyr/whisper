@@ -69,7 +69,7 @@ export function calculateTimeAgo(createdAtString : string) {
   } else if (weeksDiff > 0) {
       timeAgo = `${weeksDiff} sem${weeksDiff > 1 ? '' : ''}`;
   } else if (daysDiff > 0) {
-      timeAgo = `${daysDiff} d${daysDiff > 1 ? '' : ''}`;
+      timeAgo = `${daysDiff} j${daysDiff > 1 ? '' : ''}`;
   } else if (hoursDiff > 0) {
       timeAgo = `${hoursDiff} h${hoursDiff > 1 ? '' : ''}`;
   } else if (minutesDiff > 0) {
@@ -80,4 +80,6 @@ export function calculateTimeAgo(createdAtString : string) {
 
   return timeAgo;
 }
+
+
 

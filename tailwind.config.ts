@@ -213,7 +213,7 @@ module.exports = {
       },
    
         backgroundImage: {
-          'add-image': "url('/svgs/add-image-photo-icon.svg')",
+          'add-image': "url('/add_photos.png')",
         },
      
       boxShadow: {
