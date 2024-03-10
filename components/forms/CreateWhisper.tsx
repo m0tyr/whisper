@@ -38,7 +38,7 @@ import { WhisperValidation } from "@/lib/validations/whisper";
 import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
 import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
-import { isBase64Image } from "@/lib/utils";
+import { getMeta, isBase64Image } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
 import { useToast } from "../ui/use-toast";
@@ -55,6 +55,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const router = useRouter();
 
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
+  const [aspectRatio, setAspectRatio] = useState("revert"); 
 
   const pathname = usePathname();
 
@@ -70,7 +71,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const WatchText = () => {
     var getText = document.getElementById("editable-span")?.textContent;
     var result = getText;
-    if (result?.trim() === "") {
+    if (result?.trim() === "" && !imageDataURL) {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;
     } else {
       (document.getElementById('button') as HTMLButtonElement).disabled = false;
@@ -93,6 +94,13 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
       fileReader.onload = async (event) => {
         const imageDataUrl = event.target?.result?.toString() || "";
+        getMeta(imageDataUrl, (err: any, img: any) => {
+          const width = img.naturalWidth;
+          const height = img.naturalHeight;
+          const arvalue = width / height;
+          const ar = arvalue.toString();
+          setAspectRatio(ar);
+        });
         setImageDataURL(imageDataUrl);
         (document.getElementById('button') as HTMLButtonElement).disabled = false;
         fieldChange(imageDataUrl);
@@ -102,20 +110,30 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     }
   };
 
-
-
   useEffect(() => {
+    const offsetY = window.scrollY;
+    document.body.style.top = `-${offsetY}px`;
+    document.body.classList.add('stop-scrolling');
     return () => {
+      document.body.style.top = '';
+      document.body.classList.remove('stop-scrolling');
+      window.scrollTo(0, offsetY);
     };
   }, []);
+
+
+
 
   const abortimage = (
     fieldChange: (value: string) => void
   ) => {
-    console.log(fieldChange)
     fieldChange("");
     setImageDataURL("");
-    WatchText()
+    const fileInput = document.getElementById('file') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+    WatchText();
   }
   const [isSent, setIsSent] = useState(true);
   const { toast } = useToast()
@@ -130,8 +148,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       duration: 20000,
     }
     )
-    const spanText = document.getElementById('editable-span')?.textContent || '';
-    values.content = spanText;
+    var contenteditable = document.querySelector('[contenteditable]')
+
+    var innerText: string | undefined = (contenteditable as HTMLElement)?.innerText;
+    values.content = innerText;
 
     let hasimageChanged = false;
     let blob: string | undefined;
@@ -180,7 +200,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const editableDiv = document.getElementById('editableDiv');
 
   const handleResize = () => {
-    console.log("Changed")
     const newViewportHeight = window.innerHeight;
     setViewportHeight(newViewportHeight);
     setEditableDivHeight(newViewportHeight);
@@ -200,6 +219,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
     }
   };
+
+
 
 
   return (
@@ -232,7 +253,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                       <FormItem >
 
                         <div
-                          className='bg-good-gray p-6 max-h-[calc(100svh - 193px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap
+                          className='bg-good-gray p-6 max-h-[calc(100svh - 193px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
                           select-text	overflow-y-auto overflow-x-auto   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
                             border-t-border  '
                           role="textbox"
@@ -263,14 +284,21 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                     control={form.control}
                                     name="media"
                                     render={({ field }: { field: FieldValues }) => (
-                                      <FormItem>
+                                      <FormItem className=" space-y-4 ">
                                         {imageDataURL && (
 
                                           <>
-                                            <div className="min-w-sm max-w-md relative mt-2">
-                                              <Image src="svgs/close.svg" width={20} height={20} alt="" className=" absolute top-2 ml-2 invert-0 bg-dark-4 bg-opacity-55 rounded-full cursor-pointer" onClick={(e) => abortimage(field.onChange)} />
-                                              <img src={imageDataURL} className="rounded-xl max-w-md" />
+                                            <div id="picture" className="max-h-[430px] mb-2 grid-rows-1 grid-cols-1 grid">
+                                              <picture style={{ aspectRatio: aspectRatio , maxHeight: "430px" }}>
+                                                <Image src="svgs/close.svg" width={20} height={20} alt="" className="relative top-8 ml-2 invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
+                                                  onClick={(e) => abortimage(field.onChange)} />
+                                                <img src={imageDataURL}
+                                                  className='object-contain  rounded-xl border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
+                                                />
+                                              </picture>
+
                                             </div>
+
                                           </>
 
 

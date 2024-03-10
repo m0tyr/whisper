@@ -17,6 +17,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion"
+import ImageClickAnim from "../animations/ImageClickAnim";
 
 interface Props {
     id: string;
@@ -67,26 +68,22 @@ function WhisperCard({
 
 
                 <div className="w-full">
-                    <div className="float-right  text-white text-small-regular font-light opacity-50 flex">
+                    <div className="float-right  text-white text-small-regular font-light opacity-50 flex h-5">
 
-                        <p className="opacity-50 ">{calculateTimeAgo(createdAt.toString())}</p>
+                        <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
                         <DropdownMenu modal={false} >
-                        <DropdownMenuTrigger asChild className=" cursor-pointer ">
+                            <DropdownMenuTrigger asChild className=" cursor-pointer ">
 
-                            <div className="ml-2 relative bottom-1 left-0  text-sm align-middle group hover:bg-[#6262624c] transition-all duration-100 rounded-full w-7 h-7  flex items-center justify-center">
-
-                                    <svg className="h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        
-                                        viewBox="0 0 256 256"
-                                        stroke="currentColor"
-                                        fill="currentColor"
-                                    ><path
-                                            fill="#fff"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2" d="M138 128a10 10 0 1 1-10-10a10 10 0 0 1 10 10m-78-10a10 10 0 1 0 10 10a10 10 0 0 0-10-10m136 0a10 10 0 1 0 10 10a10 10 0 0 0-10-10" /></svg>
-                            </div>
+                                <div className="ml-2 relative bottom-1.5 left-0  text-sm align-middle group hover:bg-[#6262624c] transition-all duration-100 rounded-full w-8 h-8  flex items-center justify-center">
+                                <svg aria-label="Plus" role="img" viewBox="0 0 24 24" className="h-5 w-5" fill="#fff">
+                                    <title>Plus</title>
+                                    <circle cx="12" cy="12" r="1.5"></circle>
+                                    <circle cx="6" cy="12" r="1.5"></circle>
+                                    <circle cx="18" cy="12" r="1.5"></circle>
+                                </svg>
+                                   
+                                 
+                                </div>
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
@@ -114,15 +111,26 @@ function WhisperCard({
                         </DropdownMenu>
 
                     </div>
-                    <Link href={`/@${author.username}`}>
-                        <p className="text-white text-small-semibold hover:underline">{author.username}</p>
-                    </Link>
-                    <Link href={`/${author.username}/${id}`}>
-                        <div className=" break-words max-w-lg">
-                            <p className="text-white text-small-regular my-2.5">{content}</p>
+                    <div>
+                        <Link href={`/@${author.username}`}>
+                            <p className="text-white text-small-semibold hover:underline">{author.username}</p>
+                        </Link>
+                    </div>
+                    {content && (
+                        <div>
+                            <Link href={`/${author.username}/${id}`}>
+                                <div className=" break-words max-w-lg">
+                                    <span className="text-white text-small-regular mt-1 mb-0.5 whitespace-pre-line break-words block">{content}</span>
+                                </div>
+                            </Link>
                         </div>
-                    </Link>
-                    <img src={media} alt="" className="rounded-xl max-w-sm" />
+
+                    )}
+                    {media && (
+                        <ImageClickAnim src={media} />
+                    )}
+
+
 
                     <div className="flex w-full justify-normal my-3 gap-3">
                         <Link href='/'>
@@ -166,7 +174,7 @@ function WhisperCard({
 
 
 
-        </div>
+        </div >
 
     )
 }

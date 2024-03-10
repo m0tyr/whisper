@@ -5,11 +5,19 @@
 @layer components {
 
   /* main */
+
+
+
+
   .main-container {
-    @apply flex min-h-screen flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20 max-md:pb-32 sm:px-10;
+    @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20 max-md:pb-32 sm:px-10;
   }
+
+
   .stop-scrolling {
-    overflow-y: visible;
+    position: fixed;
+    inline-size: 100%;
+    overflow-y: scroll;
   }
 
   .head-text {
@@ -43,7 +51,7 @@
 
   /* thread card  */
   .thread-card_bar {
-    @apply relative mt-2  w-0.5 flex-grow  rounded-full bg-neutral-800;
+    @apply relative mt-2 w-0.5 flex-grow rounded-full bg-neutral-800;
     left: 46.66666667%;
   }
 
@@ -67,15 +75,19 @@
   .searchbar_input {
     @apply border-none bg-dark-3 text-base-regular text-light-4 outline-none !important;
   }
-  #editableDiv{
+
+  #editableDiv {
     z-index: 51;
   }
-  #lower-div{
+
+  #lower-div {
     z-index: 51;
   }
-  #top{
+
+  #top {
     z-index: 9999;
   }
+
   input[type=file]::file-selector-button {
     color: #181818;
   }
