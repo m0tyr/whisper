@@ -40,6 +40,7 @@ export async function fetchUserWhisper(userId: string) {
       .populate({
         path: 'whispers',
         model: Whisper,
+        options: { sort: { createdAt: -1 } }, 
         populate: {
           path: 'children',
           model: Whisper,
@@ -49,7 +50,7 @@ export async function fetchUserWhisper(userId: string) {
             select: 'image id username'
           }
         }
-      })
+      });
     return whispers;
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
