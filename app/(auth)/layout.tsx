@@ -4,9 +4,6 @@ import '../globals.css'
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  icons: {
-    icon: "/icon.png",
-    },
     title: "Connexion • Whisper",
     description: "a social app concept"
 }

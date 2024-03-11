@@ -12,6 +12,9 @@ const nextConfig = {
       hideSourceMaps: true,
     },
     images: {
+      domains: ['img.clerk.com'],
+    },
+es: {
       remotePatterns: [
         {
           protocol: "https",

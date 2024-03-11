@@ -10,9 +10,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 
 export const metadata: Metadata = {
-  icons: {
-    icon: "/icon.png",
-    },
   title: "Whisper",
   description: "a social app concept"
 }

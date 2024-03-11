@@ -36,7 +36,7 @@ const ImageClickAnim = ({ src }: any) => {
                     <picture style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
                         <img
                             draggable="false"
-                            className='object-contain rounded-xl my-2.5 border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
+                            className='object-contain rounded-xl mt-2.5 border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
                             alt="Description of Image"
                             referrerPolicy="origin-when-cross-origin"
                             src={src}

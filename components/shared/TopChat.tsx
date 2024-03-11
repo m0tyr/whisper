@@ -20,7 +20,7 @@ const TopChat = ({ user, _id }: any) => {
     return (
         <>
 
-            <div className="mt-2 mb-3.5 ">
+            <div className=" py-4 ">
                 <Link href="/user">
                     <Image src={user.image} alt="logo" width={37} height={37} className="opacity-85 hover:opacity-100 transition-all duration-300 float-left gap-3 mt-0.5 cursor-pointer rounded-full" />
                 </Link>
@@ -38,6 +38,8 @@ const TopChat = ({ user, _id }: any) => {
                     Publier
                 </button>
             </div>
+            <hr className="border-x-2 opacity-20 rounded-full " />
+
             {showPopup && (
                 <>
                     <motion.div
