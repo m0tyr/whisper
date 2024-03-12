@@ -1,3 +1,4 @@
+
 import TopBar from "@/components/shared/Topbar";
 import TopChat from "@/components/shared/TopChat";
 import { currentUser } from "@clerk/nextjs";
@@ -6,13 +7,13 @@ import { redirect } from "next/navigation";
 import { fetchwhispers } from "@/lib/actions/whisper.actions";
 import WhisperCard from "@/components/cards/WhisperCard";
 
-async function Page() {
+export default async function Page() {
   let showPopup = false;
   const user = await currentUser();
 
   if (!user) redirect('/sign-in');
 
-  const allposts = await fetchwhispers(1, 60);
+  const allposts = await fetchwhispers(1, 20);
 
 
   const userInfo = await fetchUser(user.id);
@@ -40,14 +41,18 @@ async function Page() {
               <p className="text-white text-body1-bold ">No Whispers found...</p>
             ) : (
               <>
-              {allposts.posts_exec.map((post) => (
-                 <WhisperCard 
+              {allposts.posts_exec.map((post : any) => (
+                 <WhisperCard
+                 user={userData} 
+                 _id={`${userInfo._id}`}
                  id={post._id} 
                  currentUserId={user?.id || ""} 
                  parentId={post.parentId} 
                  content={post.content} 
                  media={post.media}
-                 author={post.author} 
+                 author={
+                  { image: post.author.image, username: post.author.username, id: post.author.id }
+              }
                  createdAt={post.createdAt} 
                  comments={post.children} 
                  />
@@ -64,4 +69,3 @@ async function Page() {
     </>
   )
 }
-export default Page;

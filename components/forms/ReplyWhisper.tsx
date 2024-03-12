@@ -1,5 +1,13 @@
 "use client"
-
+import { WhisperValidation } from "@/lib/validations/whisper";
+import { useUploadThing } from "@/lib/uploadthing";
+import { image } from "@nextui-org/react";
+import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
+import { getMeta, isBase64Image } from "@/lib/utils";
+import { AnimatePresence } from 'framer-motion'
+import { motion } from "framer-motion"
+import { useToast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
 import * as z from "zod";
 import Image from "next/image";
 import { FieldValues, useForm } from "react-hook-form";
@@ -20,7 +28,8 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-
+import WhisperCardLeft from "../shared/WhisperCardLeft";
+import ReplyWhisperCardMain from "../shared/ReplyWhisperCardMain";
 
 
 interface Props {
@@ -32,20 +41,30 @@ interface Props {
     bio: string;
     image: string;
   };
+  whisper_to_reply: {
+    id: string;
+    currentUserId: string;
+    parentId: string | null;
+    content: string;
+    media: string;
+    author: {
+      username: string;
+      image: string;
+      id: string;
+    };
+    createdAt: string;
+    comments: {
+      author: {
+        image: string;
+      };
+    }[];
+    isComment?: boolean;
+  }
   toclose: any;
 }
-import { WhisperValidation } from "@/lib/validations/whisper";
-import { useUploadThing } from "@/lib/uploadthing";
-import { image } from "@nextui-org/react";
-import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
-import { getMeta, isBase64Image } from "@/lib/utils";
-import { AnimatePresence } from 'framer-motion'
-import { motion } from "framer-motion"
-import { useToast } from "../ui/use-toast";
-import { ToastAction } from "../ui/toast";
 
 
-const CreateWhisper = ({ user, _id, toclose }: Props) => {
+const ReplyWhisper = ({ user, whisper_to_reply, toclose }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const { startUpload } = useUploadThing('imageUploader')
@@ -54,7 +73,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const router = useRouter();
 
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
-  const [aspectRatio, setAspectRatio] = useState("revert"); 
+  const [aspectRatio, setAspectRatio] = useState("revert");
 
   const pathname = usePathname();
 
@@ -63,7 +82,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     defaultValues: {
       content: "",
       media: "",
-      accoundId: _id,
     },
   });
 
@@ -219,9 +237,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     }
   };
 
-
-
-
   return (
     <>
       <Form {...form} >
@@ -239,9 +254,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
                 <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 '
                   id="editableDiv"
-
                   onInput={handleInput}
-
                 >
 
                   <FormField
@@ -261,12 +274,18 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                           id="editableDiv"
                           onInput={handleInput}
                         >
-
-
+                          <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
+                            <div className="flex flex-row flex-1  gap-3 ">
+                              <WhisperCardLeft author={whisper_to_reply.author} />
+                              <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} media={whisper_to_reply.media} author={whisper_to_reply.author}
+                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} />
+                            </div>
+                          </div>
                           <div className="grid grid-cols-[auto,1fr] ">
+
                             <div className="flex flex-col">
-                            <Image src={user?.image} alt="logo" width={37} height={37} className="mt-1.5 rounded-full bg-good-gray align-self-start" />
-                            <div className="thread-card_bar" />
+                              <Image src={user?.image} alt="logo" width={37} height={37} className="mt-1.5 rounded-full bg-good-gray align-self-start" />
+                              <div className="thread-card_bar" />
                             </div>
                             <FormControl className="outline-none">
                               <div className="grid grid-cols-[auto,0.5fr]">
@@ -275,7 +294,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                   <div
                                     {...field}
                                     onKeyUp={WatchText}
-                                    id="editable-span"
+                                    data-placeholder={`Répondre à ${whisper_to_reply.author.username}...`} 
                                     className="bg-good-gray text-small-regular  text-white outline-none rounded-md ring-offset-background cursor-text placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
                                     contentEditable
                                   ></div>
@@ -289,7 +308,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
                                           <>
                                             <div id="picture" className="max-h-[430px] mb-2 grid-rows-1 grid-cols-1 grid">
-                                              <picture style={{ aspectRatio: aspectRatio , maxHeight: "430px" }}>
+                                              <picture style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
                                                 <Image src="svgs/close.svg" width={20} height={20} alt="" className="relative top-8 ml-2 invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
                                                   onClick={(e) => abortimage(field.onChange)} />
                                                 <img src={imageDataURL}
@@ -360,7 +379,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     </>
   )
 
+
 }
 
+export default ReplyWhisper;
 
-export default CreateWhisper;

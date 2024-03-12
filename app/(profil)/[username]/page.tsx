@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: { username: string 
         description: userData.bio,
     };
 }
-async function Page({ params }: { params: { username: string } }) {
+export default async function Page({ params }: { params: { username: string } }) {
     const user = await currentUser();
 
     if (!user) redirect('/sign-in');
@@ -67,12 +67,9 @@ async function Page({ params }: { params: { username: string } }) {
                                     parentId={post.parentId}
                                     content={post.content}
                                     media={post.media}
-                                    author={
-                                        { image: userposts.image, username: userposts.username, id: userposts.id }
-                                    }
+                                    author={{ image: userposts.image, username: userposts.username, id: userposts.id }}
                                     createdAt={post.createdAt}
-                                    comments={post.children}
-                                />
+                                    comments={post.children} user={currentuserData} _id={`${userInfo._id}`}/>
                             ))}
                         </>
                     )}
@@ -81,4 +78,3 @@ async function Page({ params }: { params: { username: string } }) {
         </>
     )
 }
-export default Page;
