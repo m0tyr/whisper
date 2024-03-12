@@ -1,5 +1,18 @@
+const plugin = require("tailwindcss/plugin");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  plugins: [
+  [require("tailwindcss-animate")],
+  [
+    plugin(({  }) => {
+      addUtilities({
+        ".no-overflow-anchoring": {
+          overflowAnchor: "none",
+        },
+      });
+    }),
+  ]],
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -239,5 +252,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
 };
+
+function addUtilities(arg0: { ".no-overflow-anchoring": { overflowAnchor: string; }; }) {
+  throw new Error("Function not implemented.");
+}

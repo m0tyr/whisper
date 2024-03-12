@@ -193,14 +193,14 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
       path: pathname,
     }, whisper_to_reply.id);
 
-  
+
     toast({
       title: "Publié",
       duration: 2000,
 
     }
     )
-    
+
     router.prefetch("/");
     router.push("/");
 
@@ -215,7 +215,14 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
     setEditableDivHeight(newViewportHeight);
   };
   window.onresize = handleResize
-
+  var elem = document.getElementById('scroll');
+  let isscrolled = false;
+    if (elem && !isscrolled) 
+    elem.scrollTo({
+        top: elem.scrollHeight,
+        behavior: 'instant'
+    }); 
+    isscrolled = true;
 
   const handleInput = () => {
     if (editableDiv) {
@@ -229,6 +236,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
 
     }
   };
+  if (editableDiv) editableDiv.scrollTop = editableDiv.scrollHeight; console.log("test")
 
   return (
     <>
@@ -253,18 +261,17 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
                   <FormField
                     control={form.control}
                     name="content"
-
                     render={({ field }: { field: FieldValues }) => (
-                      <FormItem >
+                      <FormItem className=" [overflow-anchor:none;]" >
 
                         <div
                           className='bg-good-gray p-6 max-h-[calc(100svh - 193px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
                           select-text	overflow-y-auto overflow-x-auto   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
-                            border-t-border  '
+                            border-t-border [overflow-anchor:auto;]  '
                           role="textbox"
                           style={{ maxHeight: editableDivHeight / 1.15, textAlign: 'left', }}
                           tabIndex={0}
-                          id="editableDiv"
+                          id="scroll"
                           onInput={handleInput}
                         >
                           <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
@@ -287,7 +294,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
                                   <div
                                     {...field}
                                     onKeyUp={WatchText}
-                                    data-placeholder={`Répondre à ${whisper_to_reply.author.username}...`} 
+                                    data-placeholder={`Répondre à ${whisper_to_reply.author.username}...`}
                                     className="bg-good-gray text-small-regular  text-white outline-none rounded-md ring-offset-background cursor-text placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
                                     contentEditable
                                   ></div>

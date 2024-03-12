@@ -81,6 +81,8 @@
 
   #editableDiv {
     z-index: 51;
+    overflow-anchor: auto;
+
   }
 
   #lower-div {

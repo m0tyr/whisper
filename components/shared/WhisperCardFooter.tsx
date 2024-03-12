@@ -33,7 +33,7 @@ const WhisperCardFooter= ({ author, comments, isComment }:Props) => {
         <div className="flex flex-row gap-3 mb-0.5">
             <div className="flex justify-center items-center">
                 <span className="text-gray-2 !text-[13.5px]">
-                    46 réponses
+                    {comments.length}
                 </span>
             </div>
             <div className="flex justify-center items-center">
