@@ -5,6 +5,7 @@ import WhisperCardFooter from "../shared/WhisperCardFooter";
 import { useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
+import router, { useRouter } from "next/navigation";
 
 interface Props {
     user: any;
@@ -19,15 +20,19 @@ interface Props {
         image: string;
         id: string;
     };
+  
     createdAt: string;
     comments: {
+        posts: {
+            number: number;
+        }
         author: {
             username: string;
             image: string;
             id: string;
         };
     }[];
-    isComment?: boolean;
+    isNotComment?: boolean;
 }
 
 const WhisperCard = ({
@@ -41,7 +46,7 @@ const WhisperCard = ({
     media,
     createdAt,
     comments,
-    isComment,
+    isNotComment,
 }: Props) => {
     const whisperData = {
         id: id,
@@ -50,14 +55,19 @@ const WhisperCard = ({
         media: media,
         createdAt: createdAt,
         comments: comments,
-        isComment: isComment,
+        isNotComment: isNotComment,
     };
     const [showPopup, setShowPopup] = useState(false);
+    
+    const router = useRouter();
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
 
     };
+    const ping = () => {
+        router.push(`/${author.username}/post`)
+    }
     return (
         <>
             {showPopup && (
@@ -83,21 +93,21 @@ const WhisperCard = ({
                         },
                         createdAt: createdAt,
                         comments: comments,
-                        isComment: isComment
+                        isComment: isNotComment
                     }} _id={_id} user={user} toclose={togglePopup} />
 
                 </>
 
 
             )}
-            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5  w-full">
+            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5  w-full cursor-pointer"  role="presentation" onClick={ping}>
                 <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                     <div className="flex flex-row flex-1  gap-3 ">
-                        <WhisperCardLeft author={whisperData.author} isComment={whisperData.isComment} />
+                        <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} />
                         <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
                             media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} />
                     </div>
-                    <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isComment={whisperData.isComment} />
+                    <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} />
 
 
                 </div>

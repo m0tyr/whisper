@@ -236,7 +236,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
 
     }
   };
-  if (editableDiv) editableDiv.scrollTop = editableDiv.scrollHeight; console.log("test")
+  if (editableDiv) editableDiv.scrollTop = editableDiv.scrollHeight;
 
   return (
     <>

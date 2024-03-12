@@ -74,7 +74,10 @@ export default async function Page({ params }: { params: { username: string } })
                                     }
                                     createdAt={post.createdAt}
                                     comments={[
-                                        {
+                                        {   
+                                            posts: {
+                                                number: post.children.length
+                                            },
                                             author: {
                                                 image: post.children.image,
                                                 username: post.children.username,
@@ -82,6 +85,8 @@ export default async function Page({ params }: { params: { username: string } })
                                             }
                                         }
                                     ]}
+                                    isNotComment={post.children.length === 0}
+
                                 />
                             ))}
                         </>

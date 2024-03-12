@@ -1,5 +1,5 @@
 export default async function Page() {
     return(
-        <div className="text-white">TEST</div>
+        <div className="text-black">TEST</div>
     )
 }

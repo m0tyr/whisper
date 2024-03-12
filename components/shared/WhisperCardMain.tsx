@@ -40,7 +40,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
     return (
         <>
   
-        <div className="w-full ">
+        <div className="w-full  ">
             <div className="float-right  text-white text-small-regular font-light opacity-50 flex h-5">
 
                 <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
@@ -84,9 +84,9 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                 </DropdownMenu>
 
             </div>
-            <div>
+            <div className="relative">
                 <Link href={`/${author.username}`}>
-                    <p className="text-white text-small-semibold hover:underline">{author.username}</p>
+                    <p className="text-white text-small-semibold hover:underline inline relative bottom-0.5 ">{author.username}</p>
                 </Link>
             </div>
             {content && (
