@@ -7,8 +7,8 @@ import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 
 interface Props {
-    user:any;
-    _id:string;
+    user: any;
+    _id: string;
     id: string;
     currentUserId: string;
     parentId: string | null;
@@ -22,7 +22,9 @@ interface Props {
     createdAt: string;
     comments: {
         author: {
+            username: string;
             image: string;
+            id: string;
         };
     }[];
     isComment?: boolean;
@@ -82,7 +84,7 @@ const WhisperCard = ({
                         createdAt: createdAt,
                         comments: comments,
                         isComment: isComment
-                    }} _id={_id} user={user} toclose={undefined} />
+                    }} _id={_id} user={user} toclose={togglePopup} />
 
                 </>
 

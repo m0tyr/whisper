@@ -54,7 +54,15 @@ export default async function Page() {
                   { image: post.author.image, username: post.author.username, id: post.author.id }
               }
                  createdAt={post.createdAt} 
-                 comments={post.children} 
+                 comments={[
+                  {  
+                      author: {
+                          image: post.children.image,
+                          username: post.children.username, 
+                          id: post.children.id 
+                      }
+                  }
+              ]} 
                  />
               )
               )}

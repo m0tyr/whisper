@@ -1,8 +1,8 @@
 "use client"
-import { WhisperValidation } from "@/lib/validations/whisper";
+import { CommentValidation } from "@/lib/validations/whisper";
 import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
-import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
+import { GetLastestWhisperfromUserId, createComment, createWhisper } from "@/lib/actions/whisper.actions";
 import { getMeta, isBase64Image } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
@@ -64,7 +64,7 @@ interface Props {
 }
 
 
-const ReplyWhisper = ({ user, whisper_to_reply, toclose }: Props) => {
+const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const { startUpload } = useUploadThing('imageUploader')
@@ -77,11 +77,12 @@ const ReplyWhisper = ({ user, whisper_to_reply, toclose }: Props) => {
 
   const pathname = usePathname();
 
-  const form = useForm<z.infer<typeof WhisperValidation>>({
-    resolver: zodResolver(WhisperValidation),
+  const form = useForm<z.infer<typeof CommentValidation>>({
+    resolver: zodResolver(CommentValidation),
     defaultValues: {
       content: "",
       media: "",
+      accoundId: _id,
     },
   });
 
@@ -155,7 +156,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, toclose }: Props) => {
   const [isSent, setIsSent] = useState(true);
   const { toast } = useToast()
 
-  async function onSubmit(values: z.infer<typeof WhisperValidation>) {
+  async function onSubmit(values: z.infer<typeof CommentValidation>) {
     setIsSent(!isSent);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
     (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
@@ -185,29 +186,21 @@ const ReplyWhisper = ({ user, whisper_to_reply, toclose }: Props) => {
         values.media = imgRes[0].url;
       }
     }
-    await createWhisper({
+    await createComment({
       content: values.content,
       author: values.accoundId,
       media: values.media,
       path: pathname,
-    });
+    }, whisper_to_reply.id);
 
-    const lastWhisper = await GetLastestWhisperfromUserId({
-      author: values.accoundId,
-    })
+  
     toast({
       title: "Publié",
-      action: (
-        <a href={`/${user.username}/${lastWhisper._id}`}>
-          <ToastAction altText="Voir Whisper" >
-            Voir
-          </ToastAction>
-        </a>
-      ),
       duration: 2000,
 
     }
     )
+    
     router.prefetch("/");
     router.push("/");
 

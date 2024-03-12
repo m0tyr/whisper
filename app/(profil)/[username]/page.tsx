@@ -62,14 +62,27 @@ export default async function Page({ params }: { params: { username: string } })
                         <>
                             {userposts.whispers.map((post: any) => (
                                 <WhisperCard
+                                    user={userData}
+                                    _id={`${userInfo._id}`}
                                     id={post._id}
                                     currentUserId={user?.id || ""}
                                     parentId={post.parentId}
                                     content={post.content}
                                     media={post.media}
-                                    author={{ image: userposts.image, username: userposts.username, id: userposts.id }}
+                                    author={
+                                        { image: post.author.image, username: post.author.username, id: post.author.id }
+                                    }
                                     createdAt={post.createdAt}
-                                    comments={post.children} user={currentuserData} _id={`${userInfo._id}`}/>
+                                    comments={[
+                                        {
+                                            author: {
+                                                image: post.children.image,
+                                                username: post.children.username,
+                                                id: post.children.id
+                                            }
+                                        }
+                                    ]}
+                                />
                             ))}
                         </>
                     )}

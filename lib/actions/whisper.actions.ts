@@ -80,3 +80,34 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15) {
 
     }
 }
+
+export async function createComment({ content, author, media, path }: Params, whisperId : any){
+    connectToDB()
+
+    try {
+        const isactive = await Whisper.findById(whisperId);
+
+        if(!isactive){
+            throw new Error("Whisper indisponible ou supprimé...")
+            //add error page
+        }
+
+        const commentitem = new Whisper({
+            content:content,
+            author:author,
+            media:media,
+            parentId: whisperId, 
+        })
+
+        const commentobject = await commentitem.save()
+
+        isactive.children.push(commentitem._id)
+
+        await isactive.save()
+
+        revalidatePath(path)
+        
+    } catch (error) {
+        throw new Error("l'ajout du commentaire à échoué...")
+    }
+}
