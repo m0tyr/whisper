@@ -1,5 +1,7 @@
 import Image from "next/image";
+
 interface Props {
+    id: string;
     author: {
         username: string;
         image: string;
@@ -15,17 +17,29 @@ interface Props {
     }[];
     isNotComment?: boolean;
 }
+import router, { useRouter } from "next/navigation";
 
-const WhisperCardFooter = ({ author, comments, isNotComment }: Props) => {
+const WhisperCardFooter = ({ id, author, comments, isNotComment }: Props) => {
     const whisperData = {
         author: author,
         comments: comments,
         isNotComment: isNotComment,
     };
+    const router = useRouter();
+
+    const ping = () => {
+        router.push(`/${author.username}/post/${id}`)
+    }
+
+
     return (
         <>
             {!isNotComment && (
-                <div className="w-full h-full flex flex-row ">
+                <div className="w-full h-full flex flex-row" onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                        ping();
+                    }
+                }}>
                     <div className="w-12 h-10 flex">
                         <div className=" justify-center flex w-full relative">
                             <div className="w-5 absolute top-0 right-2.5">
@@ -63,10 +77,16 @@ const WhisperCardFooter = ({ author, comments, isNotComment }: Props) => {
                             </span>
                         </div>
                     </div>
+
                 </div>
             )}
             {isNotComment && (
-                <div className="mb-2">
+                <div className="mb-2" onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                        ping();
+                    }
+                }}>
+
                 </div>
             )}
         </>
