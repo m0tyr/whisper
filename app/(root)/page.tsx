@@ -44,7 +44,7 @@ export default async function Page() {
                   <WhisperCard
                     user={userData}
                     _id={`${userInfo._id}`}
-                    id={post._id}
+                    id={`${post._id}`}
                     currentUserId={user?.id || ""}
                     parentId={post.parentId}
                     content={post.content}

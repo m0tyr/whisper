@@ -276,7 +276,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
                         >
                           <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                             <div className="flex flex-row flex-1  gap-3 ">
-                              <WhisperCardLeft author={whisper_to_reply.author} />
+                              <WhisperCardLeft author={whisper_to_reply.author} id={user.id} />
                               <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} media={whisper_to_reply.media} author={whisper_to_reply.author}
                                 createdAt={whisper_to_reply.createdAt} togglePopup={undefined} />
                             </div>
@@ -309,7 +309,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
                                           <>
                                             <div id="picture" className="max-h-[430px] mb-2 grid-rows-1 grid-cols-1 grid">
                                               <picture style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
-                                                <Image src="svgs/close.svg" width={20} height={20} alt="" className="relative top-8 ml-2 invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
+                                                <Image src="/svgs/close.svg" width={20} height={20} alt="" className="relative top-8 ml-2 invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
                                                   onClick={(e) => abortimage(field.onChange)} />
                                                 <img src={imageDataURL}
                                                   className='object-contain  rounded-xl border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'

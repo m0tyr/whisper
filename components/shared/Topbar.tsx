@@ -19,7 +19,7 @@ const TopBar = ({ user, _id }: any) => {
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
-       
+
     };
     const username = user ? user.username : '';
 
@@ -30,39 +30,39 @@ const TopBar = ({ user, _id }: any) => {
             <nav className="topbar backdrop-blur-2xl my-0">
                 <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
 
-                    <Image src="./svgs/logo.svg" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
+                    <Image src="/svgs/logo.svg" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
 
 
                 </Link>
                 <div className="flex justify-center items-center gap-12 md:gap-16">
                     <Link href="/" className=" transition-all duration-200 md: ">
 
-                        <Image src="./svgs/home.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        <Image src="/svgs/home.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                     </Link>
                     <Link href="/search" className=" transition-all duration-200 ">
 
-                        <Image src="./svgs/search.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150 " />
+                        <Image src="/svgs/search.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150 " />
 
 
                     </Link>
                     <Button onClick={togglePopup} className=" transition-all duration-200 ">
 
-                        <Image src="./svgs/create.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        <Image src="/svgs/create.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                     </Button>
                     <Link href="/activity" className=" transition-all duration-200 ">
 
-                        <Image src="./svgs/favorite.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        <Image src="/svgs/favorite.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                     </Link>
 
                     <Link href={`/${username}`} className=" transition-all duration-200 ">
 
-                        <Image src="./svgs/profil.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        <Image src="/svgs/profil.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
 
 
                     </Link>
@@ -76,7 +76,7 @@ const TopBar = ({ user, _id }: any) => {
                             variant="bordered"
                         >
                             <Image
-                                src="./svgs/threedot.svg"
+                                src="/svgs/threedot.svg"
                                 alt="logo"
                                 width={45}
                                 height={45}
@@ -139,22 +139,22 @@ const TopBar = ({ user, _id }: any) => {
                 </Dropdown>
             </nav>
 
-                {showPopup && (
-                    <>
-                        <motion.div
-                         initial={{ opacity: 0, zIndex:0}}
-                         animate={{ opacity: 1 , zIndex: 51}}
-                          exit={{ opacity: 0}}
-                          transition={{  }}
-                         id='top' 
-                         className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
-                       
-                            <CreateWhisper user={user} _id={_id} toclose={togglePopup}  />
+            {showPopup && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0, zIndex: 0 }}
+                        animate={{ opacity: 1, zIndex: 51 }}
+                        exit={{ opacity: 0 }}
+                        transition={{}}
+                        id='top'
+                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
 
-                    </>
+                    <CreateWhisper user={user} _id={_id} toclose={togglePopup} />
+
+                </>
 
 
-                )}
+            )}
         </>
 
 

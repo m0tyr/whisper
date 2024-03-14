@@ -81,22 +81,22 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15) {
     }
 }
 
-export async function createComment({ content, author, media, path }: Params, whisperId : any){
+export async function createComment({ content, author, media, path }: Params, whisperId: any) {
     connectToDB()
 
     try {
         const isactive = await Whisper.findById(whisperId);
 
-        if(!isactive){
+        if (!isactive) {
             throw new Error("Whisper indisponible ou supprimé...")
             //add error page
         }
 
         const commentitem = new Whisper({
-            content:content,
-            author:author,
-            media:media,
-            parentId: whisperId, 
+            content: content,
+            author: author,
+            media: media,
+            parentId: whisperId,
         })
 
         const commentobject = await commentitem.save()
@@ -106,8 +106,44 @@ export async function createComment({ content, author, media, path }: Params, wh
         await isactive.save()
 
         revalidatePath(path)
-        
+
     } catch (error) {
         throw new Error("l'ajout du commentaire à échoué...")
+    }
+}
+
+export async function fetchwhisperById(id: string) {
+    try {
+        connectToDB();
+        const WhisperById = Whisper.findById(id)
+            .populate({
+                path: 'author',
+                model: User,
+                select: "_id id username image"
+            })
+            .populate({
+                path: 'children',
+                populate: [
+                    {
+                        path: 'author',
+                        model: User,
+                        select: "_id id username parentId image"
+                    },
+                    {
+                        path: 'children',
+                        model: Whisper,
+                        populate: {
+                            path: "author",
+                            model: User,
+                            select: "_id id username parentId image"
+                        }
+                    }
+                ]
+            }).exec();
+        return WhisperById;
+    } catch (error: any) {
+        throw new Error(`error onfetchpostbyId: ${error.message} `)
+
+
     }
 }

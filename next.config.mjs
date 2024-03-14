@@ -13,6 +13,7 @@ const nextConfig = {
     },
     images: {
       domains: ['img.clerk.com'],
+      domains: ['utfs.io'],
     },
 es: {
       remotePatterns: [
