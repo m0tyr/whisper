@@ -83,7 +83,11 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
     const blob = values.profile_photo;
 
     const hasimageChanged = isBase64Image(blob);
-
+    toast({
+      title: "Inscription...",
+      duration: 20000,
+    }
+    )
     if (hasimageChanged) {
       const imgRes = await startUpload(files)
 
@@ -100,6 +104,11 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
         image: values.profile_photo ? values.profile_photo : user?.image,
         path: pathname,
       });
+      toast({
+        title: "Inscrit !",
+        duration: 2000,
+  
+      })
       if (pathname === '/profil/edit') {
         router.back();
       } else {
