@@ -24,6 +24,7 @@ export default async function Page({ params }: { params: { id: string, username:
     const user = await currentUser();
     if (!user) redirect('/sign-in');
     const currentuserInfo = await fetchUser(user.id);
+    if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const whisperdatas = await fetchwhisperById(params.id);
     const userData = {
         id: user?.id,
@@ -58,10 +59,8 @@ export default async function Page({ params }: { params: { id: string, username:
                                     posts: {
                                         number: whisperdatas.children.length
                                     },
-                                    author: {
-                                        image: whisperdatas.children.image,
-                                        username: whisperdatas.children.username,
-                                        id: whisperdatas.children.id
+                                    childrens: {
+                                        
                                     }
                                 }
                             ]}
@@ -79,22 +78,26 @@ export default async function Page({ params }: { params: { id: string, username:
                                 content={post.content}
                                 media={post.media}
                                 author={
-                                    { image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }
+                                    { image: post.author.image, username: post.author.username, id: post.author.id }
                                 }
                                 createdAt={post.createdAt}
                                 comments={[
                                     {
-
-                                        posts: {
-                                            number: post.children.length
-                                        },
+              
+                                      posts: {
+                                        number: post.children.length
+                                      },
+                                      childrens: post.children.map((child: any) => ({
                                         author: {
-                                            image: post.children.image,
-                                            username: post.children.username,
-                                            id: post.children.id
-                                        }
+                                            image: child.author.image,
+                                            username: child.author.username,
+                                            id: child.author.id
+                                        },
+                                        content: child.content,
+                                        createdAt: child.createdAt
+                                    }))
                                     }
-                                ]}
+                                  ]}
                                 isNotComment={post.children.length === 0}
                             />
                         )

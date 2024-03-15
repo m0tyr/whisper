@@ -92,8 +92,12 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                     </DropdownMenu>
 
                 </div>
-                <div className="inline">
-                    <Link href={`/${author.username}`}>
+                <div onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                        ping();
+                    }
+                }}>
+                    <Link href={`/${author.username}`} className="inline">
                         <p className="text-white text-small-semibold hover:underline inline relative bottom-0.5 ">{author.username}</p>
                     </Link>
                 </div>
@@ -112,7 +116,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
 
                 )}
                 {media && (
-                    <ImageClickAnim src={media} />
+                    <ImageClickAnim src={media} maxheight={'430px'} />
                 )}
 
 

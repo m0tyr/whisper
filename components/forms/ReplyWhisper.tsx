@@ -54,10 +54,11 @@ interface Props {
     };
     createdAt: string;
     comments: {
-      author: {
-        image: string;
-      };
-    }[];
+      posts: {
+        number: number;
+      }
+      childrens: any;
+    }[]
     isComment?: boolean;
   }
   toclose: any;
@@ -192,7 +193,9 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
       media: values.media,
       path: pathname,
     }, whisper_to_reply.id);
-
+    const lastWhisper = await GetLastestWhisperfromUserId({
+      author: values.accoundId,
+    })
 
     toast({
       title: "Publié",
@@ -201,8 +204,8 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
     }
     )
 
-    router.prefetch("/");
-    router.push("/");
+    router.prefetch(pathname);
+    router.push(pathname);
 
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -217,12 +220,12 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
   window.onresize = handleResize
   var elem = document.getElementById('scroll');
   let isscrolled = false;
-    if (elem && !isscrolled) 
+  if (elem && !isscrolled)
     elem.scrollTo({
-        top: elem.scrollHeight,
-        behavior: 'instant'
-    }); 
-    isscrolled = true;
+      top: elem.scrollHeight,
+      behavior: 'instant'
+    });
+  isscrolled = true;
 
   const handleInput = () => {
     if (editableDiv) {

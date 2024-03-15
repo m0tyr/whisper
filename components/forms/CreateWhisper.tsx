@@ -190,8 +190,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
     }
     )
-    router.prefetch("/");
-    router.push("/");
+    router.prefetch(pathname);
+    router.push(pathname);
 
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);

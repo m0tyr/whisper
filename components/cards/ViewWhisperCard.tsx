@@ -42,11 +42,7 @@ interface Props {
         posts: {
             number: number;
         }
-        author: {
-            username: string;
-            image: string;
-            id: string;
-        };
+        childrens : any;
     }[];
     isNotComment?: boolean;
 }
@@ -130,13 +126,13 @@ const ViewWhisperCard = ({
                                 ping();
                             }
                         }} >
-
+                            
                             <div className="flex flex-row mb-2  items-center gap-3">
                                 <Link href={`/${author.username}`}>
-                                    <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
+                                    <Image src={author.image} alt="logo" width={38} height={38} className=" cursor-pointer rounded-full" />
                                 </Link>
                                 <Link href={`/${author.username}`}>
-                                    <p className="text-white text-small-semibold hover:underline inline relative bottom-0.5 ">{author.username}</p>
+                                    <p className="text-white text-small-semibold hover:underline inline  ">{author.username}</p>
                                 </Link>
                                 <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
 
@@ -182,6 +178,7 @@ const ViewWhisperCard = ({
 
                                 </div>
                             </div>
+
                             {content && (
                                 <div>
                                     <Link href={`/${author.username}/post/${id}`}>
@@ -197,7 +194,7 @@ const ViewWhisperCard = ({
 
                             )}
                             {media && (
-                                <ImageClickAnim src={media} />
+                                <ImageClickAnim src={media} maxheight={'430px'}/>
                             )}
 
 

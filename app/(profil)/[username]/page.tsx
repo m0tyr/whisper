@@ -27,6 +27,7 @@ export default async function Page({ params }: { params: { username: string } })
 
     if (!user) redirect('/sign-in');
     const currentuserInfo = await fetchUser(user.id);
+    if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const userInfo = await fetchUserbyUsername(params.username);
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
@@ -74,17 +75,22 @@ export default async function Page({ params }: { params: { username: string } })
                                     }
                                     createdAt={post.createdAt}
                                     comments={[
-                                        {   
-                                            posts: {
-                                                number: post.children.length
-                                            },
+                                        {
+                  
+                                          posts: {
+                                            number: post.children.length
+                                          },
+                                          childrens: post.children.map((child: any) => ({
                                             author: {
-                                                image: post.children.image,
-                                                username: post.children.username,
-                                                id: post.children.id
-                                            }
+                                                image: child.author.image,
+                                                username: child.author.username,
+                                                id: child.author.id
+                                            },
+                                            content: child.content,
+                                            createdAt: child.createdAt
+                                        }))
                                         }
-                                    ]}
+                                      ]}
                                     isNotComment={post.children.length === 0}
 
                                 />

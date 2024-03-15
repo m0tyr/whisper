@@ -60,7 +60,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
 
             )}
             {media && (
-                <ImageClickAnim src={media} />
+                <ImageClickAnim src={media} maxheight={'430px'} />
             )}  
             <div className="mb-6">
 

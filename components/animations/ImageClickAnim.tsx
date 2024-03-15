@@ -6,7 +6,7 @@ import Image from "next/image";
 import * as AspectRatio from '@radix-ui/react-aspect-ratio';
 import { getMeta } from "@/lib/utils";
 
-const ImageClickAnim = ({ src }: any) => {
+const ImageClickAnim = ({ src, maxheight }: any) => {
     const [showImage, setShowImage] = useState(false);
     const [aspectRatio, setAspectRatio] = useState("revert"); // Default to "revert" for no custom aspect ratio
 
@@ -33,7 +33,7 @@ const ImageClickAnim = ({ src }: any) => {
                 onClick={togglePopup}
             >
                 <div id="picture" className="max-h-[430px] grid-rows-1 grid-cols-1 grid">
-                    <picture style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
+                    <picture style={{ aspectRatio: aspectRatio, maxHeight: maxheight }}>
                         <img
                             draggable="false"
                             className='object-contain rounded-xl mt-2.5 border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'

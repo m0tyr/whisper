@@ -24,6 +24,8 @@ export default async function Page() {
     bio: userInfo?.bio || "",
     image: userInfo?.image || user.imageUrl,
   };
+  console.log(allposts.posts_exec[0].children)
+
 
   return (
     <>
@@ -59,11 +61,15 @@ export default async function Page() {
                         posts: {
                           number: post.children.length
                         },
-                        author: {
-                          image: post.children.image,
-                          username: post.children.username,
-                          id: post.children.id
-                        }
+                        childrens: post.children.map((child: any) => ({
+                          author: {
+                              image: child.author.image,
+                              username: child.author.username,
+                              id: child.author.id
+                          },
+                          content: child.content,
+                          createdAt: child.createdAt
+                      }))
                       }
                     ]}
                     isNotComment={post.children.length === 0}

@@ -26,11 +26,7 @@ interface Props {
         posts: {
             number: number;
         }
-        author: {
-            username: string;
-            image: string;
-            id: string;
-        };
+        childrens: any;
     }[];
     isNotComment?: boolean;
 }
