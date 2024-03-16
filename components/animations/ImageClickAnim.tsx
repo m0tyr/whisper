@@ -12,6 +12,7 @@ const ImageClickAnim = ({ src, maxheight }: any) => {
 
     const togglePopup = () => {
         setShowImage(!showImage);
+       
     };
 
     useEffect(() => {
@@ -31,6 +32,7 @@ const ImageClickAnim = ({ src, maxheight }: any) => {
          <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={togglePopup}
+                type="button"
             >
                 <div id="picture" className="max-h-[430px] grid-rows-1 grid-cols-1 grid">
                     <picture style={{ aspectRatio: aspectRatio, maxHeight: maxheight }}>

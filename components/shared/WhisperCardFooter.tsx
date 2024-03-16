@@ -42,13 +42,13 @@ const WhisperCardFooter = ({ id, author, comments, isNotComment }: Props) => {
                         <div className="justify-center flex w-full relative">
                             {comments[0].childrens.length >= 10 ? (
                                 <>
-                                    <div className="w-5 absolute top-0 right-2.5">
+                                    <div className="w-5 absolute bottom-2 right-2.5">
                                         <Image src={comments[0].childrens[0].author.image} alt="logo" width={20} height={20} className="rounded-full border border-[#4747476e]" />
                                     </div>
-                                    <div className="w-4 absolute left-0.5 top-2">
+                                    <div className="w-4 absolute left-1 top-1">
                                         <Image src={comments[0].childrens[1].author.image} alt="logo" width={16} height={16} className="rounded-full border border-[#4747476e]" />
                                     </div>
-                                    <div className="w-3 absolute left-4 bottom-2">
+                                    <div className="w-3 absolute left-[1.125rem] top-3.5">
                                         <Image src={comments[0].childrens[2].author.image} alt="logo" width={12} height={12} className="rounded-full border border-[#4747476e]" />
                                     </div>
                                 </>

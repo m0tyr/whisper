@@ -62,10 +62,11 @@ interface Props {
     isComment?: boolean;
   }
   toclose: any;
+  togglePopup:any;
 }
 
 
-const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
+const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const { startUpload } = useUploadThing('imageUploader')
@@ -280,6 +281,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose }: Props) => {
                           <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                             <div className="flex flex-row flex-1  gap-3 ">
                               <WhisperCardLeft author={whisper_to_reply.author} id={user.id} />
+                              
                               <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} media={whisper_to_reply.media} author={whisper_to_reply.author}
                                 createdAt={whisper_to_reply.createdAt} togglePopup={undefined} />
                             </div>

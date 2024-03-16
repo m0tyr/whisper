@@ -35,6 +35,7 @@ const ShowImage = ({ src, togglePopup }: any) => {
                 exit={{ opacity: 0, zIndex: 9997 }}
                 transition={{ duration: .1 }}
                 id='top'
+                role="dialog"
                 className="fixed top-0 left-0 inset-0 bg-black w-full z-[9998] " onClick={togglePopup}>
                 <button onClick={togglePopup}>
                     <svg aria-label="Fermer" role="img" viewBox="0 0 24 24" fill='currentColor' height='18' width='18px'>
