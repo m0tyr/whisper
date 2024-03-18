@@ -120,8 +120,7 @@ const WhisperCard = ({
 
                 </div>
 
-                <hr className="border-x-2 opacity-20 rounded-full " />
-
+                <hr className="border-x-2 opacity-20 rounded-full " />          
 
         </>
     )
