@@ -1,12 +1,13 @@
 "use client"
+import WhisperCardMain from "../shared/WhisperCardMain";
+import WhisperCardLeft from "../shared/WhisperCardLeft";
 import WhisperCardFooter from "../shared/WhisperCardFooter";
 import { useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import ImageClickAnim from "../animations/ImageClickAnim";
 import Image from "next/image";
-import Link from "next/link";
+import { calculateTimeAgo } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -21,8 +22,8 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { calculateTimeAgo } from "@/lib/utils";
-
+import Link from "next/link";
+import ImageClickAnim from "../animations/ImageClickAnim";
 interface Props {
     user: any;
     _id: string;
@@ -42,12 +43,12 @@ interface Props {
         posts: {
             number: number;
         }
-        childrens : any;
+        childrens: any;
     }[];
     isNotComment?: boolean;
 }
 
-const ViewWhisperCard = ({
+const ParentWhisperCard = ({
     user,
     _id,
     id,
@@ -113,7 +114,7 @@ const ViewWhisperCard = ({
 
 
             )}
-            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5  w-full cursor-pointer relative" onClick={(e) => {
+            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 w-full pt-1 cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -121,64 +122,101 @@ const ViewWhisperCard = ({
                 <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 relative' >
 
                     <div className="flex flex-row flex-1  gap-3 ">
-                        <div className="w-full relative" onClick={(e) => {
+
+
+                        <>
+                            {!isNotComment && (
+                                <div className=" flex flex-col w-10  justify-center py-0.5" onClick={(e) => {
+                                    if (e.target === e.currentTarget) {
+                                        ping();
+                                    }
+                                }}>
+                                    <Link href={`${author.username}`}>
+                                        <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
+
+                                    </Link>
+
+
+                                    <div className="thread-card_bar" />
+
+
+                                </div>
+                            )}
+                            {isNotComment && (
+                                <div className=" flex flex-col w-10  justify-center relative" onClick={(e) => {
+                                    if (e.target === e.currentTarget) {
+                                        ping();
+                                    }
+                                }}>
+                                    <Link href={`${author.username}`} className="absolute top-0.5">
+                                        <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
+
+                                    </Link>
+
+
+
+
+                                </div>
+                            )}
+                        </>
+
+                        <div className="w-full relative pb-1.5" onClick={(e) => {
                             if (e.target === e.currentTarget) {
                                 ping();
                             }
                         }} >
-                            
-                            <div className="flex flex-row mb-2  items-center gap-3">
-                                <Link href={`/${author.username}`}>
-                                    <Image src={author.image} alt="logo" width={36} height={36} className=" cursor-pointer rounded-full" />
-                                </Link>
-                                <Link href={`/${author.username}`}>
-                                    <p className="text-white text-small-semibold hover:underline inline  ">{author.username}</p>
-                                </Link>
-                                <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
+                            <div className="float-right  text-white text-small-regular font-light opacity-50 flex h-5">
 
-                                    <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
-                                    <DropdownMenu modal={false} >
-                                        <DropdownMenuTrigger asChild className=" cursor-pointer ">
+                                <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
+                                <DropdownMenu modal={false} >
+                                    <DropdownMenuTrigger asChild className=" cursor-pointer ">
 
-                                            <div className="ml-2 relative bottom-1.5 left-0  text-sm align-middle group hover:bg-[#6262624c] transition-all duration-100 rounded-full w-8 h-8  flex items-center justify-center">
-                                                <svg aria-label="Plus" role="img" viewBox="0 0 24 24" className="h-5 w-5" fill="#fff">
-                                                    <title>Plus</title>
-                                                    <circle cx="12" cy="12" r="1.5"></circle>
-                                                    <circle cx="6" cy="12" r="1.5"></circle>
-                                                    <circle cx="18" cy="12" r="1.5"></circle>
-                                                </svg>
+                                        <div className="ml-2 relative bottom-1.5 left-0  text-sm align-middle group hover:bg-[#6262624c] transition-all duration-100 rounded-full w-8 h-8  flex items-center justify-center">
+                                            <svg aria-label="Plus" role="img" viewBox="0 0 24 24" className="h-5 w-5" fill="#fff">
+                                                <title>Plus</title>
+                                                <circle cx="12" cy="12" r="1.5"></circle>
+                                                <circle cx="6" cy="12" r="1.5"></circle>
+                                                <circle cx="18" cy="12" r="1.5"></circle>
+                                            </svg>
 
 
-                                            </div>
-                                        </DropdownMenuTrigger>
+                                        </div>
+                                    </DropdownMenuTrigger>
 
-                                        <DropdownMenuContent className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
-                                            <DropdownMenuGroup className="text-white text-[14px]">
-                                                <DropdownMenuItem >
-                                                    Enregistrer
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
+                                    <DropdownMenuContent className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                                        <DropdownMenuGroup className="text-white text-[14px]">
+                                            <DropdownMenuItem >
+                                                Enregistrer
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
 
-                                                <DropdownMenuItem>
-                                                    Bloquer
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
+                                            <DropdownMenuItem>
+                                                Bloquer
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
 
-                                                <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                                                    Signaler
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
+                                            <DropdownMenuItem className="!text-[rgb(255,48,64)]">
+                                                Signaler
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
 
-                                                <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                                                    Supprimer
-                                                </DropdownMenuItem>
-                                            </DropdownMenuGroup>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                            <DropdownMenuItem className="!text-[rgb(255,48,64)]">
+                                                Supprimer
+                                            </DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
 
-                                </div>
                             </div>
-
+                            <div onClick={(e) => {
+                                if (e.target === e.currentTarget) {
+                                    ping();
+                                }
+                            }}>
+                                <Link href={`/${author.username}`} className="inline">
+                                    <p className="text-white text-small-semibold hover:underline inline relative bottom-0.5 ">{author.username}</p>
+                                </Link>
+                            </div>
                             {content && (
                                 <div>
                                     <Link href={`/${author.username}/post/${id}`}>
@@ -194,7 +232,7 @@ const ViewWhisperCard = ({
 
                             )}
                             {media && (
-                                <ImageClickAnim src={media} maxheight={'430px'}/>
+                                <ImageClickAnim src={media} maxheight={'430px'} />
                             )}
 
 
@@ -240,19 +278,8 @@ const ViewWhisperCard = ({
 
                             </div>
 
-                        </div>
-
-                    </div>
-
-                    {!isNotComment && (
-                        <div className="w-full h-full flex flex-row" onClick={(e) => {
-                            if (e.target === e.currentTarget) {
-                                ping();
-                            }
-                        }}>
-                         
-                            <div className="flex flex-row gap-3 mb-0.5">
-                                <div className="flex justify-center items-center">
+                            <div className="flex flex-row gap-3 mt-1.5">
+                                <div className="flex ">
                                     {whisperData.comments[0]?.posts?.number > 1 ? (
                                         <span className="text-gray-2 !text-[13.5px]">
                                             {whisperData.comments[0]?.posts?.number} réponses
@@ -263,34 +290,27 @@ const ViewWhisperCard = ({
                                         </span>
                                     ) : null}
                                 </div>
-                                <div className="flex justify-center items-center">
+                                <div className="flex ">
                                     <span className="text-gray-2 !text-[13.5px]">
                                         ·
                                     </span>
                                 </div>
-                                <div className="flex justify-center items-center">
+                                <div className="flex ">
                                     <span className="text-gray-2 !text-[13.5px]">
                                         456 mentions J'aime
                                     </span>
                                 </div>
                             </div>
 
-                        </div>
-                    )}
-                    {isNotComment && (
-                        <div className="mb-2" onClick={(e) => {
-                            if (e.target === e.currentTarget) {
-                                ping();
-                            }
-                        }}>
 
                         </div>
-                    )}
+                    </div>
+
+
                 </div>
 
             </div>
 
-            <hr className="border-x-2 opacity-20 rounded-full " />
 
 
         </>
@@ -298,4 +318,4 @@ const ViewWhisperCard = ({
 }
 
 
-export default ViewWhisperCard;
+export default ParentWhisperCard;

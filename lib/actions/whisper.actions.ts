@@ -11,6 +11,7 @@ interface Params {
     media: string | undefined,
     path: string,
 }
+
 export async function createWhisper({ content, author, media, path }: Params) {
     try {
         connectToDB();
@@ -146,4 +147,50 @@ export async function fetchwhisperById(id: string) {
 
 
     }
+}
+export async function fetchallParentsFromWhisper(parentid:string){
+    let computeparent: { [key: string]: any } = {};
+
+    async function populateParents(whisperId: string) {
+        if (whisperId) {
+            const parentWhisper = await Whisper.findById(whisperId)
+                .populate({
+                    path: 'author',
+                    model: User,
+                    select: "_id id username image"
+                })
+                .populate({
+                    path: 'children',
+                    populate: [
+                        {
+                            path: 'author',
+                            model: User,
+                            select: "_id id username parentId image"
+                        },
+                        {
+                            path: 'children',
+                            model: Whisper,
+                            populate: {
+                                path: "author",
+                                model: User,
+                                select: "_id id username parentId image"
+                            }
+                        }
+                    ]
+                }).exec();
+
+            computeparent[parentWhisper._id] = parentWhisper;
+
+            // Recursively call the function for the parent whisper
+            await populateParents(parentWhisper.parentId);
+        }
+    }
+
+    await populateParents(parentid);
+    let array = Object.entries(computeparent);
+    let reversedArray = array.reverse();
+    let reversedObject = Object.fromEntries(reversedArray);
+    return reversedObject;
+
+
 }
