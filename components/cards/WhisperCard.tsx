@@ -1,11 +1,14 @@
 "use client"
-import WhisperCardMain from "../shared/WhisperCardMain";
+const WhisperCardMain = dynamic(() => import("../shared/WhisperCardMain"));
 import WhisperCardLeft from "../shared/WhisperCardLeft";
 import WhisperCardFooter from "../shared/WhisperCardFooter";
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton"
+import { getMeta } from "@/lib/utils";
 
 interface Props {
     user: any;
@@ -54,6 +57,7 @@ const WhisperCard = ({
         isNotComment: isNotComment,
     };
     const [showPopup, setShowPopup] = useState(false);
+
     const router = useRouter();
 
 
@@ -64,7 +68,21 @@ const WhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+    const [aspectRatio, setAspectRatio] = useState("revert");
+    const [loading, setLoadingStatus] = useState(true)
+    useEffect(() => {
+        setTimeout(() => {
+        getMeta(media, (err: any, img: any) => {
+            const width = img?.naturalWidth;
+            const height = img?.naturalHeight;
+            const arvalue = width && height ? width / height : 0;
+            const ar = arvalue.toString();
+            setAspectRatio(ar);
+            setLoadingStatus(false);  
+          });
+        }, 500); 
 
+        }, []);
     return (
         <>
             {showPopup && (
@@ -91,36 +109,42 @@ const WhisperCard = ({
                         createdAt: createdAt,
                         comments: comments,
                         isComment: isNotComment
-                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} />
+                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
 
                 </>
 
 
             )}
-            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5  w-full cursor-pointer relative" onClick={(e) => {
+            <div className="rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
             }} >
-                    <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 relative' >
+                <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 relative' >
 
-                        <div className="flex flex-row flex-1  gap-3 ">
-                         
+                    <div className="flex flex-row flex-1  gap-3 ">
 
-                                <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />
 
-                                <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
-                                    media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} />
-                         
-                        </div>
+                        <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} loadingstate={loading} />
 
-                        <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} />
+                        <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
+                            media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} aspectRatio={aspectRatio} loadingstate={loading} />
 
                     </div>
+                    {comments[0].posts.number == 0 ? <div></div> :
+                        <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} loadingstate={loading} />
+                    }
+
 
                 </div>
 
-                <hr className="border-x-2 opacity-20 rounded-full " />          
+            </div>
+            {!loading && (
+                <hr className="border-x-2 opacity-20 rounded-full " />
+
+            )
+
+            }
 
         </>
     )

@@ -11,8 +11,10 @@ interface Props {
     };
     createdAt: string;
     togglePopup: any;
+    aspectRatio: any;
+    loadingstate: boolean;
 }
-import { calculateTimeAgo } from "@/lib/utils";
+import { calculateTimeAgo, getMeta } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -29,18 +31,33 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import ImageClickAnim from "../animations/ImageClickAnim";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton"
 
-export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup }: Props) {
+export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup, aspectRatio, loadingstate }: Props) {
 
     const router = useRouter();
 
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+    if (loadingstate) return (
+        <div className="flex flex-col space-y-3" style={{ width: '100%' }}>
+            <div className="space-y-2">
+                <div className="flex flex-row relative">
+                    <Skeleton className="h-4 w-[30%]" />
+                    <Skeleton className=" absolute right-0 h-4 w-[15%]" />
+
+                </div>
+                <Skeleton className="h-4 w-[80%]" />
+                <Skeleton className="h-4 w-[45%]" />
+            </div>
+
+        </div>
+    )
     return (
         <>
 
@@ -92,17 +109,18 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                     </DropdownMenu>
 
                 </div>
+
                 <div onClick={(e) => {
                     if (e.target === e.currentTarget) {
                         ping();
                     }
                 }}>
                     <Link href={`/${author.username}`} className="inline">
-                        <p className="text-white text-small-semibold hover:underline inline relative bottom-0.5 ">{author.username}</p>
+                        <p className="text-white text-small-semibold hover:underline inline relative bottom-1">{author.username}</p>
                     </Link>
                 </div>
                 {content && (
-                    <div>
+                    <div className="relative bottom-1">
                         <Link href={`/${author.username}/post/${id}`}>
                             <div className=" break-words max-w-lg">
 
@@ -116,12 +134,18 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
 
                 )}
                 {media && (
-                    <ImageClickAnim src={media} maxheight={'430px'} />
+                    <div className="relative bottom-1" onClick={(e) => {
+                        if (e.target === e.currentTarget) {
+                            ping();
+                        }
+                    }}>
+                        <ImageClickAnim src={media} aspectRatio={aspectRatio} />
+                    </div>
                 )}
 
 
 
-                <div className="flex w-full justify-normal mt-2.5 gap-3" onClick={(e) => {
+                <div className="flex w-full justify-normal mt-1 gap-3" onClick={(e) => {
                     if (e.target === e.currentTarget) {
                         ping();
                     }
@@ -163,7 +187,6 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                 </div>
 
             </div>
-
         </>
     )
 

@@ -11,6 +11,7 @@ interface Props {
     };
     createdAt: string;
     togglePopup:any;
+    aspectRatio?:any;
 }
 import { calculateTimeAgo } from "@/lib/utils";
 import {
@@ -33,7 +34,7 @@ import { useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 
-export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup }: Props) {
+export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup,aspectRatio }: Props) {
 
 
    
@@ -60,7 +61,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
 
             )}
             {media && (
-                <ImageClickAnim src={media} maxheight={'430px'} />
+                <ImageClickAnim src={media} aspectRatio={aspectRatio} />
             )}  
             <div className="mb-6">
 

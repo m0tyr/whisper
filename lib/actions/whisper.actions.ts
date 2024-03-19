@@ -42,7 +42,7 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
         throw new Error(`Error retrieving last whisper: ${error.message}`);
     }
 }
-export async function fetchwhispers(pagenumber = 1, pagesize = 15) {
+export async function fetchwhispers(pagenumber = 1, pagesize = 15,path = '/') {
 
     try {
         connectToDB();
@@ -73,7 +73,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15) {
         const posts_exec = await posts_query.exec();
 
         const isnext = allposts_count > skipamount + posts_exec.length;
-
+        revalidatePath(path)
         return { posts_exec, isnext };
     } catch (error: any) {
         throw new Error(`error onfetchpots: ${error.message} `)

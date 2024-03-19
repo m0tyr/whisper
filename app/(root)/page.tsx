@@ -6,6 +6,9 @@ import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import { fetchwhispers } from "@/lib/actions/whisper.actions";
 import WhisperCard from "@/components/cards/WhisperCard";
+import { Suspense } from "react";
+import LoadingSkeleton from "@/components/shared/LoadingSkeleton";
+
 
 export default async function Page() {
   let showPopup = false;
@@ -29,59 +32,61 @@ export default async function Page() {
   return (
     <>
       <TopBar user={userData} _id={`${userInfo._id}`} />
+      <Suspense fallback={<LoadingSkeleton />}>
 
-      <section className="main-container">
+        <section className="main-container">
 
-        <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full " aria-hidden="true">
-          <div>
-            <div className="">
-              <TopChat user={userData} _id={`${userInfo._id}`} />
-            </div>
-            {allposts.posts_exec.length === 0 ? (
-              <p className="text-white text-body1-bold ">No Whispers found...</p>
-            ) : (
-              <>
-                {allposts.posts_exec.map((post: any) => (
-                  <WhisperCard
-                    user={userData}
-                    _id={`${userInfo._id}`}
-                    id={`${post._id}`}
-                    currentUserId={user?.id || ""}
-                    parentId={post.parentId}
-                    content={post.content}
-                    media={post.media}
-                    author={
-                      { image: post.author.image, username: post.author.username, id: post.author.id }
-                    }
-                    createdAt={post.createdAt}
-                    comments={[
-                      {
+          <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full " aria-hidden="true">
+            <div>
+              <div className="">
+                <TopChat user={userData} _id={`${userInfo._id}`} />
+              </div>
+              {allposts.posts_exec.length === 0 ? (
+                <p className="text-white text-body1-bold ">No Whispers found...</p>
+              ) : (
+                <>
+                  {allposts.posts_exec.map((post: any) => (
+                    <WhisperCard
+                      user={userData}
+                      _id={`${userInfo._id}`}
+                      id={`${post._id}`}
+                      currentUserId={user?.id || ""}
+                      parentId={post.parentId}
+                      content={post.content}
+                      media={post.media}
+                      author={
+                        { image: post.author.image, username: post.author.username, id: post.author.id }
+                      }
+                      createdAt={post.createdAt}
+                      comments={[
+                        {
 
-                        posts: {
-                          number: post.children.length
-                        },
-                        childrens: post.children.map((child: any) => ({
-                          author: {
+                          posts: {
+                            number: post.children.length
+                          },
+                          childrens: post.children.map((child: any) => ({
+                            author: {
                               image: child.author.image,
                               username: child.author.username,
                               id: child.author.id
-                          },
-                          content: child.content,
-                          createdAt: child.createdAt
-                      }))
-                      }
-                    ]}
-                    isNotComment={post.children.length === 0}
-                  />
-                )
-                )}
+                            },
+                            content: child.content,
+                            createdAt: child.createdAt
+                          }))
+                        }
+                      ]}
+                      isNotComment={post.children.length === 0}
+                    />
+                  )
+                  )}
 
-              </>
-            )
-            }
+                </>
+              )
+              }
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+        </Suspense>
 
     </>
   )

@@ -2,12 +2,12 @@
 import WhisperCardMain from "../shared/WhisperCardMain";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
 import WhisperCardFooter from "../shared/WhisperCardFooter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { calculateTimeAgo } from "@/lib/utils";
+import { calculateTimeAgo, getMeta } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -81,6 +81,21 @@ const ParentWhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+    const [aspectRatio, setAspectRatio] = useState("revert");
+    const [loading, setloadingstatus] = useState(true)
+    useEffect(() => {
+
+        getMeta(media, (err: any, img: any) => {
+            const width = img?.naturalWidth;
+            const height = img?.naturalHeight;
+            const arvalue = width && height ? width / height : 0;
+            const ar = arvalue.toString();
+            setAspectRatio(ar);
+            setTimeout(() => {
+                setloadingstatus(false);
+            }, 200);
+        });
+    }, [media]);
 
     return (
         <>
@@ -108,13 +123,13 @@ const ParentWhisperCard = ({
                         createdAt: createdAt,
                         comments: comments,
                         isComment: isNotComment
-                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} />
+                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
 
                 </>
 
 
             )}
-            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 w-full pt-1 cursor-pointer relative" onClick={(e) => {
+            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -126,7 +141,7 @@ const ParentWhisperCard = ({
 
                         <>
                             {!isNotComment && (
-                                <div className=" flex flex-col w-10  justify-center py-0.5" onClick={(e) => {
+                                <div className=" flex flex-col w-10  justify-center" onClick={(e) => {
                                     if (e.target === e.currentTarget) {
                                         ping();
                                     }
@@ -135,11 +150,7 @@ const ParentWhisperCard = ({
                                         <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
 
                                     </Link>
-
-
                                     <div className="thread-card_bar" />
-
-
                                 </div>
                             )}
                             {isNotComment && (
@@ -208,12 +219,12 @@ const ParentWhisperCard = ({
                                 </DropdownMenu>
 
                             </div>
-                            <div onClick={(e) => {
+                            <div className="relative" onClick={(e) => {
                                 if (e.target === e.currentTarget) {
                                     ping();
                                 }
                             }}>
-                                <Link href={`/${author.username}`} className="inline">
+                                <Link href={`/${author.username}`} className="inline relative top-0">
                                     <p className="text-white text-small-semibold hover:underline inline relative bottom-0.5 ">{author.username}</p>
                                 </Link>
                             </div>

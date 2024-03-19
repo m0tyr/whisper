@@ -1,6 +1,6 @@
 "use client"
 import WhisperCardFooter from "../shared/WhisperCardFooter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -21,7 +21,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { calculateTimeAgo } from "@/lib/utils";
+import { calculateTimeAgo, getMeta } from "@/lib/utils";
 
 interface Props {
     user: any;
@@ -80,7 +80,21 @@ const ViewWhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+    const [aspectRatio, setAspectRatio] = useState("revert");
+    const [loading, setloadingstatus] = useState(true)
+    useEffect(() => {
 
+        getMeta(media, (err: any, img: any) => {
+            const width = img?.naturalWidth;
+            const height = img?.naturalHeight;
+            const arvalue = width && height ? width / height : 0;
+            const ar = arvalue.toString();
+            setAspectRatio(ar);
+            setTimeout(() => {
+                setloadingstatus(false);
+            }, 200);
+        });
+    }, [media]);
     return (
         <>
             {showPopup && (
@@ -107,13 +121,13 @@ const ViewWhisperCard = ({
                         createdAt: createdAt,
                         comments: comments,
                         isComment: isNotComment
-                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} />
+                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
 
                 </>
 
 
             )}
-            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5  w-full cursor-pointer relative" onClick={(e) => {
+            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 pb-1.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -194,7 +208,7 @@ const ViewWhisperCard = ({
 
                             )}
                             {media && (
-                                <ImageClickAnim src={media} maxheight={'430px'}/>
+                                <ImageClickAnim src={media} aspectRatio={aspectRatio}/>
                             )}
 
 

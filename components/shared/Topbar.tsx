@@ -8,6 +8,8 @@ import { SignedIn, SignOutButton, OrganizationSwitcher } from "@clerk/nextjs";
 import CreateWhisper from "../forms/CreateWhisper";
 import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
+import { Router } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 
 const TopBar = ({ user, _id }: any) => {
@@ -22,16 +24,20 @@ const TopBar = ({ user, _id }: any) => {
 
     };
     const username = user ? user.username : '';
+    const router = useRouter();
 
+    const handleBackButtonClick = () => {
+      router.back();
+    };
     return (
         <>
 
 
             <nav className="topbar backdrop-blur-2xl my-0">
                 <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
-
-                    <Image src="/svgs/logo.svg" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
-
+                    <Button onClick={handleBackButtonClick}>
+                    <Image src="/logo_resize.png" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
+                    </Button>
 
                 </Link>
                 <div className="flex justify-center items-center gap-12 md:gap-16">

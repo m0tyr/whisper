@@ -14,10 +14,12 @@ interface Props {
         childrens: any;
     }[];
     isNotComment?: boolean;
+    loadingstate:boolean;
 }
 import router, { useRouter } from "next/navigation";
+import { Skeleton } from "../ui/skeleton";
 
-const WhisperCardFooter = ({ id, author, comments, isNotComment }: Props) => {
+const WhisperCardFooter = ({ id, author, comments, isNotComment,loadingstate }: Props) => {
     const whisperData = {
         author: author,
         comments: comments,
@@ -28,6 +30,11 @@ const WhisperCardFooter = ({ id, author, comments, isNotComment }: Props) => {
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+    if(loadingstate) return (
+        <div className="flex flex-col space-x-4 w-full ">
+       
+    </div>
+    )
 
 
     return (

@@ -11,6 +11,7 @@ const nextConfig = {
   sentry: {
     hideSourceMaps: true,
   },
+  
   images: {
     domains: ['img.clerk.com'],
     domains: ['utfs.io'],

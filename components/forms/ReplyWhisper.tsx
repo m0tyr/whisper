@@ -63,10 +63,11 @@ interface Props {
   }
   toclose: any;
   togglePopup:any;
+  aspectRatio:any;
 }
 
 
-const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup }: Props) => {
+const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspectRatio }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const { startUpload } = useUploadThing('imageUploader')
@@ -75,7 +76,6 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup }: Pro
   const router = useRouter();
 
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
-  const [aspectRatio, setAspectRatio] = useState("revert");
 
   const pathname = usePathname();
 
@@ -119,7 +119,6 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup }: Pro
           const height = img.naturalHeight;
           const arvalue = width / height;
           const ar = arvalue.toString();
-          setAspectRatio(ar);
         });
         setImageDataURL(imageDataUrl);
         (document.getElementById('button') as HTMLButtonElement).disabled = false;
@@ -283,7 +282,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup }: Pro
                               <WhisperCardLeft author={whisper_to_reply.author} id={user.id} />
                               
                               <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} media={whisper_to_reply.media} author={whisper_to_reply.author}
-                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} />
+                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} aspectRatio={aspectRatio} />
                             </div>
                           </div>
                           <div className="grid grid-cols-[auto,1fr] ">
