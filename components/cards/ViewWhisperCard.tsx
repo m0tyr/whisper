@@ -45,6 +45,7 @@ interface Props {
         childrens : any;
     }[];
     isNotComment?: boolean;
+    aspectRatio:string;
 }
 
 const ViewWhisperCard = ({
@@ -59,6 +60,7 @@ const ViewWhisperCard = ({
     createdAt,
     comments,
     isNotComment,
+    aspectRatio
 }: Props) => {
     const whisperData = {
         id: id,
@@ -68,6 +70,7 @@ const ViewWhisperCard = ({
         createdAt: createdAt,
         comments: comments,
         isNotComment: isNotComment,
+        
     };
     const [showPopup, setShowPopup] = useState(false);
     const router = useRouter();
@@ -80,21 +83,7 @@ const ViewWhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
-    const [aspectRatio, setAspectRatio] = useState("revert");
-    const [loading, setloadingstatus] = useState(true)
-    useEffect(() => {
-
-        getMeta(media, (err: any, img: any) => {
-            const width = img?.naturalWidth;
-            const height = img?.naturalHeight;
-            const arvalue = width && height ? width / height : 0;
-            const ar = arvalue.toString();
-            setAspectRatio(ar);
-            setTimeout(() => {
-                setloadingstatus(false);
-            }, 200);
-        });
-    }, [media]);
+  
     return (
         <>
             {showPopup && (

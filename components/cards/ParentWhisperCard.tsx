@@ -46,6 +46,7 @@ interface Props {
         childrens: any;
     }[];
     isNotComment?: boolean;
+    aspectRatio:string;
 }
 
 const ParentWhisperCard = ({
@@ -60,6 +61,7 @@ const ParentWhisperCard = ({
     createdAt,
     comments,
     isNotComment,
+    aspectRatio
 }: Props) => {
     const whisperData = {
         id: id,
@@ -81,22 +83,7 @@ const ParentWhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
-    const [aspectRatio, setAspectRatio] = useState("revert");
-    const [loading, setloadingstatus] = useState(true)
-    useEffect(() => {
-
-        getMeta(media, (err: any, img: any) => {
-            const width = img?.naturalWidth;
-            const height = img?.naturalHeight;
-            const arvalue = width && height ? width / height : 0;
-            const ar = arvalue.toString();
-            setAspectRatio(ar);
-            setTimeout(() => {
-                setloadingstatus(false);
-            }, 200);
-        });
-    }, [media]);
-
+  
     return (
         <>
             {showPopup && (
@@ -219,7 +206,7 @@ const ParentWhisperCard = ({
                                 </DropdownMenu>
 
                             </div>
-                            <div className="relative" onClick={(e) => {
+                            <div className="relative inline-block" onClick={(e) => {
                                 if (e.target === e.currentTarget) {
                                     ping();
                                 }
@@ -243,7 +230,7 @@ const ParentWhisperCard = ({
 
                             )}
                             {media && (
-                                <ImageClickAnim src={media} maxheight={'430px'} />
+                                <ImageClickAnim src={media} aspectRatio={aspectRatio} />
                             )}
 
 

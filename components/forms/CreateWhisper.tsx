@@ -127,6 +127,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     fieldChange: (value: string) => void
   ) => {
     fieldChange("");
+    setAspectRatio("revert");
     setImageDataURL("");
     const fileInput = document.getElementById('file') as HTMLInputElement;
     if (fileInput) {
@@ -167,10 +168,12 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
         values.media = imgRes[0].url;
       }
     }
+
     await createWhisper({
       content: values.content,
       author: values.accoundId,
       media: values.media,
+      aspectRatio: aspectRatio,
       path: pathname,
     });
 
@@ -205,6 +208,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   };
   window.onresize = handleResize
 
+  console.log(aspectRatio)
 
   const handleInput = () => {
     if (editableDiv) {

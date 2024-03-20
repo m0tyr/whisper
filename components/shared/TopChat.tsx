@@ -34,7 +34,7 @@ const TopChat = ({ user, _id }: any) => {
                 />
                 <button 
                
-                className="float-right right-2 bg-white rounded-full py-1 h-9 px-4 transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>
+                className="float-right right-2 bg-white text-black rounded-full py-1 h-9 px-4 transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>
                     Publier
                 </button>
             </div>

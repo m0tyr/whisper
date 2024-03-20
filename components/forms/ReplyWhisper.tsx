@@ -76,6 +76,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspect
   const router = useRouter();
 
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
+  const [aspectratio, setAspectRatio] = useState("revert"); 
 
   const pathname = usePathname();
 
@@ -119,6 +120,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspect
           const height = img.naturalHeight;
           const arvalue = width / height;
           const ar = arvalue.toString();
+          setAspectRatio(ar);
         });
         setImageDataURL(imageDataUrl);
         (document.getElementById('button') as HTMLButtonElement).disabled = false;
@@ -147,6 +149,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspect
     fieldChange: (value: string) => void
   ) => {
     fieldChange("");
+    setAspectRatio("revert");
     setImageDataURL("");
     const fileInput = document.getElementById('file') as HTMLInputElement;
     if (fileInput) {
@@ -191,11 +194,10 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspect
       content: values.content,
       author: values.accoundId,
       media: values.media,
+      aspectRatio: aspectratio,
       path: pathname,
     }, whisper_to_reply.id);
-    const lastWhisper = await GetLastestWhisperfromUserId({
-      author: values.accoundId,
-    })
+
 
     toast({
       title: "Publié",
@@ -312,7 +314,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspect
 
                                           <>
                                             <div id="picture" className="max-h-[430px] mb-2 grid-rows-1 grid-cols-1 grid">
-                                              <picture style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
+                                              <picture style={{ aspectRatio: aspectratio, maxHeight: "430px" }}>
                                                 <Image src="/svgs/close.svg" width={20} height={20} alt="" className="relative top-8 ml-2 invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
                                                   onClick={(e) => abortimage(field.onChange)} />
                                                 <img src={imageDataURL}

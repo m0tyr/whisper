@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import ViewWhisperCard from "@/components/cards/ViewWhisperCard";
 import ParentWhisperCard from "@/components/cards/ParentWhisperCard";
+import { userInfo } from "os";
 
 export async function generateMetadata({ params }: { params: { id: string, username: string } }) {
 
@@ -78,6 +79,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                         }
                                     ]}
                                     isNotComment={post.children.length === 0}
+                                    aspectRatio={post.aspectRatio}
                                 />
                             );
                         })}
@@ -107,6 +109,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                 }
                             ]}
                             isNotComment={whisperdatas.children.length === 0}
+                            aspectRatio={whisperdatas.aspectRatio}
                         />
                     </div>
                     <div>
@@ -141,6 +144,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                     }
                                 ]}
                                 isNotComment={post.children.length === 0}
+                                aspectRatio={post.aspectRatio}
                             />
                         )
                         )}

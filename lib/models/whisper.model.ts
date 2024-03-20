@@ -14,7 +14,10 @@ const whisperSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-
+    aspectRatio: {
+        type: String,
+        required: false
+    },
     createdAt: {
         type: Date,
         default: Date.now

@@ -92,6 +92,7 @@ export default async function Page({ params }: { params: { username: string } })
                                         }
                                       ]}
                                     isNotComment={post.children.length === 0}
+                                    aspectRatio={post.aspectRatio}
 
                                 />
                             ))}

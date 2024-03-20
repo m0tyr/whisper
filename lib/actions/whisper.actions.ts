@@ -10,23 +10,39 @@ interface Params {
     author: string,
     media: string | undefined,
     path: string,
+    aspectRatio: string,
 }
 
-export async function createWhisper({ content, author, media, path }: Params) {
+export async function createWhisper({ content, author, media, aspectRatio, path }: Params) {
     try {
         connectToDB();
+        if (aspectRatio === 'revert') {
+            const createdWhisper = await Whisper.create({
+                content,
+                author,
+                media,
+            });
+            await User.findByIdAndUpdate(author, {
+                $push: { whispers: createdWhisper._id }
+            })
+    
+            revalidatePath(path)
+        } else {
+            const createdWhisper = await Whisper.create({
+                content,
+                author,
+                media,
+                aspectRatio,
+            });
+            await User.findByIdAndUpdate(author, {
+                $push: { whispers: createdWhisper._id }
+            })
+    
+            revalidatePath(path)
+        }
 
-        const createdWhisper = await Whisper.create({
-            content,
-            author,
-            media,
-        });
 
-        await User.findByIdAndUpdate(author, {
-            $push: { whispers: createdWhisper._id }
-        })
-
-        revalidatePath(path)
+       
     } catch (error: any) {
         throw new Error(`error oncreate: ${error.message} `)
     }
@@ -42,7 +58,7 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
         throw new Error(`Error retrieving last whisper: ${error.message}`);
     }
 }
-export async function fetchwhispers(pagenumber = 1, pagesize = 15,path = '/') {
+export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
         connectToDB();
@@ -82,7 +98,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15,path = '/') {
     }
 }
 
-export async function createComment({ content, author, media, path }: Params, whisperId: any) {
+export async function createComment({ content, author, media,aspectRatio, path }: Params, whisperId: any) {
     connectToDB()
 
     try {
@@ -92,6 +108,7 @@ export async function createComment({ content, author, media, path }: Params, wh
             throw new Error("Whisper indisponible ou supprimé...")
             //add error page
         }
+        if (aspectRatio === 'revert') {
 
         const commentitem = new Whisper({
             content: content,
@@ -107,6 +124,23 @@ export async function createComment({ content, author, media, path }: Params, wh
         await isactive.save()
 
         revalidatePath(path)
+    } else{
+        const commentitem = new Whisper({
+            content: content,
+            author: author,
+            media: media,
+            aspectRatio: aspectRatio,
+            parentId: whisperId,
+        })
+
+        const commentobject = await commentitem.save()
+
+        isactive.children.push(commentitem._id)
+
+        await isactive.save()
+
+        revalidatePath(path)
+    }
 
     } catch (error) {
         throw new Error("l'ajout du commentaire à échoué...")
@@ -148,7 +182,7 @@ export async function fetchwhisperById(id: string) {
 
     }
 }
-export async function fetchallParentsFromWhisper(parentid:string){
+export async function fetchallParentsFromWhisper(parentid: string) {
     let computeparent: { [key: string]: any } = {};
 
     async function populateParents(whisperId: string) {

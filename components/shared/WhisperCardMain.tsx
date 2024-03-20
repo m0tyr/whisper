@@ -11,8 +11,7 @@ interface Props {
     };
     createdAt: string;
     togglePopup: any;
-    aspectRatio: any;
-    loadingstate: boolean;
+    aspectRatio: string;
 }
 import { calculateTimeAgo, getMeta } from "@/lib/utils";
 import {
@@ -37,27 +36,14 @@ import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup, aspectRatio, loadingstate }: Props) {
+export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup, aspectRatio }: Props) {
 
     const router = useRouter();
 
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
-    if (loadingstate) return (
-        <div className="flex flex-col space-y-3" style={{ width: '100%' }}>
-            <div className="space-y-2">
-                <div className="flex flex-row relative">
-                    <Skeleton className="h-4 w-[30%]" />
-                    <Skeleton className=" absolute right-0 h-4 w-[15%]" />
-
-                </div>
-                <Skeleton className="h-4 w-[80%]" />
-                <Skeleton className="h-4 w-[45%]" />
-            </div>
-
-        </div>
-    )
+ 
     return (
         <>
 
