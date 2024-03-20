@@ -67,6 +67,11 @@
     @apply relative mt-2 w-0.5 flex-grow rounded-full bg-neutral-800;
     left: 46.66666667%;
   }
+  .big_thread-card_bar {
+    @apply relative mt-2 mb-1 w-0.5 flex-grow rounded-full bg-neutral-800;
+    left: 46.66666667%;
+  }
+
 
   /* User card */
   .user-card {

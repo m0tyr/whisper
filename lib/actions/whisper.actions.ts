@@ -25,7 +25,7 @@ export async function createWhisper({ content, author, media, aspectRatio, path 
             await User.findByIdAndUpdate(author, {
                 $push: { whispers: createdWhisper._id }
             })
-    
+
             revalidatePath(path)
         } else {
             const createdWhisper = await Whisper.create({
@@ -37,12 +37,12 @@ export async function createWhisper({ content, author, media, aspectRatio, path 
             await User.findByIdAndUpdate(author, {
                 $push: { whispers: createdWhisper._id }
             })
-    
+
             revalidatePath(path)
         }
 
 
-       
+
     } catch (error: any) {
         throw new Error(`error oncreate: ${error.message} `)
     }
@@ -62,7 +62,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
         connectToDB();
-
+        
         const skipamount = (pagenumber - 1) * pagesize;
 
         const posts_query = Whisper.find({
@@ -89,6 +89,9 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
         const posts_exec = await posts_query.exec();
 
         const isnext = allposts_count > skipamount + posts_exec.length;
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         revalidatePath(path)
         return { posts_exec, isnext };
     } catch (error: any) {
@@ -98,7 +101,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
     }
 }
 
-export async function createComment({ content, author, media,aspectRatio, path }: Params, whisperId: any) {
+export async function createComment({ content, author, media, aspectRatio, path }: Params, whisperId: any) {
     connectToDB()
 
     try {
@@ -110,37 +113,37 @@ export async function createComment({ content, author, media,aspectRatio, path }
         }
         if (aspectRatio === 'revert') {
 
-        const commentitem = new Whisper({
-            content: content,
-            author: author,
-            media: media,
-            parentId: whisperId,
-        })
+            const commentitem = new Whisper({
+                content: content,
+                author: author,
+                media: media,
+                parentId: whisperId,
+            })
 
-        const commentobject = await commentitem.save()
+            const commentobject = await commentitem.save()
 
-        isactive.children.push(commentitem._id)
+            isactive.children.push(commentitem._id)
 
-        await isactive.save()
+            await isactive.save()
 
-        revalidatePath(path)
-    } else{
-        const commentitem = new Whisper({
-            content: content,
-            author: author,
-            media: media,
-            aspectRatio: aspectRatio,
-            parentId: whisperId,
-        })
+            revalidatePath(path)
+        } else {
+            const commentitem = new Whisper({
+                content: content,
+                author: author,
+                media: media,
+                aspectRatio: aspectRatio,
+                parentId: whisperId,
+            })
 
-        const commentobject = await commentitem.save()
+            const commentobject = await commentitem.save()
 
-        isactive.children.push(commentitem._id)
+            isactive.children.push(commentitem._id)
 
-        await isactive.save()
+            await isactive.save()
 
-        revalidatePath(path)
-    }
+            revalidatePath(path)
+        }
 
     } catch (error) {
         throw new Error("l'ajout du commentaire à échoué...")

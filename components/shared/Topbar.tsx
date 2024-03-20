@@ -27,7 +27,7 @@ const TopBar = ({ user, _id }: any) => {
     const router = useRouter();
 
     const handleBackButtonClick = () => {
-      router.back();
+        router.refresh();
     };
     return (
         <>
@@ -36,16 +36,15 @@ const TopBar = ({ user, _id }: any) => {
             <nav className="topbar backdrop-blur-2xl my-0">
                 <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
                     <Button onClick={handleBackButtonClick}>
-                    <Image src="/logo_resize.png" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
+                        <Image src="/logo_resize.png" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
                     </Button>
 
                 </Link>
                 <div className="flex justify-center items-center gap-12 md:gap-16">
                     <Link href="/" className=" transition-all duration-200 md: ">
-
-                        <Image src="/svgs/home.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
-
-
+                        <Button onClick={handleBackButtonClick}>
+                            <Image src="/svgs/home.svg" alt="logo" width={29} height={29} className="opacity-45 hover:opacity-100 transition-all duration-150" />
+                        </Button>
                     </Link>
                     <Link href="/search" className=" transition-all duration-200 ">
 

@@ -7,6 +7,8 @@ import TopBar from "@/components/shared/Topbar";
 import ViewWhisperCard from "@/components/cards/ViewWhisperCard";
 import ParentWhisperCard from "@/components/cards/ParentWhisperCard";
 import { userInfo } from "os";
+import { Suspense } from "react";
+import Loader from "@/components/shared/loader/loader";
 
 export async function generateMetadata({ params }: { params: { id: string, username: string } }) {
 
@@ -113,41 +115,45 @@ export default async function Page({ params }: { params: { id: string, username:
                         />
                     </div>
                     <div>
-                        {whisperdatas.children.map((post: any) => (
-                            <WhisperCard
-                                user={userData}
-                                _id={`${currentuserInfo._id}`}
-                                id={`${post._id}`}
-                                currentUserId={user?.id || ""}
-                                parentId={post.parentId}
-                                content={post.content}
-                                media={post.media}
-                                author={
-                                    { image: post.author.image, username: post.author.username, id: post.author.id }
-                                }
-                                createdAt={post.createdAt}
-                                comments={[
-                                    {
-
-                                        posts: {
-                                            number: post.children.length
-                                        },
-                                        childrens: post.children.map((child: any) => ({
-                                            author: {
-                                                image: child.author.image,
-                                                username: child.author.username,
-                                                id: child.author.id
-                                            },
-                                            content: child.content,
-                                            createdAt: child.createdAt
-                                        }))
+                        <Suspense fallback={
+                            <Loader />
+                        }>
+                            {whisperdatas.children.map((post: any) => (
+                                <WhisperCard
+                                    user={userData}
+                                    _id={`${currentuserInfo._id}`}
+                                    id={`${post._id}`}
+                                    currentUserId={user?.id || ""}
+                                    parentId={post.parentId}
+                                    content={post.content}
+                                    media={post.media}
+                                    author={
+                                        { image: post.author.image, username: post.author.username, id: post.author.id }
                                     }
-                                ]}
-                                isNotComment={post.children.length === 0}
-                                aspectRatio={post.aspectRatio}
-                            />
-                        )
-                        )}
+                                    createdAt={post.createdAt}
+                                    comments={[
+                                        {
+
+                                            posts: {
+                                                number: post.children.length
+                                            },
+                                            childrens: post.children.map((child: any) => ({
+                                                author: {
+                                                    image: child.author.image,
+                                                    username: child.author.username,
+                                                    id: child.author.id
+                                                },
+                                                content: child.content,
+                                                createdAt: child.createdAt
+                                            }))
+                                        }
+                                    ]}
+                                    isNotComment={post.children.length === 0}
+                                    aspectRatio={post.aspectRatio}
+                                />
+                            )
+                            )}
+                        </Suspense>
                     </div>
                 </div>
             </section>

@@ -137,7 +137,7 @@ const ParentWhisperCard = ({
                                         <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
 
                                     </Link>
-                                    <div className="thread-card_bar" />
+                                    <div className="big_thread-card_bar" />
                                 </div>
                             )}
                             {isNotComment && (
@@ -206,7 +206,7 @@ const ParentWhisperCard = ({
                                 </DropdownMenu>
 
                             </div>
-                            <div className="relative inline-block" onClick={(e) => {
+                            <div className="flex relative " onClick={(e) => {
                                 if (e.target === e.currentTarget) {
                                     ping();
                                 }

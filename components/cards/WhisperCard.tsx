@@ -70,7 +70,7 @@ const WhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
- 
+
     return (
         <>
             {showPopup && (
@@ -120,16 +120,16 @@ const WhisperCard = ({
 
                     </div>
                     {comments[0].posts.number == 0 ? <div></div> :
-                        <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id}  />
+                        <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} />
                     }
 
 
                 </div>
-
             </div>
-           
+            <hr className="border-x-2 opacity-20 rounded-full " />
 
-           
+
+
         </>
     )
 }
