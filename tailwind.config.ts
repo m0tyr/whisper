@@ -3,16 +3,16 @@ const plugin = require("tailwindcss/plugin");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   plugins: [
-  [require("tailwindcss-animate")],
-  [
-    plugin(({  }) => {
-      addUtilities({
-        ".no-overflow-anchoring": {
-          overflowAnchor: "none",
-        },
-      });
-    }),
-  ]],
+    [require("tailwindcss-animate")],
+    [
+      plugin(({ }) => {
+        addUtilities({
+          ".no-overflow-anchoring": {
+            overflowAnchor: "none",
+          },
+        });
+      }),
+    ]],
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -25,6 +25,7 @@ module.exports = {
       center: true,
       padding: "2rem",
       screens: {
+        "mobile": "680px",
         "2xl": "1400px",
       },
     },
@@ -191,8 +192,6 @@ module.exports = {
       height: {
         basic: '189px',
       },
-    
-
 
       colors: {
         "primary-500": "#877EFF",
@@ -224,17 +223,18 @@ module.exports = {
           "0 0px 65px rgba(255,255,255, 0.1)"
         ]
       },
-   
-        backgroundImage: {
-          'add-image': "url('/add_photos.png')",
-        },
-     
+
+      backgroundImage: {
+        'add-image': "url('/add_photos.png')",
+      },
+
       boxShadow: {
         "count-badge": "0px 0px 6px 2px rgba(219, 188, 159, 0.30)",
         "groups-sidebar": "-30px 0px 60px 0px rgba(28, 28, 31, 0.50)",
       },
       screens: {
         xs: "400px",
+        mobile: "680px",
       },
       keyframes: {
         "accordion-down": {

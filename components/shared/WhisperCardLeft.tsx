@@ -34,13 +34,13 @@ const WhisperCardLeft = ({
     )
     return (<>
         {!isNotComment && (
-            <div className=" flex flex-col w-10  justify-center" onClick={(e) => {
+            <div className=" flex flex-col w-10 mt-0.5  justify-center" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
             }}>
                 <Link href={`${author.username}`}>
-                            <Image src={author.image} alt="logo" width={36} height={36} className="cursor-pointer rounded-full" />
+                            <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
 
                         </Link>
                
@@ -53,13 +53,13 @@ const WhisperCardLeft = ({
             </div>
         )}
         {isNotComment && (
-            <div className=" flex flex-col w-10  justify-center relative" onClick={(e) => {
+            <div className=" flex flex-col w-10 justify-center relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
             }}>
                 <Link href={`${author.username}`} className="absolute top-0.5">
-                    <Image src={author.image} alt="logo" width={36} height={36} className=" cursor-pointer rounded-full" />
+                    <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
 
                 </Link>
 

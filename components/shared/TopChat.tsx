@@ -15,36 +15,36 @@ const TopChat = ({ user, _id }: any) => {
         console.log("test")
 
     };
-  const { toast } = useToast()
+    const { toast } = useToast()
 
     return (
         <>
+            <div className="hidden md:block">
+                <div className="py-4 ">
+                    <Link href={user.username}>
+                        <Image src={user.image} alt="logo" width={37} height={37} className=" float-left gap-3 mt-0.5 cursor-pointer rounded-full" />
+                    </Link>
+                    <input
 
-            <div className=" py-4 ">
-                <Link href={user.username}>
-                    <Image src={user.image} alt="logo" width={37} height={37} className=" float-left gap-3 mt-0.5 cursor-pointer rounded-full" />
-                </Link>
-                <input
+                        name=""
+                        placeholder="Commencer un Whisper.."
+                        onClick={togglePopup}
+                        readOnly
+                        className="bg-navcolor text-small-regular rounded-full pl-3 pr-12 pt-3 outline-none font text-gray-300 opacity-65 px-12"
+                    />
+                    <button
 
-                    name=""
-                    placeholder="Commencer un Whisper.."
-                    onClick={togglePopup}
-                    readOnly
-                    className="bg-navcolor text-small-regular rounded-full pl-3 pr-12 pt-3 outline-none font text-gray-300 opacity-65 px-12"
-                />
-                <button 
-               
-                className="float-right right-2 bg-white text-black rounded-full py-1 h-9 px-4 transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>
-                    Publier
-                </button>
+                        className="float-right right-2 bg-white text-black rounded-full py-1 h-9 px-4 transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>
+                        Publier
+                    </button>
+                </div>
+                <hr className="border-x-2 opacity-20 rounded-full " />
             </div>
-            <hr className="border-x-2 opacity-20 rounded-full " />
-
             {showPopup && (
                 <>
                     <motion.div
-                        initial={{ opacity: 0, zIndex:0}}
-                        animate={{ opacity: 1 , zIndex: 51}}
+                        initial={{ opacity: 0, zIndex: 0 }}
+                        animate={{ opacity: 1, zIndex: 51 }}
                         exit={{ opacity: 0 }}
                         transition={{}}
                         id='top'

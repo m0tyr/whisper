@@ -48,8 +48,9 @@ export default async function Page({ params }: { params: { username: string } })
     return (
         <>
             <TopBar user={currentuserData} _id={`${currentuserInfo._id}`} />
-            <section className="main-container">
-                <div className=" w-7/12 max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
+            <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
+
+                <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
                     <UserCard
                         id={userData.id}
                         name={userData.name}
@@ -76,21 +77,21 @@ export default async function Page({ params }: { params: { username: string } })
                                     createdAt={post.createdAt}
                                     comments={[
                                         {
-                  
-                                          posts: {
-                                            number: post.children.length
-                                          },
-                                          childrens: post.children.map((child: any) => ({
-                                            author: {
-                                                image: child.author.image,
-                                                username: child.author.username,
-                                                id: child.author.id
+
+                                            posts: {
+                                                number: post.children.length
                                             },
-                                            content: child.content,
-                                            createdAt: child.createdAt
-                                        }))
+                                            childrens: post.children.map((child: any) => ({
+                                                author: {
+                                                    image: child.author.image,
+                                                    username: child.author.username,
+                                                    id: child.author.id
+                                                },
+                                                content: child.content,
+                                                createdAt: child.createdAt
+                                            }))
                                         }
-                                      ]}
+                                    ]}
                                     isNotComment={post.children.length === 0}
                                     aspectRatio={post.aspectRatio}
 

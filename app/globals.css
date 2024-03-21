@@ -10,7 +10,7 @@
 
 
   .main-container {
-    @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20 max-md:pb-32 sm:px-10;
+    @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20;
   }
 
   [data-placeholder]:empty:before {
@@ -119,7 +119,7 @@
   }
 
   .topbar {
-    @apply fixed top-0 z-10 left-0 flex w-full items-center justify-between bg-navcolor px-10 py-3 mx-auto;
+    @apply fixed z-10  flex w-full items-center justify-between bg-navcolor;
   }
 
   .bottombar {

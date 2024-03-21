@@ -90,7 +90,6 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
         const isnext = allposts_count > skipamount + posts_exec.length;
 
-        await new Promise(resolve => setTimeout(resolve, 100));
 
         revalidatePath(path)
         return { posts_exec, isnext };

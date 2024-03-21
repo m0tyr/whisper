@@ -44,15 +44,15 @@ function UserCard({
          border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] 
          border-y-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium">Modifier le profil</button>
                 </div>
-                <div className="text-center text-gray-2 h-8 flex items-center text-base-regular mb-2 mt-3.5  ">
-                    <div className="w-48 border-b  border-solid border-white pb-3">
-                        <a href={`./${username}`} className="hover:text-white transition-all duration-150 text-white text-[15px] font-normal">Whispers</a>
+                <div className="text-center text-gray-2 h-full grid grid-cols-[1fr_1fr_1fr] w-full justify-center items-center text-base-regular ">
+                    <div className="w-48 h-12 border-b  border-solid border-white block">
+                        <a href={`./${username}`} className="hover:text-gray text-white transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">Whispers</a>
                     </div>
-                    <div className="w-48 border-b  border-solid border-gray-2 pb-3">
-                        <a href={`./${username}/replies`} className="hover:text-gray transition-all duration-150 text-[15px] font-normal">Réponses</a>
+                    <div className="w-48 h-12 border-b  border-solid border-gray-2 block">
+                        <a href={`./${username}/replies`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">Réponses</a>
                     </div>
-                    <div className="w-48 border-b  border-solid border-gray-2 pb-3">
-                        <a href={`./${username}/reposts`} className="hover:text-gray transition-all duration-150 text-[15px] font-normal">Republications</a>
+                    <div className="w-48 h-12 border-b  border-solid border-gray-2 block ">
+                        <a href={`./${username}/reposts`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">Republications</a>
                     </div>
                 </div>
             </div>
