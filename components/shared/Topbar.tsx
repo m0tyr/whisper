@@ -1,7 +1,6 @@
 'use client'
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
 import { Dropdown, DropdownTrigger, DropdownSection, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 
 import { SignedIn, SignOutButton, OrganizationSwitcher } from "@clerk/nextjs";
@@ -10,10 +9,14 @@ import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
 import { Router } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useWindowSize } from 'react-use';
+
+import { useState, useEffect, useLayoutEffect, useCallback } from "react";
+
+
+
+
 
 const TopBar = ({ user, _id }: any) => {
-    const { width } = useWindowSize();
     const isUserLoggedIn = true;
     function handleConfirm() {
         location.href = "/settings";
@@ -27,33 +30,29 @@ const TopBar = ({ user, _id }: any) => {
     const username = user ? user.username : '';
     const router = useRouter();
 
-    const handleBackButtonClick = () => {
-        router.refresh();
-    };
+
     return (
         <>
 
-            <header className={`backdrop-blur-3xl topbar top-0 left-0 right-0 w-full h-[74px] ${width < 680 ? 'grid-cols-[1fr_50vw_1fr] ' : 'grid-cols-[1fr_max-content_1fr] '} grid max-w-[1230px] mx-auto`}>
-                {width < 680 && (
-                   //back icon
-                   <div></div>
-                )}
-                <div className={`flex flex-col w-18 h-18  ${width < 680 ? 'col-start-2 mx-auto my-auto' : 'ml-4 col-start-1 mr-auto'} `}>
+            <header className="backdrop-blur-3xl topbar top-0 left-0 right-0 w-full h-[74px] grid-cols-[1fr_50vw_1fr] mobile:grid-cols-[1fr_max-content_1fr] grid max-w-[1230px] mx-auto">
+                   <div className="mobile:block mobile:col-start-1 hidden"></div>
+              
+                <div className="flex flex-col w-18 h-18  col-start-2 mx-auto mmy-auto  mobile:ml-4 mobile:col-start-1 mobile:mr-auto ">
                     <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
                             <Image src="/logo_resize.png" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
 
                     </Link>
                 </div>
-                {width > 680 && (
+            
 
-                    <div className={`md:w-[620px] xs:w-[550px]  max-w-[620px] w-[620px] px-16 h-full ${width > 680 ? 'col-start-2' : 'col-start-1'} `}>
+                    <div className="md:w-[620px] xs:w-[550px]  max-w-[620px] w-[620px] px-16 h-full mobile:col-start-2 col-start-1 mobile:block hidden">
                         <nav className="h-full grid grid-cols-[repeat(5,20%)] ">
                             <motion.div
                                 whileTap={{ scale: 0.9 }}
 
                             >
                                 <div className="relative">
-                                    <Link href="/" onClick={handleBackButtonClick} className="py-5 px-5 my-1 mx-1 flex justify-center">
+                                    <Link href="/"  className="py-5 px-5 my-1 mx-1 flex justify-center">
                                         <div className="h-full justify-center items-center">
 
 
@@ -93,7 +92,7 @@ const TopBar = ({ user, _id }: any) => {
                                         <div className="h-full justify-center items-center">
 
 
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#706f6f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className=" opacity-20">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#706f6f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=" opacity-20">
                                                 <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 4.2v10.3" />
                                             </svg>
 
@@ -130,9 +129,9 @@ const TopBar = ({ user, _id }: any) => {
 
                                             <svg aria-label="Profil" role="img" viewBox="0 0 26 26" width={26} height={26} className="opacity-20">
                                                 <title>Profil</title>
-                                                <circle cx="13" cy="7.25" r="4" stroke="currentColor" stroke-width="2.5">
+                                                <circle cx="13" cy="7.25" r="4" stroke="currentColor" strokeWidth="2.5">
                                                 </circle>
-                                                <path d="M6.26678 23.75H19.744C21.603 23.75 22.5 23.2186 22.5 22.0673C22.5 19.3712 18.8038 15.75 13 15.75C7.19625 15.75 3.5 19.3712 3.5 22.0673C3.5 23.2186 4.39704 23.75 6.26678 23.75Z" stroke="currentColor" stroke-width="2.5"></path>
+                                                <path d="M6.26678 23.75H19.744C21.603 23.75 22.5 23.2186 22.5 22.0673C22.5 19.3712 18.8038 15.75 13 15.75C7.19625 15.75 3.5 19.3712 3.5 22.0673C3.5 23.2186 4.39704 23.75 6.26678 23.75Z" stroke="currentColor" strokeWidth="2.5"></path>
                                             </svg>
                                         </div>
                                         <div className="z-0 absolute top-0 w-[95%] h-full hover:bg-[rgba(243,245,247,.06)] opacity-60 duration-150 rounded-lg"></div>
@@ -141,7 +140,7 @@ const TopBar = ({ user, _id }: any) => {
                             </motion.div>
                         </nav>
                     </div>
-                )}
+              
                 <div className="flex flex-col w-18 h-18 mr-4 col-start-3 ml-auto">
                     <Dropdown>
 
@@ -213,15 +212,15 @@ const TopBar = ({ user, _id }: any) => {
                     </Dropdown>
                 </div>
             </header>
-            {width < 680 && (
 
-                <nav className="z-[1] w-full backdrop-blur-3xl bg-[rgba(16,16,16,.90)] grid grid-cols-[repeat(5,20%)] fixed bottom-0 my-auto ">
+
+                <nav className="z-[1] w-full backdrop-blur-3xl bg-[rgba(16,16,16,.90)]  fixed bottom-0 my-auto  mobile:hidden grid grid-cols-[repeat(5,20%)] ">
                     <motion.div
                         whileTap={{ scale: 0.9 }}
 
                     >
                         <div className="relative">
-                            <Link href="/" onClick={handleBackButtonClick} className="py-5 px-5 my-1 mx-1 flex justify-center">
+                            <Link href="/" className="py-5 px-5 my-1 mx-1 flex justify-center">
                                 <div className="h-full justify-center items-center">
 
 
@@ -261,7 +260,7 @@ const TopBar = ({ user, _id }: any) => {
                                 <div className="h-full justify-center items-center">
 
 
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#706f6f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className=" opacity-20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#706f6f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=" opacity-20">
                                         <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 4.2v10.3" />
                                     </svg>
 
@@ -298,9 +297,9 @@ const TopBar = ({ user, _id }: any) => {
 
                                     <svg aria-label="Profil" role="img" viewBox="0 0 26 26" width={26} height={26} className="opacity-20">
                                         <title>Profil</title>
-                                        <circle cx="13" cy="7.25" r="4" stroke="currentColor" stroke-width="2.5">
+                                        <circle cx="13" cy="7.25" r="4" stroke="currentColor" strokeWidth="2.5">
                                         </circle>
-                                        <path d="M6.26678 23.75H19.744C21.603 23.75 22.5 23.2186 22.5 22.0673C22.5 19.3712 18.8038 15.75 13 15.75C7.19625 15.75 3.5 19.3712 3.5 22.0673C3.5 23.2186 4.39704 23.75 6.26678 23.75Z" stroke="currentColor" stroke-width="2.5"></path>
+                                        <path d="M6.26678 23.75H19.744C21.603 23.75 22.5 23.2186 22.5 22.0673C22.5 19.3712 18.8038 15.75 13 15.75C7.19625 15.75 3.5 19.3712 3.5 22.0673C3.5 23.2186 4.39704 23.75 6.26678 23.75Z" stroke="currentColor" strokeWidth="2.5"></path>
                                     </svg>
                                 </div>
                                 <div className="z-0 absolute top-0 w-[95%] h-full hover:bg-[rgba(243,245,247,.06)] opacity-60 duration-150 rounded-lg"></div>
@@ -308,7 +307,6 @@ const TopBar = ({ user, _id }: any) => {
                         </div>
                     </motion.div>
                 </nav>
-            )}
             {showPopup && (
                 <>
                     <motion.div
@@ -333,3 +331,4 @@ const TopBar = ({ user, _id }: any) => {
     )
 }
 export default TopBar;
+

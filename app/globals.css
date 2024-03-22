@@ -71,7 +71,12 @@
     @apply relative mt-2 mb-1 w-0.5 flex-grow rounded-full bg-neutral-800;
     left: 46.66666667%;
   }
-
+  [contenteditable=true]:empty:before {
+    content: attr(placeholder);
+    pointer-events: none;
+    color: gray;
+    display: block; /* For Firefox */
+  }
 
   /* User card */
   .user-card {

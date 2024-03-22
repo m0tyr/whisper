@@ -1,4 +1,5 @@
 
+
 import TopBar from "@/components/shared/Topbar";
 import TopChat from "@/components/shared/TopChat";
 import { currentUser } from "@clerk/nextjs";
@@ -34,6 +35,9 @@ export default async function Page() {
 
   return (
     <>
+     <Suspense fallback={
+            <Loader/>
+          }>
       <TopBar user={userData} _id={`${userInfo._id}`} />
 
 
@@ -41,9 +45,7 @@ export default async function Page() {
 
         <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
           <TopChat user={userData} _id={`${userInfo._id}`} />  
-          <Suspense fallback={
-            <Loader/>
-          }>
+         
 
             <div>
               <div className="">
@@ -91,13 +93,12 @@ export default async function Page() {
               </div>
 
             </div>
-          </Suspense>
 
         </div>
 
 
       </section>
-
+      </Suspense>
     </>
   )
 }
