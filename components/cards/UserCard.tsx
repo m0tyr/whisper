@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import UpdateProfile from "../forms/UpdateProfil";
 
 interface Props {
+    myusername: string;
     name: string;
     username: string;
     image: string;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 function UserCard({
+    myusername,
     name,
     username,
     image,
@@ -23,7 +25,11 @@ function UserCard({
     _id
 }: Props) {
     const [showPopup, setShowPopup] = useState(false);
+    const [isfollowing, setisfollowing] = useState(false);
 
+    const AddFollow = () => {
+        setisfollowing(!isfollowing)
+    }
     const togglePopup = () => {
         setShowPopup(!showPopup);
 
@@ -53,15 +59,37 @@ function UserCard({
                 </div>
                 <div>
                     <div className="mobile:mx-0 mx-3">
-                        <motion.div
-                            whileTap={{ scale: 0.95 }}>
-                            <button
-                                className="w-full rounded-xl h-[34px] hover:bg-dark transition-all duration-150 text-white 
-         border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] 
-                             border-y-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium" onClick={togglePopup}>
-                                Modifier le profil
-                            </button>
-                        </motion.div>
+                        {myusername === username ? (
+                            <motion.div whileTap={{ scale: 0.95 }}>
+                                <button
+                                    className="w-full rounded-xl h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
+                                    onClick={togglePopup}
+                                >
+                                    Modifier le profil
+                                </button>
+                            </motion.div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-[1fr,1fr] gap-2">
+
+                                    <motion.div whileTap={{ scale: 0.95 }} className="col-start-1">
+                                        <button
+                                            className={`w-full rounded-xl h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} hover:bg-dark transition-all duration-150 border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
+                                            onClick={AddFollow}
+                                        >
+                                            {!isfollowing ? "Suivre" : "Suivi(e)"}
+                                        </button>
+                                    </motion.div><motion.div whileTap={{ scale: 0.95 }} className="col-start-2">
+                                        <button
+                                            className="w-full rounded-xl h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
+
+                                        >
+                                            Mentionner
+                                        </button>
+                                    </motion.div>
+                                </div>
+                            </>
+                        )}
                     </div>
                     <div className="text-center text-gray-2 h-full grid grid-cols-[1fr_1fr_1fr] w-full justify-center items-center text-base-regular ">
                         <div className="w-full h-12 border-b  border-solid border-white block">

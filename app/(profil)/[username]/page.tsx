@@ -52,6 +52,7 @@ export default async function Page({ params }: { params: { username: string } })
 
                 <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
                     <UserCard
+                        myusername={currentuserData.username}
                         id={userData.id}
                         name={userData.name}
                         username={userData.username}
