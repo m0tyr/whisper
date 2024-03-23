@@ -44,9 +44,15 @@ const DataReacherPage = ({ editableDivHeight, data, data_limit, onUpdateData, ca
         const inputText = document.getElementById("data") as HTMLElement;
         let textContent = inputText.innerText || "";
         textContent = textContent.replace(/\n\s*\n/g, '\n');
-
-        onUpdateData(textContent, data.toString().toLowerCase());
-        toclose()
+        if(textContent.trim() === ""){
+            onUpdateData("", data.toString().toLowerCase());
+            toclose()
+        }
+        else{
+            onUpdateData(textContent, data.toString().toLowerCase());
+            toclose()
+        }
+        
     };
     const UndoContentChange = () => {
         onUpdateData(cache, data.toString().toLowerCase());

@@ -6,6 +6,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useDebounceCallback } from 'usehooks-ts'
 
 import { Input } from "@/components/ui/input";
 
@@ -55,7 +56,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
   const [aspectRatio, setAspectRatio] = useState("revert"); 
-
+  const [text, setText] = useState<string>('');
+  const debouncedText = useDebounceCallback(setText, 500);
   const pathname = usePathname();
 
   const form = useForm<z.infer<typeof WhisperValidation>>({
@@ -67,9 +69,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     },
   });
 
-  const WatchText = () => {
+  const WatchText = (en) => {
     var getText = document.getElementById("editable-span")?.textContent;
     var result = getText;
+    debouncedText()
     if (result?.trim() === "" && !imageDataURL) {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;
     } else {
@@ -119,10 +122,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       window.scrollTo(0, offsetY);
     };
   }, []);
-
-
-
-
   const abortimage = (
     fieldChange: (value: string) => void
   ) => {
@@ -200,7 +199,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [editableDivHeight, setEditableDivHeight] = useState(viewportHeight);
   const editableDiv = document.getElementById('editableDiv');
-
   const handleResize = () => {
     const newViewportHeight = window.innerHeight;
     setViewportHeight(newViewportHeight);
@@ -208,7 +206,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   };
   window.onresize = handleResize
 
-  console.log(aspectRatio)
 
   const handleInput = () => {
     if (editableDiv) {
@@ -222,9 +219,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
     }
   };
-
-
-
 
   return (
     <>
