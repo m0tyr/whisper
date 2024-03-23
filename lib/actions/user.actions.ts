@@ -83,7 +83,7 @@ export async function updateUser({
       }
     );
 
-    if (path === '/profil/edit') {
+    if (path === `/${username}`) {
       revalidatePath(path);
     }
   } catch (error: any) {

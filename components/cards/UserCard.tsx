@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import UpdateProfile from "../forms/UpdateProfil";
+import React from "react";
 
 interface Props {
     myusername: string;
@@ -34,6 +35,7 @@ function UserCard({
         setShowPopup(!showPopup);
 
     };
+
     return (
         <>
             <div className=" w-[99%] mx-auto">
@@ -49,7 +51,7 @@ function UserCard({
                         </div>
                     </div>
                     <div className="mt-4">
-                        <span className="text-white text-small-medium font-normal !text-[15px]">
+                        <span className="text-white text-small-medium font-normal !text-[14px] whitespace-pre-line">
                             {bio}
                         </span>
                     </div>
