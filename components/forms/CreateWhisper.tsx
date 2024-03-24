@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDebounceCallback } from 'usehooks-ts'
+import { MentionsInput, Mention } from "react-mentions";
 
 import { Input } from "@/components/ui/input";
 
@@ -55,7 +56,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const router = useRouter();
 
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
-  const [aspectRatio, setAspectRatio] = useState("revert"); 
+  const [aspectRatio, setAspectRatio] = useState("revert");
   const [text, setText] = useState<string>('');
   const debouncedText = useDebounceCallback(setText, 500);
   const pathname = usePathname();
@@ -69,10 +70,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     },
   });
 
-  const WatchText = (en) => {
-    var getText = document.getElementById("editable-span")?.textContent;
+  const WatchText = () => {
+    var getText = document.getElementById("editable-span")?.textContent || "";
     var result = getText;
-    debouncedText()
+    setvalues(result);
     if (result?.trim() === "" && !imageDataURL) {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;
     } else {
@@ -219,7 +220,20 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
     }
   };
+  const [values, setvalues] = useState('');
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const keyPressed = event.key;
+    const textWithKeyPressed = values;
 
+    const regex = /@([A-Za-z]+)/g;
+    const matches = textWithKeyPressed.match(regex);
+
+    if (matches) {
+      matches.forEach((match: string) => {
+        console.log('Mention:', match);
+      });
+    }
+  };
   return (
     <>
       <Form {...form} >
@@ -263,8 +277,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
                           <div className="grid grid-cols-[auto,1fr] ">
                             <div className="flex flex-col">
-                            <Image src={user?.image} alt="logo" width={37} height={37} className="mt-1.5 rounded-full bg-good-gray align-self-start" />
-                            <div className="thread-card_bar" />
+                              <Image src={user?.image} alt="logo" width={37} height={37} className="mt-1.5 rounded-full bg-good-gray align-self-start" />
+                              <div className="thread-card_bar" />
                             </div>
                             <FormControl className="outline-none">
                               <div className="grid grid-cols-[auto,0.5fr]">
@@ -273,11 +287,12 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                   <div
                                     {...field}
                                     onKeyUp={WatchText}
+                                    onKeyDown={handleKeyDown}
                                     id="editable-span"
                                     className="bg-good-gray text-small-regular  text-white outline-none rounded-md ring-offset-background cursor-text placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
                                     contentEditable
                                   ></div>
-
+                               
                                   <FormField
                                     control={form.control}
                                     name="media"
@@ -287,7 +302,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
                                           <>
                                             <div id="picture" className="max-h-[430px] mb-2 grid-rows-1 grid-cols-1 grid">
-                                              <picture style={{ aspectRatio: aspectRatio , maxHeight: "430px" }}>
+                                              <picture style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
                                                 <Image src="svgs/close.svg" width={20} height={20} alt="" className="relative top-8 ml-2 invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
                                                   onClick={(e) => abortimage(field.onChange)} />
                                                 <img src={imageDataURL}
