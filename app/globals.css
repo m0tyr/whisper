@@ -41,7 +41,9 @@
     content: "Commencer un whisper...";
     color: gray;
   }
-
+  .tiptap[content-editable] {
+    border-radius: 50%;
+  }
 
   /* Activity */
   .activity-card {

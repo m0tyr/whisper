@@ -11,7 +11,12 @@ const nextConfig = {
   sentry: {
     hideSourceMaps: true,
   },
-  
+  loaders: [
+    {
+      test: /plugin\.css$/,
+      loaders: ['style-loader', 'css'],
+    },
+  ],
   images: {
     domains: ['img.clerk.com'],
     domains: ['utfs.io'],

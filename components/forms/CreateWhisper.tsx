@@ -4,11 +4,9 @@ import * as z from "zod";
 import Image from "next/image";
 import { FieldValues, useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler } from "react";
+import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler, LegacyRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDebounceCallback } from 'usehooks-ts'
-import { MentionsInput, Mention } from "react-mentions";
-
 import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
@@ -45,9 +43,18 @@ import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
+import Mention from '@tiptap/extension-mention'
+import { EditorContent, Extension, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import suggestion from './RTE/suggestion.js'
+import { Plugin, PluginKey } from 'prosemirror-state';
+import MentionExample from "./RTE/MentionMain";
+
+
 
 
 const CreateWhisper = ({ user, _id, toclose }: Props) => {
+
   const [files, setFiles] = useState<File[]>([]);
 
   const { startUpload } = useUploadThing('imageUploader')
@@ -70,7 +77,9 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     },
   });
 
-  const WatchText = () => {
+
+
+  const WatchText = (event: React.KeyboardEvent<HTMLDivElement>) => {
     var getText = document.getElementById("editable-span")?.textContent || "";
     var result = getText;
     setvalues(result);
@@ -80,6 +89,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       (document.getElementById('button') as HTMLButtonElement).disabled = false;
     }
   }
+  const ref: LegacyRef<HTMLDivElement> = useRef<HTMLDivElement>(null);
 
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
@@ -133,7 +143,14 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     if (fileInput) {
       fileInput.value = '';
     }
-    WatchText();
+    var getText = document.getElementById("editable-span")?.textContent || "";
+    var result = getText;
+    setvalues(result);
+    if (result?.trim() === "" && !imageDataURL) {
+      (document.getElementById('button') as HTMLButtonElement).disabled = true;
+    } else {
+      (document.getElementById('button') as HTMLButtonElement).disabled = false;
+    }
   }
   const [isSent, setIsSent] = useState(true);
   const { toast } = useToast()
@@ -206,8 +223,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     setEditableDivHeight(newViewportHeight);
   };
   window.onresize = handleResize
-
-
   const handleInput = () => {
     if (editableDiv) {
 
@@ -221,19 +236,23 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     }
   };
   const [values, setvalues] = useState('');
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const keyPressed = event.key;
-    const textWithKeyPressed = values;
+  const MyMentionPluginKey = new PluginKey('MyMentionPlugin');
 
-    const regex = /@([A-Za-z]+)/g;
-    const matches = textWithKeyPressed.match(regex);
+  const MyMentionPlugin = new Plugin({
+    key: MyMentionPluginKey,
+    props: {
+      handleTextInput(view, from, to, text) {
+        if (text === '@' && view.state.doc.resolve(from).parentOffset === 0) {
+          view.dispatch(view.state.tr.setMeta(MyMentionPluginKey, true));
+          return true;
+        }
+        return false;
+      },
+    },
+  });
 
-    if (matches) {
-      matches.forEach((match: string) => {
-        console.log('Mention:', match);
-      });
-    }
-  };
+
+
   return (
     <>
       <Form {...form} >
@@ -250,7 +269,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
               >
 
                 <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 '
-                  id="editableDiv"
+                  id="editableDiv" ref={ref}
 
                   onInput={handleInput}
 
@@ -267,7 +286,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                           className='bg-good-gray p-6 max-h-[calc(100svh - 193px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
                           select-text	overflow-y-auto overflow-x-auto   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
                             border-t-border  '
-                          role="textbox"
                           style={{ maxHeight: editableDivHeight / 1.15, textAlign: 'left', }}
                           tabIndex={0}
                           id="editableDiv"
@@ -284,15 +302,9 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                               <div className="grid grid-cols-[auto,0.5fr]">
                                 <div className='col-span-2 ml-2 '>
                                   <span className="text-white text-small-semibold mb-1">{user?.username}</span>
-                                  <div
-                                    {...field}
-                                    onKeyUp={WatchText}
-                                    onKeyDown={handleKeyDown}
-                                    id="editable-span"
-                                    className="bg-good-gray text-small-regular  text-white outline-none rounded-md ring-offset-background cursor-text placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
-                                    contentEditable
-                                  ></div>
-                               
+                                  <div>
+                                    <MentionExample main_ref={ref}/>
+                                  </div>
                                   <FormField
                                     control={form.control}
                                     name="media"
