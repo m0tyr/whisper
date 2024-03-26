@@ -8,7 +8,13 @@ import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHa
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDebounceCallback } from 'usehooks-ts'
 import { Input } from "@/components/ui/input";
-
+import MentionsPlugin from "./MentionsPlugin"
+import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { Button } from "@/components/ui/button";
 
 import {
@@ -43,12 +49,8 @@ import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
-import Mention from '@tiptap/extension-mention'
-import { EditorContent, Extension, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import suggestion from './RTE/suggestion.js'
-import { Plugin, PluginKey } from 'prosemirror-state';
-import MentionExample from "./RTE/MentionMain";
+import { MentionNode } from "./MentionsPlugin/MentionNode";
+
 
 
 
@@ -236,20 +238,21 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     }
   };
   const [values, setvalues] = useState('');
-  const MyMentionPluginKey = new PluginKey('MyMentionPlugin');
+  const theme = {
 
-  const MyMentionPlugin = new Plugin({
-    key: MyMentionPluginKey,
-    props: {
-      handleTextInput(view, from, to, text) {
-        if (text === '@' && view.state.doc.resolve(from).parentOffset === 0) {
-          view.dispatch(view.state.tr.setMeta(MyMentionPluginKey, true));
-          return true;
-        }
-        return false;
-      },
-    },
-  });
+  }
+  function onError(error: any) {
+    console.error(error);
+  }
+
+  const initialConfig = {
+    namespace: 'MyEditor',
+    theme,
+    onError,
+    nodes: [
+      MentionNode
+    ]
+  };
 
 
 
@@ -262,10 +265,12 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.01, delay: .1 }}
+
           >
             <div className="relative">
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
+
               >
 
                 <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 '
@@ -302,8 +307,15 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                               <div className="grid grid-cols-[auto,0.5fr]">
                                 <div className='col-span-2 ml-2 '>
                                   <span className="text-white text-small-semibold mb-1">{user?.username}</span>
-                                  <div>
-                                    <MentionExample main_ref={ref}/>
+                                  <div className="relative">
+                                    <LexicalComposer initialConfig={initialConfig}>
+                                      <MentionsPlugin />
+                                      <RichTextPlugin
+                                        contentEditable={<ContentEditable className=" outline-none text-[14px]" />}
+                                        placeholder={<div className="absolute top-0 pointer-events-none text-[14px] !font-light opacity-50">Commencer un whisper...</div>}
+                                        ErrorBoundary={LexicalErrorBoundary}
+                                      />
+                                    </LexicalComposer>
                                   </div>
                                   <FormField
                                     control={form.control}
@@ -374,6 +386,9 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
                 </div>
               </form>
+              <div>
+                <div id="parent" className=" fixed top-0  z-[51]"></div>
+              </div>
             </div>
           </motion.div>
 

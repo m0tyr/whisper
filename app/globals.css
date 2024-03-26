@@ -79,6 +79,26 @@
     color: gray;
     display: block; /* For Firefox */
   }
+  
+  #typeahead-menu {
+    z-index: 51;
+    background-color: #181818;
+  }
+  
+  #main-pop{
+    width: 300px !important;
+  }
+  li{
+    width: 100%;
+    cursor: pointer;
+  }
+  li:hover {
+    opacity: 60%;
+  }
+  .text{
+    display: flex;
+    width: 100%;
+  } 
 
   /* User card */
   .user-card {
