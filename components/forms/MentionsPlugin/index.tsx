@@ -19,6 +19,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import { $createMentionNode } from './MentionNode';
+import { MentionSearchModel } from '@/lib/actions/user.actions';
+import Loader from '@/components/shared/loader/loader';
 
 const PUNCTUATION =
   '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
@@ -91,94 +93,20 @@ const mentionsCache = new Map();
 // motyr,
 // test,
 // motyr will display first for the query @t !important for referencement by follow etc
-const dummyMentionsData = [
-  {
-    name: 'soso',
-    picture: '/profil.jpg',
-    username: 'soso123',
-  },
-  {
-    name: 'azza',
-    picture: '/profil.jpg',
-    username: 'azza456',
-  },
-  {
-    name: 'gris',
-    picture: '/profil.jpg',
-    username: 'gris789',
-  },
-  {
-    name: 'soso',
-    picture: '/profil.jpg',
-    username: 'soso123',
-  },
-  {
-    name: 'azza',
-    picture: '/profil.jpg',
-    username: 'azza456',
-  },
-  {
-    name: 'gris',
-    picture: '/profil.jpg',
-    username: 'gris789',
-  },
-  {
-    name: 'soso',
-    picture: '/profil.jpg',
-    username: 'soso123',
-  },
-  {
-    name: 'azza',
-    picture: '/profil.jpg',
-    username: 'azza456',
-  },
-  {
-    name: 'gris',
-    picture: '/profil.jpg',
-    username: 'gris789',
-  },
-  {
-    name: 'soso',
-    picture: '/profil.jpg',
-    username: 'soso123',
-  },
-  {
-    name: 'azza',
-    picture: '/profil.jpg',
-    username: 'azza456',
-  },
-  {
-    name: 'gris',
-    picture: '/profil.jpg',
-    username: 'gris789',
-  },
-  {
-    name: 'soso',
-    picture: '/profil.jpg',
-    username: 'soso123',
-  },
-  {
-    name: 'azza',
-    picture: '/profil.jpg',
-    username: 'azza456',
-  },
-  {
-    name: 'gris',
-    picture: '/profil.jpg',
-    username: 'gris789',
-  },
-];
+
 
 // TODO !!
-// use this has the backend call with use server directive
-// make a cache data that will store the previous states of the search until refresh
-// make a call with server actions to the backend at every mention results added to the list
-// map the data to return parsed for postiung after exportDom etc...
-// filter function should return due to current index of letter so sofien would be first for sofie and sofiane shouldn't
+// use this has the backend call with use server directive : ~done
+// make a cache data that will store the previous states of the search until refresh : done
+// make a call with server actions to the backend at every mention results added to the list : done
+// map the data to return parsed for postiung after exportDom etc... : not done
+// filter function should return due to current index of letter so sofien would be first for sofie and sofiane shouldn't : not done
 const dummyLookupService = {
   search(string: string, callback: (results: Array<any>) => void): void {
-    setTimeout(() => {
-      const results = dummyMentionsData.filter((mention) =>
+    setTimeout(async () => {
+      const usermodal = await MentionSearchModel(string);
+      console.log(usermodal)
+      const results = usermodal.filter((mention) =>
         mention.username.toLowerCase().includes(string.toLowerCase())
       );
       callback(results);
@@ -187,7 +115,8 @@ const dummyLookupService = {
 };
 
 function useMentionLookupService(mentionString: string | null) {
-  const [results, setResults] = useState<Array<any>>([]); // Change type to Array<any>
+  const [results, setResults] = useState<Array<any>>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const cachedResults = mentionsCache.get(mentionString);
@@ -202,14 +131,17 @@ function useMentionLookupService(mentionString: string | null) {
       return;
     }
 
+    setLoading(true);
+
     mentionsCache.set(mentionString, null);
     dummyLookupService.search(mentionString, (newResults) => {
       mentionsCache.set(mentionString, newResults);
       setResults(newResults);
+      setLoading(false);
     });
   }, [mentionString]);
 
-  return results;
+  return { results, loading };
 }
 
 function checkForAtSignMentions(
@@ -244,13 +176,13 @@ function getPossibleQueryMatch(text: string): MenuTextMatch | null {
 
 class MentionTypeaheadOption extends MenuOption {
   name: string;
-  picture: string;
+  image: string;
   username: string;
 
-  constructor(name: string, picture: string, username: string) {
+  constructor(name: string, image: string, username: string) {
     super(name);
     this.name = name;
-    this.picture = picture;
+    this.image = image;
     this.username = username;
   }
 }
@@ -270,9 +202,10 @@ function MentionsTypeaheadMenuItem({
 }) {
   let className = 'item';
   if (isSelected) {
-    className += ' selected';
+    className = 'selected';
   }
   return (
+
     <li
       key={option.key}
       tabIndex={-1}
@@ -282,24 +215,31 @@ function MentionsTypeaheadMenuItem({
       aria-selected={isSelected}
       id={'typeahead-item-' + index}
       onMouseEnter={onMouseEnter}
-      onClick={onClick}>
-      <div className='flex'>
-        <div className='flex relative mt-3 mr-3  w-[36px] h-[36px]'>
-          <img src={option.picture} alt="" className='rounded-full' width={36} height={36} />
-        </div>
-        <div className=' justify-center flex flex-col relative'>
-          <span className=" font-semibold text-[15px] absolute top-2">{option.username}</span>
-          <span className=" font-light text-[16px] absolute bottom-0">{option.name}</span>
+      onClick={onClick} >
+      <div className='overflow-x-hidden  overflow-y-hidden flex items-center relative px-0 py-0 mx-0 my-0 w-full border-b border-border '>
+        <div className='flex flex-col flex-shrink px-1 py-0.5'>
+          <div className='flex flex-row flex-wrap p-2'>
+            <div className='flex'>
+              <div className='flex relative mt-1 mr-2.5 w-[36px] h-[36px]'>
+                <img src={option.image} alt="" className='rounded-full' width={36} height={36} />
+              </div>
+              <div className=' justify-center flex flex-col relative '>
+                <span className=" font-medium text-[15px] absolute bottom-4">{option.username}</span>
+                <span className=" whitespace-nowrap max-w-full text-ellipsis font-light text-[15px] opacity-45 absolute top-[1.15rem]">{option.name}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </li>
+
   );
 }
 
 export default function NewMentionsPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
-  const results = useMentionLookupService(queryString);
+  const { results, loading } = useMentionLookupService(queryString);
 
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0,
@@ -307,20 +247,20 @@ export default function NewMentionsPlugin(): JSX.Element | null {
 
   const options = useMemo(
     () =>
-      results.map((result) => {
-        const { name, picture, username } = result;
-        return new MentionTypeaheadOption(name, picture, username);
+      results.map((result: { name: any; image: any; username: any; }) => {
+        const { name, image, username } = result;
+        return new MentionTypeaheadOption(name, image, username);
       }).slice(0, SUGGESTION_LIST_LENGTH_LIMIT),
     [results]
   );
   const onSelectOption = useCallback(
     (
-      selectedOption: { name: string; picture: string; username: string },
+      selectedOption: { name: string; image: string; username: string },
       nodeToReplace: TextNode | null,
       closeMenu: () => void
     ) => {
       editor.update(() => {
-        const mentionNode = $createMentionNode(selectedOption.name);
+        const mentionNode = $createMentionNode(selectedOption.username);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
@@ -342,27 +282,48 @@ export default function NewMentionsPlugin(): JSX.Element | null {
     [checkForSlashTriggerMatch, editor]
   );
   const parent = document.getElementById('parent') as HTMLElement | undefined;
-  
+
   return (
+
     <LexicalTypeaheadMenuPlugin
       onQueryChange={setQueryString}
       onSelectOption={onSelectOption}
-      triggerFn={checkForMentionMatch} 
+      triggerFn={checkForMentionMatch}
       options={options}
-      parent={parent}
-      menuRenderFn={(
-        anchorElementRef,
-        { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
-      ) =>
-        anchorElementRef.current && results.length ? (
+      anchorClassName="disable"
+      menuRenderFn={(anchorElementRef, { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }) =>
+        anchorElementRef.current ? (
           ReactDOM.createPortal(
-            <div className='rounded-xl '>
-              <div className="overflow-y-auto max-h-[280px] rounded-3xl " id='main-pop'>
-                <ul className='bg-[rgba(16,16,16,1)] flex flex-col'>
-                  {options.map((option, i: number) => (
-                    <div className='overflow-x-hidden  overflow-y-hidden flex items-center relative px-0 py-0 mx-0 my-0 w-full border-b border-border ' key={i}>
-                      <div className='flex flex-col flex-shrink px-1 py-1'>
+            <>
+              {loading ? (
+                <div className='rounded-xl'>
+                  <div className="overflow-y-auto max-h-52 rounded-xl bg-[rgba(16,16,16,1)]" id='main-pop'>
+                    <div className='overflow-x-hidden  overflow-y-hidden flex items-center relative px-0 py-0 mx-0 my-0 w-full'>
+                      <div className='flex flex-col flex-shrink w-full px-1 py-0.5'>
                         <div className='flex flex-row flex-wrap p-2'>
+                          <div className='flex h-[36px] justify-center items-center mx-auto'>
+                            <svg aria-label="Chargement…" className="animate-spin text-white opacity-60" role="img" viewBox="0 0 100 100" width={20} height={20}>
+                              <rect fill="white" height="10" opacity="0" rx="5" ry="5" transform="rotate(-90 50 50)" width="28" x="67" y="45"></rect>
+                              <rect fill="white" height="10" opacity="0.125" rx="5" ry="5" transform="rotate(-45 50 50)" width="28" x="67" y="45"></rect>
+                              <rect fill="white" height="10" opacity="0.25" rx="5" ry="5" transform="rotate(0 50 50)" width="28" x="67" y="45"></rect>
+                              <rect fill="white" height="10" opacity="0.375" rx="5" ry="5" transform="rotate(45 50 50)" width="28" x="67" y="45"></rect>
+                              <rect fill="white" height="10" opacity="0.5" rx="5" ry="5" transform="rotate(90 50 50)" width="28" x="67" y="45"></rect>
+                              <rect fill="white" height="10" opacity="0.625" rx="5" ry="5" transform="rotate(135 50 50)" width="28" x="67" y="45"></rect>
+                              <rect fill="white" height="10" opacity="0.75" rx="5" ry="5" transform="rotate(180 50 50)" width="28" x="67" y="45"></rect>
+                              <rect fill="white" height="10" opacity="0.875" rx="5" ry="5" transform="rotate(225 50 50)" width="28" x="67" y="45"></rect>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : results.length > 0 ? (
+                <div className='rounded-xl'>
+                  <div className=" rounded-[16px] w-full overflow-x-hidden drop-shadow-2xl" id='main-pop'>
+                    <div className='overflow-y-auto max-h-[285px]'>
+                      <ul className='bg-[#1b1b1b]  flex flex-col'>
+                        {options.map((option, i: number) => (
                           <MentionsTypeaheadMenuItem
                             index={i}
                             isSelected={selectedIndex === i}
@@ -378,18 +339,21 @@ export default function NewMentionsPlugin(): JSX.Element | null {
                             onMouseEnter={() => {
                               setHighlightedIndex(i);
                             }}
-                            option={option} />
-                        </div>
-                      </div>
+                            option={option}
+                            key={i}
+                          />
+                        ))}
+                      </ul>
                     </div>
-                  ))}
-                </ul>
-              </div>
-            </div>,
+                  </div>
+                </div>
+              ) : null}
+            </>,
             anchorElementRef.current
           )
         ) : null
       }
     />
+
   );
 }

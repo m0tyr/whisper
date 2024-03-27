@@ -33,7 +33,7 @@ function convertMentionElement(
   const textContent = domNode.textContent;
 
   if (textContent !== null) {
-    const node = $createMentionNode( textContent);
+    const node = $createMentionNode(textContent);
     return {
       node,
     };

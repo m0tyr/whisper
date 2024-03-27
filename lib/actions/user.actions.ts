@@ -90,3 +90,22 @@ export async function updateUser({
     throw new Error(`La MAJ des données a échouée... :  ${error.message}`);
   }
 }
+
+export async function MentionSearchModel(input : string){
+
+  
+  const result = await User.find({
+    $or: [
+      { username: { $regex: input, $options: "i" } },
+    ]
+  }).limit(10);
+
+  // for ui purpose nd to remove
+  const additionalResults = result.concat(result);
+  const additionalResult2 = additionalResults.concat(additionalResults); 
+  return additionalResult2;
+  //
+
+  
+  // return result;
+}

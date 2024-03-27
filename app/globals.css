@@ -36,6 +36,9 @@
   .head-text {
     @apply text-heading2-bold text-light-1;
   }
+  .disable{
+    width: 0px !important;
+  }
 
   #editable-span[contenteditable]:empty::before {
     content: "Commencer un whisper...";
@@ -84,16 +87,16 @@
     z-index: 51;
     background-color: #181818;
   }
-  
+
   #main-pop{
-    width: 300px !important;
+    width: 280px !important;
   }
   li{
     width: 100%;
     cursor: pointer;
   }
-  li:hover {
-    opacity: 60%;
+  .selected{
+    background-color: #2e2e2e;
   }
   .text{
     display: flex;
