@@ -8,13 +8,6 @@ import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHa
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDebounceCallback } from 'usehooks-ts'
 import { Input } from "@/components/ui/input";
-import MentionsPlugin from "./MentionsPlugin"
-import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
-import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { ContentEditable } from '@lexical/react/LexicalContentEditable';
-import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { Button } from "@/components/ui/button";
 
 import {
@@ -49,7 +42,8 @@ import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
-import { MentionNode } from "./MentionsPlugin/MentionNode";
+import { MentionNode } from "../plugins/MentionsPlugin/MentionNode";
+import { ContentPlayer, extractTypeAndText } from "../plugins/Main";
 
 
 
@@ -82,7 +76,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
 
   const WatchText = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    var getText = document.getElementById("editable-span")?.textContent || "";
+    var getText = document.getElementById("editable_content")?.textContent || "";
     var result = getText;
     setvalues(result);
     if (result?.trim() === "" && !imageDataURL) {
@@ -158,63 +152,70 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-    setIsSent(!isSent);
-    (document.getElementById('button') as HTMLButtonElement).disabled = true;
-    (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
-    toclose();
-    toast({
-      title: "Publication...",
-      duration: 20000,
-    }
-    )
+    /*     setIsSent(!isSent);
+        (document.getElementById('button') as HTMLButtonElement).disabled = true;
+        (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
+        toclose();
+        toast({
+          title: "Publication...",
+          duration: 20000,
+        }
+        )
+        var contenteditable = document.querySelector('[contenteditable]')
+    
+        var innerText: string | undefined = (contenteditable as HTMLElement)?.innerText;
+        values.content = innerText;
+    
+        let hasimageChanged = false;
+        let blob: string | undefined;
+    
+        if (values.media) {
+          blob = values.media;
+          hasimageChanged = isBase64Image(blob);
+        }
+        if (hasimageChanged) {
+    
+          const imgRes = await startUpload(files)
+    
+          if (imgRes && imgRes[0].url) {
+            values.media = imgRes[0].url;
+          }
+        }
+    
+        await createWhisper({
+          content: values.content,
+          author: values.accoundId,
+          media: values.media,
+          aspectRatio: aspectRatio,
+          path: pathname,
+        });
+    
+        const lastWhisper = await GetLastestWhisperfromUserId({
+          author: values.accoundId,
+        })
+        toast({
+          title: "Publié",
+          action: (
+            <a href={`/${user.username}/${lastWhisper._id}`}>
+              <ToastAction altText="Voir Whisper" >
+                Voir
+              </ToastAction>
+            </a>
+          ),
+          duration: 2000,
+    
+        }
+        )
+        router.prefetch(pathname);
+        router.push(pathname); */
     var contenteditable = document.querySelector('[contenteditable]')
 
     var innerText: string | undefined = (contenteditable as HTMLElement)?.innerText;
-    values.content = innerText;
-
-    let hasimageChanged = false;
-    let blob: string | undefined;
-
-    if (values.media) {
-      blob = values.media;
-      hasimageChanged = isBase64Image(blob);
-    }
-    if (hasimageChanged) {
-
-      const imgRes = await startUpload(files)
-
-      if (imgRes && imgRes[0].url) {
-        values.media = imgRes[0].url;
-      }
-    }
-
-    await createWhisper({
-      content: values.content,
-      author: values.accoundId,
-      media: values.media,
-      aspectRatio: aspectRatio,
-      path: pathname,
-    });
-
-    const lastWhisper = await GetLastestWhisperfromUserId({
-      author: values.accoundId,
-    })
-    toast({
-      title: "Publié",
-      action: (
-        <a href={`/${user.username}/${lastWhisper._id}`}>
-          <ToastAction altText="Voir Whisper" >
-            Voir
-          </ToastAction>
-        </a>
-      ),
-      duration: 2000,
-
-    }
-    )
-    router.prefetch(pathname);
-    router.push(pathname);
-
+    values.content = JSON.stringify(editorRef.current.getEditorState());
+    const datas = JSON.parse(values.content)
+    const extractedData = extractTypeAndText(datas);
+    console.log('Mentions:', extractedData.mentions);
+    console.log('Texts:', extractedData.texts);
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [editableDivHeight, setEditableDivHeight] = useState(viewportHeight);
@@ -238,22 +239,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     }
   };
   const [values, setvalues] = useState('');
-  const theme = {
-
-  }
-  function onError(error: any) {
-    console.error(error);
-  }
-
-  const initialConfig = {
-    namespace: 'MyEditor',
-    theme,
-    onError,
-    nodes: [
-      MentionNode
-    ]
-  };
-
+  const editorRef: any = useRef();
 
 
   return (
@@ -273,7 +259,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
               >
 
-                <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 '
+                <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 drop-shadow-xl '
                   id="editableDiv" ref={ref}
 
                   onInput={handleInput}
@@ -308,14 +294,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                 <div className='col-span-2 ml-2 '>
                                   <span className="text-white text-small-semibold mb-1">{user?.username}</span>
                                   <div className="relative">
-                                    <LexicalComposer initialConfig={initialConfig}>
-                                      <MentionsPlugin />
-                                      <RichTextPlugin
-                                        contentEditable={<ContentEditable className=" outline-none text-[14px]" />}
-                                        placeholder={<div className="absolute top-0 pointer-events-none text-[14px] !font-light opacity-50">Commencer un whisper...</div>}
-                                        ErrorBoundary={LexicalErrorBoundary}
-                                      />
-                                    </LexicalComposer>
+                                    <ContentPlayer ref={editorRef} watchtext={WatchText} />
                                   </div>
                                   <FormField
                                     control={form.control}

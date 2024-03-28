@@ -105,7 +105,6 @@ const dummyLookupService = {
   search(string: string, callback: (results: Array<any>) => void): void {
     setTimeout(async () => {
       const usermodal = await MentionSearchModel(string);
-      console.log(usermodal)
       const results = usermodal.filter((mention) =>
         mention.username.toLowerCase().includes(string.toLowerCase())
       );
@@ -236,6 +235,7 @@ function MentionsTypeaheadMenuItem({
   );
 }
 
+
 export default function NewMentionsPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
@@ -245,14 +245,15 @@ export default function NewMentionsPlugin(): JSX.Element | null {
     minLength: 0,
   });
 
-  const options = useMemo(
-    () =>
-      results.map((result: { name: any; image: any; username: any; }) => {
+  const options = useMemo(() => {
+    if (results !== null) {
+      return results.map((result: { name: any; image: any; username: any; }) => {
         const { name, image, username } = result;
         return new MentionTypeaheadOption(name, image, username);
-      }).slice(0, SUGGESTION_LIST_LENGTH_LIMIT),
-    [results]
-  );
+      }).slice(0, SUGGESTION_LIST_LENGTH_LIMIT);
+    }
+    return [];
+  }, [results]);
   const onSelectOption = useCallback(
     (
       selectedOption: { name: string; image: string; username: string },
@@ -320,7 +321,7 @@ export default function NewMentionsPlugin(): JSX.Element | null {
                 </div>
               ) : results.length > 0 ? (
                 <div className='rounded-xl'>
-                  <div className=" rounded-[16px] w-full overflow-x-hidden drop-shadow-2xl" id='main-pop'>
+                  <div className=" rounded-[16px] w-full overflow-x-hidden drop-shadow" id='main-pop'>
                     <div className='overflow-y-auto max-h-[285px]'>
                       <ul className='bg-[#1b1b1b]  flex flex-col'>
                         {options.map((option, i: number) => (
@@ -329,7 +330,6 @@ export default function NewMentionsPlugin(): JSX.Element | null {
                             isSelected={selectedIndex === i}
                             onClick={() => {
                               setHighlightedIndex(i);
-                              console.log("selected");
                               try {
                                 selectOptionAndCleanUp(option);
                               } catch (error) {

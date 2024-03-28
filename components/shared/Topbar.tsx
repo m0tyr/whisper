@@ -106,7 +106,7 @@ const TopBar = ({ user, _id }: any) => {
 
                             >
                                 <div className="relative">
-                                    <Link href="/likes" className="py-5 px-5 my-1 mx-1 flex justify-center">
+                                    <Link href="/activity" className="py-5 px-5 my-1 mx-1 flex justify-center">
                                         <div className="h-full justify-center items-center">
 
 
@@ -274,7 +274,7 @@ const TopBar = ({ user, _id }: any) => {
 
                     >
                         <div className="relative">
-                            <Link href="/likes" className="py-5 px-5 my-1 mx-1 flex justify-center">
+                            <Link href="/activity" className="py-5 px-5 my-1 mx-1 flex justify-center">
                                 <div className="h-full justify-center items-center">
 
 

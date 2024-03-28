@@ -94,18 +94,9 @@ export async function updateUser({
 export async function MentionSearchModel(input : string){
 
   
-  const result = await User.find({
-    $or: [
-      { username: { $regex: input, $options: "i" } },
-    ]
-  }).limit(10);
-
-  // for ui purpose nd to remove
-  const additionalResults = result.concat(result);
-  const additionalResult2 = additionalResults.concat(additionalResults); 
-  return additionalResult2;
-  //
-
-  
-  // return result;
+  const result = await User.find(
+    { username: { $regex: input, $options: "i" } }, 
+    { _id: 0, name: 1, image: 1, username: 1 }
+  ).limit(10).lean();
+  return result;
 }

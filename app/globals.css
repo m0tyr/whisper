@@ -12,6 +12,9 @@
   .main-container {
     @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20;
   }
+  .activity-container {
+    @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pb-10 pt-16;
+  }
 
   [data-placeholder]:empty:before {
     content: attr(data-placeholder);
