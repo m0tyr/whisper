@@ -6,7 +6,7 @@
  *
  */
 
-import type {Spread} from 'lexical';
+import type {LexicalEditor, Spread} from 'lexical';
 
 import {
   type DOMConversionMap,
@@ -18,6 +18,8 @@ import {
   type SerializedTextNode,
   $applyNodeReplacement,
   TextNode,
+  $getNodeByKey,
+  $isTextNode,
 } from 'lexical';
 
 export type SerializedMentionNode = Spread<
@@ -26,6 +28,7 @@ export type SerializedMentionNode = Spread<
   },
   SerializedTextNode
 >;
+
 
 function convertMentionElement(
   domNode: HTMLElement,

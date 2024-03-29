@@ -13,12 +13,12 @@ import {
   MenuTextMatch,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
-import { TextNode } from 'lexical';
+import { $getSelection, TextNode } from 'lexical';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { $createMentionNode } from './MentionNode';
+import { $createMentionNode, $isMentionNode } from './MentionNode';
 import { MentionSearchModel } from '@/lib/actions/user.actions';
 import Loader from '@/components/shared/loader/loader';
 
@@ -240,7 +240,7 @@ export default function NewMentionsPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
   const { results, loading } = useMentionLookupService(queryString);
-
+  const [isTransform, setTransform] = useState(false)
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0,
   });
@@ -273,15 +273,19 @@ export default function NewMentionsPlugin(): JSX.Element | null {
   );
 
   const checkForMentionMatch = useCallback(
-    (text: string) => {
+    (
+      text: string,
+    ) => {
       const slashMatch = checkForSlashTriggerMatch(text, editor);
       if (slashMatch !== null) {
         return null;
       }
+
       return getPossibleQueryMatch(text);
     },
     [checkForSlashTriggerMatch, editor]
   );
+
   const parent = document.getElementById('parent') as HTMLElement | undefined;
 
   return (

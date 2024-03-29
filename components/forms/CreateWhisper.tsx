@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useDebounceCallback } from 'usehooks-ts'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import { $generateHtmlFromNodes } from '@lexical/html';
 import {
   Form,
   FormControl,
@@ -152,70 +152,73 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-    /*     setIsSent(!isSent);
-        (document.getElementById('button') as HTMLButtonElement).disabled = true;
-        (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
-        toclose();
-        toast({
-          title: "Publication...",
-          duration: 20000,
-        }
-        )
-        var contenteditable = document.querySelector('[contenteditable]')
-    
-        var innerText: string | undefined = (contenteditable as HTMLElement)?.innerText;
-        values.content = innerText;
-    
-        let hasimageChanged = false;
-        let blob: string | undefined;
-    
-        if (values.media) {
-          blob = values.media;
-          hasimageChanged = isBase64Image(blob);
-        }
-        if (hasimageChanged) {
-    
-          const imgRes = await startUpload(files)
-    
-          if (imgRes && imgRes[0].url) {
-            values.media = imgRes[0].url;
-          }
-        }
-    
-        await createWhisper({
-          content: values.content,
-          author: values.accoundId,
-          media: values.media,
-          aspectRatio: aspectRatio,
-          path: pathname,
-        });
-    
-        const lastWhisper = await GetLastestWhisperfromUserId({
-          author: values.accoundId,
-        })
-        toast({
-          title: "Publié",
-          action: (
-            <a href={`/${user.username}/${lastWhisper._id}`}>
-              <ToastAction altText="Voir Whisper" >
-                Voir
-              </ToastAction>
-            </a>
-          ),
-          duration: 2000,
-    
-        }
-        )
-        router.prefetch(pathname);
-        router.push(pathname); */
+    /*         setIsSent(!isSent);
+            (document.getElementById('button') as HTMLButtonElement).disabled = true;
+            (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
+            toclose();
+            toast({
+              title: "Publication...",
+              duration: 20000,
+            }
+            ) */
     var contenteditable = document.querySelector('[contenteditable]')
 
-    var innerText: string | undefined = (contenteditable as HTMLElement)?.innerText;
+    var innerText: string | undefined = (contenteditable as HTMLElement)?.innerHTML;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(innerText, 'text/html');
+    const paragraphs = Array.from(doc.querySelectorAll('p'));
+    const textWithLineBreaks = paragraphs.map(p => p.textContent).join('\n');
+    console.log(textWithLineBreaks);
     values.content = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(values.content)
+    console.log(datas)
     const extractedData = extractTypeAndText(datas);
+    console.log(values.content)
     console.log('Mentions:', extractedData.mentions);
     console.log('Texts:', extractedData.texts);
+    /*  let hasimageChanged = false;
+     let blob: string | undefined;
+ 
+     if (values.media) {
+       blob = values.media;
+       hasimageChanged = isBase64Image(blob);
+     }
+     if (hasimageChanged) {
+ 
+       const imgRes = await startUpload(files)
+ 
+       if (imgRes && imgRes[0].url) {
+         values.media = imgRes[0].url;
+       }
+     }
+ 
+     await createWhisper({
+       content: values.content,
+       author: values.accoundId,
+       media: values.media,
+       aspectRatio: aspectRatio,
+       path: pathname,
+     });
+ 
+     const lastWhisper = await GetLastestWhisperfromUserId({
+       author: values.accoundId,
+     })
+     toast({
+       title: "Publié",
+       action: (
+         <a href={`/${user.username}/${lastWhisper._id}`}>
+           <ToastAction altText="Voir Whisper" >
+             Voir
+           </ToastAction>
+         </a>
+       ),
+       duration: 2000,
+ 
+     }
+     )
+     router.prefetch(pathname);
+     router.push(pathname);  */
+
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [editableDivHeight, setEditableDivHeight] = useState(viewportHeight);
