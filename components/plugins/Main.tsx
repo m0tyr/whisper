@@ -73,6 +73,7 @@ export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
       <EditorCapturePlugin ref={ref} />
       <HistoryPlugin />
       <LinkPlugin />
+      
       <HashtagPlugin />
       <RichTextPlugin
         contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[14px]" onKeyDown={watchtext} />}

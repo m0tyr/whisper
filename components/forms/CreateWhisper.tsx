@@ -69,6 +69,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     defaultValues: {
       content: "",
       media: "",
+      mentions:[],
       accoundId: _id,
     },
   });
@@ -152,31 +153,27 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-    /*         setIsSent(!isSent);
-            (document.getElementById('button') as HTMLButtonElement).disabled = true;
-            (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
-            toclose();
-            toast({
+    setIsSent(!isSent);
+    (document.getElementById('button') as HTMLButtonElement).disabled = true;
+    (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
+    toclose();
+    toast({
               title: "Publication...",
               duration: 20000,
-            }
-            ) */
+          } 
+        ) 
     var contenteditable = document.querySelector('[contenteditable]')
 
     var innerText: string | undefined = (contenteditable as HTMLElement)?.innerHTML;
     const parser = new DOMParser();
     const doc = parser.parseFromString(innerText, 'text/html');
     const paragraphs = Array.from(doc.querySelectorAll('p'));
-    const textWithLineBreaks = paragraphs.map(p => p.textContent).join('\n');
-    console.log(textWithLineBreaks);
-    values.content = JSON.stringify(editorRef.current.getEditorState());
-    const datas = JSON.parse(values.content)
-    console.log(datas)
+    values.content = paragraphs.map(p => p.textContent).join('\n');
+    const temp = JSON.stringify(editorRef.current.getEditorState());
+    const datas = JSON.parse(temp);
     const extractedData = extractTypeAndText(datas);
-    console.log(values.content)
-    console.log('Mentions:', extractedData.mentions);
-    console.log('Texts:', extractedData.texts);
-    /*  let hasimageChanged = false;
+    values.mentions = extractedData.mentions;
+     let hasimageChanged = false;
      let blob: string | undefined;
  
      if (values.media) {
@@ -197,6 +194,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
        author: values.accoundId,
        media: values.media,
        aspectRatio: aspectRatio,
+       mentions: values.mentions,
        path: pathname,
      });
  
@@ -217,7 +215,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
      }
      )
      router.prefetch(pathname);
-     router.push(pathname);  */
+     router.push(pathname);  
 
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);

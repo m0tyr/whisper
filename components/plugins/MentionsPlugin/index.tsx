@@ -13,12 +13,12 @@ import {
   MenuTextMatch,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
-import { $getSelection, TextNode } from 'lexical';
+import { $getSelection, LexicalEditor, TextNode } from 'lexical';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { $createMentionNode, $isMentionNode } from './MentionNode';
+import { $createMentionNode, $isMentionNode, MentionNode } from './MentionNode';
 import { MentionSearchModel } from '@/lib/actions/user.actions';
 import Loader from '@/components/shared/loader/loader';
 
@@ -260,6 +260,7 @@ export default function NewMentionsPlugin(): JSX.Element | null {
       nodeToReplace: TextNode | null,
       closeMenu: () => void
     ) => {
+      console.log(nodeToReplace)
       editor.update(() => {
         const mentionNode = $createMentionNode(selectedOption.username);
         if (nodeToReplace) {
@@ -275,7 +276,10 @@ export default function NewMentionsPlugin(): JSX.Element | null {
   const checkForMentionMatch = useCallback(
     (
       text: string,
+      editor: LexicalEditor,
     ) => {
+      console.log(text)
+     
       const slashMatch = checkForSlashTriggerMatch(text, editor);
       if (slashMatch !== null) {
         return null;

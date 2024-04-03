@@ -11,7 +11,7 @@ const NavActivity = ({ currenttype }: { currenttype: string }) => {
         <div className="gap-2 flex flex-row">
             <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: .01 }}>
                 <Link
-                    href='.'
+                    href='/activity'
                     className={`min-w-[100px] text-[14.2px] flex justify-center items-center rounded-xl h-[34px]  px-3.5 hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3  font-medium ${currenttype === "all" ? "bg-white !text-black" : ""}`}
                 >Tout</Link>
             </motion.div>

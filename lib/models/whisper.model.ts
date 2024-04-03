@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 
+const mentionSchema = new mongoose.Schema({
+    link:String,
+    text: String,
+    version: Number,
+});
+
 const whisperSchema = new mongoose.Schema({
     content: {
         type: String,
@@ -10,6 +16,7 @@ const whisperSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    mentions : [mentionSchema],
     media: {
         type: String,
         required: false

@@ -85,6 +85,18 @@ export class MentionNode extends TextNode {
     dom.style.cssText = mentionStyle;
     return dom;
   }
+  setMention(mention: string): void {
+    const writable = this.getWritable();
+    writable.__mention = mention;
+  }
+  onMentionChange = (newName: string, editor: LexicalEditor) => {
+    editor.update(() => {
+      const node = $getNodeByKey(this.getKey()) as MentionNode;
+      if (node !== null && $isMentionNode(node)) {
+        node.setMention(newName);
+      }
+    });
+  }
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement('span');

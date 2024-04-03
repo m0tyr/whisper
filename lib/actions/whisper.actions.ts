@@ -11,28 +11,39 @@ interface Params {
     media: string | undefined,
     path: string,
     aspectRatio: string,
+    mentions: string[]
 }
 
-export async function createWhisper({ content, author, media, aspectRatio, path }: Params) {
+export async function createWhisper({ content, author, media, aspectRatio, path,mentions }: Params) {
     try {
         connectToDB();
+        const mentionData = mentions.map(mention => ({
+            link: `/${mention.substring(1)}`,
+            text: mention,
+            version: 1
+        }));
+        console.log(mentionData)
         if (aspectRatio === 'revert') {
+            
+           
             const createdWhisper = await Whisper.create({
                 content,
                 author,
                 media,
+                mentions: mentionData
             });
             await User.findByIdAndUpdate(author, {
                 $push: { whispers: createdWhisper._id }
             })
 
-            revalidatePath(path)
+            revalidatePath(path) 
         } else {
             const createdWhisper = await Whisper.create({
                 content,
                 author,
                 media,
                 aspectRatio,
+                mentions: mentionData
             });
             await User.findByIdAndUpdate(author, {
                 $push: { whispers: createdWhisper._id }
@@ -62,7 +73,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
         connectToDB();
-        
+
         const skipamount = (pagenumber - 1) * pagesize;
 
         const posts_query = Whisper.find({
@@ -217,7 +228,6 @@ export async function fetchallParentsFromWhisper(parentid: string) {
 
             computeparent[parentWhisper._id] = parentWhisper;
 
-            // Recursively call the function for the parent whisper
             await populateParents(parentWhisper.parentId);
         }
     }
