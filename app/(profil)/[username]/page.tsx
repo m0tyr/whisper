@@ -1,5 +1,5 @@
 import { fetchUser, fetchUserWhisper, fetchUserbyUsername } from "@/lib/actions/user.actions";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import { currentUser } from "@clerk/nextjs";
 import UserCard from "@/components/cards/UserCard";
@@ -9,6 +9,9 @@ import WhisperCard from "@/components/cards/WhisperCard";
 export async function generateMetadata({ params }: { params: { username: string } }) {
 
     const userInfo = await fetchUserbyUsername(params.username);
+    if (!userInfo) {
+		return notFound()
+	}
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
         id: userInfo?.id,
@@ -29,6 +32,9 @@ export default async function Page({ params }: { params: { username: string } })
     const currentuserInfo = await fetchUser(user.id);
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const userInfo = await fetchUserbyUsername(params.username);
+    if (!userInfo) {
+		return notFound()
+	}
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
         id: userInfo?.id,
@@ -71,13 +77,10 @@ export default async function Page({ params }: { params: { username: string } })
                                     parentId={post.parentId}
                                     content={post.content}
                                     media={post.media}
-                                    author={
-                                        { image: userposts.image, username: userposts.username, id: userposts.id }
-                                    }
+                                    author={{ image: userposts.image, username: userposts.username, id: userposts.id }}
                                     createdAt={post.createdAt}
                                     comments={[
                                         {
-
                                             posts: {
                                                 number: post.children.length
                                             },
@@ -93,8 +96,7 @@ export default async function Page({ params }: { params: { username: string } })
                                         }
                                     ]}
                                     isNotComment={post.children.length === 0}
-                                    aspectRatio={post.aspectRatio}
-
+                                    aspectRatio={post.aspectRatio} mentions={[]}
                                 />
                             ))}
                         </>

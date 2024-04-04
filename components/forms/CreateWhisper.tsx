@@ -44,6 +44,7 @@ import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
 import { MentionNode } from "../plugins/MentionsPlugin/MentionNode";
 import { ContentPlayer, extractTypeAndText } from "../plugins/Main";
+import { $getRoot } from "lexical";
 
 
 
@@ -161,19 +162,20 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
               title: "Publication...",
               duration: 20000,
           } 
-        ) 
-    var contenteditable = document.querySelector('[contenteditable]')
-
-    var innerText: string | undefined = (contenteditable as HTMLElement)?.innerHTML;
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(innerText, 'text/html');
-    const paragraphs = Array.from(doc.querySelectorAll('p'));
-    values.content = paragraphs.map(p => p.textContent).join('\n');
+        )  
+    
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
     const extractedData = extractTypeAndText(datas);
     values.mentions = extractedData.mentions;
-     let hasimageChanged = false;
+    const stringifiedEditorState = JSON.stringify(
+      editorRef.current.getEditorState().toJSON(),
+    );
+    const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
+    
+    values.content = parsedEditorState.read(() => $getRoot().getTextContent())
+    console.log(values.content)
+    let hasimageChanged = false;
      let blob: string | undefined;
  
      if (values.media) {
@@ -215,7 +217,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
      }
      )
      router.prefetch(pathname);
-     router.push(pathname);  
+     router.push(pathname);   
 
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);

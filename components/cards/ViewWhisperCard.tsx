@@ -22,6 +22,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { calculateTimeAgo, getMeta } from "@/lib/utils";
+import React from "react";
 
 interface Props {
     user: any;
@@ -189,17 +190,46 @@ const ViewWhisperCard = ({
                             </div>
 
                             {content && (
-                                <div>
-                                    <Link href={`/${author.username}/post/${id}`}>
-                                        <div className=" break-words max-w-lg">
+                               <div className="relative bottom-1" >
 
-
-                                            <span className="text-white text-small-regular mt-1  whitespace-pre-line break-words inline">{content}</span>
-
-
-                                        </div>
-                                    </Link>
-                                </div>
+                               <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5" onClick={(e) => {
+                                   if (e.target === e.currentTarget) {
+                                       ping();
+                                   }
+                               }}>
+                                   {content.split(/\n{2,}/).map((paragraph, index) => {
+                                       const mentionsRegex = /@[a-zA-Z0-9]+/g;
+                                       const mentions = paragraph.match(mentionsRegex);
+                                       if (mentions) {
+                                           return (
+                                               <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} onClick={(e) => {
+                                                   if (e.target === e.currentTarget) {
+                                                       ping();
+                                                   }
+                                               }}>
+                                                   {paragraph.split(mentionsRegex).map((text, i) => (
+                                                       <React.Fragment key={i}>
+                                                           {text}
+                                                           {mentions[i] && (
+                                                               <div className="inline-block">
+                                                                   <Link href={"/" + mentions[i].substring(1)} className="text-[rgb(29,161,242)] text-[14px] hover:underline py-0.5">{mentions[i]}</Link>
+                                                               </div>
+                                                           )}
+                                                       </React.Fragment>
+                                                   ))}
+                                               </span>
+                                           );
+                                       } else {
+                                           return (
+                                               <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
+                                                   {paragraph}
+                                               </span>
+                                           );
+                                       }
+                                   })}
+                               </div>
+       
+                           </div>
 
                             )}
                             {media && (

@@ -1,6 +1,7 @@
 import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchUser, getActivityFromUser } from "@/lib/actions/user.actions";
+import { calculateTimeAgo } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 export function generateMetadata() {
@@ -22,6 +23,7 @@ export default async function Page() {
         bio: currentuserInfo?.bio || "",
         image: currentuserInfo?.image || user.imageUrl,
     };
+    const datas = await getActivityFromUser(userData.username,'all');
 
     return (
         <>
@@ -30,6 +32,21 @@ export default async function Page() {
                 <div className="max-w-full overflow-x-auto " aria-hidden="true">
                    <NavActivity currenttype="all"/>
                 </div>
+                {datas ? (
+                    datas.map(whisper => (
+                        <div key={whisper._id}>
+                            <div>
+                               <span>{whisper.username}</span> 
+                               <span>{calculateTimeAgo(whisper.createdAt.toString())}</span>
+                            </div>
+                            <p>{whisper.content}</p>
+                        </div>
+                    ))
+                ) : (
+                    <div className=" justify-center items-center flex flex-grow">
+                        <p className="text-[13.5px] opacity-55 font-light">Aucune Activité</p>
+                    </div>
+                )}
             </section>
         </>
 

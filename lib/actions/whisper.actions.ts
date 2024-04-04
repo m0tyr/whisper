@@ -14,7 +14,7 @@ interface Params {
     mentions: string[]
 }
 
-export async function createWhisper({ content, author, media, aspectRatio, path,mentions }: Params) {
+export async function createWhisper({ content, author, media, aspectRatio, path, mentions }: Params) {
     try {
         connectToDB();
         const mentionData = mentions.map(mention => ({
@@ -24,8 +24,8 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
         }));
         console.log(mentionData)
         if (aspectRatio === 'revert') {
-            
-           
+
+
             const createdWhisper = await Whisper.create({
                 content,
                 author,
@@ -36,7 +36,7 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
                 $push: { whispers: createdWhisper._id }
             })
 
-            revalidatePath(path) 
+            revalidatePath(path)
         } else {
             const createdWhisper = await Whisper.create({
                 content,
@@ -101,7 +101,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
         const isnext = allposts_count > skipamount + posts_exec.length;
 
-
+     
         revalidatePath(path)
         return { posts_exec, isnext };
     } catch (error: any) {
@@ -240,3 +240,4 @@ export async function fetchallParentsFromWhisper(parentid: string) {
 
 
 }
+

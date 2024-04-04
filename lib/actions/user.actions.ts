@@ -40,7 +40,7 @@ export async function fetchUserWhisper(userId: string) {
       .populate({
         path: 'whispers',
         model: Whisper,
-        options: { sort: { createdAt: -1 } }, 
+        options: { sort: { createdAt: -1 } },
         populate: {
           path: 'children',
           model: Whisper,
@@ -91,12 +91,43 @@ export async function updateUser({
   }
 }
 
-export async function MentionSearchModel(input : string){
+export async function MentionSearchModel(input: string) {
 
-  
+
   const result = await User.find(
-    { username: { $regex: input, $options: "i" } }, 
+    { username: { $regex: input, $options: "i" } },
     { _id: 0, name: 1, image: 1, username: 1 }
   ).limit(10).lean();
   return result;
+}
+export async function getMentionActivityFromUser(username: string) {
+  try {
+    username = "@" + username
+    console.log(username)
+    const mentions = await Whisper.find({
+      'mentions.text': username
+    }).populate('author');
+    console.log(mentions)
+    return mentions;
+  } catch (error: any) {
+    throw new Error(`Error fetching mentions: ${error.message}`);
+  }
+}
+export async function getActivityFromUser(username: string, type: string) {
+  try {
+    console.log(type)
+    if (type === "mentions") {
+      username = "@" + username
+      console.log(username)
+      const mentions = await Whisper.find({
+        'mentions.text': username
+      }).populate(
+        'author'
+      ).sort({ createdAt: 'desc' });
+      console.log(mentions)
+      return mentions;
+    }
+  } catch (error: any) {
+    throw new Error(`Error fetching mentions: ${error.message}`);
+  }
 }

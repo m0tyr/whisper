@@ -30,22 +30,22 @@ export default async function Page() {
     bio: userInfo?.bio || "",
     image: userInfo?.image || user.imageUrl,
   };
-
+  console.log(allposts.posts_exec[0].mentions)
 
 
   return (
     <>
-     <Suspense fallback={
-            <Loader/>
-          }>
-      <TopBar user={userData} _id={`${userInfo._id}`} />
+      <Suspense fallback={
+        <Loader />
+      }>
+        <TopBar user={userData} _id={`${userInfo._id}`} />
 
 
-      <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
+        <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
 
-        <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
-          <TopChat user={userData} _id={`${userInfo._id}`} />  
-         
+          <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
+            <TopChat user={userData} _id={`${userInfo._id}`} />
+
 
             <div>
               <div className="">
@@ -55,7 +55,7 @@ export default async function Page() {
                   ) : (
                     <>
                       {allposts.posts_exec.map((post: any) => (
-                     <WhisperCard
+                        <WhisperCard
                           user={userData}
                           _id={`${userInfo._id}`}
                           id={`${post._id}`}
@@ -82,7 +82,13 @@ export default async function Page() {
                             }
                           ]}
                           isNotComment={post.children.length === 0}
-                          aspectRatio={post.aspectRatio} />
+                          aspectRatio={post.aspectRatio}
+                          mentions={post.mentions.map((mention: any) => ({
+                            link: mention.link,
+                            text: mention.text,
+                            version: mention.version
+                          }))}
+                        />
 
                       )
                       )}
@@ -94,10 +100,10 @@ export default async function Page() {
 
             </div>
 
-        </div>
+          </div>
 
 
-      </section>
+        </section>
       </Suspense>
     </>
   )

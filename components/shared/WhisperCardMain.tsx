@@ -12,6 +12,11 @@ interface Props {
     createdAt: string;
     togglePopup: any;
     aspectRatio: string;
+    mentions: {
+        link: string,
+        text: string,
+        version: number
+    }[];
 }
 import { calculateTimeAgo, getMeta } from "@/lib/utils";
 import {
@@ -35,14 +40,16 @@ import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton"
+import React from "react";
 
-export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup, aspectRatio }: Props) {
+export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup, aspectRatio, mentions }: Props) {
 
     const router = useRouter();
 
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+
 
     return (
         <>
@@ -76,7 +83,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                             exit={{ opacity: 0 }}
                             transition={{ duration: 1, delay: .1 }}
                         >
-                            <DropdownMenuContent  className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                            <DropdownMenuContent className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
                                 <DropdownMenuGroup className="text-white text-[14px]">
                                     <DropdownMenuItem >
                                         Enregistrer
@@ -114,18 +121,46 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                     </Link>
                 </div>
                 {content && (
-                    <div className="relative bottom-1">
-                        <Link href={`/${author.username}/post/${id}`}>
-                            <div className=" break-words max-w-lg">
+                    <div className="relative bottom-1" >
 
+                        <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5" onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                                ping();
+                            }
+                        }}>
+                            {content.split(/\n{2,}/).map((paragraph, index) => {
+                                const mentionsRegex = /@[a-zA-Z0-9]+/g;
+                                const mentions = paragraph.match(mentionsRegex);
+                                if (mentions) {
+                                    return (
+                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} onClick={(e) => {
+                                            if (e.target === e.currentTarget) {
+                                                ping();
+                                            }
+                                        }}>
+                                            {paragraph.split(mentionsRegex).map((text, i) => (
+                                                <React.Fragment key={i}>
+                                                    {text}
+                                                    {mentions[i] && (
+                                                        <div className="inline-block">
+                                                            <Link href={"/" + mentions[i].substring(1)} className="text-[rgb(29,161,242)] text-[14px] hover:underline py-0.5">{mentions[i]}</Link>
+                                                        </div>
+                                                    )}
+                                                </React.Fragment>
+                                            ))}
+                                        </span>
+                                    );
+                                } else {
+                                    return (
+                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
+                                            {paragraph}
+                                        </span>
+                                    );
+                                }
+                            })}
+                        </div>
 
-                                <span className="text-white text-small-regular mt-1  whitespace-pre-line break-words inline">{content}</span>
-
-
-                            </div>
-                        </Link>
                     </div>
-
                 )}
                 {media && (
                     <div className="relative bottom-1" onClick={(e) => {

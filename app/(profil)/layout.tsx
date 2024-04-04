@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 
 export const metadata: Metadata = {
-  title: "Paramètres • Whisper",
+  title: "Whisper",
   description: "a social app concept"
 }
 

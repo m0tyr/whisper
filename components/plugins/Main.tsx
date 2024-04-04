@@ -11,8 +11,11 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { HashtagNode } from '@lexical/hashtag';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin'
+import {PlainTextPlugin} from '@lexical/react/LexicalPlainTextPlugin';
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
+
 import MentionsPlugin from "./MentionsPlugin";
-import { TextNode } from "lexical";
+import { $getRoot, $getSelection, TextNode } from "lexical";
 interface Props {
   ref: any;
   watchtext: any;
@@ -73,9 +76,8 @@ export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
       <EditorCapturePlugin ref={ref} />
       <HistoryPlugin />
       <LinkPlugin />
-      
       <HashtagPlugin />
-      <RichTextPlugin
+      <PlainTextPlugin
         contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[14px]" onKeyDown={watchtext} />}
         placeholder={<div className="absolute top-0 pointer-events-none text-[14px] !font-light opacity-50">Commencer un whisper...</div>}
         ErrorBoundary={LexicalErrorBoundary}

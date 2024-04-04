@@ -33,6 +33,11 @@ interface Props {
     }[];
     isNotComment?: boolean;
     aspectRatio: string;
+    mentions: {
+        link: string,
+        text:string,
+        version:number
+    }[];
 }
 
 const WhisperCard = ({
@@ -47,7 +52,8 @@ const WhisperCard = ({
     createdAt,
     comments,
     isNotComment,
-    aspectRatio
+    aspectRatio,
+    mentions
 }: Props) => {
     const whisperData = {
         id: id,
@@ -57,6 +63,7 @@ const WhisperCard = ({
         createdAt: createdAt,
         comments: comments,
         isNotComment: isNotComment,
+        mentions : mentions
     };
     const [showPopup, setShowPopup] = useState(false);
 
@@ -109,14 +116,13 @@ const WhisperCard = ({
                 }
             }} >
                 <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 relative' >
-
                     <div className="flex flex-row flex-1  gap-3 ">
 
 
                         <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />
 
                         <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
-                            media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} aspectRatio={aspectRatio} />
+                            media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} aspectRatio={aspectRatio} mentions={whisperData.mentions} />
 
                     </div>
                     {comments[0].posts.number == 0 ? <div></div> :
