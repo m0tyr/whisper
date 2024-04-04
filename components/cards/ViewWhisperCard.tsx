@@ -192,17 +192,13 @@ const ViewWhisperCard = ({
                             {content && (
                                <div className="relative bottom-1" >
 
-                               <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5" onClick={(e) => {
-                                   if (e.target === e.currentTarget) {
-                                       ping();
-                                   }
-                               }}>
+                               <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5 cursor-auto">
                                    {content.split(/\n{2,}/).map((paragraph, index) => {
                                        const mentionsRegex = /@[a-zA-Z0-9]+/g;
                                        const mentions = paragraph.match(mentionsRegex);
                                        if (mentions) {
                                            return (
-                                               <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} onClick={(e) => {
+                                               <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 mt-[1rem] whitespace-pre-line break-words`} onClick={(e) => {
                                                    if (e.target === e.currentTarget) {
                                                        ping();
                                                    }
