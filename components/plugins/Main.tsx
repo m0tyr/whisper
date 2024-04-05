@@ -11,8 +11,8 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { HashtagNode } from '@lexical/hashtag';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin'
-import {PlainTextPlugin} from '@lexical/react/LexicalPlainTextPlugin';
-import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
+import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 
 import MentionsPlugin from "./MentionsPlugin";
 import { $getRoot, $getSelection, TextNode } from "lexical";

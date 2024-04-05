@@ -266,26 +266,23 @@ export default function NewMentionsPlugin(): JSX.Element | null {
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
         }
+        const usernameLength = selectedOption.username.length;
+
         mentionNode.select();
         closeMenu();
       });
     },
     [editor]
   );
-
+ 
   const checkForMentionMatch = useCallback(
     (
       text: string,
       editor: LexicalEditor,
     ) => {
-      console.log(text)
-     
+      const mentionMatch = getPossibleQueryMatch(text);
       const slashMatch = checkForSlashTriggerMatch(text, editor);
-      if (slashMatch !== null) {
-        return null;
-      }
-
-      return getPossibleQueryMatch(text);
+      return !slashMatch && mentionMatch ? mentionMatch : null;
     },
     [checkForSlashTriggerMatch, editor]
   );
