@@ -30,7 +30,6 @@ export default async function Page() {
     bio: userInfo?.bio || "",
     image: userInfo?.image || user.imageUrl,
   };
-  console.log(allposts.posts_exec[0].mentions)
 
 
   return (

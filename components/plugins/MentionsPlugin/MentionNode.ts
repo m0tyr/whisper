@@ -47,6 +47,9 @@ function convertMentionElement(
 
 const mentionStyle = "color: #1da1f2;";
 export class MentionNode extends TextNode {
+  getStart() {
+    throw new Error('Method not implemented.');
+  }
   __mention: string;
 
   static getType(): string {
@@ -133,7 +136,7 @@ export class MentionNode extends TextNode {
 }
 
 export function $createMentionNode(mentionName: string | undefined): MentionNode {
-  const mentionNode = new MentionNode("@" + mentionName);
+  const mentionNode = new MentionNode("@"+mentionName);
   mentionNode.setMode('segmented').toggleDirectionless();
   return $applyNodeReplacement(mentionNode);
 }

@@ -5,15 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
+import { useLexicalTextEntity } from '@lexical/react/useLexicalTextEntity';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { mergeRegister } from '@lexical/utils'
+
 import {
   LexicalTypeaheadMenuPlugin,
   MenuOption,
   MenuTextMatch,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
-import { $getSelection, LexicalEditor, TextNode } from 'lexical';
+import { $createRangeSelection, $createTextNode, $getSelection, $isRangeSelection, $setSelection, LexicalEditor, TextNode } from 'lexical';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -21,6 +23,7 @@ import * as ReactDOM from 'react-dom';
 import { $createMentionNode, $isMentionNode, MentionNode } from './MentionNode';
 import { MentionSearchModel } from '@/lib/actions/user.actions';
 import Loader from '@/components/shared/loader/loader';
+import { removeNode } from 'lexical/LexicalNode';
 
 const PUNCTUATION =
   '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
@@ -87,6 +90,13 @@ const SUGGESTION_LIST_LENGTH_LIMIT = 10;
 
 const mentionsCache = new Map();
 
+// Regular expression patterns for mentions
+const mentionRegexPattern = "(^|[^a-zA-Z0-9_!#$%&*@/\uff20])";
+const mentionSymbolPattern = "([@\uff20\uf000])";
+const mentionUsernamePattern = "((?:[a-zA-Z0-9_]|\\.[a-zA-Z0-9_])+)";
+const mentionRegex = new RegExp(mentionRegexPattern + mentionSymbolPattern + mentionUsernamePattern, "g");
+
+
 
 //when certains person at the top of the list it display first 
 //example
@@ -119,7 +129,6 @@ function useMentionLookupService(mentionString: string | null) {
 
   useEffect(() => {
     const cachedResults = mentionsCache.get(mentionString);
-
     if (mentionString === null) {
       setResults([]);
       return;
@@ -234,17 +243,123 @@ function MentionsTypeaheadMenuItem({
 
   );
 }
+function replaceWithMentionNode(node: TextNode): void {
+  const textContent = node.getTextContent();
+  const mentionNode = $createMentionNode(textContent).toggleUnmergeable();
+  node.replace(mentionNode);
+}
 
+// Function to replace a node with a text node
+function replaceWithTextNode(node: TextNode): void {
+  const textContent = node.getTextContent();
+  const textNode = $createTextNode(textContent);
+  node.replace(textNode);
+}
+
+// Function to handle text node transformation
+function handleTextNode(node: TextNode): void {
+  const textContent = node.getTextContent();
+  const mentionMatches = Array.from(textContent.matchAll(mentionRegex));
+
+  if (mentionMatches.length === 1) {
+    const mentionMatch = mentionMatches[0];
+    const mentionStartIndex = mentionMatch.index!;
+    const mentionLength = mentionMatch[0].length;
+
+    if (mentionLength < 1 && $isMentionNode(node.getPreviousSibling())) {
+      replaceWithTextNode(node);
+      return;
+    }
+
+    if (mentionMatch.input.length > mentionStartIndex) {
+      replaceWithMentionNode(node);
+      return;
+    }
+  }
+}
+
+// Function to handle mention node transformation
+function handleMentionNode(node: TextNode): void {
+  const textContent = node.getTextContent();
+  const mentionMatches = Array.from(textContent.matchAll(mentionRegex));
+
+  if (mentionMatches.length === 1) {
+    const mentionMatch = mentionMatches[0];
+    const mentionStartIndex = mentionMatch.index!;
+    const mentionLength = mentionMatch[0].length;
+
+    if (mentionLength < 1 && $isMentionNode(node.getPreviousSibling())) {
+      replaceWithTextNode(node);
+      return;
+    }
+
+    if (mentionMatch.input.length > mentionStartIndex) {
+      replaceWithMentionNode(node);
+      return;
+    }
+  }
+}
 
 export default function NewMentionsPlugin(): JSX.Element | null {
-  const [editor] = useLexicalComposerContext();
+  const composereditor = useLexicalComposerContext();
+  const [realeditor] = useLexicalComposerContext();
+  const [composerContext] = composereditor;
+/*   useEffect(() => {
+    const handleMentionCreation = (mentionText: string) => {
+      realeditor.update(() => {
+        const selection = $getSelection();
+        if (!$isRangeSelection(selection)) {
+          return;
+        }
+        const anchorNode = selection.anchor.getNode();
+        const anchorOffset = selection.anchor.offset;
+        const mentionNode = $createMentionNode(mentionText);
+        const textNode = anchorNode.getTextContent();
+        const newText = textNode.slice(0, anchorOffset) + mentionText + textNode.slice(anchorOffset);
+        anchorNode.setTextContent(newText);
+        const newSelection = $createRangeSelection();
+        newSelection.anchor.key = anchorNode.getKey();
+        newSelection.anchor.offset = anchorOffset + mentionText.length;
+        newSelection.focus.key = anchorNode.getKey();
+        newSelection.focus.offset = anchorOffset + mentionText.length;
+        $setSelection(newSelection);
+        mentionNode.select();
+      });
+    };
+    const rootElement = realeditor.getRootElement();
+    const editableElement = rootElement?.querySelector('.lexical-editor-editable');
+
+    editableElement?.addEventListener('input', handleTextInput as EventListener);
+
+    return () => {
+      editableElement?.removeEventListener('input', handleMentionCreation as EventListener);
+    };
+  }, [realeditor]); */
+  /*  useEffect(() => {
+     const registerTransformations = () => {
+       let transforms;
+       console.log("in")
+       console.log(composereditor[0] == composerContext)
+       console.log(composerContext)
+       if (composereditor[0] !== composerContext) {
+         const textNodeTransform = composerContext.registerNodeTransform(TextNode, handleTextNode);
+         const mentionNodeTransform = composerContext.registerNodeTransform(MentionNode, handleMentionNode);
+         console.log(mentionNodeTransform)
+         transforms = mergeRegister(textNodeTransform, mentionNodeTransform);
+       } else {
+         transforms = composereditor[1];
+       }
+ 
+     };
+ 
+     registerTransformations();
+   }, [composerContext]); */
   const [queryString, setQueryString] = useState<string | null>(null);
   const { results, loading } = useMentionLookupService(queryString);
   const [isTransform, setTransform] = useState(false)
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0,
   });
-
   const options = useMemo(() => {
     if (results !== null) {
       return results.map((result: { name: any; image: any; username: any; }) => {
@@ -261,20 +376,19 @@ export default function NewMentionsPlugin(): JSX.Element | null {
       closeMenu: () => void
     ) => {
       console.log(nodeToReplace)
-      editor.update(() => {
+      realeditor.update(() => {
         const mentionNode = $createMentionNode(selectedOption.username);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
+          mentionNode.select();
+          closeMenu();
         }
-        const usernameLength = selectedOption.username.length;
-
-        mentionNode.select();
-        closeMenu();
-      });
+      }
+      );
     },
-    [editor]
+    [composereditor]
   );
- 
+
   const checkForMentionMatch = useCallback(
     (
       text: string,
@@ -284,10 +398,11 @@ export default function NewMentionsPlugin(): JSX.Element | null {
       const slashMatch = checkForSlashTriggerMatch(text, editor);
       return !slashMatch && mentionMatch ? mentionMatch : null;
     },
-    [checkForSlashTriggerMatch, editor]
+    [checkForSlashTriggerMatch, composereditor]
   );
 
   const parent = document.getElementById('parent') as HTMLElement | undefined;
+
 
   return (
 
@@ -337,6 +452,7 @@ export default function NewMentionsPlugin(): JSX.Element | null {
                               setHighlightedIndex(i);
                               try {
                                 selectOptionAndCleanUp(option);
+                                console.log(option)
                               } catch (error) {
                                 console.error("Error in selectOptionAndCleanUp:", error);
                               }

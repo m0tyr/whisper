@@ -42,9 +42,9 @@ import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
-import { MentionNode } from "../plugins/MentionsPlugin/MentionNode";
+import { $createMentionNode, MentionNode } from "../plugins/MentionsPlugin/MentionNode";
 import { ContentPlayer, extractTypeAndText } from "../plugins/Main";
-import { $getRoot } from "lexical";
+import { $getRoot, $getSelection, TextNode } from "lexical";
 
 
 
@@ -70,16 +70,18 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     defaultValues: {
       content: "",
       media: "",
-      mentions:[],
+      mentions: [],
       accoundId: _id,
     },
   });
 
+  const [oneTimeMention, setoneTimeMention] = useState(true);
 
 
-  const WatchText = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const WatchText = (node: any) => {
     var getText = document.getElementById("editable_content")?.textContent || "";
     var result = getText;
+   
     setvalues(result);
     if (result?.trim() === "" && !imageDataURL) {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;
@@ -159,11 +161,11 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
     toclose();
     toast({
-              title: "Publication...",
-              duration: 20000,
-          } 
-        )  
-    
+      title: "Publication...",
+      duration: 20000,
+    }
+    )
+
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
     const extractedData = extractTypeAndText(datas);
@@ -172,52 +174,52 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       editorRef.current.getEditorState().toJSON(),
     );
     const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
-    
+
     values.content = parsedEditorState.read(() => $getRoot().getTextContent())
     console.log(values.content)
     let hasimageChanged = false;
-     let blob: string | undefined;
- 
-     if (values.media) {
-       blob = values.media;
-       hasimageChanged = isBase64Image(blob);
-     }
-     if (hasimageChanged) {
- 
-       const imgRes = await startUpload(files)
- 
-       if (imgRes && imgRes[0].url) {
-         values.media = imgRes[0].url;
-       }
-     }
- 
-     await createWhisper({
-       content: values.content,
-       author: values.accoundId,
-       media: values.media,
-       aspectRatio: aspectRatio,
-       mentions: values.mentions,
-       path: pathname,
-     });
- 
-     const lastWhisper = await GetLastestWhisperfromUserId({
-       author: values.accoundId,
-     })
-     toast({
-       title: "Publié",
-       action: (
-         <a href={`/${user.username}/${lastWhisper._id}`}>
-           <ToastAction altText="Voir Whisper" >
-             Voir
-           </ToastAction>
-         </a>
-       ),
-       duration: 2000,
- 
-     }
-     )
-     router.prefetch(pathname);
-     router.push(pathname);   
+    let blob: string | undefined;
+
+    if (values.media) {
+      blob = values.media;
+      hasimageChanged = isBase64Image(blob);
+    }
+    if (hasimageChanged) {
+
+      const imgRes = await startUpload(files)
+
+      if (imgRes && imgRes[0].url) {
+        values.media = imgRes[0].url;
+      }
+    }
+
+    await createWhisper({
+      content: values.content,
+      author: values.accoundId,
+      media: values.media,
+      aspectRatio: aspectRatio,
+      mentions: values.mentions,
+      path: pathname,
+    });
+
+    const lastWhisper = await GetLastestWhisperfromUserId({
+      author: values.accoundId,
+    })
+    toast({
+      title: "Publié",
+      action: (
+        <a href={`/${user.username}/${lastWhisper._id}`}>
+          <ToastAction altText="Voir Whisper" >
+            Voir
+          </ToastAction>
+        </a>
+      ),
+      duration: 2000,
+
+    }
+    )
+    router.prefetch(pathname);
+    router.push(pathname);
 
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
