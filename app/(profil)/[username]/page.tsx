@@ -96,7 +96,12 @@ export default async function Page({ params }: { params: { username: string } })
                                         }
                                     ]}
                                     isNotComment={post.children.length === 0}
-                                    aspectRatio={post.aspectRatio} mentions={[]}
+                                    aspectRatio={post.aspectRatio}  
+                                    mentions={post.mentions.map((mention: any) => ({
+                                        link: mention.link,
+                                        text: mention.text,
+                                        version: mention.version
+                                      }))}      
                                 />
                             ))}
                         </>

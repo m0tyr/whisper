@@ -87,31 +87,30 @@ export default async function Page({ params }: { params: { id: string, username:
                         </div>
                         <div>
                             <ViewWhisperCard
-                                user={userData}
-                                _id={`${currentuserInfo._id}`}
-                                id={`${whisperdatas._id}`}
-                                currentUserId={user?.id || ""}
-                                parentId={whisperdatas.parentId}
-                                content={whisperdatas.content}
-                                media={whisperdatas.media}
-                                author={
-                                    { image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }
+                            user={userData}
+                            _id={`${currentuserInfo._id}`}
+                            id={`${whisperdatas._id}`}
+                            currentUserId={user?.id || ""}
+                            parentId={whisperdatas.parentId}
+                            content={whisperdatas.content}
+                            media={whisperdatas.media}
+                            author={{ image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }}
+                            createdAt={whisperdatas.createdAt}
+                            comments={[
+                                {
+                                    posts: {
+                                        number: whisperdatas.children.length
+                                    },
+                                    childrens: {}
                                 }
-                                createdAt={whisperdatas.createdAt}
-                                comments={[
-                                    {
-
-                                        posts: {
-                                            number: whisperdatas.children.length
-                                        },
-                                        childrens: {
-
-                                        }
-                                    }
-                                ]}
-                                isNotComment={whisperdatas.children.length === 0}
-                                aspectRatio={whisperdatas.aspectRatio}
-                            />
+                            ]}
+                            isNotComment={whisperdatas.children.length === 0}
+                            aspectRatio={whisperdatas.aspectRatio}
+                            mentions={whisperdatas.mentions.map((mention: any) => ({
+                                link: mention.link,
+                                text: mention.text,
+                                version: mention.version
+                              }))}                         />
                         </div>
                         <div>
                             <Suspense fallback={
@@ -126,13 +125,10 @@ export default async function Page({ params }: { params: { id: string, username:
                                         parentId={post.parentId}
                                         content={post.content}
                                         media={post.media}
-                                        author={
-                                            { image: post.author.image, username: post.author.username, id: post.author.id }
-                                        }
+                                        author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
                                         createdAt={post.createdAt}
                                         comments={[
                                             {
-
                                                 posts: {
                                                     number: post.children.length
                                                 },
@@ -149,7 +145,11 @@ export default async function Page({ params }: { params: { id: string, username:
                                         ]}
                                         isNotComment={post.children.length === 0}
                                         aspectRatio={post.aspectRatio}
-                                    />
+                                        mentions={post.mentions.map((mention: any) => ({
+                                            link: mention.link,
+                                            text: mention.text,
+                                            version: mention.version
+                                          }))}                                 />
                                 )
                                 )}
                             </Suspense>

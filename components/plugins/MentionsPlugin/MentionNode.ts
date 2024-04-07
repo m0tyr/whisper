@@ -135,10 +135,14 @@ export class MentionNode extends TextNode {
   }
 }
 
-export function $createMentionNode(mentionName: string | undefined): MentionNode {
+export function $createMentionNode(mentionName: string): MentionNode {
   const mentionNode = new MentionNode("@"+mentionName);
   mentionNode.setMode('segmented').toggleDirectionless();
   return $applyNodeReplacement(mentionNode);
+}
+
+export function $mentionNodeAuto(mentionName:string):MentionNode{
+  return $applyNodeReplacement(new MentionNode(mentionName));
 }
 
 export function $isMentionNode(

@@ -11,13 +11,13 @@ interface Params {
     media: string | undefined,
     path: string,
     aspectRatio: string,
-    mentions: string[]
+    mentions?: string[]
 }
 
 export async function createWhisper({ content, author, media, aspectRatio, path, mentions }: Params) {
     try {
         connectToDB();
-        const mentionData = mentions.map(mention => ({
+        const mentionData = mentions?.map(mention => ({
             link: `/${mention.substring(1)}`,
             text: mention,
             version: 1

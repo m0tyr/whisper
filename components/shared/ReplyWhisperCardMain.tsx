@@ -12,6 +12,11 @@ interface Props {
     createdAt: string;
     togglePopup:any;
     aspectRatio?:any;
+    mentions: {
+        link: string,
+        text: string,
+        version: number
+    }[];
 }
 import { calculateTimeAgo } from "@/lib/utils";
 import {
@@ -33,8 +38,9 @@ import ImageClickAnim from "../animations/ImageClickAnim";
 import { useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
+import React from "react";
 
-export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup,aspectRatio }: Props) {
+export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup,aspectRatio,mentions }: Props) {
 
 
    
@@ -53,13 +59,64 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                 </Link>
             </div>
             {content && (
-                <div>
-                        <div className=" break-words max-w-lg">
-                            <span className="text-white text-small-regular mt-1  whitespace-pre-line break-words block">{content}</span>
-                        </div>
-                </div>
+                    <div className="relative bottom-1" >
 
-            )}
+                        <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5">
+                            {content.split(/\n{2,}/).map((paragraph, index) => {
+                                const mentionsRegex = /@[a-zA-Z0-9]+/g;
+                                const mymentions = paragraph.match(mentionsRegex);
+                                const matchText: string[] = [];
+                                const textesTableau2 = new Set(mentions.map(objet => objet.text));
+                                if (mymentions) {
+                                    for (const text of mymentions) {
+                                        if (textesTableau2.has(text)) {
+                                            matchText.push(text);
+                                        }
+                                    }
+                                }
+
+                                if (textesTableau2.size !== 0 && mymentions) {
+                                    return (
+                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} >
+                                            {paragraph.split(mentionsRegex).map((text, i) => {
+                                                if (textesTableau2.has(mymentions[i])) {
+                                                    return (
+                                                        <React.Fragment key={i}>
+                                                            {text}
+                                                            {mymentions[i] && (
+                                                                <div className="inline-block">
+                                                                    <Link href={"/" + mymentions[i].substring(1)} className="text-[rgb(29,161,242)] text-[14px] hover:underline py-0.5">{mymentions[i]}</Link>
+                                                                </div>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <React.Fragment key={i}>
+                                                            {text}
+                                                            {mymentions[i] && (
+                                                                <React.Fragment>
+                                                                    {mymentions[i]}
+                                                                </React.Fragment>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                }
+                                            })}
+                                        </span>
+                                    );
+                                } else {
+                                    return (
+                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
+                                            {paragraph}
+                                        </span>
+                                    );
+                                }
+                            })}
+                        </div>
+
+                    </div>
+                )}
             {media && (
                 <ImageClickAnim src={media} aspectRatio={aspectRatio} />
             )}  

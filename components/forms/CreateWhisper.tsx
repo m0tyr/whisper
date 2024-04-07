@@ -44,7 +44,7 @@ import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
 import { $createMentionNode, MentionNode } from "../plugins/MentionsPlugin/MentionNode";
 import { ContentPlayer, extractTypeAndText } from "../plugins/Main";
-import { $getRoot, $getSelection, TextNode } from "lexical";
+import { $createTextNode, $getRoot, $getSelection, TextNode } from "lexical";
 
 
 
@@ -78,7 +78,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const [oneTimeMention, setoneTimeMention] = useState(true);
 
 
-  const WatchText = (node: any) => {
+  const WatchText = (node: any) => {    
     var getText = document.getElementById("editable_content")?.textContent || "";
     var result = getText;
    

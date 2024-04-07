@@ -130,24 +130,49 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                         }}>
                             {content.split(/\n{2,}/).map((paragraph, index) => {
                                 const mentionsRegex = /@[a-zA-Z0-9]+/g;
-                                const mentions = paragraph.match(mentionsRegex);
-                                if (mentions) {
+                                const mymentions = paragraph.match(mentionsRegex);
+                                const matchText: string[] = [];
+                                const textesTableau2 = new Set(mentions.map(objet => objet.text));
+                                if (mymentions) {
+                                    for (const text of mymentions) {
+                                        if (textesTableau2.has(text)) {
+                                            matchText.push(text);
+                                        }
+                                    }
+                                }
+
+                                if (textesTableau2.size !== 0 && mymentions) {
                                     return (
                                         <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} onClick={(e) => {
                                             if (e.target === e.currentTarget) {
                                                 ping();
                                             }
                                         }}>
-                                            {paragraph.split(mentionsRegex).map((text, i) => (
-                                                <React.Fragment key={i}>
-                                                    {text}
-                                                    {mentions[i] && (
-                                                        <div className="inline-block">
-                                                            <Link href={"/" + mentions[i].substring(1)} className="text-[rgb(29,161,242)] text-[14px] hover:underline py-0.5">{mentions[i]}</Link>
-                                                        </div>
-                                                    )}
-                                                </React.Fragment>
-                                            ))}
+                                            {paragraph.split(mentionsRegex).map((text, i) => {
+                                                if (textesTableau2.has(mymentions[i])) {
+                                                    return (
+                                                        <React.Fragment key={i}>
+                                                            {text}
+                                                            {mymentions[i] && (
+                                                                <div className="inline-block">
+                                                                    <Link href={"/" + mymentions[i].substring(1)} className="text-[rgb(29,161,242)] text-[14px] hover:underline py-0.5">{mymentions[i]}</Link>
+                                                                </div>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <React.Fragment key={i}>
+                                                            {text}
+                                                            {mymentions[i] && (
+                                                                <React.Fragment>
+                                                                    {mymentions[i]}
+                                                                </React.Fragment>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                }
+                                            })}
                                         </span>
                                     );
                                 } else {

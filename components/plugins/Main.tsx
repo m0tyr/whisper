@@ -68,48 +68,11 @@ const initialConfig = {
 };
 
 
-
-
-
 export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
   const { watchtext, ...rest } = props;
-  //HOT POTENTIAL TO BE FUNCTIONAL /!\ /!\ /!\
-  // /!\ /!\
-  const handleMentionTrigger = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    ref.current.update(() => {
-    const selection = $createRangeSelection();
-    console.log("test")
-    if (!selection) {
-      return;
-    }
-      const anchorNode = selection.anchor.getNode();
-      const anchorOffset = selection.anchor.offset;
-      const textContent = anchorNode.getTextContent();
-      const searchStr = textContent.slice(0, anchorOffset).match(/\S+$/);
-      if (!searchStr) {
-        return;
-      }
-
-      const index = textContent.length - searchStr[0].length;
-
-      // Créer une nouvelle sélection pour la mention
-      const mentionSelection = $createRangeSelection();
-      mentionSelection.anchor.key = anchorNode.getKey();
-      mentionSelection.anchor.offset = index;
-      mentionSelection.focus.key = anchorNode.getKey();
-      mentionSelection.focus.offset = index + searchStr[0].length;
-
-      // Créer un nouveau nœud de mention et le remplacer par le texte sélectionné
-      const mentionNode = $createMentionNode(searchStr[0]);
-      anchorNode.replace(mentionNode);
-
-      const newSelection = new RangeSelection(mentionSelection.anchor, mentionSelection.anchor, 0, mentionNode.getTextContent());
-      $setSelection(newSelection);
-      ref.current.setSelection(mentionSelection);
-    
-  });
-  };
-
+  const onChange = () => {
+      console.log("test")
+  }
   return (
     <LexicalComposer initialConfig={initialConfig} >
       <MentionsPlugin />
@@ -117,8 +80,9 @@ export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
       <HistoryPlugin />
       <LinkPlugin />
       <HashtagPlugin />
+  <OnChangePlugin onChange={onChange} />
       <PlainTextPlugin
-        contentEditable={<ContentEditable onKeyUp={handleMentionTrigger} id="editable_content" spellCheck className=" outline-none text-[14px]" onKeyDown={watchtext} />}
+        contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[14px]" onKeyDown={watchtext} />}
         placeholder={<div className="absolute top-0 pointer-events-none text-[14px] !font-light opacity-50">Commencer un whisper...</div>}
         ErrorBoundary={LexicalErrorBoundary}
       />

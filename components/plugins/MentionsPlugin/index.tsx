@@ -8,14 +8,21 @@
 import { useLexicalTextEntity } from '@lexical/react/useLexicalTextEntity';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils'
-
+import {
+  useFloating,
+  FloatingPortal,
+  autoPlacement,
+  offset,
+  flip,
+  shift,
+} from '@floating-ui/react';
 import {
   LexicalTypeaheadMenuPlugin,
   MenuOption,
   MenuTextMatch,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
-import { $createRangeSelection, $createTextNode, $getSelection, $isRangeSelection, $setSelection, LexicalEditor, TextNode } from 'lexical';
+import { $createRangeSelection, $createTextNode, $getSelection, $isRangeSelection, $isTextNode, $setSelection, COMMAND_PRIORITY_EDITOR, LexicalEditor, TextNode } from 'lexical';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -245,10 +252,26 @@ function MentionsTypeaheadMenuItem({
 }
 function replaceWithMentionNode(node: TextNode): void {
   const textContent = node.getTextContent();
-  const mentionNode = $createMentionNode(textContent).toggleUnmergeable();
-  node.replace(mentionNode);
-}
+  const mentionMatch = textContent.match(/@\w+/);
 
+  if (mentionMatch) {
+    const mentionText = mentionMatch[0];
+    const mentionNode = $createMentionNode(mentionText).toggleUnmergeable();
+
+    // Créer un nouveau nœud de texte pour le texte avant la mention
+    const beforeText = textContent.slice(0, textContent.indexOf(mentionText));
+    const beforeTextNode = $createTextNode(beforeText);
+
+    // Créer un nouveau nœud de texte pour le texte après la mention
+    const afterText = textContent.slice(textContent.indexOf(mentionText) + mentionText.length);
+    const afterTextNode = $createTextNode(afterText);
+
+    // Remplacer le nœud de texte existant par les nouveaux nœuds de texte et de mention
+    node.replace(beforeTextNode);
+    beforeTextNode.insertAfter(mentionNode);
+    mentionNode.insertAfter(afterTextNode);
+  }
+}
 // Function to replace a node with a text node
 function replaceWithTextNode(node: TextNode): void {
   const textContent = node.getTextContent();
@@ -261,21 +284,13 @@ function handleTextNode(node: TextNode): void {
   const textContent = node.getTextContent();
   const mentionMatches = Array.from(textContent.matchAll(mentionRegex));
 
-  if (mentionMatches.length === 1) {
-    const mentionMatch = mentionMatches[0];
-    const mentionStartIndex = mentionMatch.index!;
-    const mentionLength = mentionMatch[0].length;
-
-    if (mentionLength < 1 && $isMentionNode(node.getPreviousSibling())) {
-      replaceWithTextNode(node);
-      return;
-    }
-
-    if (mentionMatch.input.length > mentionStartIndex) {
-      replaceWithMentionNode(node);
-      return;
-    }
+  if (mentionMatches.length >= 1) {
+    const nodemen = $createMentionNode(node.getTextContent())
+    node.replace(nodemen)
+/*       replaceWithMentionNode(node);
+ */      return;
   }
+
 }
 
 // Function to handle mention node transformation
@@ -304,62 +319,13 @@ export default function NewMentionsPlugin(): JSX.Element | null {
   const composereditor = useLexicalComposerContext();
   const [realeditor] = useLexicalComposerContext();
   const [composerContext] = composereditor;
-/*   useEffect(() => {
-    const handleMentionCreation = (mentionText: string) => {
-      realeditor.update(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) {
-          return;
-        }
-        const anchorNode = selection.anchor.getNode();
-        const anchorOffset = selection.anchor.offset;
-        const mentionNode = $createMentionNode(mentionText);
-        const textNode = anchorNode.getTextContent();
-        const newText = textNode.slice(0, anchorOffset) + mentionText + textNode.slice(anchorOffset);
-        anchorNode.setTextContent(newText);
-        const newSelection = $createRangeSelection();
-        newSelection.anchor.key = anchorNode.getKey();
-        newSelection.anchor.offset = anchorOffset + mentionText.length;
-        newSelection.focus.key = anchorNode.getKey();
-        newSelection.focus.offset = anchorOffset + mentionText.length;
-        $setSelection(newSelection);
-        mentionNode.select();
-      });
-    };
-    const rootElement = realeditor.getRootElement();
-    const editableElement = rootElement?.querySelector('.lexical-editor-editable');
-
-    editableElement?.addEventListener('input', handleTextInput as EventListener);
-
-    return () => {
-      editableElement?.removeEventListener('input', handleMentionCreation as EventListener);
-    };
-  }, [realeditor]); */
-  /*  useEffect(() => {
-     const registerTransformations = () => {
-       let transforms;
-       console.log("in")
-       console.log(composereditor[0] == composerContext)
-       console.log(composerContext)
-       if (composereditor[0] !== composerContext) {
-         const textNodeTransform = composerContext.registerNodeTransform(TextNode, handleTextNode);
-         const mentionNodeTransform = composerContext.registerNodeTransform(MentionNode, handleMentionNode);
-         console.log(mentionNodeTransform)
-         transforms = mergeRegister(textNodeTransform, mentionNodeTransform);
-       } else {
-         transforms = composereditor[1];
-       }
- 
-     };
- 
-     registerTransformations();
-   }, [composerContext]); */
   const [queryString, setQueryString] = useState<string | null>(null);
   const { results, loading } = useMentionLookupService(queryString);
   const [isTransform, setTransform] = useState(false)
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0,
   });
+
   const options = useMemo(() => {
     if (results !== null) {
       return results.map((result: { name: any; image: any; username: any; }) => {
@@ -394,6 +360,7 @@ export default function NewMentionsPlugin(): JSX.Element | null {
       text: string,
       editor: LexicalEditor,
     ) => {
+
       const mentionMatch = getPossibleQueryMatch(text);
       const slashMatch = checkForSlashTriggerMatch(text, editor);
       return !slashMatch && mentionMatch ? mentionMatch : null;
@@ -402,11 +369,23 @@ export default function NewMentionsPlugin(): JSX.Element | null {
   );
 
   const parent = document.getElementById('parent') as HTMLElement | undefined;
-
+  const { x, y, refs, strategy } = useFloating({
+    placement: 'bottom-start',
+    middleware: [
+      offset(6),
+      flip(),
+      shift()
+    ],
+  });
 
   return (
 
     <LexicalTypeaheadMenuPlugin
+      onOpen={(r) => {
+        refs.setPositionReference({
+          getBoundingClientRect: r.getRect,
+        });
+      }}
       onQueryChange={setQueryString}
       onSelectOption={onSelectOption}
       triggerFn={checkForMentionMatch}
@@ -417,7 +396,16 @@ export default function NewMentionsPlugin(): JSX.Element | null {
           ReactDOM.createPortal(
             <>
               {loading ? (
-                <div className='rounded-xl'>
+                <div
+                  className='rounded-xl'
+                  ref={refs.setFloating}
+                  style={{
+                    position: strategy,
+                    top: y ?? 0,
+                    left: x ?? 0,
+                    width: 'max-content',
+                  }}
+                >
                   <div className="overflow-y-auto max-h-52 rounded-xl bg-[rgba(16,16,16,1)]" id='main-pop'>
                     <div className='overflow-x-hidden  overflow-y-hidden flex items-center relative px-0 py-0 mx-0 my-0 w-full'>
                       <div className='flex flex-col flex-shrink w-full px-1 py-0.5'>
@@ -440,7 +428,16 @@ export default function NewMentionsPlugin(): JSX.Element | null {
                   </div>
                 </div>
               ) : results.length > 0 ? (
-                <div className='rounded-xl'>
+                <div
+                  className='rounded-xl'
+                  ref={refs.setFloating}
+                  style={{
+                    position: strategy,
+                    top: y ?? 0,
+                    left: x ?? 0,
+                    width: 'max-content',
+                  }}
+                >
                   <div className=" rounded-[16px] w-full overflow-x-hidden drop-shadow" id='main-pop'>
                     <div className='overflow-y-auto max-h-[285px]'>
                       <ul className='bg-[#1b1b1b]  flex flex-col'>

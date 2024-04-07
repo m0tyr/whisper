@@ -47,6 +47,11 @@ interface Props {
     parentId: string | null;
     content: string;
     media: string;
+    mentions: {
+      link: string,
+      text: string,
+      version: number
+    }[];
     author: {
       username: string;
       image: string;
@@ -62,12 +67,12 @@ interface Props {
     isComment?: boolean;
   }
   toclose: any;
-  togglePopup:any;
-  aspectRatio:any;
+  togglePopup: any;
+  aspectRatio: any;
 }
 
 
-const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspectRatio }: Props) => {
+const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspectRatio }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const { startUpload } = useUploadThing('imageUploader')
@@ -76,7 +81,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspect
   const router = useRouter();
 
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
-  const [aspectratio, setAspectRatio] = useState("revert"); 
+  const [aspectratio, setAspectRatio] = useState("revert");
 
   const pathname = usePathname();
 
@@ -282,9 +287,13 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup,aspect
                           <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                             <div className="flex flex-row flex-1  gap-3 ">
                               <WhisperCardLeft author={whisper_to_reply.author} id={user.id} />
-                              
+
                               <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} media={whisper_to_reply.media} author={whisper_to_reply.author}
-                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} aspectRatio={aspectRatio} />
+                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} aspectRatio={aspectRatio} mentions={whisper_to_reply.mentions.map((mention: any) => ({
+                                  link: mention.link,
+                                  text: mention.text,
+                                  version: mention.version
+                                }))} />
                             </div>
                           </div>
                           <div className="grid grid-cols-[auto,1fr] ">

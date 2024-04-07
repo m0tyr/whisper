@@ -103,7 +103,8 @@ const WhisperCard = ({
                         },
                         createdAt: createdAt,
                         comments: comments,
-                        isComment: isNotComment
+                        isComment: isNotComment,
+                        mentions:mentions
                     }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
 
                 </>

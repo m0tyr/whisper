@@ -41,6 +41,8 @@
   }
   .disable{
     width: 0px !important;
+    top: initial!important;
+    left: initial!important;
   }
 
   #editable-span[contenteditable]:empty::before {
