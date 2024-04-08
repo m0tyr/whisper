@@ -2,7 +2,7 @@
 
 interface Props {
     id: string;
-    content: string;
+    content: ExtractedElement[];
     media: string;
     author: {
         username: string;
@@ -18,7 +18,7 @@ interface Props {
         version: number
     }[];
 }
-import { calculateTimeAgo } from "@/lib/utils";
+import { calculateTimeAgo, processElements } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,11 +39,13 @@ import { useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import React from "react";
+import { ExtractedElement } from "../plugins/Main";
 
 export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup,aspectRatio,mentions }: Props) {
 
 
-   
+    let sections = processElements(content)
+
     return (
         <>
   
@@ -62,57 +64,24 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                     <div className="relative bottom-1" >
 
                         <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5">
-                            {content.split(/\n{2,}/).map((paragraph, index) => {
-                                const mentionsRegex = /@[a-zA-Z0-9]+/g;
-                                const mymentions = paragraph.match(mentionsRegex);
-                                const matchText: string[] = [];
-                                const textesTableau2 = new Set(mentions.map(objet => objet.text));
-                                if (mymentions) {
-                                    for (const text of mymentions) {
-                                        if (textesTableau2.has(text)) {
-                                            matchText.push(text);
-                                        }
-                                    }
-                                }
+                        {sections.map((section, index) => (
+                                <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] text-small-regular mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
+                                    {section.map((line, subIndex) => (
+                                        line.type === 'mention' ? (
+                                            <div className="inline-block text-[#1da1f2]" key={`mention_${subIndex}`}>
+                                                <Link href={`/${line.text.slice(1)}`} className="hover:underline">
+                                                    {line.text}
+                                                </Link>
 
-                                if (textesTableau2.size !== 0 && mymentions) {
-                                    return (
-                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} >
-                                            {paragraph.split(mentionsRegex).map((text, i) => {
-                                                if (textesTableau2.has(mymentions[i])) {
-                                                    return (
-                                                        <React.Fragment key={i}>
-                                                            {text}
-                                                            {mymentions[i] && (
-                                                                <div className="inline-block">
-                                                                    <Link href={"/" + mymentions[i].substring(1)} className="text-[rgb(29,161,242)] text-[14px] hover:underline py-0.5">{mymentions[i]}</Link>
-                                                                </div>
-                                                            )}
-                                                        </React.Fragment>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <React.Fragment key={i}>
-                                                            {text}
-                                                            {mymentions[i] && (
-                                                                <React.Fragment>
-                                                                    {mymentions[i]}
-                                                                </React.Fragment>
-                                                            )}
-                                                        </React.Fragment>
-                                                    );
-                                                }
-                                            })}
-                                        </span>
-                                    );
-                                } else {
-                                    return (
-                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
-                                            {paragraph}
-                                        </span>
-                                    );
-                                }
-                            })}
+                                            </div>
+                                        ) : (
+                                            <React.Fragment key={`text_${subIndex}`}>
+                                                {line.text}
+                                            </React.Fragment>
+                                        )
+                                    ))}
+                                </span>
+                            ))}
                         </div>
 
                     </div>

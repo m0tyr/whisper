@@ -63,9 +63,9 @@ export default async function Page({ params }: { params: { username: string } })
                         name={userData.name}
                         username={userData.username}
                         bio={userData.bio}
-                        image={userData.image} _id={`${userInfo._id}`}
-                        fetchedtype={"whisper"}
-                        />
+                        image={userData.image} _id={`${userInfo._id}`}  
+                        fetchedtype={"reposts"}
+                                          />
                     {userposts.whispers.length === 0 ? (
                         <p className="text-white text-body1-bold ">No Whispers found...</p>
                     ) : (

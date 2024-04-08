@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/form";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
 import ReplyWhisperCardMain from "../shared/ReplyWhisperCardMain";
+import { ContentPlayer, ExtractedElement, extractElements, extractMention } from "../plugins/Main";
+import { $getRoot } from "lexical";
 
 
 interface Props {
@@ -45,7 +47,7 @@ interface Props {
     id: string;
     currentUserId: string;
     parentId: string | null;
-    content: string;
+    content: ExtractedElement[];
     media: string;
     mentions: {
       link: string,
@@ -88,8 +90,9 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
   const form = useForm<z.infer<typeof CommentValidation>>({
     resolver: zodResolver(CommentValidation),
     defaultValues: {
-      content: "",
+      content: [] as ExtractedElement[],
       media: "",
+      mentions: [],
       accoundId: _id,
     },
   });
@@ -175,11 +178,19 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
       duration: 20000,
     }
     )
-    var contenteditable = document.querySelector('[contenteditable]')
+    const temp = JSON.stringify(editorRef.current.getEditorState());
+    const datas = JSON.parse(temp);
 
-    var innerText: string | undefined = (contenteditable as HTMLElement)?.innerText;
-    values.content = innerText;
+    const stringifiedEditorState = JSON.stringify(
+      editorRef.current.getEditorState().toJSON(),
+    );
+    const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
 
+    const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
+    const extractedData = extractMention(datas);
+    const extractedstuff = extractElements(datas)
+    values.mentions = extractedData.mentions;
+    values.content = extractedstuff
     let hasimageChanged = false;
     let blob: string | undefined;
 
@@ -200,6 +211,8 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
       author: values.accoundId,
       media: values.media,
       aspectRatio: aspectratio,
+      mentions: values.mentions,
+      caption: editorStateTextString,
       path: pathname,
     }, whisper_to_reply.id);
 
@@ -246,6 +259,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
 
     }
   };
+  const editorRef: any = useRef();
   if (editableDiv) editableDiv.scrollTop = editableDiv.scrollHeight;
 
   return (
@@ -306,13 +320,10 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
                               <div className="grid grid-cols-[auto,0.5fr]">
                                 <div className='col-span-2 ml-2 '>
                                   <span className="text-white text-small-semibold mb-1">{user?.username}</span>
-                                  <div
-                                    {...field}
-                                    onKeyUp={WatchText}
-                                    data-placeholder={`Répondre à ${whisper_to_reply.author.username}...`}
-                                    className="bg-good-gray text-small-regular  text-white outline-none rounded-md ring-offset-background cursor-text placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
-                                    contentEditable
-                                  ></div>
+                                  <div className="relative">
+                                    <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."} />
+                                  </div>
+
 
                                   <FormField
                                     control={form.control}

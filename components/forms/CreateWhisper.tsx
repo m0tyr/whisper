@@ -43,7 +43,7 @@ import { motion } from "framer-motion"
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
 import { $createMentionNode, MentionNode } from "../plugins/MentionsPlugin/MentionNode";
-import { ContentPlayer, extractTypeAndText } from "../plugins/Main";
+import { ContentPlayer, ExtractedElement, extractElements, extractMention } from "../plugins/Main";
 import { $createTextNode, $getRoot, $getSelection, TextNode } from "lexical";
 
 
@@ -68,7 +68,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const form = useForm<z.infer<typeof WhisperValidation>>({
     resolver: zodResolver(WhisperValidation),
     defaultValues: {
-      content: "",
+      content: [] as ExtractedElement[],
       media: "",
       mentions: [],
       accoundId: _id,
@@ -78,10 +78,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const [oneTimeMention, setoneTimeMention] = useState(true);
 
 
-  const WatchText = (node: any) => {    
+  const WatchText = (node: any) => {
     var getText = document.getElementById("editable_content")?.textContent || "";
     var result = getText;
-   
+
     setvalues(result);
     if (result?.trim() === "" && !imageDataURL) {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;
@@ -156,7 +156,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-   /*  setIsSent(!isSent);
+    setIsSent(!isSent);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
     (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
     toclose();
@@ -164,21 +164,21 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       title: "Publication...",
       duration: 20000,
     }
-    ) */
-
+    )
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
-    const extractedData = extractTypeAndText(datas);
-    values.mentions = extractedData.mentions;
+
     const stringifiedEditorState = JSON.stringify(
       editorRef.current.getEditorState().toJSON(),
     );
     const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
 
-    values.content = parsedEditorState.read(() => $getRoot().getTextContent())
-    console.log(values.content)
-    console.log(temp)
-    /* let hasimageChanged = false;
+    const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
+    const extractedData = extractMention(datas);
+    const extractedstuff = extractElements(datas)
+    values.mentions = extractedData.mentions;
+    values.content = extractedstuff
+    let hasimageChanged = false;
     let blob: string | undefined;
 
     if (values.media) {
@@ -200,27 +200,23 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       media: values.media,
       aspectRatio: aspectRatio,
       mentions: values.mentions,
+      caption: editorStateTextString,
       path: pathname,
     });
 
-    const lastWhisper = await GetLastestWhisperfromUserId({
+    /*     const lastWhisper = await GetLastestWhisperfromUserId({
       author: values.accoundId,
-    })
+    }) */ // MAX CALL SIZE ERROR NEED TO FIX
+   
     toast({
       title: "Publié",
-      action: (
-        <a href={`/${user.username}/${lastWhisper._id}`}>
-          <ToastAction altText="Voir Whisper" >
-            Voir
-          </ToastAction>
-        </a>
-      ),
       duration: 2000,
 
     }
     )
     router.prefetch(pathname);
-    router.push(pathname); */
+    router.push(pathname);
+
 
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -300,7 +296,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                 <div className='col-span-2 ml-2 '>
                                   <span className="text-white text-small-semibold mb-1">{user?.username}</span>
                                   <div className="relative">
-                                    <ContentPlayer ref={editorRef} watchtext={WatchText} />
+                                    <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Commencer un whisper..."} />
                                   </div>
                                   <FormField
                                     control={form.control}

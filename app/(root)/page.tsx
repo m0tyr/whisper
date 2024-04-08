@@ -30,8 +30,6 @@ export default async function Page() {
     bio: userInfo?.bio || "",
     image: userInfo?.image || user.imageUrl,
   };
-
-
   return (
     <>
       <Suspense fallback={
@@ -60,7 +58,10 @@ export default async function Page() {
                           id={`${post._id}`}
                           currentUserId={user?.id || ""}
                           parentId={post.parentId}
-                          content={post.content}
+                          content={post.content.map((content: any) => ({
+                            text: content.text,
+                            type: content.type
+                          }))}
                           media={post.media}
                           author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
                           createdAt={post.createdAt}
@@ -75,7 +76,7 @@ export default async function Page() {
                                   username: child.author.username,
                                   id: child.author.id
                                 },
-                                content: child.content,
+                                content: [],//No data needed here
                                 createdAt: child.createdAt
                               }))
                             }

@@ -7,7 +7,7 @@ import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { calculateTimeAgo, getMeta } from "@/lib/utils";
+import { calculateTimeAgo, getMeta, processElements } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,20 +24,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import ImageClickAnim from "../animations/ImageClickAnim";
+import { ExtractedElement } from "../plugins/Main";
+import React from "react";
 interface Props {
     user: any;
     _id: string;
     id: string;
     currentUserId: string;
     parentId: string | null;
-    content: string;
+    content: ExtractedElement[];
     media: string;
     author: {
         username: string;
         image: string;
         id: string;
     };
-
     createdAt: string;
     comments: {
         posts: {
@@ -46,7 +47,12 @@ interface Props {
         childrens: any;
     }[];
     isNotComment?: boolean;
-    aspectRatio:string;
+    aspectRatio: string;
+    mentions: {
+        link: string,
+        text: string,
+        version: number
+    }[];
 }
 
 const ParentWhisperCard = ({
@@ -61,7 +67,8 @@ const ParentWhisperCard = ({
     createdAt,
     comments,
     isNotComment,
-    aspectRatio
+    aspectRatio,
+    mentions
 }: Props) => {
     const whisperData = {
         id: id,
@@ -83,7 +90,8 @@ const ParentWhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
-  
+    let sections = processElements(content)
+
     return (
         <>
             {showPopup && (
@@ -109,7 +117,8 @@ const ParentWhisperCard = ({
                         },
                         createdAt: createdAt,
                         comments: comments,
-                        isComment: isNotComment
+                        isComment: isNotComment,
+                        mentions: mentions
                     }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
 
                 </>
@@ -219,11 +228,23 @@ const ParentWhisperCard = ({
                                 <div>
                                     <Link href={`/${author.username}/post/${id}`}>
                                         <div className=" break-words max-w-lg">
-
-
-                                            <span className="text-white text-small-regular mt-1  whitespace-pre-line break-words inline">{content}</span>
-
-
+                                            {sections.map((section, index) => (
+                                                <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] text-small-regular mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
+                                                    {section.map((line, subIndex) => (
+                                                        line.type === 'mention' ? (
+                                                            <div className="inline-block text-[#1da1f2]" key={`mention_${subIndex}`}>
+                                                                <Link href={`/${line.text.slice(1)}`} className="hover:underline">
+                                                                    {line.text}
+                                                                </Link>
+                                                            </div>
+                                                        ) : (
+                                                            <React.Fragment key={`text_${subIndex}`}>
+                                                                {line.text}
+                                                            </React.Fragment>
+                                                        )
+                                                    ))}
+                                                </span>
+                                            ))}
                                         </div>
                                     </Link>
                                 </div>

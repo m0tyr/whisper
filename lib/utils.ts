@@ -1,3 +1,4 @@
+import { ExtractedElement } from "@/components/plugins/Main";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -16,6 +17,34 @@ export function getMeta(url :string, cb:any){
   img.src = url;
 };
 
+export function processElements(elements: ExtractedElement[]): ExtractedElement[][] {
+  let consecutiveLineBreaksCount = 0;
+  const sections: ExtractedElement[][] = [];
+  let currentSection: ExtractedElement[] = [];
+
+  for (const element of elements) {
+      if (element.type === 'linebreak') {
+          consecutiveLineBreaksCount++;
+          if (consecutiveLineBreaksCount === 2) {
+              sections.push(currentSection);
+              currentSection = [];
+          }
+      } else {
+          if (consecutiveLineBreaksCount === 1) {
+              currentSection.push({ text: ' \n', type: 'linebreak' }); // Include a single line break
+          }
+          currentSection.push(element);
+          consecutiveLineBreaksCount = 0; // Reset count when non-line break encountered
+      }
+  }
+
+  // Push the last section if it's not empty
+  if (currentSection.length > 0) {
+      sections.push(currentSection);
+  }
+
+  return sections;
+}
 export function formatDateString(dateString: string) {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",

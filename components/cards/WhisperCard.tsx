@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton"
 import { getMeta } from "@/lib/utils";
+import { ExtractedElement, extractElements } from "../plugins/Main";
 
 interface Props {
     user: any;
@@ -16,7 +17,7 @@ interface Props {
     id: string;
     currentUserId: string;
     parentId: string | null;
-    content: string;
+    content: ExtractedElement[];
     media: string;
     author: {
         username: string;
@@ -77,7 +78,6 @@ const WhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
-
     return (
         <>
             {showPopup && (

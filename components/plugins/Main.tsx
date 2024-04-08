@@ -34,9 +34,54 @@ interface Root {
   root: { children: any; };
   children: Paragraph[];
 }
-interface ExtractedData {
+interface MentionsDatas {
   mentions: string[];
-  texts: string[];
+}
+interface Element {
+  detail?: number;
+  format?: number;
+  mode?: string;
+  style?: string;
+  text?: string;
+  type: string;
+  version: number;
+  mentionName?: string;
+}
+
+
+
+interface Root {
+  children: Paragraph[];
+}
+
+interface Input {
+  root: Root;
+}
+
+export interface ExtractedElement {
+  text: string;
+  type: string;
+}
+
+export function extractElements(input: Input): ExtractedElement[] {
+  const extractedElements: ExtractedElement[] = [];
+
+  // Iterate over each paragraph
+  input.root.children.forEach(paragraph => {
+      // Iterate over each element in the paragraph
+      paragraph.children.forEach(element => {
+          // If it's a linebreak, set text to '\n'
+          const text = element.type === 'linebreak' ? '\n' : element.text;
+          
+          if (text && element.type) {
+              // Extract text and type
+              const { type } = element;
+              extractedElements.push({ text, type });
+          }
+      });
+  });
+
+  return extractedElements;
 }
 
 const EditorCapturePlugin = React.forwardRef((props: any, ref: any) => {
@@ -70,7 +115,7 @@ const initialConfig = {
 
 
 export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
-  const { watchtext, ...rest } = props;
+  const { watchtext, placeholder } = props;
   const onChange = () => {
   }
   return (
@@ -83,7 +128,7 @@ export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
   <OnChangePlugin onChange={onChange} />
       <PlainTextPlugin
         contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[14px]" onKeyDown={watchtext} />}
-        placeholder={<div className="absolute top-0 pointer-events-none text-[14px] !font-light opacity-50">Commencer un whisper...</div>}
+        placeholder={<div className="absolute top-0 pointer-events-none text-[14px] !font-light opacity-50">{placeholder}</div>}
         ErrorBoundary={LexicalErrorBoundary}
       />
     </LexicalComposer>
@@ -92,20 +137,14 @@ export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
 
 
 
-export function extractTypeAndText(json: Root): ExtractedData {
-  const extractedData: ExtractedData = { mentions: [], texts: [] };
+export function extractMention(json: Root): MentionsDatas {
+  const extractedData: MentionsDatas = { mentions: []};
 
   const { children } = json.root;
   children.forEach((paragraph: any) => {
-    if (paragraph.direction === null && paragraph.children.type !== 'mention') {
-      extractedData.texts.push('\n');
-    }
     paragraph.children.forEach((child: any) => {
       if (child.type === 'mention') {
         extractedData.mentions.push(child.text || 'N/A');
-        extractedData.texts.push(child.text || 'N/A');
-      } else if (child.type === 'text') {
-        extractedData.texts.push(child.text || 'N/A');
       }
     });
   });

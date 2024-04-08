@@ -39,7 +39,7 @@ export default async function Page() {
                                <span>{whisper.username}</span> 
                                <span>{calculateTimeAgo(whisper.createdAt.toString())}</span>
                             </div>
-                            <p>{whisper.content}</p>
+                            <p>{whisper.caption}</p>
                         </div>
                     ))
                 ) : (

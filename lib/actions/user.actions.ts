@@ -127,6 +127,15 @@ export async function getActivityFromUser(username: string, type: string) {
       console.log(mentions)
       return mentions;
     }
+    else if (type === "replies") {
+      const replies = await Whisper.find({
+        'username': username
+      }).populate(
+        'author'
+      ).sort({ createdAt: 'desc' });
+      console.log(replies)
+      return replies;
+    } 
   } catch (error: any) {
     throw new Error(`Error fetching mentions: ${error.message}`);
   }

@@ -1,3 +1,4 @@
+import ActivityCard from "@/components/cards/ActivityCard";
 import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
 import { fetchUser, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
@@ -28,6 +29,7 @@ export default async function Page({ params }: { params: { type: string } }) {
     if (params.type === null) {
         params.type = 'activité';
     }
+
     return (
         <>
             <TopBar user={userData} _id={`${currentuserInfo._id}`} />
@@ -35,43 +37,17 @@ export default async function Page({ params }: { params: { type: string } }) {
                 <div className="max-w-full overflow-x-auto " aria-hidden="true">
                     <NavActivity currenttype={params.type} />
                 </div>
-               
-                    {datas ? (
-                        datas.map(whisper => (
-                            <> 
-                            <div className="w-full mobile:max-w-[580px]" >
-                                <div className="mt-1">
-                                    <div className="grid grid-cols-[48px_minmax(0,1fr)] gap-1.5">
-                                        <div className="relative block mx-auto mt-3 w-[34px] h-[34px] justify-center items-center">
-                                            <img src={whisper.author.image} alt="" className="rounded-full " />
-                                        </div>
 
-                                        <div className="flex py-2 max-w-full">
-                                            <div key={whisper._id} className="flex-grow min-w-0">
-                                                <div className="flex-grow">
-                                                    <span className=" max-w-full text-[15px] font-semibold">{whisper.author.username}</span>
-                                                    <span className="max-w-full ml-2 text-[14px] font-normal opacity-65">{calculateTimeAgo(whisper.createdAt.toString())}</span>
-                                                </div>
-                                                <div className="flex-grow max-w-full">
-                                                <span  className="text-[15px]  font-light">{whisper.content}</span>
-                                                </div>
-                                                <hr className="border-x-2 opacity-20 rounded-full mt-2 " />
+                {datas ? (
+                    datas.map(whisper => (
+                        <ActivityCard username={whisper.author.username} image={whisper.author.image} _id={whisper._id} caption={whisper.caption} createdAt={whisper.createdAt} />
+                    ))
+                ) : (
+                    <div className=" justify-center items-center m-auto" >
+                        <p className="text-[13.5px] opacity-55 font-light">Aucune {params.type || 'activité'}</p>
+                    </div>
+                )}
 
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-                                   
-                                </div>
-                                </div>
-                            </>
-                        ))
-                    ) : (
-                        <div className=" justify-center items-center m-auto" >
-                            <p className="text-[13.5px] opacity-55 font-light">Aucune {params.type || 'activité'}</p>
-                        </div>
-                    )}
-             
             </section>
         </>
 

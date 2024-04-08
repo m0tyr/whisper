@@ -1,22 +1,23 @@
 import mongoose from "mongoose";
 
-const mentionSchema = new mongoose.Schema({
+const mentionsSUBSchema = new mongoose.Schema({
     link:String,
     text: String,
     version: Number,
 });
+const captionsSUBSchema = new mongoose.Schema({
+    text: String,
+    type: String,
+});
 
 const whisperSchema = new mongoose.Schema({
-    content: {
-        type: String,
-        required: false
-    },
+    content: [captionsSUBSchema],
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    mentions : [mentionSchema],
+    mentions : [mentionsSUBSchema],
     media: {
         type: String,
         required: false
@@ -38,6 +39,10 @@ const whisperSchema = new mongoose.Schema({
     parentId: {
         type: String,
     },
+    caption:{
+        type:String,
+        require:false
+    }
   
 });
 

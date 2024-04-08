@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import UpdateProfile from "../forms/UpdateProfil";
 import React from "react";
+import Link from "next/link";
 
 interface Props {
     myusername: string;
@@ -13,7 +14,7 @@ interface Props {
     id: string;
     bio: string;
     _id: any;
-
+    fetchedtype: string;
 }
 
 function UserCard({
@@ -23,7 +24,8 @@ function UserCard({
     image,
     id,
     bio,
-    _id
+    _id,
+    fetchedtype
 }: Props) {
     const [showPopup, setShowPopup] = useState(false);
     const [isfollowing, setisfollowing] = useState(false);
@@ -76,7 +78,7 @@ function UserCard({
 
                                     <motion.div whileTap={{ scale: 0.95 }} className="col-start-1">
                                         <button
-                                            className={`w-full rounded-xl h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} hover:bg-dark transition-all duration-150 border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
+                                            className={`w-full rounded-xl h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
                                             onClick={AddFollow}
                                         >
                                             {!isfollowing ? "Suivre" : "Suivi(e)"}
@@ -94,15 +96,27 @@ function UserCard({
                         )}
                     </div>
                     <div className="text-center text-gray-2 h-full grid grid-cols-[1fr_1fr_1fr] w-full justify-center items-center text-base-regular ">
-                        <div className="w-full h-12 border-b  border-solid border-white block">
-                            <a href={`./${username}`} className="hover:text-gray text-white transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">Whispers</a>
-                        </div>
-                        <div className="w-full h-12 border-b  border-solid border-gray-2 block">
-                            <a href={`./${username}/replies`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">Réponses</a>
-                        </div>
-                        <div className="w-full  h-12 border-b  border-solid border-gray-2 block ">
-                            <a href={`./${username}/reposts`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">Republications</a>
-                        </div>
+                        <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'whisper' ? 'border-white text-white' : 'border-gray-2'} block`}>
+                            <Link href={`/${username}`} className="hover:text-gray  transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
+                                <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
+                                    Whispers
+                                </motion.div>
+                            </Link>
+                        </motion.div>
+                        <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'replies' ? 'border-white text-white' : 'border-gray-2'} block`}>
+                            <Link href={`/${username}/replies`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
+                                <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
+                                    Réponses
+                                </motion.div>
+                            </Link>
+                        </motion.div>
+                        <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'reposts' ? 'border-white text-white' : 'border-gray-2'} block`}>
+                            <Link href={`/${username}/reposts`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
+                                <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
+                                    Republications
+                                </motion.div>
+                            </Link>
+                        </motion.div>
                     </div>
                 </div>
             </div>

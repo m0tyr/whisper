@@ -2,7 +2,7 @@
 
 interface Props {
     id: string;
-    content: string;
+    content: ExtractedElement[];
     media: string;
     author: {
         username: string;
@@ -18,7 +18,7 @@ interface Props {
         version: number
     }[];
 }
-import { calculateTimeAgo, getMeta } from "@/lib/utils";
+import { calculateTimeAgo, getMeta, processElements } from "@/lib/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -41,6 +41,7 @@ import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton"
 import React from "react";
+import { ExtractedElement } from "../plugins/Main";
 
 export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup, aspectRatio, mentions }: Props) {
 
@@ -49,7 +50,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
-
+    let sections = processElements(content)
 
     return (
         <>
@@ -117,74 +118,35 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                     }
                 }}>
                     <Link href={`/${author.username}`} className="inline">
-                        <p className="text-white text-small-semibold hover:underline inline relative bottom-1">{author.username}</p>
+                        <p className="text-white text-small-semibold !text-[15px] font-semibold hover:underline inline relative">{author.username}</p>
                     </Link>
                 </div>
                 {content && (
-                    <div className="relative bottom-1" >
+                    <div className="relative bottom-1" onClick={(e) => {
+                        if (e.target === e.currentTarget) {
+                            ping();
+                        }
+                    }} >
 
-                        <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5" onClick={(e) => {
-                            if (e.target === e.currentTarget) {
-                                ping();
-                            }
-                        }}>
-                            {content.split(/\n{2,}/).map((paragraph, index) => {
-                                const mentionsRegex = /@[a-zA-Z0-9]+/g;
-                                const mymentions = paragraph.match(mentionsRegex);
-                                const matchText: string[] = [];
-                                const textesTableau2 = mentions.map(objet => objet.text);
-                                console.log(textesTableau2)
-                                if (mymentions) {
-                                    for (const text of mymentions) {
-                                        if (textesTableau2.includes(text)) {
-                                            matchText.push(text);
-                                        }
-                                    }
-                                }
+                        <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5 inline-block" >
+                            {sections.map((section, index) => (
+                                <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] text-small-regular font-normal  mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words `}>
+                                    {section.map((line, subIndex) => (
+                                        line.type === 'mention' ? (
+                                            <div className="inline-block text-[#1da1f2]" key={`mention_${subIndex}`}>
+                                                <Link href={`/${line.text.slice(1)}`} className="hover:underline">
+                                                    {line.text}
+                                                </Link>
 
-                                if (textesTableau2.length !== 0 && mymentions) {
-                                    return (
-                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} onClick={(e) => {
-                                            if (e.target === e.currentTarget) {
-                                                ping();
-                                            }
-                                        }}>
-                                            {paragraph.split(mentionsRegex).map((text, i) => {
-                                                if (textesTableau2.includes(mymentions[i])) {
-                                                    textesTableau2.splice(textesTableau2.indexOf(mymentions[i]), 1);
-                                                    return (
-                                                        <React.Fragment key={i}>
-                                                            {text}
-                                                            {mymentions[i] && (
-                                                                <div className="inline-block">
-                                                                    <Link href={"/" + mymentions[i].substring(1)} className="text-[rgb(29,161,242)] text-[14px] hover:underline py-0.5">{mymentions[i]}</Link>
-                                                                </div>
-                                                            )}
-                                                        </React.Fragment>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <React.Fragment key={i}>
-                                                            {text}
-                                                            {mymentions[i] && (
-                                                                <React.Fragment>
-                                                                    {mymentions[i]}
-                                                                </React.Fragment>
-                                                            )}
-                                                        </React.Fragment>
-                                                    );
-                                                }
-                                            })}
-                                        </span>
-                                    );
-                                } else {
-                                    return (
-                                        <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
-                                            {paragraph}
-                                        </span>
-                                    );
-                                }
-                            })}
+                                            </div>
+                                        ) : (
+                                            <React.Fragment key={`text_${subIndex}`}>
+                                                {line.text}
+                                            </React.Fragment>
+                                        )
+                                    ))}
+                                </span>
+                            ))}
                         </div>
 
                     </div>

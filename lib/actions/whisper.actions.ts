@@ -4,17 +4,19 @@ import { revalidatePath } from "next/cache";
 import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
+import { ExtractedElement } from "@/components/plugins/Main";
 
 interface Params {
-    content: string | undefined,
-    author: string,
-    media: string | undefined,
-    path: string,
-    aspectRatio: string,
-    mentions?: string[]
+    content: ExtractedElement[] | undefined;
+    author: string;
+    media?: string;
+    path: string;
+    caption: string;
+    aspectRatio: string;
+    mentions?: string[];
 }
 
-export async function createWhisper({ content, author, media, aspectRatio, path, mentions }: Params) {
+export async function createWhisper({ content, author, media, aspectRatio, path, caption, mentions }: Params) {
     try {
         connectToDB();
         const mentionData = mentions?.map(mention => ({
@@ -22,14 +24,12 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
             text: mention,
             version: 1
         }));
-        console.log(mentionData)
         if (aspectRatio === 'revert') {
-
-
             const createdWhisper = await Whisper.create({
                 content,
                 author,
                 media,
+                caption,
                 mentions: mentionData
             });
             await User.findByIdAndUpdate(author, {
@@ -43,6 +43,7 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
                 author,
                 media,
                 aspectRatio,
+                caption,
                 mentions: mentionData
             });
             await User.findByIdAndUpdate(author, {
@@ -101,7 +102,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
         const isnext = allposts_count > skipamount + posts_exec.length;
 
-     
+
         revalidatePath(path)
         return { posts_exec, isnext };
     } catch (error: any) {
@@ -111,7 +112,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
     }
 }
 
-export async function createComment({ content, author, media, aspectRatio, path }: Params, whisperId: any) {
+export async function createComment({ content, author, media, aspectRatio, path, mentions, caption }: Params, whisperId: any) {
     connectToDB()
 
     try {
@@ -121,16 +122,23 @@ export async function createComment({ content, author, media, aspectRatio, path 
             throw new Error("Whisper indisponible ou supprimé...")
             //add error page
         }
+        const mentionData = mentions?.map(mention => ({
+            link: `/${mention.substring(1)}`,
+            text: mention,
+            version: 1
+        }));
         if (aspectRatio === 'revert') {
 
             const commentitem = new Whisper({
                 content: content,
                 author: author,
                 media: media,
+                mentions: mentionData,
+                caption: caption,
                 parentId: whisperId,
             })
 
-            const commentobject = await commentitem.save()
+            await commentitem.save()
 
             isactive.children.push(commentitem._id)
 
@@ -142,11 +150,13 @@ export async function createComment({ content, author, media, aspectRatio, path 
                 content: content,
                 author: author,
                 media: media,
+                mentions: mentionData,
+                caption: caption,
                 aspectRatio: aspectRatio,
                 parentId: whisperId,
             })
 
-            const commentobject = await commentitem.save()
+            await commentitem.save()
 
             isactive.children.push(commentitem._id)
 
