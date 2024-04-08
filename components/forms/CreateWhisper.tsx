@@ -156,7 +156,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const { toast } = useToast()
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-    setIsSent(!isSent);
+   /*  setIsSent(!isSent);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
     (document.getElementById('button') as HTMLButtonElement).innerHTML = "";
     toclose();
@@ -164,7 +164,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       title: "Publication...",
       duration: 20000,
     }
-    )
+    ) */
 
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
@@ -177,7 +177,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
     values.content = parsedEditorState.read(() => $getRoot().getTextContent())
     console.log(values.content)
-    let hasimageChanged = false;
+    console.log(temp)
+    /* let hasimageChanged = false;
     let blob: string | undefined;
 
     if (values.media) {
@@ -219,7 +220,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     }
     )
     router.prefetch(pathname);
-    router.push(pathname);
+    router.push(pathname); */
 
   }
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);

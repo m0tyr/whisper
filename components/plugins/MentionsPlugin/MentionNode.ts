@@ -129,10 +129,6 @@ export class MentionNode extends TextNode {
   canInsertTextBefore(): boolean {
     return false;
   }
-
-  canInsertTextAfter(): boolean {
-    return false;
-  }
 }
 
 export function $createMentionNode(mentionName: string): MentionNode {
@@ -141,7 +137,7 @@ export function $createMentionNode(mentionName: string): MentionNode {
   return $applyNodeReplacement(mentionNode);
 }
 
-export function $mentionNodeAuto(mentionName:string):MentionNode{
+export function $mentionNodeAuto(mentionName = ''):MentionNode{
   return $applyNodeReplacement(new MentionNode(mentionName));
 }
 

@@ -132,16 +132,17 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                                 const mentionsRegex = /@[a-zA-Z0-9]+/g;
                                 const mymentions = paragraph.match(mentionsRegex);
                                 const matchText: string[] = [];
-                                const textesTableau2 = new Set(mentions.map(objet => objet.text));
+                                const textesTableau2 = mentions.map(objet => objet.text);
+                                console.log(textesTableau2)
                                 if (mymentions) {
                                     for (const text of mymentions) {
-                                        if (textesTableau2.has(text)) {
+                                        if (textesTableau2.includes(text)) {
                                             matchText.push(text);
                                         }
                                     }
                                 }
 
-                                if (textesTableau2.size !== 0 && mymentions) {
+                                if (textesTableau2.length !== 0 && mymentions) {
                                     return (
                                         <span key={index} className={`text-white leading-relaxed overflow-y-visible overflow-x-visible max-w-full text-left relative block text-small-regular mb-0 ${index == 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`} onClick={(e) => {
                                             if (e.target === e.currentTarget) {
@@ -149,7 +150,8 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                                             }
                                         }}>
                                             {paragraph.split(mentionsRegex).map((text, i) => {
-                                                if (textesTableau2.has(mymentions[i])) {
+                                                if (textesTableau2.includes(mymentions[i])) {
+                                                    textesTableau2.splice(textesTableau2.indexOf(mymentions[i]), 1);
                                                     return (
                                                         <React.Fragment key={i}>
                                                             {text}

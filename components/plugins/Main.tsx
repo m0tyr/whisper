@@ -16,6 +16,7 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 
 import MentionsPlugin from "./MentionsPlugin";
 import { $createRangeSelection, $getRoot, $getSelection, $setSelection, RangeSelection, TextNode } from "lexical";
+import { InitMention } from "./InitMention";
 interface Props {
   ref: any;
   watchtext: any;
@@ -71,11 +72,10 @@ const initialConfig = {
 export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
   const { watchtext, ...rest } = props;
   const onChange = () => {
-      console.log("test")
   }
   return (
     <LexicalComposer initialConfig={initialConfig} >
-      <MentionsPlugin />
+      <MentionsPlugin/>
       <EditorCapturePlugin ref={ref} />
       <HistoryPlugin />
       <LinkPlugin />
