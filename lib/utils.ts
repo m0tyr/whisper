@@ -45,6 +45,18 @@ export function processElements(elements: ExtractedElement[]): ExtractedElement[
 
   return sections;
 }
+export function limitNewlines(text: string): string {
+  const parts = text.split('\n');
+  const limitedParts = parts.slice(0, 2); // Take the first two parts
+
+  // Check if there are more than two parts or if the second part is empty
+  if (parts.length > 2 || (parts.length === 2 && parts[1] === '')) {
+      return limitedParts.join('\n');
+  } else {
+      // No \n characters found or only one \n character found
+      return text;
+  }
+}
 export function formatDateString(dateString: string) {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
