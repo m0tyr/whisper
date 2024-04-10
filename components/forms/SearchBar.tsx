@@ -15,9 +15,13 @@ import {
 import { SearchValidation } from "@/lib/validations/whisper";
 import { z } from "zod";
 import { FieldValues, useForm } from "react-hook-form";
+import { SearchModel } from "@/lib/actions/user.actions";
+
+type SearchResultType = { name: string, image:string, username: string, isfollowing: boolean };
+
 const SearchBar = () => {
   const [inputValue, setInputValue] = useState('');
-
+  const [searchResult, setSearchResult] = useState<SearchResultType[]>([]); 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event?.target.value);
@@ -79,7 +83,15 @@ const SearchBar = () => {
     },
   });
   async function onSubmit(values: z.infer<typeof SearchValidation>) {
-    console.log(values)
+    console.log("Search values:", values);
+  
+      const username = values?.username || ''; 
+      const resultat = await SearchModel(username) 
+      const results = resultat.filter((data) =>
+        data.username.toLowerCase().includes(username.toLowerCase())
+      );
+    setSearchResult(results);
+    console.log(results)
   }
   return [
     <>
@@ -141,7 +153,7 @@ const SearchBar = () => {
           <div className="flex flex-col">
             <ul className="max-w-[600px] min-w-[600px] flex overflow-x-hidden overflow-y-scroll flex-col items-center justify-center " style={{ scrollbarWidth: 'none' }}>
               <SearchValue inputValue={inputValue} svgViewBox={svgViewBox} />
-              {sampledata.map((result, index) => (
+              {searchResult.map((result, index) => (
                 <SearchResult name={result.name} username={result.username} isfollowing={result.isfollowing} />
               ))}
 

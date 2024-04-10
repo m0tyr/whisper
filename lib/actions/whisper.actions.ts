@@ -122,7 +122,7 @@ export async function createComment({ content, author, media, aspectRatio, path,
             throw new Error("Whisper indisponible ou supprimé...")
             //add error page
         }
-        const mentionData = mentions?.map(mention => ({
+        const mentionData : any = mentions?.map(mention => ({
             link: `/${mention.substring(1)}`,
             text: mention,
             version: 1

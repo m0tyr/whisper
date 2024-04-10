@@ -92,13 +92,33 @@ export async function updateUser({
 }
 
 export async function MentionSearchModel(input: string) {
-
-
   const result = await User.find(
     { username: { $regex: input, $options: "i" } },
     { _id: 0, name: 1, image: 1, username: 1 }
   ).limit(10).lean();
   return result;
+}
+type SearchResultType = { name: string, image:string, username: string, isfollowing: boolean };
+
+export async function SearchModel(input: string) {
+  try {
+    const result = await User.find(
+      { username: { $regex: input, $options: "i" } },
+      { _id: 0, name: 1, image: 1, username: 1 }
+    ).limit(10).lean();
+
+    const formattedResult: SearchResultType[] = result.map((item: any) => ({
+      name: item.name,
+      image: item.image,
+      username: item.username,
+      isfollowing:false
+    }));
+
+    return formattedResult;
+  } catch (error) {
+    console.error("Erreur dans SearchModel:", error);
+    throw error;
+  }
 }
 export async function getMentionActivityFromUser(username: string) {
   try {
@@ -135,7 +155,7 @@ export async function getActivityFromUser(username: string, type: string) {
       ).sort({ createdAt: 'desc' });
       console.log(replies)
       return replies;
-    } 
+    }
   } catch (error: any) {
     throw new Error(`Error fetching mentions: ${error.message}`);
   }
