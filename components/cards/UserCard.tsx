@@ -86,7 +86,6 @@ function UserCard({
                                     </motion.div><motion.div whileTap={{ scale: 0.95 }} className="col-start-2">
                                         <button
                                             className="w-full rounded-xl h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
-
                                         >
                                             Mentionner
                                         </button>

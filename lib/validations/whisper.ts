@@ -18,3 +18,6 @@ export const CommentValidation = z.object({
   mentions: z.array(z.string()).optional(),
   accoundId: z.string(),
 })
+export const SearchValidation = z.object({
+  username: z.string().optional(),
+});

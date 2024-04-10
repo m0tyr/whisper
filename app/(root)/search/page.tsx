@@ -15,6 +15,7 @@ import Loader from "@/components/shared/loader/loader";
 import SearchBar from "@/components/forms/SearchBar";
 
 
+
 export default async function Page() {
   const user = await currentUser();
   if (!user) redirect('/sign-in');
@@ -27,6 +28,7 @@ export default async function Page() {
     bio: userInfo?.bio || "",
     image: userInfo?.image || user.imageUrl,
   };
+
   return (
     <>
 

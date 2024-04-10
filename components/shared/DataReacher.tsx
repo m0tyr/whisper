@@ -13,7 +13,6 @@ interface DataReacherProps {
 }
 const DataReacherPage = ({ editableDivHeight, data, data_limit, onUpdateData, cache, toclose }: DataReacherProps) => {
     const [childCount, setChildCount] = useState(0);
-    const placeholder: string = `Ecrivez votre ${data.toString()}...`;
     const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
         const parentDiv = document.getElementById("data");
         if (parentDiv) {
@@ -22,16 +21,16 @@ const DataReacherPage = ({ editableDivHeight, data, data_limit, onUpdateData, ca
                 if (event.key === "Enter" || event.keyCode === 13) { // Prevent Enter key
                     event.preventDefault();
                 } else if (event.currentTarget.textContent?.length! >= data_limit) {
-                    event.preventDefault(); 
+                    event.preventDefault();
                 }
-            } 
+            }
             else if (event.currentTarget.textContent?.length! >= data_limit) {
-                event.preventDefault(); 
-            } 
-            else{
-            } 
+                event.preventDefault();
+            }
+            else {
+            }
         }
-      
+
 
     };
     const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
@@ -44,22 +43,20 @@ const DataReacherPage = ({ editableDivHeight, data, data_limit, onUpdateData, ca
         const inputText = document.getElementById("data") as HTMLElement;
         let textContent = inputText.innerText || "";
         textContent = textContent.replace(/\n\s*\n/g, '\n');
-        if(textContent.trim() === ""){
+        if (textContent.trim() === "") {
             onUpdateData("", data.toString().toLowerCase());
             toclose()
         }
-        else{
+        else {
             onUpdateData(textContent, data.toString().toLowerCase());
             toclose()
         }
-        
+
     };
     const UndoContentChange = () => {
         onUpdateData(cache, data.toString().toLowerCase());
         toclose()
     };
-
-
     return (
 
 
@@ -82,15 +79,16 @@ const DataReacherPage = ({ editableDivHeight, data, data_limit, onUpdateData, ca
                     id="editableDiv"
                 >
                     <div
-                        style={{ maxHeight: editableDivHeight / 2}}
+                        style={{ maxHeight: editableDivHeight / 2 }}
                         id="data"
-                        placeholder={placeholder}
+                        data-placeholder="Click me and start typing!"
                         onKeyPress={handleKeyPress}
                         onPaste={handlePaste}
-                        className="bg-good-gray text-small-regular overflow-y-visible  text-white outline-none rounded-md ring-offset-background cursor-text placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="bg-good-gray text-small-regular overflow-y-visible  text-white outline-none rounded-md ring-offset-background cursor-text  disabled:cursor-not-allowed disabled:opacity-50"
                         contentEditable
                         suppressContentEditableWarning={true}
-                    >{cache}
+                    >
+                        {cache ? cache : `Ecrivez votre ${data.toString()}...`}
                     </div>
 
                 </div>

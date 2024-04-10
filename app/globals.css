@@ -26,6 +26,7 @@
     height: 0;
     pointer-events: none;
 }
+
   body {
     overflow-y: scroll;
     overflow-x: hidden;
@@ -33,7 +34,11 @@
   :root {
     color-scheme: dark;
   }
-  
+  #data:empty:before {
+    content: attr(data-placeholder);
+    color: #888;
+    font-style: italic;
+}
 
   .stop-scrolling {
     position: fixed;
