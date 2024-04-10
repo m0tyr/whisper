@@ -37,12 +37,12 @@ const TopBar = ({ user, _id }: any) => {
             <header className="backdrop-blur-3xl topbar top-0 left-0 right-0 w-full h-[74px] grid-cols-[1fr_50vw_1fr] mobile:grid-cols-[1fr_max-content_1fr] grid max-w-[1230px] mx-auto">
                    <div className="mobile:block mobile:col-start-1 hidden"></div>
               
-                <div className="flex flex-col w-18 h-18  col-start-2 mx-auto mmy-auto  mobile:ml-4 mobile:col-start-1 mobile:mr-auto ">
+                <motion.div whileTap={{scale : 0.92}} className="flex flex-col w-18 h-18  col-start-2 mx-auto mmy-auto  mobile:ml-4 mobile:col-start-1 mobile:mr-auto ">
                     <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
-                            <Image src="/logo_resize.png" alt="logo" width={45} height={45} className="opacity-85 hover:opacity-100 " />
+                            <Image src="/logo_resize.png" alt="logo" width={45} height={45} />
 
                     </Link>
-                </div>
+                </motion.div>
             
 
                     <div className="md:w-[620px] xs:w-[550px]  max-w-[620px] w-[620px] px-16 h-full mobile:col-start-2 col-start-1 mobile:block hidden">
@@ -307,6 +307,7 @@ const TopBar = ({ user, _id }: any) => {
                         </div>
                     </motion.div>
                 </nav>
+
             {showPopup && (
                 <>
                     <motion.div

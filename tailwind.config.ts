@@ -12,6 +12,10 @@ module.exports = {
           },
         });
       }),
+      [require('tailwindcss/plugin')],
+      (({ addVariant  } : any) => {
+        addVariant('search-cancel', '&::-webkit-search-cancel-button');
+      }),
     ]],
   darkMode: ["class"],
   content: [

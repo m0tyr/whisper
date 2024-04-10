@@ -81,7 +81,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const WatchText = (node: any) => {
     var getText = document.getElementById("editable_content")?.textContent || "";
     var result = getText;
-
     setvalues(result);
     if (result?.trim() === "" && !imageDataURL) {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;

@@ -20,7 +20,7 @@ const TopChat = ({ user, _id }: any) => {
     return (
         <>
             <div className="hidden md:block">
-                <div className="py-4 ">
+                <div className="pb-5 pt-2">
                     <Link href={user.username}>
                         <Image src={user.image} alt="logo" width={37} height={37} className=" float-left gap-3 mt-0.5 cursor-pointer rounded-full" />
                     </Link>
