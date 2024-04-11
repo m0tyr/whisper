@@ -1,4 +1,4 @@
-import { fetchUser, fetchUserWhisper, fetchUserbyUsername } from "@/lib/actions/user.actions";
+import { fetchUser, fetchUserWhisper, fetchUserbyUsername, isFollowing } from "@/lib/actions/user.actions";
 import { notFound, redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import { currentUser } from "@clerk/nextjs";
@@ -38,11 +38,13 @@ export default async function Page({ params }: { params: { username: string } })
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
         id: userInfo?.id,
+        follow_count: userInfo?.user_social_info.follow_count,
         username: userInfo?.username,
         name: userInfo?.name,
         bio: userInfo?.bio,
         image: userInfo?.image,
     };
+
     const userposts = await fetchUserWhisper(userInfo.id);
     const currentuserData = {
         id: currentuserInfo?.id,
@@ -51,6 +53,7 @@ export default async function Page({ params }: { params: { username: string } })
         bio: currentuserInfo?.bio,
         image: currentuserInfo?.image,
     };
+    const isfollowing = await isFollowing(currentuserData.username,userData.username)
     return (
         <>
             <TopBar user={currentuserData} _id={`${currentuserInfo._id}`} />
@@ -64,7 +67,9 @@ export default async function Page({ params }: { params: { username: string } })
                         username={userData.username}
                         bio={userData.bio}
                         image={userData.image} _id={`${userInfo._id}`}
-                        fetchedtype={"whisper"}
+                        fetchedtype={"whisper"} 
+                        follow_count={userData.follow_count}
+                        Isfollowing={isfollowing}                    
                         />
                     {userposts.whispers.length === 0 ? (
                         <p className="text-white text-body1-bold ">No Whispers found...</p>

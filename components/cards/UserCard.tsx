@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import UpdateProfile from "../forms/UpdateProfil";
 import React from "react";
 import Link from "next/link";
+import { follow } from "@/lib/actions/user.actions";
 
 interface Props {
     myusername: string;
@@ -14,6 +15,8 @@ interface Props {
     id: string;
     bio: string;
     _id: any;
+    Isfollowing:boolean;
+    follow_count:number;
     fetchedtype: string;
 }
 
@@ -25,19 +28,22 @@ function UserCard({
     id,
     bio,
     _id,
+    follow_count,
+    Isfollowing,
     fetchedtype
 }: Props) {
     const [showPopup, setShowPopup] = useState(false);
-    const [isfollowing, setisfollowing] = useState(false);
 
-    const AddFollow = () => {
-        setisfollowing(!isfollowing)
-    }
+    const [isfollowing,setisfollowing] = useState(Isfollowing)
     const togglePopup = () => {
         setShowPopup(!showPopup);
 
     };
+    const addFollow = async () => {
+        await follow(myusername,username)
+        setisfollowing(!isfollowing)
 
+    }
     return (
         <>
             <div className=" w-[99%] mx-auto">
@@ -58,7 +64,7 @@ function UserCard({
                         </span>
                     </div>
                     <div className="mt-3">
-                        <span className=" text-white opacity-50 text-small-medium font-extralight !text-[15px] line-clamp-2 ">no data :/</span>
+                        <span className=" text-white opacity-50 text-small-medium font-extralight !text-[15px] line-clamp-2 ">{follow_count} Followers</span>
                     </div>
                 </div>
                 <div>
@@ -79,11 +85,12 @@ function UserCard({
                                     <motion.div whileTap={{ scale: 0.95 }} className="col-start-1">
                                         <button
                                             className={`w-full rounded-xl h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
-                                            onClick={AddFollow}
+                                            onClick={addFollow}
                                         >
                                             {!isfollowing ? "Suivre" : "Suivi(e)"}
                                         </button>
-                                    </motion.div><motion.div whileTap={{ scale: 0.95 }} className="col-start-2">
+                                    </motion.div>
+                                    <motion.div whileTap={{ scale: 0.95 }} className="col-start-2">
                                         <button
                                             className="w-full rounded-xl h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
                                         >

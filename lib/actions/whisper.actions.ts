@@ -111,7 +111,39 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     }
 }
+export async function searchwhispersV1(input: string | string[] | undefined, pagenumber: number, pagesize: number) {
+    try {
+        if(!input){
+            return;
+        }
+        const skipamount = (pagenumber - 1) * pagesize;
 
+        const whispers = await Whisper.find({
+            caption: { $regex: input, $options: 'i' },
+            parentId: { $in: [null, undefined] }
+        })
+            .sort({ createdAt: 'desc' })
+            .skip(skipamount)
+            .limit(pagesize)
+            .populate({ path: 'author', model: User })
+            .populate({
+                path: 'children',
+                populate: {
+                    path: 'author',
+                    model: User,
+                    select: "_id username parentId image"
+                }
+            })
+            .exec();
+
+        return { whispers };
+
+    } catch (error) {
+        // Handle errors
+        console.error("Error searching whispers:", error);
+        throw error;
+    }
+}
 export async function createComment({ content, author, media, aspectRatio, path, mentions, caption }: Params, whisperId: any) {
     connectToDB()
 
@@ -122,7 +154,7 @@ export async function createComment({ content, author, media, aspectRatio, path,
             throw new Error("Whisper indisponible ou supprimé...")
             //add error page
         }
-        const mentionData : any = mentions?.map(mention => ({
+        const mentionData: any = mentions?.map(mention => ({
             link: `/${mention.substring(1)}`,
             text: mention,
             version: 1

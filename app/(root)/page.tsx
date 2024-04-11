@@ -19,8 +19,7 @@ export default async function Page() {
   if (!user) redirect('/sign-in');
 
   const allposts = await fetchwhispers(1, 30);
-
-
+  
   const userInfo = await fetchUser(user.id);
   if (!userInfo?.onboarded) redirect('/onboarding');
   const userData = {

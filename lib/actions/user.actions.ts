@@ -76,10 +76,15 @@ export async function updateUser({
         bio,
         image,
         onboarded: true,
+        $set: {
+          user_social_info: {
+            follow_count: 0,
+            followers: []
+          }
+        }
       },
-
       {
-        upsert: true //search upsert = update and also insert if row doesnt exist
+        upsert: true
       }
     );
 
@@ -91,6 +96,47 @@ export async function updateUser({
   }
 }
 
+
+export async function follow(from: string, to: string) {
+  try {
+    const currentuser = await User.findOne({ username: from });
+    const foreignuser = await User.findOne({ username: to });
+    if (!currentuser || !foreignuser) {
+      throw new Error(`User '${from}' or '${to}' not found.`);
+    }
+    const isFollowing = currentuser.user_social_info.following.some((follower: { id: string }) => follower.id === to);
+    if (!isFollowing) {
+      foreignuser.user_social_info.followers.push({ id: from });
+      currentuser.user_social_info.following.push({ id: to });
+      foreignuser.user_social_info.follow_count++;
+    } else {
+      const foreignuserFollowerIndex = foreignuser.user_social_info.followers.findIndex((follower: { id: string }) => follower.id === from);
+      const currentuserFollowingIndex = currentuser.user_social_info.following.findIndex((following: { id: string }) => following.id === to);
+      if (foreignuserFollowerIndex !== -1) {
+        foreignuser.user_social_info.followers.splice(foreignuserFollowerIndex, 1);
+      }
+      if (currentuserFollowingIndex !== -1) {
+        currentuser.user_social_info.following.splice(currentuserFollowingIndex, 1);
+      }
+      foreignuser.user_social_info.follow_count--;
+    }
+    await currentuser.save();
+    await foreignuser.save();
+    console.log(`${from} -> ${to}`);
+  } catch (error: any) {
+    console.error('Error:', error.message);
+  }
+}
+export async function isFollowing(username:string,foreignusername:string){
+try {
+    const currentuser = await User.findOne({ username: username });
+    const isFollowing = currentuser.user_social_info.following.some((follower: { id: string }) => follower.id === foreignusername);
+    return isFollowing
+  } catch (error: any) {
+  console.error('Error:', error.message);
+}
+
+}
 export async function MentionSearchModel(input: string) {
   const result = await User.find(
     { username: { $regex: input, $options: "i" } },
@@ -98,20 +144,21 @@ export async function MentionSearchModel(input: string) {
   ).limit(10).lean();
   return result;
 }
-type SearchResultType = { name: string, image:string, username: string, isfollowing: boolean };
+type SearchResultType = { id: string, name: string, image: string, username: string, isfollowing: boolean };
 
 export async function SearchModel(input: string) {
   try {
     const result = await User.find(
       { username: { $regex: input, $options: "i" } },
-      { _id: 0, name: 1, image: 1, username: 1 }
+      { id: 1, name: 1, image: 1, username: 1 }
     ).limit(10).lean();
 
     const formattedResult: SearchResultType[] = result.map((item: any) => ({
+      id: item.id,
       name: item.name,
       image: item.image,
       username: item.username,
-      isfollowing:false
+      isfollowing: false
     }));
 
     return formattedResult;

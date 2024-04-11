@@ -81,14 +81,14 @@ const DataReacherPage = ({ editableDivHeight, data, data_limit, onUpdateData, ca
                     <div
                         style={{ maxHeight: editableDivHeight / 2 }}
                         id="data"
-                        data-placeholder="Click me and start typing!"
+                        data-placeholder= {`Ecrivez votre ${data.toString()}...`}
                         onKeyPress={handleKeyPress}
                         onPaste={handlePaste}
                         className="bg-good-gray text-small-regular overflow-y-visible  text-white outline-none rounded-md ring-offset-background cursor-text  disabled:cursor-not-allowed disabled:opacity-50"
                         contentEditable
                         suppressContentEditableWarning={true}
                     >
-                        {cache ? cache : `Ecrivez votre ${data.toString()}...`}
+                        {cache}
                     </div>
 
                 </div>

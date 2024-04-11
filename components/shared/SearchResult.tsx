@@ -3,25 +3,24 @@ import Link from "next/link";
 import Image from 'next/image';
 import { useState } from "react";
 interface Props {
+    id: string;
+    image:string;
     name: string;
     username: string;
     isfollowing:boolean;
 }
 
-const SearchResult = ({ name, username,isfollowing }: Props) => {
+const SearchResult = ({ id, image, name, username,isfollowing }: Props) => {
     const [followtracker, setfollowtracker] = useState(isfollowing);  
-
     return (
-        <li>
+        <li key={id}>
             <div className="w-full mx-0 my-0 px-0 py-0 overflow-hidden flex items-center relative">
                 <Link href={`/${username}`} className="w-full relative flex-shrink-0 basis-auto inline-block z-0 mx-0 my-0 px-0 py-0">
                     <div className=" flex flex-nowrap items-center mb--[6px] mt--5 mx--[6px]">
                         <div className=" min-w-0 flex flex-shrink flex-col relative z-0 flex-grow px-[6px]  box-border basis-0 max-w-full">
-                            <div className=" relative right-1.5 w-[600px] flex justify-center items-center flex-row flex-grow ">
+                            <div className=" relative right-1.5 w-[592px] flex justify-center items-center flex-row flex-grow ">
                                 <div className="relative flex px-[14.5px] py-[14.5px]" >
-                                    <Link href={`/${username}`}>
-                                        <Image src="/profil.jpg" alt="logo" width={36} height={36} className=" outline-[rgba(243,245,247,0.15)] outline outline-1 float-left gap-3 cursor-pointer rounded-full" />
-                                    </Link>
+                                        <Image src={image} alt="logo" width={36} height={36} className=" outline-[rgba(243,245,247,0.15)] outline outline-1 float-left gap-3 cursor-pointer rounded-full" />
                                 </div>
                                 <div className="py-4 px-4 border-solid border-b border-b-border content-center pl-0 flex flex-grow justify-between items-center">
                                     <div className="flex flex-col justify-center pr-2 h-11">
