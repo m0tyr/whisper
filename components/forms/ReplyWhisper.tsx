@@ -286,10 +286,10 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
                     control={form.control}
                     name="content"
                     render={({ field }: { field: FieldValues }) => (
-                      <FormItem className=" [overflow-anchor:none;]" >
+                      <FormItem className="[overflow-anchor:none;]" >
 
                         <div
-                          className='bg-good-gray p-6 max-h-[calc(100svh - 193px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
+                          className='bg-good-gray p-6 max-h-[calc(100svh - 133px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
                           select-text	overflow-y-auto overflow-x-auto   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
                             border-t-border [overflow-anchor:auto;]  '
                           role="textbox"
@@ -380,7 +380,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
 
 
                   <div id="editableDiv"
-                    className='items-center justify-center rounded-b-2xl 
+                    className='items-center justify-center rounded-b-2xl flex
                   bg-good-gray  border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-b-border  w-basic h-20 mx-auto p-4'>
 
                     <Button id="button"

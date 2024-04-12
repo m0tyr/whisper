@@ -74,10 +74,14 @@ const WhisperCard = ({
     };
     
     const [showPopup, setShowPopup] = useState(false);
-    const [isliking,setisliking] = useState(false)
+
     const router = useRouter();
 
+    const liketrackerIDs = like_info.liketracker.map((item: { id: string }) => item.id); 
 
+    const isLiking = liketrackerIDs.includes(user.id); 
+
+    const [isliking,setisliking] = useState(isLiking)
     const togglePopup = () => {
         setShowPopup(!showPopup);
 
@@ -87,7 +91,7 @@ const WhisperCard = ({
     }
 
     const LikeWhisper = async () => {
-        await likewhisper(user.username,id)
+        like_info.like_count = await likewhisper(user.username,id)
         setisliking(!isliking)
     }
 
@@ -139,7 +143,7 @@ const WhisperCard = ({
                         media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} aspectRatio={aspectRatio} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
 
                     </div>
-                    {comments[0].posts.number == 0 ? <div></div> :
+                    {comments[0].posts.number == 0 && like_info.like_count == 0 ? <div></div> :
                         <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} like_count={like_info.like_count}  />
                     }
 

@@ -53,7 +53,7 @@ const WhisperCardLeft = ({
             </div>
         )}
         {isNotComment && (
-            <div className=" flex flex-col w-10 justify-center mt-[3px] relative" onClick={(e) => {
+            <div className=" flex flex-col w-10 justify-center mt-[1px] relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }

@@ -51,6 +51,12 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+    const [isliking,setisliking] = useState(Isliking)
+    const LikingAction = () =>{
+        LikeWhisper()
+        setisliking(!isliking)
+
+    }
     let sections = processElements(content)
 
     return (
@@ -173,7 +179,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
                                 <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
                                     <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} onClick={LikeWhisper}
-                                        className="justify-center flex items-center scale-100 transition-transform duration-150 select-none list-none">
+                                        className="justify-center outline-none flex items-center scale-100 transition-transform duration-150 select-none list-none">
                                         <div className="w-full h-full absolute top-[-1px] left-[-0.25px]">
                                             <motion.div
                                                 initial={{ scale: 0 }}

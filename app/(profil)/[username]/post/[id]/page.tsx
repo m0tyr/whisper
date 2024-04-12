@@ -91,7 +91,12 @@ export default async function Page({ params }: { params: { id: string, username:
                                         link: mention.link,
                                         text: mention.text,
                                         version: mention.version
-                                    }))}
+                                    }))} like_info={{
+                                        like_count: post.interaction_info.like_count,
+                                        liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
+                                            id: likeid.id
+                                        }))
+                                    }}
                                 />
                             );
                         })}
@@ -115,7 +120,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                     posts: {
                                         number: whisperdatas.children.length
                                     },
-                                    childrens: {}//No data needed here
+                                    childrens: {} //No data needed here
                                 }
                             ]}
                             isNotComment={whisperdatas.children.length === 0}
@@ -124,7 +129,12 @@ export default async function Page({ params }: { params: { id: string, username:
                                 link: mention.link,
                                 text: mention.text,
                                 version: mention.version
-                            }))} />
+                            }))}  like_info={{
+                                like_count: whisperdatas.interaction_info.like_count,
+                                liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
+                                    id: likeid.id
+                                }))
+                            }}/>
                     </div>
                     <div>
                         <Suspense fallback={
@@ -169,7 +179,14 @@ export default async function Page({ params }: { params: { id: string, username:
                                         link: mention.link,
                                         text: mention.text,
                                         version: mention.version
-                                    }))} />
+                                    }))}
+                                    like_info={{
+                                        like_count: post.interaction_info.like_count,
+                                        liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
+                                            id: likeid.id
+                                        }))
+                                    }}
+                                />
                             )
                             )}
                         </Suspense>

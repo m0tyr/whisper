@@ -322,7 +322,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                         )}
                                         <FormControl className="outline-none">
 
-                                          <div className=" w-6 h-3 mt-3 mb-8" role="button">
+                                          <div className=" w-6 h-3 mt-3 mb-8 cursor-pointer" role="button">
                                             <Input type="file"
                                               id='file'
                                               className="cursor-pointer w-6 h-6  text-good-gray placeholder:bg-good-gray bg-good-gray bg-contain bg-no-repeat !outline-none border-opacity-0 bg-add-image "

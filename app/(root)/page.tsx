@@ -44,17 +44,17 @@ export default async function Page() {
             <TopChat user={userData} _id={`${userInfo._id}`} />
 
 
-            <div>
+    
               <div className="">
                 <div>
-                  {allposts.posts_exec.length === 0 ? (
+                {allposts.posts_exec.length === 0 ? (
                     <p className="text-white text-body1-bold">No Whispers found...</p>
                   ) : (
                     <>
-                      {allposts.posts_exec.map(async (post: any) => {
+                      {allposts.posts_exec.map((post: any) => {
                         return (
                           <WhisperCard
-                            key={post._id} // Ensure each WhisperCard has a unique key
+                            key={post._id} 
                             user={userData}
                             _id={`${userInfo._id}`}
                             id={`${post._id}`}
@@ -105,7 +105,7 @@ export default async function Page() {
                   )}
                 </div>
               </div>
-            </div>
+     
 
           </div>
 

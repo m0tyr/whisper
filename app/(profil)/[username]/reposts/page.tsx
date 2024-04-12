@@ -1,4 +1,4 @@
-import { fetchUser, fetchUserWhisper, fetchUserbyUsername } from "@/lib/actions/user.actions";
+import { fetchUser, fetchUserWhisper, fetchUserbyUsername, isFollowing } from "@/lib/actions/user.actions";
 import { notFound, redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import { currentUser } from "@clerk/nextjs";
@@ -10,8 +10,8 @@ export async function generateMetadata({ params }: { params: { username: string 
 
     const userInfo = await fetchUserbyUsername(params.username);
     if (!userInfo) {
-		return notFound()
-	}
+        return notFound()
+    }
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
         id: userInfo?.id,
@@ -33,11 +33,12 @@ export default async function Page({ params }: { params: { username: string } })
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const userInfo = await fetchUserbyUsername(params.username);
     if (!userInfo) {
-		return notFound()
-	}
+        return notFound()
+    }
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
         id: userInfo?.id,
+        follow_count: userInfo?.user_social_info.follow_count,
         username: userInfo?.username,
         name: userInfo?.name,
         bio: userInfo?.bio,
@@ -51,21 +52,25 @@ export default async function Page({ params }: { params: { username: string } })
         bio: currentuserInfo?.bio,
         image: currentuserInfo?.image,
     };
+    const isfollowing = await isFollowing(currentuserData.username, userData.username)
+
     return (
         <>
             <TopBar user={currentuserData} _id={`${currentuserInfo._id}`} />
             <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
 
                 <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
-                    <UserCard
+                <UserCard
                         myusername={currentuserData.username}
                         id={userData.id}
                         name={userData.name}
                         username={userData.username}
                         bio={userData.bio}
-                        image={userData.image} _id={`${userInfo._id}`}  
+                        image={userData.image} _id={`${userInfo._id}`}
                         fetchedtype={"reposts"}
-                                          />
+                        follow_count={userData.follow_count}
+                        Isfollowing={isfollowing}
+                    />
                     {userposts.whispers.length === 0 ? (
                         <p className="text-white text-body1-bold ">No Whispers found...</p>
                     ) : (
@@ -80,7 +85,7 @@ export default async function Page({ params }: { params: { username: string } })
                                     content={post.content.map((content: any) => ({
                                         text: content.text,
                                         type: content.type
-                                      }))}
+                                    }))}
                                     media={post.media}
                                     author={{ image: userposts.image, username: userposts.username, id: userposts.id }}
                                     createdAt={post.createdAt}
@@ -101,12 +106,18 @@ export default async function Page({ params }: { params: { username: string } })
                                         }
                                     ]}
                                     isNotComment={post.children.length === 0}
-                                    aspectRatio={post.aspectRatio}  
+                                    aspectRatio={post.aspectRatio}
                                     mentions={post.mentions.map((mention: any) => ({
                                         link: mention.link,
                                         text: mention.text,
                                         version: mention.version
-                                      }))}      
+                                    }))}
+                                    like_info={{
+                                        like_count: post.interaction_info.like_count,
+                                        liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
+                                            id: likeid.id
+                                        }))
+                                    }}
                                 />
                             ))}
                         </>

@@ -55,6 +55,7 @@ export default async function Page({
                   <>
                     {results?.whispers.map((post: any) => (
                       <WhisperCard
+                        key={post._id}
                         user={userData}
                         _id={`${userInfo._id}`}
                         id={`${post._id}`}
@@ -65,24 +66,32 @@ export default async function Page({
                           type: content.type
                         }))}
                         media={post.media}
-                        author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
+                        author={{
+                          image: post.author.image,
+                          username: post.author.username,
+                          id: post.author.id
+                        }}
                         createdAt={post.createdAt}
-                        comments={[
-                          {
-                            posts: {
-                              number: post.children.length
+                        like_info={{
+                          like_count: post.interaction_info.like_count,
+                          liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
+                            id: likeid.id
+                          }))
+                        }}
+                        comments={[{
+                          posts: {
+                            number: post.children.length
+                          },
+                          childrens: post.children.map((child: any) => ({
+                            author: {
+                              image: child.author.image,
+                              username: child.author.username,
+                              id: child.author.id
                             },
-                            childrens: post.children.map((child: any) => ({
-                              author: {
-                                image: child.author.image,
-                                username: child.author.username,
-                                id: child.author.id
-                              },
-                              content: [],//No data needed here
-                              createdAt: child.createdAt
-                            }))
-                          }
-                        ]}
+                            content: [], // No data needed here
+                            createdAt: child.createdAt
+                          }))
+                        }]}
                         isNotComment={post.children.length === 0}
                         aspectRatio={post.aspectRatio}
                         mentions={post.mentions.map((mention: any) => ({

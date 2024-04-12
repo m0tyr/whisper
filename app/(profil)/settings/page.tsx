@@ -1,27 +1,36 @@
 import TopBar from "@/components/shared/Topbar";
 
- 
+import { fetchUser, getActivityFromUser } from "@/lib/actions/user.actions";
+import { calculateTimeAgo } from "@/lib/utils";
+import { currentUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
+
+export function generateMetadata() {
+
+  return {
+      title: `Paramètres • Whisper`,
+  };
+}
+
 async function Page() {
-  return(
-    <div>
-        <div className="">
-        <p className="text-white py-5">Change ton pseudo</p>
-        <input type="text" placeholder="m0tyr" name="username" id="" className="bg-navcolor  rounded-full pl-6 pr-32 py-3 outline-8 bg-zinc-800 text-white " />
-        <input type="submit" value="Changer" className="float-right right-2 mr-2 bg-white rounded-full py-2 px-4 hover:bg-slate-200 transition-all duration-150 cursor-pointer" />
-      </div>
-      <div className="opacity-90 rounded-3xl hover:opacity-100 transition-all duration-300 py-12">
-      BLABLA
-      </div>
-      <div className="opacity-90 rounded-3xl hover:opacity-100 transition-all duration-300 py-12">
-      BLABLA
-      </div>
-      <div className="opacity-90 rounded-3xl hover:opacity-100 transition-all duration-300 py-12">
-      BLABLA
-      </div>
-      <div className="opacity-90 rounded-3xl hover:opacity-100 transition-all duration-300 py-12">
-      BLABLA
-      </div>
-    </div>
+  const user = await currentUser();
+  if (!user) redirect('/sign-in');
+  const currentuserInfo = await fetchUser(user.id);
+  if (!currentuserInfo?.onboarded) redirect('/onboarding');
+  const userData = {
+      id: user?.id,
+      username: currentuserInfo?.username || user.username,
+      name: currentuserInfo?.name || user.firstName,
+      bio: currentuserInfo?.bio || "",
+      image: currentuserInfo?.image || user.imageUrl,
+  };
+  return (
+    <>
+      <TopBar user={userData} _id={`${currentuserInfo._id}`} />
+      <section className="mobile:activity-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-16 pb-[4.55rem] px-0">
+        <div className="mt-1">Your password :  </div>
+      </section>
+    </>
   )
 }
 

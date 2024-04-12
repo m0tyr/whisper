@@ -81,13 +81,11 @@ export async function likewhisper(username: string, whisper_id: string) {
     const liker = await User.findOne({ username: username });
     const tolike = await Whisper.findOne({ _id: whisper_id });
     const isLiking = tolike.interaction_info.liketracker.some((liketracker: { id: string }) => liketracker.id === liker.id);
-    console.log(isLiking)
     if (!isLiking) {
         tolike.interaction_info.liketracker.push({
             id: liker.id
         })
         tolike.interaction_info.like_count++
-        console.log(tolike.interaction_info)
 
     } else {
         const get_index = tolike.interaction_info.liketracker.findIndex((liketracker: { id: string }) => liketracker.id === liker.id);
@@ -97,10 +95,10 @@ export async function likewhisper(username: string, whisper_id: string) {
         }
         tolike.interaction_info.like_count--
     }
-
+    const like_count = tolike.interaction_info.like_count
     await tolike.save()
-    console.log(tolike.interaction_info)
-    console.log(liker.username)
+    return like_count
+
 }
 
 export async function GetLastestWhisperfromUserId({ author }: any) {
@@ -142,7 +140,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
                 $in: [null, undefined]
             }
         })
-
+        
         const posts_exec = await posts_query.exec();
 
         const isnext = allposts_count > skipamount + posts_exec.length;
