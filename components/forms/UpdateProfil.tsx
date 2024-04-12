@@ -7,7 +7,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
 
@@ -45,7 +44,7 @@ import { motion } from "framer-motion"
 import { Switch } from "@/components/ui/switch"
 import DataReacher from "../shared/DataReacher";
 import { ModificationValidation } from "@/lib/validations/user";
-import { updateUser } from "@/lib/actions/user.actions";
+import { updateAccountUser } from "@/lib/actions/user.actions";
 
 
 
@@ -128,7 +127,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
             values.name = namecachedata
         }
         values.bio = biocachedata
-        await updateUser({
+        await updateAccountUser({
             userId: values.accoundId,
             username: user?.username,
             name: values.name,

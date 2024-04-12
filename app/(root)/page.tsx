@@ -5,7 +5,7 @@ import TopChat from "@/components/shared/TopChat";
 import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect, usePathname } from "next/navigation";
-import { fetchwhispers } from "@/lib/actions/whisper.actions";
+import { fetchwhispers, isliking } from "@/lib/actions/whisper.actions";
 import WhisperCard from "@/components/cards/WhisperCard";
 import { Suspense } from "react";
 import LoadingSkeleton from "@/components/shared/loader/LoadingSkeleton";
@@ -19,7 +19,7 @@ export default async function Page() {
   if (!user) redirect('/sign-in');
 
   const allposts = await fetchwhispers(1, 30);
-  
+
   const userInfo = await fetchUser(user.id);
   if (!userInfo?.onboarded) redirect('/onboarding');
   const userData = {
@@ -29,6 +29,7 @@ export default async function Page() {
     bio: userInfo?.bio || "",
     image: userInfo?.image || user.imageUrl,
   };
+
   return (
     <>
       <Suspense fallback={
@@ -47,25 +48,36 @@ export default async function Page() {
               <div className="">
                 <div>
                   {allposts.posts_exec.length === 0 ? (
-                    <p className="text-white text-body1-bold ">No Whispers found...</p>
+                    <p className="text-white text-body1-bold">No Whispers found...</p>
                   ) : (
                     <>
-                      {allposts.posts_exec.map((post: any) => (
-                        <WhisperCard
-                          user={userData}
-                          _id={`${userInfo._id}`}
-                          id={`${post._id}`}
-                          currentUserId={user?.id || ""}
-                          parentId={post.parentId}
-                          content={post.content.map((content: any) => ({
-                            text: content.text,
-                            type: content.type
-                          }))}
-                          media={post.media}
-                          author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
-                          createdAt={post.createdAt}
-                          comments={[
-                            {
+                      {allposts.posts_exec.map(async (post: any) => {
+                        return (
+                          <WhisperCard
+                            key={post._id} // Ensure each WhisperCard has a unique key
+                            user={userData}
+                            _id={`${userInfo._id}`}
+                            id={`${post._id}`}
+                            currentUserId={user?.id || ""}
+                            parentId={post.parentId}
+                            content={post.content.map((content: any) => ({
+                              text: content.text,
+                              type: content.type
+                            }))}
+                            media={post.media}
+                            author={{
+                              image: post.author.image,
+                              username: post.author.username,
+                              id: post.author.id
+                            }}
+                            createdAt={post.createdAt}
+                            like_info={{
+                              like_count: post.interaction_info.like_count,
+                              liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
+                                id: likeid.id
+                              }))
+                            }}
+                            comments={[{
                               posts: {
                                 number: post.children.length
                               },
@@ -75,28 +87,24 @@ export default async function Page() {
                                   username: child.author.username,
                                   id: child.author.id
                                 },
-                                content: [],//No data needed here
+                                content: [], // No data needed here
                                 createdAt: child.createdAt
                               }))
-                            }
-                          ]}
-                          isNotComment={post.children.length === 0}
-                          aspectRatio={post.aspectRatio}
-                          mentions={post.mentions.map((mention: any) => ({
-                            link: mention.link,
-                            text: mention.text,
-                            version: mention.version
-                          }))}
-                        />
-
-                      )
-                      )}
+                            }]}
+                            isNotComment={post.children.length === 0}
+                            aspectRatio={post.aspectRatio}
+                            mentions={post.mentions.map((mention: any) => ({
+                              link: mention.link,
+                              text: mention.text,
+                              version: mention.version
+                            }))}
+                          />
+                        );
+                      })}
                     </>
-                  )
-                  }
+                  )}
                 </div>
               </div>
-
             </div>
 
           </div>

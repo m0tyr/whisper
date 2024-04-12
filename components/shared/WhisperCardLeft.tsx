@@ -34,7 +34,7 @@ const WhisperCardLeft = ({
     )
     return (<>
         {!isNotComment && (
-            <div className=" flex flex-col w-10 mt-0.5  justify-center" onClick={(e) => {
+            <div className=" flex flex-col w-10  mt-[3px]  justify-center" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -53,7 +53,7 @@ const WhisperCardLeft = ({
             </div>
         )}
         {isNotComment && (
-            <div className=" flex flex-col w-10 justify-center relative" onClick={(e) => {
+            <div className=" flex flex-col w-10 justify-center mt-[3px] relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }

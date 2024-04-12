@@ -6,6 +6,7 @@ import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
 import { ExtractedElement } from "@/components/plugins/Main";
 
+
 interface Params {
     content: ExtractedElement[] | undefined;
     author: string;
@@ -15,6 +16,7 @@ interface Params {
     aspectRatio: string;
     mentions?: string[];
 }
+
 
 export async function createWhisper({ content, author, media, aspectRatio, path, caption, mentions }: Params) {
     try {
@@ -30,7 +32,11 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
                 author,
                 media,
                 caption,
-                mentions: mentionData
+                mentions: mentionData,
+                interaction_info: {
+                    like_count: 0,
+                    liketracker: []
+                }
             });
             await User.findByIdAndUpdate(author, {
                 $push: { whispers: createdWhisper._id }
@@ -44,7 +50,11 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
                 media,
                 aspectRatio,
                 caption,
-                mentions: mentionData
+                mentions: mentionData,
+                interaction_info: {
+                    like_count: 0,
+                    liketracker: []
+                }
             });
             await User.findByIdAndUpdate(author, {
                 $push: { whispers: createdWhisper._id }
@@ -59,6 +69,39 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
         throw new Error(`error oncreate: ${error.message} `)
     }
 };
+export async function isliking(userid:string,liketracker:any){
+    try {
+        const isLiking = liketracker.some((liketracker: { id: string }) => liketracker.id === userid);
+        return isLiking
+      } catch (error: any) {
+      console.error('Error:', error.message);
+    }
+}
+export async function likewhisper(username: string, whisper_id: string) {
+    const liker = await User.findOne({ username: username });
+    const tolike = await Whisper.findOne({ _id: whisper_id });
+    const isLiking = tolike.interaction_info.liketracker.some((liketracker: { id: string }) => liketracker.id === liker.id);
+    console.log(isLiking)
+    if (!isLiking) {
+        tolike.interaction_info.liketracker.push({
+            id: liker.id
+        })
+        tolike.interaction_info.like_count++
+        console.log(tolike.interaction_info)
+
+    } else {
+        const get_index = tolike.interaction_info.liketracker.findIndex((liketracker: { id: string }) => liketracker.id === liker.id);
+
+        if (get_index !== -1) {
+            tolike.interaction_info.liketracker.splice(get_index, 1);
+        }
+        tolike.interaction_info.like_count--
+    }
+
+    await tolike.save()
+    console.log(tolike.interaction_info)
+    console.log(liker.username)
+}
 
 export async function GetLastestWhisperfromUserId({ author }: any) {
     try {
@@ -70,6 +113,8 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
         throw new Error(`Error retrieving last whisper: ${error.message}`);
     }
 }
+
+
 export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
@@ -111,9 +156,11 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     }
 }
+
+
 export async function searchwhispersV1(input: string | string[] | undefined, pagenumber: number, pagesize: number) {
     try {
-        if(!input){
+        if (!input) {
             return;
         }
         const skipamount = (pagenumber - 1) * pagesize;
@@ -144,6 +191,8 @@ export async function searchwhispersV1(input: string | string[] | undefined, pag
         throw error;
     }
 }
+
+
 export async function createComment({ content, author, media, aspectRatio, path, mentions, caption }: Params, whisperId: any) {
     connectToDB()
 
@@ -168,6 +217,10 @@ export async function createComment({ content, author, media, aspectRatio, path,
                 mentions: mentionData,
                 caption: caption,
                 parentId: whisperId,
+                interaction_info: {
+                    like_count: 0,
+                    liketracker: []
+                }
             })
 
             await commentitem.save()
@@ -186,6 +239,10 @@ export async function createComment({ content, author, media, aspectRatio, path,
                 caption: caption,
                 aspectRatio: aspectRatio,
                 parentId: whisperId,
+                interaction_info: {
+                    like_count: 0,
+                    liketracker: []
+                }
             })
 
             await commentitem.save()
@@ -201,6 +258,7 @@ export async function createComment({ content, author, media, aspectRatio, path,
         throw new Error("l'ajout du commentaire à échoué...")
     }
 }
+
 
 export async function fetchwhisperById(id: string) {
     try {
@@ -237,6 +295,8 @@ export async function fetchwhisperById(id: string) {
 
     }
 }
+
+
 export async function fetchallParentsFromWhisper(parentid: string) {
     let computeparent: { [key: string]: any } = {};
 

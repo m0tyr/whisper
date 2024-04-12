@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton"
 import { getMeta } from "@/lib/utils";
 import { ExtractedElement, extractElements } from "../plugins/Main";
+import { likewhisper } from "@/lib/actions/whisper.actions";
 
 interface Props {
     user: any;
@@ -36,9 +37,13 @@ interface Props {
     aspectRatio: string;
     mentions: {
         link: string,
-        text:string,
-        version:number
+        text: string,
+        version: number
     }[];
+    like_info: {
+        like_count : number;
+        liketracker : []
+    }
 }
 
 const WhisperCard = ({
@@ -54,7 +59,8 @@ const WhisperCard = ({
     comments,
     isNotComment,
     aspectRatio,
-    mentions
+    mentions,
+    like_info,
 }: Props) => {
     const whisperData = {
         id: id,
@@ -64,10 +70,11 @@ const WhisperCard = ({
         createdAt: createdAt,
         comments: comments,
         isNotComment: isNotComment,
-        mentions : mentions
+        mentions: mentions,
     };
+    
     const [showPopup, setShowPopup] = useState(false);
-
+    const [isliking,setisliking] = useState(false)
     const router = useRouter();
 
 
@@ -78,6 +85,12 @@ const WhisperCard = ({
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
+
+    const LikeWhisper = async () => {
+        await likewhisper(user.username,id)
+        setisliking(!isliking)
+    }
+
     return (
         <>
             {showPopup && (
@@ -104,30 +117,30 @@ const WhisperCard = ({
                         createdAt: createdAt,
                         comments: comments,
                         isComment: isNotComment,
-                        mentions:mentions
+                        mentions: mentions
                     }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
 
                 </>
 
 
             )}
-            <div className="rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5 mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
+            <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3 pt-1.5 mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
             }} >
-                <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 relative' >
+                <div className={`flex w-full flex-1 flex-col mt-1.5 ${whisperData.isNotComment ? '' : 'gap-2'} mb-1 relative`}>
                     <div className="flex flex-row flex-1  gap-3 ">
 
 
                         <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />
 
                         <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
-                            media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} aspectRatio={aspectRatio} mentions={whisperData.mentions} />
+                        media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} aspectRatio={aspectRatio} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
 
                     </div>
                     {comments[0].posts.number == 0 ? <div></div> :
-                        <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} />
+                        <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} like_count={like_info.like_count}  />
                     }
 
 

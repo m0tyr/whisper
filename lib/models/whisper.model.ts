@@ -9,8 +9,19 @@ const captionsSUBSchema = new mongoose.Schema({
     text: String,
     type: String,
 });
-
+const liketrackerchema = new mongoose.Schema({
+    id: String,
+    liked_at : {
+        type: Date,
+        default: Date.now
+    },
+  });
+  const interaction_info = new mongoose.Schema({
+    like_count: { type: Number, default: 0, min: 0 }, 
+    liketracker: [liketrackerchema],
+  });
 const whisperSchema = new mongoose.Schema({
+    interaction_info: interaction_info,
     content: [captionsSUBSchema],
     author: {
         type: mongoose.Schema.Types.ObjectId,

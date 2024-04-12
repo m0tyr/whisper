@@ -56,6 +56,37 @@ export async function fetchUserWhisper(userId: string) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+export async function updateAccountUser({
+  userId,
+  username,
+  name,
+  bio,
+  image,
+  path,
+}: Params): Promise<void> {
+  connectToDB();
+
+  try {
+    await User.findOneAndUpdate(
+      { id: userId },
+      {
+        username: username.toLowerCase(),
+        name,
+        bio,
+        image
+      },
+      {
+        upsert: true
+      }
+    );
+
+    if (path === `/${username}`) {
+      revalidatePath(path);
+    }
+  } catch (error: any) {
+    throw new Error(`La MAJ des données a échouée... :  ${error.message}`);
+  }
+}
 
 export async function updateUser({
   userId,

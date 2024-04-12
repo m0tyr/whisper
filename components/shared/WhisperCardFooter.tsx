@@ -14,11 +14,12 @@ interface Props {
         childrens: any;
     }[];
     isNotComment?: boolean;
+    like_count: number;
 }
 import router, { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 
-const WhisperCardFooter = ({ id, author, comments, isNotComment }: Props) => {
+const WhisperCardFooter = ({ id, author, comments, isNotComment, like_count }: Props) => {
     const whisperData = {
         author: author,
         comments: comments,
@@ -95,7 +96,7 @@ const WhisperCardFooter = ({ id, author, comments, isNotComment }: Props) => {
                         </div>
                         <div className="flex ">
                             <span className="text-gray-2 !text-[13.5px]">
-                                456 mentions J'aime
+                            {like_count} mentions J'aime
                             </span>
                         </div>
                     </div>
