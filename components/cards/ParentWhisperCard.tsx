@@ -283,13 +283,19 @@ const ParentWhisperCard = ({
 
                             )}
                             {media && (
-                                <ImageClickAnim src={media} aspectRatio={aspectRatio} />
+                                <div className={`relative bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} onClick={(e) => {
+                                    if (e.target === e.currentTarget) {
+                                        ping();
+                                    }
+                                }}>
+                                    <ImageClickAnim src={media} aspectRatio={aspectRatio} />
+                                </div>
                             )}
 
 
 
 
-                            <div className="relative right-1.5 ">
+                            <div className="relative right-1.5 mt-1 ">
                                 <div className="grid grid-cols-[36px_36px_36px] w-full" onClick={(e) => {
                                     if (e.target === e.currentTarget) {
                                         ping();
@@ -390,7 +396,7 @@ const ParentWhisperCard = ({
                                         ping();
                                     }
                                 }}>
-                                  
+
 
                                     <div className="flex flex-row gap-3 mb-0.5">
                                         <div className="flex ">

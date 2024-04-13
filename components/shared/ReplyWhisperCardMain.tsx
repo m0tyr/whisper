@@ -87,8 +87,9 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                     </div>
                 )}
             {media && (
-                <ImageClickAnim src={media} aspectRatio={aspectRatio} />
-            )}  
+                <div className={`relative bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} >
+                            <ImageClickAnim src={media} aspectRatio={aspectRatio}  />
+                        </div>            )}  
             <div className="mb-6">
 
             </div>

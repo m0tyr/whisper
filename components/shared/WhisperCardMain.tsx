@@ -58,7 +58,6 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
 
     }
     let sections = processElements(content)
-
     return (
         <>
 
@@ -128,7 +127,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                     </Link>
                 </div>
                 <div>
-                    {content && (
+                    {content && content.length !== 0 && (
                         <div className="relative bottom-1" onClick={(e) => {
                             if (e.target === e.currentTarget) {
                                 ping();
@@ -159,12 +158,12 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                         </div>
                     )}
                     {media && (
-                        <div className="relative bottom-1" onClick={(e) => {
+                        <div className={`relative bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} onClick={(e) => {
                             if (e.target === e.currentTarget) {
                                 ping();
                             }
                         }}>
-                            <ImageClickAnim src={media} aspectRatio={aspectRatio} />
+                            <ImageClickAnim src={media} aspectRatio={aspectRatio}  />
                         </div>
                     )}
 
