@@ -10,6 +10,8 @@ import { useDebounceCallback } from 'usehooks-ts'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { $generateHtmlFromNodes } from '@lexical/html';
+import { motion, useAnimation, useDragControls, useMotionValue, useTransform } from 'framer-motion';
+
 import {
   Form,
   FormControl,
@@ -39,16 +41,21 @@ import { image } from "@nextui-org/react";
 import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
 import { getMeta, isBase64Image } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
-import { motion } from "framer-motion"
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
 import { $createMentionNode, MentionNode } from "../plugins/MentionsPlugin/MentionNode";
 import { ContentPlayer, ExtractedElement, extractElements, extractMention } from "../plugins/Main";
 import { $createTextNode, $getRoot, $getSelection, TextNode } from "lexical";
+import Carousel from "../shared/Carousel";
 
 
 
 
+interface ImageData {
+  url: string;
+  aspectRatio: string;
+  width: string;
+}
 
 const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
@@ -59,14 +66,23 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const { startUpload } = useUploadThing('imageUploader')
   const filesTracker = useRef<File[]>([]);
   const router = useRouter();
-  const [imageDataURL, setImageDataURL] = useState<string[]>([]);
   const [aspectRatio, setAspectRatio] = useState("revert");
   const [text, setText] = useState<string>('');
   const debouncedText = useDebounceCallback(setText, 500);
   const pathname = usePathname();
   const ref: LegacyRef<HTMLDivElement> = useRef<HTMLDivElement>(null);
-  const addImageDataURL = (newImageDataUrl: string) => {
-    setImageDataURL([...imageDataURL, newImageDataUrl]);
+  const [imageDataArray, setImageDataArray] = useState<ImageData[]>([]);
+
+  const addImageData = (url: string, aspectRatio: string, width: string) => {
+    setImageDataArray([...imageDataArray, { url, aspectRatio, width }]);
+  };
+  const removeImageData = (urlToRemove: string) => {
+    console.log("URL to remove:", urlToRemove);
+    setImageDataArray(prevImageDataArray => {
+      const newArray = prevImageDataArray.filter(imageData => imageData.url !== urlToRemove);
+      console.log("New array after filtering:", newArray);
+      return newArray;
+    });
   };
   useEffect(() => {
     const offsetY = window.scrollY;
@@ -94,64 +110,47 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     var getText = document.getElementById("editable_content")?.textContent || "";
     var result = getText;
     setvalues(result);
-    if (result?.trim() === "" && !imageDataURL) {
+    if (result?.trim() === "" && imageDataArray.length === 0) {
       (document.getElementById('button') as HTMLButtonElement).disabled = true;
     } else {
       (document.getElementById('button') as HTMLButtonElement).disabled = false;
     }
   }
-
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
-    fieldChange: (value: string) => void
+    fieldChange: (value: string) => void,
+    addImageData: (url: string, aspectRatio: string, witdh: string) => void
   ) => {
     e.preventDefault();
-    const selectedFiles = e.target.files;
-    if (selectedFiles) {
-      const newFiles = Array.from(selectedFiles).slice(0, 4);
-      filesTracker.current = newFiles;
-      console.log(filesTracker.current);
-      fieldChange(JSON.stringify(newFiles));
-    }
+    console.log(imageDataArray)
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     const fileReader = new FileReader();
-
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFiles(Array.from(e.target.files));
-
-      if (!file.type.includes("image")) return;
-
-      fileReader.onload = async (event) => {
-        const imageDataUrl = event.target?.result?.toString() || "";
-        getMeta(imageDataUrl, (err: any, img: any) => {
-          const width = img.naturalWidth;
-          const height = img.naturalHeight;
-          const arvalue = width / height;
-          const ar = arvalue.toString();
-          setAspectRatio(ar);
-        });
-        addImageDataURL(imageDataUrl);
+    fileReader.onload = async (event) => {
+      const imageDataUrl = event.target?.result?.toString() || "";
+      const img = new window.Image();
+      img.src = imageDataUrl;
+      img.onload = () => {
+        const width = img.naturalWidth;
+        const height = img.naturalHeight;
+        const aspectRatio = (width / height).toString();
+        addImageData(imageDataUrl, aspectRatio, width.toString());
         (document.getElementById('button') as HTMLButtonElement).disabled = false;
         fieldChange(imageDataUrl);
       };
-
-      fileReader.readAsDataURL(file);
-    }
+    };
+    fileReader.readAsDataURL(file);
   };
-
-
+  const appendCacheBustingParameter = (imageUrl: string): string => {
+    const cacheBustedUrl = new URL(imageUrl);
+    cacheBustedUrl.searchParams.append('cacheBuster', Date.now().toString());
+    return cacheBustedUrl.toString();
+  };
   const abortimage = (
     src: string,
-    fieldChange: (value: string) => void
   ) => {
-    fieldChange("");
-    setAspectRatio("revert");
-    addImageDataURL(src);
-    console.log(filesTracker)
-    const fileInput = document.getElementById('file') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
+    removeImageData(src)
     const stringifiedEditorState = JSON.stringify(
       editorRef.current.getEditorState().toJSON(),
     );
@@ -159,8 +158,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
     const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
     setvalues(editorStateTextString);
-    console.log(editorStateTextString)
-    if (imageDataURL === null) {
+    if (imageDataArray.length === 0 && editorStateTextString === "") {
       (document.getElementById("button") as HTMLButtonElement).disabled = true;
       console.log("in")
     } else {
@@ -174,7 +172,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       inputRef.current.click();
     }
   };
-
+  const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const element = event.target as HTMLInputElement
+    element.value = ''
+  }
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
     setIsSent(!isSent);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
@@ -262,7 +263,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const [values, setvalues] = useState('');
   const editorRef: any = useRef();
 
-
   return (
     <>
       <Form {...form} >
@@ -321,34 +321,83 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                     control={form.control}
                                     name="media"
                                     render={({ field }: { field: FieldValues }) => (
-                                      <FormItem className=" space-y-4 ">
-                                        {imageDataURL && imageDataURL.map((url, index) => (
-                                          <div key={index} id={`picture-${index}`} className="max-h-[430px] py-4 grid-rows-1 grid-cols-1 grid">
-                                            <div style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
-                                              <div className="block relative h-full">
-                                                <picture>
-                                                  <img
-                                                    src={url}
-                                                    className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-xl border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
-                                                    alt={`Image ${index}`}
-                                                  />
-                                                </picture>
-                                                <div className="absolute top-2 right-2">
-                                                  <Image
-                                                    src="/svgs/close.svg"
-                                                    width={20}
-                                                    height={20}
-                                                    alt=""
-                                                    className="invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
-                                                    onClick={(e) => abortimage(url, field.onChange)}
-                                                  />
+                                      <FormItem className=" space-y-[10px] ">
+                                        {imageDataArray && (
+                                          <>
+                                            {imageDataArray.length === 1 && (
+                                              <div className="max-h-[430px] my-1 grid-rows-1 grid-cols-1 grid">
+                                                <div style={{ aspectRatio: imageDataArray[0].aspectRatio, maxHeight: "430px" }}>
+                                                  <div className="block relative h-full">
+                                                    <picture>
+                                                      <img
+                                                        src={imageDataArray[0].url}
+                                                        className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
+                                                        alt={`Image 0`}
+                                                      />
+                                                    </picture>
+                                                    <div className="absolute top-2 right-2">
+                                                      <Image
+                                                        src="/svgs/close.svg"
+                                                        width={20}
+                                                        height={20}
+                                                        alt=""
+                                                        className="invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
+                                                        onClick={(e) => abortimage(imageDataArray[0].url)}
+                                                      />
+                                                    </div>
+                                                  </div>
                                                 </div>
                                               </div>
-                                            </div>
-                                          </div>
-                                        ))}
+                                            )}
+                                            {imageDataArray.length === 2 && (
+                                              <div className="pt-3">
+                                                {(() => {
+                                                  let aspectRatio;
+                                                  if (parseFloat(imageDataArray[0].aspectRatio) + parseFloat(imageDataArray[1].aspectRatio) > 2.5) {
+                                                    aspectRatio = 2.1413333333333333;
+                                                  } else {
+                                                    aspectRatio = (parseFloat(imageDataArray[0].aspectRatio) + parseFloat(imageDataArray[1].aspectRatio)).toString();
+                                                  }
+
+                                                  return (
+                                                    <div className="grid grid-rows-[100%] gap-[6px]" style={{
+                                                      aspectRatio: aspectRatio,
+                                                      gridTemplateColumns: `minmax(0, ${Math.min(133, Math.floor(parseFloat(imageDataArray[0].aspectRatio) * 100))}fr) minmax(0, ${Math.min(133, Math.floor(parseFloat(imageDataArray[1].aspectRatio) * 100))}fr)`
+                                                    }}>
+                                                      {imageDataArray.map(({ url, aspectRatio }, index) => (
+                                                        <div className="block relative h-full" key={index}>
+                                                          <picture>
+                                                            <img
+                                                              src={url}
+                                                              className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
+                                                              alt={`Image ${index}`}
+                                                            />
+                                                          </picture>
+                                                          <div className="absolute top-2 right-2">
+                                                            <Image
+                                                              src="/svgs/close.svg"
+                                                              width={20}
+                                                              height={20}
+                                                              alt=""
+                                                              className="invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
+                                                              onClick={(e) => abortimage(url)}
+                                                            />
+                                                          </div>
+                                                        </div>
+                                                      ))}
+                                                    </div>
+                                                  );
+                                                })()}
+                                              </div>
+                                            )}
+                                            {imageDataArray.length > 2 && (
+                                              <Carousel DataArray={imageDataArray} abortimage={abortimage}/>
+                                            )}
+
+                                          </>
+                                        )}
                                         <FormControl className="outline-none">
-                                          <div className="relative right-1.5 mt-1">
+                                          <div className="relative right-1.5">
                                             <div className="flex w-full">
                                               <div
                                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
@@ -425,7 +474,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                               </div>
                                               <input
                                                 id="file"
-                                                onChange={(e) => handleImage(e, field.onChange)}
+                                                onChange={(e) => handleImage(e, field.onChange, addImageData)}
+                                                onClick={onInputClick}
                                                 ref={inputRef}
                                                 style={{ display: 'none' }}
                                                 accept="image/jpeg,image/png,video/mp4,video/quicktime"

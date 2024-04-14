@@ -65,6 +65,8 @@
     "sharp": "^0.33.2",
     "slate-history": "^0.100.0",
     "slate-react": "^0.102.0",
+    "styled-components": "^6.1.8",
+    "styled-system": "^5.1.5",
     "svix": "^1.17.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
