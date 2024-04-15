@@ -8,8 +8,9 @@ import { useState } from "react";
 
 interface Props {
     medias: DBImageData[];
+    isReply: boolean;
 }
-const WhisperCardMedia = ({ medias }: Props) => {
+const WhisperCardMedia = ({ medias, isReply }: Props) => {
     const [showImage, setShowImage] = useState(false);
     const [targetImage, settargetImage] = useState<string | undefined>("")
     const [targetAR, settargetAR] = useState<string | undefined>("")
@@ -84,7 +85,7 @@ const WhisperCardMedia = ({ medias }: Props) => {
                 </div>
             )}
             {medias.length === 2 && (
-                <div className="pt-3">
+                <div className="pt-1.5 ">
                     {(() => {
                         let aspectRatio;
                         if (parseFloat(medias[0].aspectRatio) + parseFloat(medias[1].aspectRatio) > 2.5) {
@@ -94,12 +95,12 @@ const WhisperCardMedia = ({ medias }: Props) => {
                         }
 
                         return (
-                            <div className="grid grid-rows-[100%] gap-[6px]" style={{
+                            <div className="grid grid-rows-[100%] max-h-[430px]  gap-[6px]" style={{
                                 aspectRatio: aspectRatio,
                                 gridTemplateColumns: `minmax(0, ${Math.min(133, Math.floor(parseFloat(medias[0].aspectRatio) * 100))}fr) minmax(0, ${Math.min(133, Math.floor(parseFloat(medias[1].aspectRatio) * 100))}fr)`,
                             }}>
                                 {medias.map(({ s3url, aspectRatio, isVideo, width }, index) => (
-                                    <div className="block relative h-full" key={index}>
+                                    <div className="block relative max-h-[430px] " key={index}>
                                         {isVideo ? ( // Check if it's a video
                                             <div className="z-0 relative w-full h-full">
                                                 <video
@@ -155,7 +156,7 @@ const WhisperCardMedia = ({ medias }: Props) => {
                 </div>
             )}
             {medias.length > 2 && (
-                <WhisperCardCarousel DataArray={medias} srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} showImage={showImage} />
+                <WhisperCardCarousel DataArray={medias} widthprovider={settargetWidth} srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} showImage={showImage} isReply={isReply} />
             )}
             {showImage && (
                 <ShowImage width={targetWidth} src={targetImage} ar={targetAR} togglePopup={togglePopup} isVideo={targetType} />

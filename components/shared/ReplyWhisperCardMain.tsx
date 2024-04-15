@@ -3,15 +3,14 @@
 interface Props {
     id: string;
     content: ExtractedElement[];
-    media: string;
+    medias: DBImageData[];
     author: {
         username: string;
         image: string;
         id: string;
     };
     createdAt: string;
-    togglePopup:any;
-    aspectRatio?:any;
+    togglePopup: any;
     mentions: {
         link: string,
         text: string,
@@ -39,32 +38,33 @@ import { useState } from "react";
 import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import React from "react";
-import { ExtractedElement } from "../plugins/Main";
+import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
+import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
 
-export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup,aspectRatio,mentions }: Props) {
+export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions }: Props) {
 
 
     let sections = processElements(content)
 
     return (
         <>
-  
-        <div className="w-full ">
-            <div className="float-right  text-white text-small-regular font-light opacity-50 flex h-5">
 
-                <p className="opacity-50 pr-2.5">{calculateTimeAgo(createdAt.toString())}</p>
-               
-            </div>
-            <div>
-                <Link href={`/${author.username}`}>
-                    <p className="text-white text-small-semibold hover:underline">{author.username}</p>
-                </Link>
-            </div>
-            {content && (
+            <div className="w-full ">
+                <div className="float-right  text-white text-small-regular font-light opacity-50 flex h-5">
+
+                    <p className="opacity-50 pr-2.5">{calculateTimeAgo(createdAt.toString())}</p>
+
+                </div>
+                <div>
+                    <Link href={`/${author.username}`}>
+                        <p className="text-white text-small-semibold hover:underline">{author.username}</p>
+                    </Link>
+                </div>
+                {content && (
                     <div className="relative bottom-1" >
 
                         <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5">
-                        {sections.map((section, index) => (
+                            {sections.map((section, index) => (
                                 <span key={index} className={`text-white leading-[calc(1.4_*_1em)] overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] font-light mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
                                     {section.map((line, subIndex) => (
                                         line.type === 'mention' ? (
@@ -86,18 +86,23 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
 
                     </div>
                 )}
-            {media && (
-                <div className={`relative bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} >
-                            <ImageClickAnim src={media} aspectRatio={aspectRatio}  />
-                        </div>            )}  
-            <div className="mb-6">
+                {medias && medias.length <= 2 ? (
+                    <div className={`relative w-full bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} >
+                        <WhisperCardMedia medias={medias} isReply={true} />
+                    </div>
+                ) : (
+                    <div className={`relative w-[calc(100%_+_48px)] ml-[calc(-1_*_48px)] bottom-1 ${content && content.length !== 0 ? "" : "pt-5"}`} >
+                        <WhisperCardMedia medias={medias}  isReply={true} />
+                    </div>
+                )}
+                <div className="mb-6">
+
+                </div>
+
+
 
             </div>
 
-
-
-        </div>
-          
         </>
     )
 

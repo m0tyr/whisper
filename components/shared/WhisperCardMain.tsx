@@ -47,7 +47,6 @@ import DisplayMedia from "./ui/DisplayMedia";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
 
 export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {
-    console.log(medias)
     const router = useRouter();
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
@@ -62,7 +61,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
     return (
         <>
 
-            <div className="col-start-2 row-start-2 row-span-2 relative" onClick={(e) => {
+            <div className=" mt-2 w-full relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -162,7 +161,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                                 ping();
                             }
                         }}>
-                            <WhisperCardMedia medias={medias} />
+                            <WhisperCardMedia medias={medias} isReply={false} />
                         </div>
                     ) : (
                         <div className={`relative w-[calc(100%_+_48px)] ml-[calc(-1_*_48px)] bottom-1 ${content && content.length !== 0 ? "" : "pt-5"}`} onClick={(e) => {
@@ -170,7 +169,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                                 ping();
                             }
                         }}>
-                            <WhisperCardMedia medias={medias} />
+                            <WhisperCardMedia medias={medias} isReply={false} />
                         </div>
                     )}
 

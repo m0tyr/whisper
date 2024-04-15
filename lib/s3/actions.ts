@@ -14,7 +14,7 @@ const allowedFileTypes = [
     "video/quicktime"
 ]
 
-const MAXFILESIZE = 1048576 * 20; // 20 MB
+const MAXFILESIZE = 1048576 * 25; // 25 MB
 
 type GetSignedURLParams = {
     userId: string

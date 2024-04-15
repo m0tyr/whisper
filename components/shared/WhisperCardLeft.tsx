@@ -33,7 +33,9 @@ const WhisperCardLeft = ({
         </div>
     )
     return (<>
-            {!isNotComment && (
+        {!isNotComment && (
+            <div className="mt-2 flex flex-col w-10">
+
                 <div className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]  justify-center" onClick={(e) => {
                     if (e.target === e.currentTarget) {
                         ping();
@@ -43,17 +45,13 @@ const WhisperCardLeft = ({
                         <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
 
                     </Link>
-
-
-
-
-                    <div className="thread-card_bar" />
-
-
                 </div>
-            )}
-            {isNotComment && (
-                <div className=" col-start-1 row-start-1 row-span-2 w-10 justify-center mt-[1px] relative" onClick={(e) => {
+                <div className="thread-card_bar " />
+            </div>
+        )}
+        {isNotComment && (
+            <div className="mt-2 flex flex-col w-10">
+                <div className=" flex-grow  col-start-1 row-start-1 row-span-2 w-10 justify-center mt-[1px] relative" onClick={(e) => {
                     if (e.target === e.currentTarget) {
                         ping();
                     }
@@ -66,8 +64,10 @@ const WhisperCardLeft = ({
 
 
 
+
                 </div>
-            )}
+            </div>
+        )}
     </>
     )
 

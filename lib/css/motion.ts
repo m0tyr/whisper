@@ -1,0 +1,1 @@
+export const CAROUSEL_DIRECTION_VALUE = 80

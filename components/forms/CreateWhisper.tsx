@@ -186,11 +186,25 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   }
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
+    toclose()
     toast({
       title: "Publication...",
       duration: 20000,
     }
     )
+    const temp = JSON.stringify(editorRef.current.getEditorState());
+    const datas = JSON.parse(temp);
+
+    const stringifiedEditorState = JSON.stringify(
+      editorRef.current.getEditorState().toJSON(),
+    );
+    const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
+
+    const editorStateTextString: string = parsedEditorState.read(() => $getRoot().getTextContent())
+    const extractedData = extractMention(datas);
+    const extractedstuff = extractElements(datas)
+    values.mentions = extractedData.mentions;
+    values.content = extractedstuff
 
     if (imageDataArray.length >= 1) {
       if (imageDataArray.length > 4) {
@@ -203,7 +217,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       }
       let allFilesAuthorized = true;
       for (const imageData of imageDataArray) {
-        if (imageData.file.size > 1048576 * 20) {
+        if (imageData.file.size > 1048576 * 25) {
           allFilesAuthorized = false;
           break;
         }
@@ -251,19 +265,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       const { url, file, ...rest } = obj;
       return rest;
     });
-    const temp = JSON.stringify(editorRef.current.getEditorState());
-    const datas = JSON.parse(temp);
-
-    const stringifiedEditorState = JSON.stringify(
-      editorRef.current.getEditorState().toJSON(),
-    );
-    const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
-
-    const editorStateTextString: string = parsedEditorState.read(() => $getRoot().getTextContent())
-    const extractedData = extractMention(datas);
-    const extractedstuff = extractElements(datas)
-    values.mentions = extractedData.mentions;
-    values.content = extractedstuff
 
     values.media = mongo_db_media_object;
 

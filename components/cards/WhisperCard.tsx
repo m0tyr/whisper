@@ -110,7 +110,7 @@ const WhisperCard = ({
                         currentUserId: currentUserId,
                         parentId: parentId,
                         content: content,
-                        media: "media",
+                        medias: medias,
                         author: {
                             username: author.username,
                             image: author.image,
@@ -126,14 +126,14 @@ const WhisperCard = ({
 
 
             )}
-            <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3 pt-1.5 mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
+            <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3  mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
             }} >
-                <div className={`flex w-full flex-1 flex-col mt-1.5 ${whisperData.isNotComment ? '' : 'gap-2'} mb-1 relative`}>
+                <div className={`flex w-full flex-1 flex-col  ${whisperData.isNotComment ? '' : 'gap-2'} mb-1 relative`}>
                     <div className="relative outline-none">
-                        <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1  ">
+                        <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
 
 
                             <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />

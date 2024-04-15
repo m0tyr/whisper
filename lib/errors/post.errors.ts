@@ -1,4 +1,4 @@
-export var MAX_FILE_SIZE = "Un ou plusieurs fichiers excèdent la limite autorisée. (20MB / fichier)"
+export var MAX_FILE_SIZE = "Un ou plusieurs fichiers excèdent la limite autorisée. (25MB / fichier)"
 
 export var FILE_TYPE_NOT_ALLOWED = "Un ou plusieurs fichiers ne sont pas autorisés."
 

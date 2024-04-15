@@ -16,7 +16,7 @@ import WhisperCardLeft from "../shared/WhisperCardLeft";
 import { usePathname, useRouter } from "next/navigation";
 import { CommentValidation } from "@/lib/validations/whisper";
 import ReplyWhisperCardMain from "../shared/ReplyWhisperCardMain";
-import { ContentPlayer, ExtractedElement, extractElements, extractMention } from "../plugins/Main";
+import { ContentPlayer, extractElements, extractMention } from "../plugins/Main";
 import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler } from "react";
 import { GetLastestWhisperfromUserId, createComment } from "@/lib/actions/whisper.actions";
 import {
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/form";
 
 import { $getRoot } from "lexical";
+import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 interface Props {
   _id: string;
   user: {
@@ -44,7 +45,7 @@ interface Props {
     currentUserId: string;
     parentId: string | null;
     content: ExtractedElement[];
-    media: string;
+    medias: DBImageData[];
     mentions: {
       link: string,
       text: string,
@@ -227,15 +228,15 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
         values.media = imgRes[0].url;
       }
     }
-    await createComment({
-      content: values.content,
-      author: values.accoundId,
-      media: values.media,
-      aspectRatio: aspectratio,
-      mentions: values.mentions,
-      caption: editorStateTextString,
-      path: pathname,
-    }, whisper_to_reply.id);
+    /*     await createComment({
+          content: values.content,
+          author: values.accoundId,
+          media: values.media,
+          aspectRatio: aspectratio,
+          mentions: values.mentions,
+          caption: editorStateTextString,
+          path: pathname,
+        }, whisper_to_reply.id); */
 
 
     toast({
@@ -277,7 +278,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
 
                         <div
                           className='bg-good-gray p-6 max-h-[calc(100svh - 133px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
-                          select-text	overflow-y-auto overflow-x-auto   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
+                          select-text	overflow-y-auto overflow-x-hidden   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
                             border-t-border [overflow-anchor:auto;]  '
                           role="textbox"
                           style={{ maxHeight: editableDivHeight / 1.15, textAlign: 'left', }}
@@ -286,11 +287,11 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
                           onInput={handleInput}
                         >
                           <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
-                            <div className="flex flex-row flex-1  gap-3 ">
+                            <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1  ">
                               <WhisperCardLeft author={whisper_to_reply.author} id={user.id} />
 
-                              <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} media={whisper_to_reply.media} author={whisper_to_reply.author}
-                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} aspectRatio={aspectRatio} mentions={whisper_to_reply.mentions.map((mention: any) => ({
+                              <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} medias={whisper_to_reply.medias} author={whisper_to_reply.author}
+                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} mentions={whisper_to_reply.mentions.map((mention: any) => ({
                                   link: mention.link,
                                   text: mention.text,
                                   version: mention.version

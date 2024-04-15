@@ -48,7 +48,7 @@ const ShowImage = ({ src, ar, togglePopup, isVideo, width }: any) => {
                         </svg>
                     </span>
                 </motion.div>
-                <div className="flex justify-center items-center w-full  h-full ">
+                <div className="flex justify-center items-center h-full" >
                     <div className=" h-full scale-100 " style={{
                         aspectRatio: ar,
                         width : (parseInt(width) - 100).toString() + "px"
@@ -64,7 +64,7 @@ const ShowImage = ({ src, ar, togglePopup, isVideo, width }: any) => {
                                 src={src} className="h-full object-contain " />
 
                         ) : (
-                            <img draggable='false' src={src} className="w-full h-full object-contain " />
+                            <img draggable='false' src={src} className="w-full h-full object-cover " />
                         )}
 
                     </div>
