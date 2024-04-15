@@ -8,6 +8,7 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
+import { FILE_TYPE_NOT_ALLOWED, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import { useState } from "react";
 
 export function Toaster() {
@@ -58,12 +59,24 @@ export function Toaster() {
                     {title}
                   </div>
                 </ToastTitle>
-              ) : (
-                <ToastTitle className="flex gap-3 items-center justify-center">
-                  <div className="mt-0.5">
+              ) : title === FILE_TYPE_NOT_ALLOWED ? (
+                <ToastTitle className="flex gap-3 items-center justify-center bg-red-600">
+                  <div className="mt-0.5 ">
                     {title}
                   </div>
                 </ToastTitle>
+              ) : title === MAX_FILE_SIZE ? (
+                <ToastTitle className="flex gap-3 items-center justify-center ">
+                  <div className="mt-0.5 ">
+                    {title}
+                  </div>
+                </ToastTitle>
+              ) : (
+              <ToastTitle className="flex gap-3 items-center justify-center">
+                <div className="mt-0.5">
+                  {title}
+                </div>
+              </ToastTitle>
               )}
 
               {description && (

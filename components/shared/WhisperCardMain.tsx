@@ -3,7 +3,7 @@
 interface Props {
     id: string;
     content: ExtractedElement[];
-    media: string;
+    medias: DBImageData[];
     author: {
         username: string;
         image: string;
@@ -11,14 +11,13 @@ interface Props {
     };
     createdAt: string;
     togglePopup: any;
-    aspectRatio: string;
     mentions: {
         link: string,
         text: string,
         version: number
     }[];
-    LikeWhisper : any;
-    Isliking:boolean;
+    LikeWhisper: any;
+    Isliking: boolean;
 }
 import { calculateTimeAgo, getMeta, processElements } from "@/lib/utils";
 import {
@@ -43,16 +42,18 @@ import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton"
 import React from "react";
-import { ExtractedElement } from "../plugins/Main";
+import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
+import DisplayMedia from "./ui/DisplayMedia";
+import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
 
-export default function WhisperCardMain({ id, content, media, author, createdAt, togglePopup, aspectRatio, mentions, LikeWhisper, Isliking }: Props) {
-
+export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {
+    console.log(medias)
     const router = useRouter();
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
-    const [isliking,setisliking] = useState(Isliking)
-    const LikingAction = () =>{
+    const [isliking, setisliking] = useState(Isliking)
+    const LikingAction = () => {
         LikeWhisper()
         setisliking(!isliking)
 
@@ -61,7 +62,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
     return (
         <>
 
-            <div className="w-full relative" onClick={(e) => {
+            <div className="col-start-2 row-start-2 row-span-2 relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -114,8 +115,6 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                             </DropdownMenuContent>
                         </motion.div>
                     </DropdownMenu>
-
-
                 </div>
                 <div onClick={(e) => {
                     if (e.target === e.currentTarget) {
@@ -126,7 +125,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                         <p className="text-white text-small-semibold !text-[15px] font-semibold hover:underline inline relative">{author.username}</p>
                     </Link>
                 </div>
-                <div>
+                <div >
                     {content && content.length !== 0 && (
                         <div className="relative bottom-1" onClick={(e) => {
                             if (e.target === e.currentTarget) {
@@ -157,13 +156,21 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
 
                         </div>
                     )}
-                    {media && (
-                        <div className={`relative bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} onClick={(e) => {
+                    {medias && medias.length <= 2 ? (
+                        <div className={`relative w-full bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} onClick={(e) => {
                             if (e.target === e.currentTarget) {
                                 ping();
                             }
                         }}>
-                            <ImageClickAnim src={media} aspectRatio={aspectRatio}  />
+                            <WhisperCardMedia medias={medias} />
+                        </div>
+                    ) : (
+                        <div className={`relative w-[calc(100%_+_48px)] ml-[calc(-1_*_48px)] bottom-1 ${content && content.length !== 0 ? "" : "pt-5"}`} onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                                ping();
+                            }
+                        }}>
+                            <WhisperCardMedia medias={medias} />
                         </div>
                     )}
 
@@ -243,7 +250,7 @@ export default function WhisperCardMain({ id, content, media, author, createdAt,
                                                     scale: 1,
                                                     transition: { duration: 0.01 },
                                                 }}
-                                                transition={{duration: 0.01, ease: "easeOut" }}
+                                                transition={{ duration: 0.01, ease: "easeOut" }}
                                                 className="rounded-full w-[36px] h-[36px] absolute top-[calc(-1_*_(36px_-_100%)_/_2)] block left-[calc(-1_*_(36px_-_100%)_/_2)] select-none list-none"
                                             />
                                         </div>

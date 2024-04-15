@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { string } from "zod";
 
 const mentionsSUBSchema = new mongoose.Schema({
     link:String,
@@ -16,6 +17,12 @@ const liketrackerchema = new mongoose.Schema({
         default: Date.now
     },
   });
+const mediaSUBSchema = new mongoose.Schema({
+    s3url : String,
+    aspectRatio: String,
+    width : String,
+    isVideo: Boolean
+})
   const interaction_info = new mongoose.Schema({
     like_count: { type: Number, default: 0, min: 0 }, 
     liketracker: [liketrackerchema],
@@ -29,14 +36,7 @@ const whisperSchema = new mongoose.Schema({
         required: true,
     },
     mentions : [mentionsSUBSchema],
-    media: {
-        type: String,
-        required: false
-    },
-    aspectRatio: {
-        type: String,
-        required: false
-    },
+    media: [mediaSUBSchema],
     createdAt: {
         type: Date,
         default: Date.now

@@ -29,6 +29,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "whisper-local-sample.s3.eu-north-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "images.clerk.dev",
       },
       {

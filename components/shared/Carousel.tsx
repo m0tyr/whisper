@@ -1,66 +1,78 @@
 import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler, LegacyRef, Key, MutableRefObject } from "react";
 import { motion, useAnimation, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import Image from "next/image";
-
-interface ImageData {
-    url: string;
-    aspectRatio: string;
-    width: string;
-}
+import { PrevImageData  } from "@/lib/types/whisper.types";
 
 interface Props {
-    DataArray: ImageData[];
+    DataArray: PrevImageData[];
     abortimage: (url: string) => void;
 }
 
 const Carousel = ({ DataArray, abortimage }: Props) => {
     const [width, setWidth] = useState(0)
     const carouselRef = useRef<HTMLDivElement>(null);
-    const RTwidth = () => {
-        if (carouselRef.current) {
-            console.log(carouselRef.current.scrollWidth)
-            console.log(carouselRef.current.offsetWidth)
-            const newWidth = carouselRef.current.scrollWidth - carouselRef.current.offsetWidth + 30;
-            setWidth(newWidth > 0 ? newWidth : 0); // Ensure width is never negative
+    const fullcarouselRef = useRef<HTMLDivElement>(null);
+    let height = "272px";
+    for (let index = 0; index < DataArray.length; index++) {
+        if(DataArray[index].isVideo){
+            height = "272px"; //need to see for scaling aspectratio
         }
-    };
+    }
     useEffect(() => {
         const updateWidth = () => {
-            if (carouselRef.current) {
-                console.log(carouselRef.current.scrollTop)
-                console.log(carouselRef.current.scrollWidth)
-                console.log(carouselRef.current.offsetWidth)
-                const newWidth = carouselRef.current.scrollWidth - carouselRef.current.offsetWidth + 30;
-                setWidth(newWidth > 0 ? newWidth : 0); // Ensure width is never negative
+            if (carouselRef.current && fullcarouselRef.current) {
+                carouselRef.current.scrollTo(0, 0);
+                const newWidth = fullcarouselRef.current.scrollWidth - carouselRef.current.offsetWidth + 30;
+                setWidth(newWidth > 0 ? newWidth : 0);
             }
         };
-
         updateWidth();
-        if(carouselRef.current)
-        carouselRef.current.addEventListener('resize', updateWidth);
-        return () => {
-            if(carouselRef.current)
-            carouselRef.current.removeEventListener('resize', updateWidth);
+
+        const handleResize = () => {
+            updateWidth();
         };
-    }, [DataArray,carouselRef.current]);
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [DataArray]);
     return (
         <div className=" pr-[2.88rem]">
             <motion.div ref={carouselRef} className=" overflow-hidden mt-2 active:cursor-grabbing cursor-grab" whileTap={"grabbing"}>
                 <motion.div
+                    ref={fullcarouselRef}
                     drag="x"
+                    dragElastic={0.1}
+                    transition={{ type: "spring", stiffness: 100 }}
                     dragConstraints={{ right: 0, left: -width }}
                     className="flex">
-                    {DataArray.slice(0, 4).map(({ url, aspectRatio, width }: ImageData, index) => (
-                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: '272px', width: `${parseInt(width) > 380 ? "380" : width}px` }}>
+                    {DataArray.map(({ url, aspectRatio, width, isVideo }: PrevImageData, index) => (
+                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: height, width: `${parseInt(width) > 380 ? "380" : width}px` }}>
                             <div className="relative">
-                                <picture className="select-none">
-                                    <img
-                                        draggable={false}
-                                        src={url}
-                                        className='w-full max-w-full object-cover box-border select-none absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
-                                        alt={`Image ${index}`}
-                                    />
-                                </picture>
+                                {isVideo ? ( // Check if it's a video
+                                    <div className="z-0 relative w-full h-full">
+                                        <video
+                                            loop
+                                            autoPlay
+                                            playsInline
+                                            src={url}
+                                            className='w-full h-full '
+                                            muted
+
+                                        />
+                                    </div>
+                                ) : (
+                                    <picture>
+                                        <img
+                                            draggable="false"
+                                            src={url}
+                                            className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
+                                            alt={`Image 0`}
+                                        />
+                                    </picture>
+                                )}
                                 <div className="absolute top-2 right-2">
                                     <Image
                                         src="/svgs/close.svg"

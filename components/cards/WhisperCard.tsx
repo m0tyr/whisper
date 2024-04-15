@@ -9,8 +9,8 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton"
 import { getMeta } from "@/lib/utils";
-import { ExtractedElement, extractElements } from "../plugins/Main";
 import { likewhisper } from "@/lib/actions/whisper.actions";
+import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 
 interface Props {
     user: any;
@@ -19,7 +19,7 @@ interface Props {
     currentUserId: string;
     parentId: string | null;
     content: ExtractedElement[];
-    media: string;
+    medias: DBImageData[];
     author: {
         username: string;
         image: string;
@@ -34,15 +34,14 @@ interface Props {
         childrens: any;
     }[];
     isNotComment?: boolean;
-    aspectRatio: string;
     mentions: {
         link: string,
         text: string,
         version: number
     }[];
     like_info: {
-        like_count : number;
-        liketracker : []
+        like_count: number;
+        liketracker: []
     }
 }
 
@@ -54,11 +53,10 @@ const WhisperCard = ({
     parentId,
     content,
     author,
-    media,
+    medias,
     createdAt,
     comments,
     isNotComment,
-    aspectRatio,
     mentions,
     like_info,
 }: Props) => {
@@ -66,22 +64,22 @@ const WhisperCard = ({
         id: id,
         content: content,
         author: author,
-        media: media,
+        medias: medias,
         createdAt: createdAt,
         comments: comments,
         isNotComment: isNotComment,
         mentions: mentions,
     };
-    
+
     const [showPopup, setShowPopup] = useState(false);
 
     const router = useRouter();
 
-    const liketrackerIDs = like_info.liketracker.map((item: { id: string }) => item.id); 
+    const liketrackerIDs = like_info.liketracker.map((item: { id: string }) => item.id);
 
-    const isLiking = liketrackerIDs.includes(user.id); 
+    const isLiking = liketrackerIDs.includes(user.id);
 
-    const [isliking,setisliking] = useState(isLiking)
+    const [isliking, setisliking] = useState(isLiking)
     const togglePopup = () => {
         setShowPopup(!showPopup);
 
@@ -91,7 +89,7 @@ const WhisperCard = ({
     }
 
     const LikeWhisper = async () => {
-        like_info.like_count = await likewhisper(user.username,id)
+        like_info.like_count = await likewhisper(user.username, id)
         setisliking(!isliking)
     }
 
@@ -112,7 +110,7 @@ const WhisperCard = ({
                         currentUserId: currentUserId,
                         parentId: parentId,
                         content: content,
-                        media: media,
+                        media: "media",
                         author: {
                             username: author.username,
                             image: author.image,
@@ -122,7 +120,7 @@ const WhisperCard = ({
                         comments: comments,
                         isComment: isNotComment,
                         mentions: mentions
-                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
+                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={"1"} />
 
                 </>
 
@@ -134,19 +132,20 @@ const WhisperCard = ({
                 }
             }} >
                 <div className={`flex w-full flex-1 flex-col mt-1.5 ${whisperData.isNotComment ? '' : 'gap-2'} mb-1 relative`}>
-                    <div className="flex flex-row flex-1  gap-3 ">
+                    <div className="relative outline-none">
+                        <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1  ">
 
 
-                        <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />
+                            <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />
 
-                        <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
-                        media={whisperData.media} createdAt={whisperData.createdAt} togglePopup={togglePopup} aspectRatio={aspectRatio} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
+                            <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
+                                medias={whisperData.medias} createdAt={whisperData.createdAt} togglePopup={togglePopup} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
 
+                        </div>
+                        {comments[0].posts.number == 0 && like_info.like_count == 0 ? <div></div> :
+                            <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} like_count={like_info.like_count} />
+                        }
                     </div>
-                    {comments[0].posts.number == 0 && like_info.like_count == 0 ? <div></div> :
-                        <WhisperCardFooter author={whisperData.author} comments={whisperData.comments} isNotComment={whisperData.isNotComment} id={id} like_count={like_info.like_count}  />
-                    }
-
 
                 </div>
             </div>

@@ -4,21 +4,20 @@ import { revalidatePath } from "next/cache";
 import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
-import { ExtractedElement } from "@/components/plugins/Main";
+import { DBImageData, ExtractedElement } from "../types/whisper.types";
 
 
 interface Params {
     content: ExtractedElement[] | undefined;
     author: string;
-    media?: string;
+    media?: DBImageData[];
     path: string;
     caption: string;
-    aspectRatio: string;
     mentions?: string[];
 }
 
 
-export async function createWhisper({ content, author, media, aspectRatio, path, caption, mentions }: Params) {
+export async function createWhisper({ content, author, media, path, caption, mentions }: Params) {
     try {
         connectToDB();
         const mentionData = mentions?.map(mention => ({
@@ -26,42 +25,24 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
             text: mention,
             version: 1
         }));
-        if (aspectRatio === 'revert') {
-            const createdWhisper = await Whisper.create({
-                content,
-                author,
-                media,
-                caption,
-                mentions: mentionData,
-                interaction_info: {
-                    like_count: 0,
-                    liketracker: []
-                }
-            });
-            await User.findByIdAndUpdate(author, {
-                $push: { whispers: createdWhisper._id }
-            })
 
-            revalidatePath(path)
-        } else {
-            const createdWhisper = await Whisper.create({
-                content,
-                author,
-                media,
-                aspectRatio,
-                caption,
-                mentions: mentionData,
-                interaction_info: {
-                    like_count: 0,
-                    liketracker: []
-                }
-            });
-            await User.findByIdAndUpdate(author, {
-                $push: { whispers: createdWhisper._id }
-            })
+        const createdWhisper = await Whisper.create({
+            content,
+            author,
+            media,
+            caption,
+            mentions: mentionData,
+            interaction_info: {
+                like_count: 0,
+                liketracker: []
+            }
+        });
+        await User.findByIdAndUpdate(author, {
+            $push: { whispers: createdWhisper._id }
+        })
 
-            revalidatePath(path)
-        }
+        revalidatePath(path)
+
 
 
 
@@ -69,12 +50,12 @@ export async function createWhisper({ content, author, media, aspectRatio, path,
         throw new Error(`error oncreate: ${error.message} `)
     }
 };
-export async function isliking(userid:string,liketracker:any){
+export async function isliking(userid: string, liketracker: any) {
     try {
         const isLiking = liketracker.some((liketracker: { id: string }) => liketracker.id === userid);
         return isLiking
-      } catch (error: any) {
-      console.error('Error:', error.message);
+    } catch (error: any) {
+        console.error('Error:', error.message);
     }
 }
 export async function likewhisper(username: string, whisper_id: string) {
@@ -140,7 +121,7 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
                 $in: [null, undefined]
             }
         })
-        
+
         const posts_exec = await posts_query.exec();
 
         const isnext = allposts_count > skipamount + posts_exec.length;
@@ -191,7 +172,7 @@ export async function searchwhispersV1(input: string | string[] | undefined, pag
 }
 
 
-export async function createComment({ content, author, media, aspectRatio, path, mentions, caption }: Params, whisperId: any) {
+export async function createComment({ content, author, media, path, mentions, caption }: Params, whisperId: any) {
     connectToDB()
 
     try {
@@ -206,51 +187,28 @@ export async function createComment({ content, author, media, aspectRatio, path,
             text: mention,
             version: 1
         }));
-        if (aspectRatio === 'revert') {
 
-            const commentitem = new Whisper({
-                content: content,
-                author: author,
-                media: media,
-                mentions: mentionData,
-                caption: caption,
-                parentId: whisperId,
-                interaction_info: {
-                    like_count: 0,
-                    liketracker: []
-                }
-            })
+        const commentitem = new Whisper({
+            content: content,
+            author: author,
+            media: media,
+            mentions: mentionData,
+            caption: caption,
+            parentId: whisperId,
+            interaction_info: {
+                like_count: 0,
+                liketracker: []
+            }
+        })
 
-            await commentitem.save()
+        await commentitem.save()
 
-            isactive.children.push(commentitem._id)
+        isactive.children.push(commentitem._id)
 
-            await isactive.save()
+        await isactive.save()
 
-            revalidatePath(path)
-        } else {
-            const commentitem = new Whisper({
-                content: content,
-                author: author,
-                media: media,
-                mentions: mentionData,
-                caption: caption,
-                aspectRatio: aspectRatio,
-                parentId: whisperId,
-                interaction_info: {
-                    like_count: 0,
-                    liketracker: []
-                }
-            })
+        revalidatePath(path)
 
-            await commentitem.save()
-
-            isactive.children.push(commentitem._id)
-
-            await isactive.save()
-
-            revalidatePath(path)
-        }
 
     } catch (error) {
         throw new Error("l'ajout du commentaire à échoué...")

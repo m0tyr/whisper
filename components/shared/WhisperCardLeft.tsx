@@ -33,41 +33,41 @@ const WhisperCardLeft = ({
         </div>
     )
     return (<>
-        {!isNotComment && (
-            <div className=" flex flex-col w-10  mt-[3px]  justify-center" onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                    ping();
-                }
-            }}>
-                <Link href={`${author.username}`}>
-                            <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
+            {!isNotComment && (
+                <div className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]  justify-center" onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                        ping();
+                    }
+                }}>
+                    <Link href={`${author.username}`}>
+                        <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
 
-                        </Link>
-               
-
-
-
-                <div className="thread-card_bar" />
-
-
-            </div>
-        )}
-        {isNotComment && (
-            <div className=" flex flex-col w-10 justify-center mt-[1px] relative" onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                    ping();
-                }
-            }}>
-                <Link href={`${author.username}`} className="absolute top-0.5">
-                    <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
-
-                </Link>
+                    </Link>
 
 
 
 
-            </div>
-        )}
+                    <div className="thread-card_bar" />
+
+
+                </div>
+            )}
+            {isNotComment && (
+                <div className=" col-start-1 row-start-1 row-span-2 w-10 justify-center mt-[1px] relative" onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                        ping();
+                    }
+                }}>
+                    <Link href={`${author.username}`} className="absolute top-0.5">
+                        <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
+
+                    </Link>
+
+
+
+
+                </div>
+            )}
     </>
     )
 

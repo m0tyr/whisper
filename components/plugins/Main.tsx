@@ -17,51 +17,8 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import MentionsPlugin from "./MentionsPlugin";
 import { $createRangeSelection, $getRoot, $getSelection, $setSelection, RangeSelection, TextNode } from "lexical";
 import { InitMention } from "./InitMention";
-interface Props {
-  ref: any;
-  watchtext: any;
-}
-interface Child {
-  type: string;
-  text?: string;
-}
+import { ExtractedElement, Input, MentionsDatas, Root } from "@/lib/types/whisper.types";
 
-interface Paragraph {
-  children: Child[];
-}
-
-interface Root {
-  root: { children: any; };
-  children: Paragraph[];
-}
-interface MentionsDatas {
-  mentions: string[];
-}
-interface Element {
-  detail?: number;
-  format?: number;
-  mode?: string;
-  style?: string;
-  text?: string;
-  type: string;
-  version: number;
-  mentionName?: string;
-}
-
-
-
-interface Root {
-  children: Paragraph[];
-}
-
-interface Input {
-  root: Root;
-}
-
-export interface ExtractedElement {
-  text: string;
-  type: string;
-}
 
 export function extractElements(input: Input): ExtractedElement[] {
   const extractedElements: ExtractedElement[] = [];

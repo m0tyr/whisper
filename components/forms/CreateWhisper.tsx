@@ -39,28 +39,26 @@ import { WhisperValidation } from "@/lib/validations/whisper";
 import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
 import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
-import { getMeta, isBase64Image } from "@/lib/utils";
+import { computeSHA256, getMeta, isBase64Image } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
 import { $createMentionNode, MentionNode } from "../plugins/MentionsPlugin/MentionNode";
-import { ContentPlayer, ExtractedElement, extractElements, extractMention } from "../plugins/Main";
+import { ContentPlayer, extractElements, extractMention } from "../plugins/Main";
 import { $createTextNode, $getRoot, $getSelection, TextNode } from "lexical";
-import Carousel from "../shared/Carousel";
+import DisplayMedia from "../shared/ui/DisplayMedia";
+import { DBImageData, ExtractedElement, PrevImageData } from "@/lib/types/whisper.types";
+import { s3GenerateSignedURL } from "@/lib/s3/actions";
+import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 
 
 
 
-interface ImageData {
-  url: string;
-  aspectRatio: string;
-  width: string;
-}
+
 
 const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
   const [files, setFiles] = useState<File[]>([]);
-  const [isSent, setIsSent] = useState(true);
   const { toast } = useToast()
   const inputRef = useRef<HTMLInputElement>(null);
   const { startUpload } = useUploadThing('imageUploader')
@@ -71,10 +69,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const debouncedText = useDebounceCallback(setText, 500);
   const pathname = usePathname();
   const ref: LegacyRef<HTMLDivElement> = useRef<HTMLDivElement>(null);
-  const [imageDataArray, setImageDataArray] = useState<ImageData[]>([]);
+  const [imageDataArray, setImageDataArray] = useState<PrevImageData[]>([]);
 
-  const addImageData = (url: string, aspectRatio: string, width: string) => {
-    setImageDataArray([...imageDataArray, { url, aspectRatio, width }]);
+  const addImageData = (file: File, s3url: string | undefined, url: string, aspectRatio: string, width: string, isVideo: boolean) => {
+    setImageDataArray([...imageDataArray, { file, url, aspectRatio, width, isVideo, s3url }]);
   };
   const removeImageData = (urlToRemove: string) => {
     console.log("URL to remove:", urlToRemove);
@@ -98,7 +96,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     resolver: zodResolver(WhisperValidation),
     defaultValues: {
       content: [] as ExtractedElement[],
-      media: "",
+      media: [] as DBImageData[],
       mentions: [],
       accoundId: _id,
     },
@@ -119,38 +117,48 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
     fieldChange: (value: string) => void,
-    addImageData: (url: string, aspectRatio: string, witdh: string) => void
+    addImageData: (file: File, s3url: string | undefined, url: string, aspectRatio: string, witdh: string, isVideo: boolean) => void
   ) => {
     e.preventDefault();
-    console.log(imageDataArray)
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    const fileReader = new FileReader();
-    fileReader.onload = async (event) => {
-      const imageDataUrl = event.target?.result?.toString() || "";
+
+    const fileread = e.target.files?.[0] as File
+    const CACHEDBLOBURL = URL.createObjectURL(fileread)
+    const mimeType = fileread.type;
+    console.log(mimeType)
+    if (mimeType.includes('image')) {
       const img = new window.Image();
-      img.src = imageDataUrl;
+      img.src = CACHEDBLOBURL;
       img.onload = () => {
         const width = img.naturalWidth;
         const height = img.naturalHeight;
         const aspectRatio = (width / height).toString();
-        addImageData(imageDataUrl, aspectRatio, width.toString());
-        (document.getElementById('button') as HTMLButtonElement).disabled = false;
-        fieldChange(imageDataUrl);
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio, width.toString(), false);
       };
-    };
-    fileReader.readAsDataURL(file);
+    } else if (mimeType.includes('video')) {
+      const video = document.createElement('video');
+      video.src = CACHEDBLOBURL;
+      video.addEventListener('loadedmetadata', () => {
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+        const aspectRatio = (width / height).toString();
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio, width.toString(), true);
+      });
+    } else {
+      console.error('Unsupported file type');
+    }
+    (document.getElementById('button') as HTMLButtonElement).disabled = false;
+    console.log(imageDataArray)
+
   };
-  const appendCacheBustingParameter = (imageUrl: string): string => {
-    const cacheBustedUrl = new URL(imageUrl);
-    cacheBustedUrl.searchParams.append('cacheBuster', Date.now().toString());
-    return cacheBustedUrl.toString();
-  };
+
+
+
   const abortimage = (
     src: string,
   ) => {
     removeImageData(src)
+    URL.revokeObjectURL(src)
     const stringifiedEditorState = JSON.stringify(
       editorRef.current.getEditorState().toJSON(),
     );
@@ -177,14 +185,72 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     element.value = ''
   }
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-    setIsSent(!isSent);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
-    toclose();
     toast({
       title: "Publication...",
       duration: 20000,
     }
     )
+
+    if (imageDataArray.length >= 1) {
+      if (imageDataArray.length > 4) {
+        toast({
+          title: MAX_FILE_NUMBER,
+          duration: 3000,
+        });
+        (document.getElementById('button') as HTMLButtonElement).disabled = false;
+        return
+      }
+      let allFilesAuthorized = true;
+      for (const imageData of imageDataArray) {
+        if (imageData.file.size > 1048576 * 20) {
+          allFilesAuthorized = false;
+          break;
+        }
+      }
+      if (allFilesAuthorized) {
+        for (const imageData of imageDataArray) {
+          const result = await s3GenerateSignedURL({
+            userId: _id,
+            fileType: imageData.file.type,
+            fileSize: imageData.file.size,
+            checksum: await computeSHA256(imageData.file),
+          });
+
+          if (result.failure !== undefined) {
+            toast({
+              title: result.failure,
+              duration: 3000,
+            });
+            (document.getElementById('button') as HTMLButtonElement).disabled = false;
+            break;
+          }
+
+          if (result.success) {
+            const url = result.success.url;
+            imageData.s3url = url.split("?")[0];
+            await fetch(url, {
+              method: "PUT",
+              headers: {
+                "Content-Type": imageData.file.type,
+              },
+              body: imageData.file,
+            });
+          }
+        }
+      } else {
+        toast({
+          title: MAX_FILE_SIZE,
+          duration: 3000,
+        });
+        (document.getElementById('button') as HTMLButtonElement).disabled = false;
+        return
+      }
+    }
+    const mongo_db_media_object = imageDataArray.map(obj => {
+      const { url, file, ...rest } = obj;
+      return rest;
+    });
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
 
@@ -193,32 +259,18 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     );
     const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
 
-    const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
+    const editorStateTextString: string = parsedEditorState.read(() => $getRoot().getTextContent())
     const extractedData = extractMention(datas);
     const extractedstuff = extractElements(datas)
     values.mentions = extractedData.mentions;
     values.content = extractedstuff
-    let hasimageChanged = false;
-    let blob: string | undefined;
 
-    if (values.media) {
-      blob = values.media;
-      hasimageChanged = isBase64Image(blob);
-    }
-    if (hasimageChanged) {
-
-      const imgRes = await startUpload(files)
-
-      if (imgRes && imgRes[0].url) {
-        values.media = imgRes[0].url;
-      }
-    }
+    values.media = mongo_db_media_object;
 
     await createWhisper({
       content: values.content,
       author: values.accoundId,
       media: values.media,
-      aspectRatio: aspectRatio,
       mentions: values.mentions,
       caption: editorStateTextString,
       path: pathname,
@@ -323,78 +375,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                     render={({ field }: { field: FieldValues }) => (
                                       <FormItem className=" space-y-[10px] ">
                                         {imageDataArray && (
-                                          <>
-                                            {imageDataArray.length === 1 && (
-                                              <div className="max-h-[430px] my-1 grid-rows-1 grid-cols-1 grid">
-                                                <div style={{ aspectRatio: imageDataArray[0].aspectRatio, maxHeight: "430px" }}>
-                                                  <div className="block relative h-full">
-                                                    <picture>
-                                                      <img
-                                                        src={imageDataArray[0].url}
-                                                        className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
-                                                        alt={`Image 0`}
-                                                      />
-                                                    </picture>
-                                                    <div className="absolute top-2 right-2">
-                                                      <Image
-                                                        src="/svgs/close.svg"
-                                                        width={20}
-                                                        height={20}
-                                                        alt=""
-                                                        className="invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
-                                                        onClick={(e) => abortimage(imageDataArray[0].url)}
-                                                      />
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            )}
-                                            {imageDataArray.length === 2 && (
-                                              <div className="pt-3">
-                                                {(() => {
-                                                  let aspectRatio;
-                                                  if (parseFloat(imageDataArray[0].aspectRatio) + parseFloat(imageDataArray[1].aspectRatio) > 2.5) {
-                                                    aspectRatio = 2.1413333333333333;
-                                                  } else {
-                                                    aspectRatio = (parseFloat(imageDataArray[0].aspectRatio) + parseFloat(imageDataArray[1].aspectRatio)).toString();
-                                                  }
-
-                                                  return (
-                                                    <div className="grid grid-rows-[100%] gap-[6px]" style={{
-                                                      aspectRatio: aspectRatio,
-                                                      gridTemplateColumns: `minmax(0, ${Math.min(133, Math.floor(parseFloat(imageDataArray[0].aspectRatio) * 100))}fr) minmax(0, ${Math.min(133, Math.floor(parseFloat(imageDataArray[1].aspectRatio) * 100))}fr)`
-                                                    }}>
-                                                      {imageDataArray.map(({ url, aspectRatio }, index) => (
-                                                        <div className="block relative h-full" key={index}>
-                                                          <picture>
-                                                            <img
-                                                              src={url}
-                                                              className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
-                                                              alt={`Image ${index}`}
-                                                            />
-                                                          </picture>
-                                                          <div className="absolute top-2 right-2">
-                                                            <Image
-                                                              src="/svgs/close.svg"
-                                                              width={20}
-                                                              height={20}
-                                                              alt=""
-                                                              className="invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
-                                                              onClick={(e) => abortimage(url)}
-                                                            />
-                                                          </div>
-                                                        </div>
-                                                      ))}
-                                                    </div>
-                                                  );
-                                                })()}
-                                              </div>
-                                            )}
-                                            {imageDataArray.length > 2 && (
-                                              <Carousel DataArray={imageDataArray} abortimage={abortimage}/>
-                                            )}
-
-                                          </>
+                                          <DisplayMedia medias={imageDataArray} abortimage={abortimage} />
                                         )}
                                         <FormControl className="outline-none">
                                           <div className="relative right-1.5">
