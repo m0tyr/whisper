@@ -1,11 +1,13 @@
+import ActivityCard from "@/components/cards/ActivityCard";
+import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
 import NavMenu from "@/components/shared/widgets/nav_menu";
 import SettingsAccountMenu from "@/components/shared/widgets/settings_account_menu";
-
-import { fetchUser, getActivityFromUser } from "@/lib/actions/user.actions";
+import SettingsPrivacyMenu from "@/components/shared/widgets/settings_privacy_menu";
+import { fetchUser, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
+import { calculateTimeAgo } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export function generateMetadata() {
@@ -15,7 +17,8 @@ export function generateMetadata() {
   };
 }
 
-async function Page() {
+
+export default async function Page({ params }: { params: { type: string } }) {
   const user = await currentUser();
   if (!user) redirect('/sign-in');
   const currentuserInfo = await fetchUser(user.id);
@@ -27,6 +30,10 @@ async function Page() {
     bio: currentuserInfo?.bio || "",
     image: currentuserInfo?.image || user.imageUrl,
   };
+  if (params.type === null) {
+    params.type = '';
+  }
+
   return (
     <>
       <TopBar user={userData} _id={`${currentuserInfo._id}`} />
@@ -38,14 +45,18 @@ async function Page() {
             </span>
 
           </div>
-          <NavMenu navigation={""} />
-          <SettingsAccountMenu />
+          <NavMenu navigation={params.type} />
+          {
+            params.type === 'privacy' && <SettingsPrivacyMenu/>
+          }
+          {
+            params.type === 'others' && <div>testing</div>
+          }
         </div>
 
 
       </section>
     </>
+
   )
 }
-
-export default Page;
