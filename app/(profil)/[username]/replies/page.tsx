@@ -10,8 +10,8 @@ export async function generateMetadata({ params }: { params: { username: string 
 
     const userInfo = await fetchUserbyUsername(params.username);
     if (!userInfo) {
-		return notFound()
-	}
+        return notFound()
+    }
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
         id: userInfo?.id,
@@ -33,8 +33,8 @@ export default async function Page({ params }: { params: { username: string } })
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const userInfo = await fetchUserbyUsername(params.username);
     if (!userInfo) {
-		return notFound()
-	}
+        return notFound()
+    }
     if (!userInfo?.onboarded) redirect('/onboarding');
     const userData = {
         id: userInfo?.id,
@@ -61,7 +61,7 @@ export default async function Page({ params }: { params: { username: string } })
             <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
 
                 <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
-                <UserCard
+                    <UserCard
                         myusername={currentuserData.username}
                         id={userData.id}
                         name={userData.name}
@@ -86,8 +86,13 @@ export default async function Page({ params }: { params: { username: string } })
                                     content={post.content.map((content: any) => ({
                                         text: content.text,
                                         type: content.type
-                                      }))}
-                                    media={post.media}
+                                    }))}
+                                    medias={post.media.map((media: any) => ({
+                                        s3url: media.s3url,
+                                        aspectRatio: media.aspectRatio,
+                                        width: media.width,
+                                        isVideo: media.isVideo
+                                    }))}
                                     author={{ image: userposts.image, username: userposts.username, id: userposts.id }}
                                     createdAt={post.createdAt}
                                     comments={[
@@ -101,24 +106,23 @@ export default async function Page({ params }: { params: { username: string } })
                                                     username: child.author.username,
                                                     id: child.author.id
                                                 },
-                                                content: [],//No data needed here
+                                                content: [], //No data needed here
                                                 createdAt: child.createdAt
                                             }))
                                         }
                                     ]}
                                     isNotComment={post.children.length === 0}
-                                    aspectRatio={post.aspectRatio}  
                                     mentions={post.mentions.map((mention: any) => ({
                                         link: mention.link,
                                         text: mention.text,
                                         version: mention.version
-                                      }))}
-                                      like_info={{
+                                    }))}
+                                    like_info={{
                                         like_count: post.interaction_info.like_count,
                                         liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
-                                          id: likeid.id
+                                            id: likeid.id
                                         }))
-                                      }}          
+                                    }}
                                 />
                             ))}
                         </>

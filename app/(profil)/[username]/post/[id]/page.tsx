@@ -59,7 +59,12 @@ export default async function Page({ params }: { params: { id: string, username:
                                         text: content.text,
                                         type: content.type
                                     }))}
-                                    media={post.media}
+                                    medias={post.media.map((media: any) => ({
+                                        s3url: media.s3url,
+                                        aspectRatio: media.aspectRatio,
+                                        width: media.width,
+                                        isVideo: media.isVideo
+                                    }))}
                                     author={{
                                         image: post.author.image,
                                         username: post.author.username,
@@ -112,8 +117,12 @@ export default async function Page({ params }: { params: { id: string, username:
                                 text: content.text,
                                 type: content.type
                             }))}
-                            media={whisperdatas.media}
-                            author={{ image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }}
+                            medias={whisperdatas.media.map((media: any) => ({
+                                s3url: media.s3url,
+                                aspectRatio: media.aspectRatio,
+                                width: media.width,
+                                isVideo: media.isVideo
+                            }))} author={{ image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }}
                             createdAt={whisperdatas.createdAt}
                             comments={[
                                 {
@@ -129,12 +138,12 @@ export default async function Page({ params }: { params: { id: string, username:
                                 link: mention.link,
                                 text: mention.text,
                                 version: mention.version
-                            }))}  like_info={{
+                            }))} like_info={{
                                 like_count: whisperdatas.interaction_info.like_count,
                                 liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
                                     id: likeid.id
                                 }))
-                            }}/>
+                            }} />
                     </div>
                     <div>
                         <Suspense fallback={
@@ -151,8 +160,12 @@ export default async function Page({ params }: { params: { id: string, username:
                                         text: content.text,
                                         type: content.type
                                     }))}
-                                    media={post.media}
-                                    author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
+                                    medias={post.media.map((media: any) => ({
+                                        s3url: media.s3url,
+                                        aspectRatio: media.aspectRatio,
+                                        width: media.width,
+                                        isVideo: media.isVideo
+                                    }))} author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
                                     createdAt={post.createdAt}
                                     comments={[
                                         {
@@ -174,7 +187,6 @@ export default async function Page({ params }: { params: { id: string, username:
                                         }
                                     ]}
                                     isNotComment={post.children.length === 0}
-                                    aspectRatio={post.aspectRatio}
                                     mentions={post.mentions.map((mention: any) => ({
                                         link: mention.link,
                                         text: mention.text,

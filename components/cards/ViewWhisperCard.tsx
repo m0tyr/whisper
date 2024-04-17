@@ -23,8 +23,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { calculateTimeAgo, getMeta, processElements } from "@/lib/utils";
 import React from "react";
-import { ExtractedElement } from "../plugins/Main";
 import { likewhisper } from "@/lib/actions/whisper.actions";
+import WhisperCardMedia from "./ui/WhisperCardMedia";
+import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 
 interface Props {
     user: any;
@@ -33,7 +34,7 @@ interface Props {
     currentUserId: string;
     parentId: string | null;
     content: ExtractedElement[];
-    media: string;
+    medias: DBImageData[];
     author: {
         username: string;
         image: string;
@@ -68,7 +69,7 @@ const ViewWhisperCard = ({
     parentId,
     content,
     author,
-    media,
+    medias,
     createdAt,
     comments,
     isNotComment,
@@ -80,7 +81,7 @@ const ViewWhisperCard = ({
         id: id,
         content: content,
         author: author,
-        media: media,
+        media: medias,
         createdAt: createdAt,
         comments: comments,
         isNotComment: isNotComment,
@@ -143,7 +144,7 @@ const ViewWhisperCard = ({
                         currentUserId: currentUserId,
                         parentId: parentId,
                         content: content,
-                        media: media,
+                        medias: medias,
                         author: {
                             username: author.username,
                             image: author.image,
@@ -231,7 +232,7 @@ const ViewWhisperCard = ({
                                 </div>
                             </div>
 
-                            {content && (
+                            {content  && content.length !== 0 && (
                                 <div className="relative bottom-1" >
 
                                     <div className="break-words max-w-lg whitespace-pre-wrap pt-[10px] cursor-auto">
@@ -258,13 +259,21 @@ const ViewWhisperCard = ({
                                 </div>
 
                             )}
-                            {media && (
-                                <div className={`relative bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} onClick={(e) => {
+                            {medias && medias.length <= 2 ? (
+                                <div className={`relative w-full bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} onClick={(e) => {
                                     if (e.target === e.currentTarget) {
                                         ping();
                                     }
                                 }}>
-                                    <ImageClickAnim src={media} aspectRatio={aspectRatio} />
+                                    <WhisperCardMedia medias={medias} isReply={false} />
+                                </div>
+                            ) : (
+                                <div className={`relative w-[calc(100%_+_48px)] ml-[calc(-1_*_48px)] bottom-1 ${content && content.length !== 0 ? "" : "pt-5"}`} onClick={(e) => {
+                                    if (e.target === e.currentTarget) {
+                                        ping();
+                                    }
+                                }}>
+                                    <WhisperCardMedia medias={medias} isReply={false} />
                                 </div>
                             )}
 

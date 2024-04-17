@@ -18,11 +18,14 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
     const [targetType, settargetType] = useState<boolean>(false)
     const [Audiostate, toggleAudio] = useState<boolean>(false)
     const togglePopup = (src: string, ar: string, isVideo: boolean, width: string) => {
-        setShowImage(!showImage);
-        settargetImage(src)
-        settargetAR(ar)
-        settargetType(isVideo)
-        settargetWidth(width)
+        if (!isReply) {
+            setShowImage(!showImage);
+            settargetImage(src)
+            settargetAR(ar)
+            settargetType(isVideo)
+            settargetWidth(width)
+        }
+
     };
 
     return (
@@ -74,7 +77,7 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
                                         className=' select-none w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
                                         onClick={() => {
                                             if (medias[0].s3url)
-                                                togglePopup(medias[0].s3url, medias[0].aspectRatio, medias[0].isVideo , medias[0].width)
+                                                togglePopup(medias[0].s3url, medias[0].aspectRatio, medias[0].isVideo, medias[0].width)
                                         }}
                                     />
                                 </picture>

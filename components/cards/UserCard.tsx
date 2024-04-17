@@ -40,6 +40,7 @@ function UserCard({
 
     };
     const addFollow = async () => {
+        
         await follow(myusername,username)
         setisfollowing(!isfollowing)
 

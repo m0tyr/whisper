@@ -25,7 +25,6 @@ export async function createWhisper({ content, author, media, path, caption, men
             text: mention,
             version: 1
         }));
-
         const createdWhisper = await Whisper.create({
             content,
             author,
@@ -40,16 +39,12 @@ export async function createWhisper({ content, author, media, path, caption, men
         await User.findByIdAndUpdate(author, {
             $push: { whispers: createdWhisper._id }
         })
-
         revalidatePath(path)
-
-
-
-
     } catch (error: any) {
         throw new Error(`error oncreate: ${error.message} `)
     }
-};
+}
+
 export async function isliking(userid: string, liketracker: any) {
     try {
         const isLiking = liketracker.some((liketracker: { id: string }) => liketracker.id === userid);
@@ -58,6 +53,7 @@ export async function isliking(userid: string, liketracker: any) {
         console.error('Error:', error.message);
     }
 }
+
 export async function likewhisper(username: string, whisper_id: string) {
     const liker = await User.findOne({ username: username });
     const tolike = await Whisper.findOne({ _id: whisper_id });
@@ -135,7 +131,6 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     }
 }
-
 
 export async function searchwhispersV1(input: string | string[] | undefined, pagenumber: number, pagesize: number) {
     try {

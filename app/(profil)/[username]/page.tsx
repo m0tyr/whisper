@@ -86,7 +86,12 @@ export default async function Page({ params }: { params: { username: string } })
                                         text: content.text,
                                         type: content.type
                                     }))}
-                                    media={post.media}
+                                    medias={post.media.map((media: any) => ({
+                                        s3url: media.s3url,
+                                        aspectRatio: media.aspectRatio,
+                                        width: media.width,
+                                        isVideo: media.isVideo
+                                    }))} 
                                     author={{ image: userposts.image, username: userposts.username, id: userposts.id }}
                                     createdAt={post.createdAt}
                                     comments={[
@@ -106,7 +111,6 @@ export default async function Page({ params }: { params: { username: string } })
                                         }
                                     ]}
                                     isNotComment={post.children.length === 0}
-                                    aspectRatio={post.aspectRatio}
                                     mentions={post.mentions.map((mention: any) => ({
                                         link: mention.link,
                                         text: mention.text,

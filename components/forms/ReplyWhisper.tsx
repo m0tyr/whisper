@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button";
 import { useUploadThing } from "@/lib/uploadthing";
-import { getMeta, isBase64Image } from "@/lib/utils";
+import { computeSHA256, getMeta, isBase64Image } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, useForm } from "react-hook-form";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
@@ -30,7 +30,10 @@ import {
 } from "@/components/ui/form";
 
 import { $getRoot } from "lexical";
-import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
+import { DBImageData, ExtractedElement, PrevImageData } from "@/lib/types/whisper.types";
+import DisplayMedia from "../shared/ui/DisplayMedia";
+import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
+import { s3GenerateSignedURL } from "@/lib/s3/actions";
 interface Props {
   _id: string;
   user: {
@@ -85,7 +88,19 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
   const inputRef = useRef<HTMLInputElement>(null);
   const editorRef: any = useRef();
   if (editableDiv) editableDiv.scrollTop = editableDiv.scrollHeight;
+  const [imageDataArray, setImageDataArray] = useState<PrevImageData[]>([]);
 
+  const addImageData = (file: File, s3url: string | undefined, url: string, aspectRatio: string, width: string, isVideo: boolean) => {
+    setImageDataArray([...imageDataArray, { file, url, aspectRatio, width, isVideo, s3url }]);
+  };
+  const removeImageData = (urlToRemove: string) => {
+    console.log("URL to remove:", urlToRemove);
+    setImageDataArray(prevImageDataArray => {
+      const newArray = prevImageDataArray.filter(imageData => imageData.url !== urlToRemove);
+      console.log("New array after filtering:", newArray);
+      return newArray;
+    });
+  };
   useEffect(() => {
     const offsetY = window.scrollY;
     document.body.style.top = `-${offsetY}px`;
@@ -110,49 +125,68 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
       inputRef.current.click();
     }
   };
-  const abortimage = (
-    fieldChange: (value: string) => void
-  ) => {
-    fieldChange("");
-    setAspectRatio("revert");
-    setImageDataURL("");
-    const fileInput = document.getElementById('file') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
-    WatchText();
+  const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const element = event.target as HTMLInputElement
+    element.value = ''
   }
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
-    fieldChange: (value: string) => void
+    fieldChange: (value: string) => void,
+    addImageData: (file: File, s3url: string | undefined, url: string, aspectRatio: string, witdh: string, isVideo: boolean) => void
   ) => {
     e.preventDefault();
 
-    const fileReader = new FileReader();
 
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFiles(Array.from(e.target.files));
-
-      if (!file.type.includes("image")) return;
-
-      fileReader.onload = async (event) => {
-        const imageDataUrl = event.target?.result?.toString() || "";
-        getMeta(imageDataUrl, (err: any, img: any) => {
-          const width = img.naturalWidth;
-          const height = img.naturalHeight;
-          const arvalue = width / height;
-          const ar = arvalue.toString();
-          setAspectRatio(ar);
-        });
-        setImageDataURL(imageDataUrl);
-        (document.getElementById('button') as HTMLButtonElement).disabled = false;
-        fieldChange(imageDataUrl);
+    const fileread = e.target.files?.[0] as File
+    const CACHEDBLOBURL = URL.createObjectURL(fileread)
+    const mimeType = fileread.type;
+    console.log(mimeType)
+    if (mimeType.includes('image')) {
+      const img = new window.Image();
+      img.src = CACHEDBLOBURL;
+      img.onload = () => {
+        const width = img.naturalWidth;
+        const height = img.naturalHeight;
+        const aspectRatio = (width / height).toString();
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio, width.toString(), false);
       };
-
-      fileReader.readAsDataURL(file);
+    } else if (mimeType.includes('video')) {
+      const video = document.createElement('video');
+      video.src = CACHEDBLOBURL;
+      video.addEventListener('loadedmetadata', () => {
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+        const aspectRatio = (width / height).toString();
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio, width.toString(), true);
+      });
+    } else {
+      console.error('Unsupported file type');
     }
+    (document.getElementById('button') as HTMLButtonElement).disabled = false;
+    console.log(imageDataArray)
+
   };
+
+
+
+  const abortimage = (
+    src: string,
+  ) => {
+    removeImageData(src)
+    URL.revokeObjectURL(src)
+    const stringifiedEditorState = JSON.stringify(
+      editorRef.current.getEditorState().toJSON(),
+    );
+    const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
+
+    const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
+    if (imageDataArray.length === 0 && editorStateTextString === "") {
+      (document.getElementById("button") as HTMLButtonElement).disabled = true;
+      console.log("in")
+    } else {
+      (document.getElementById('button') as HTMLButtonElement).disabled = false;
+    }
+  }
   const handleResize = () => {
     const newViewportHeight = window.innerHeight;
     setViewportHeight(newViewportHeight);
@@ -185,7 +219,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
     resolver: zodResolver(CommentValidation),
     defaultValues: {
       content: [] as ExtractedElement[],
-      media: "",
+      media: [] as DBImageData[],
       mentions: [],
       accoundId: _id,
     },
@@ -213,30 +247,76 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
     const extractedstuff = extractElements(datas)
     values.mentions = extractedData.mentions;
     values.content = extractedstuff
-    let hasimageChanged = false;
-    let blob: string | undefined;
+    if (imageDataArray.length >= 1) {
+      if (imageDataArray.length > 4) {
+        toast({
+          title: MAX_FILE_NUMBER,
+          duration: 3000,
+        });
+        (document.getElementById('button') as HTMLButtonElement).disabled = false;
+        return
+      }
+      let allFilesAuthorized = true;
+      for (const imageData of imageDataArray) {
+        if (imageData.file.size > 1048576 * 25) {
+          allFilesAuthorized = false;
+          break;
+        }
+      }
+      if (allFilesAuthorized) {
+        for (const imageData of imageDataArray) {
+          const result = await s3GenerateSignedURL({
+            userId: _id,
+            fileType: imageData.file.type,
+            fileSize: imageData.file.size,
+            checksum: await computeSHA256(imageData.file),
+          });
 
-    if (values.media) {
-      blob = values.media;
-      hasimageChanged = isBase64Image(blob);
-    }
-    if (hasimageChanged) {
+          if (result.failure !== undefined) {
+            toast({
+              title: result.failure,
+              duration: 3000,
+            });
+            (document.getElementById('button') as HTMLButtonElement).disabled = false;
+            break;
+          }
 
-      const imgRes = await startUpload(files)
-
-      if (imgRes && imgRes[0].url) {
-        values.media = imgRes[0].url;
+          if (result.success) {
+            const url = result.success.url;
+            imageData.s3url = url.split("?")[0];
+            await fetch(url, {
+              method: "PUT",
+              headers: {
+                "Content-Type": imageData.file.type,
+              },
+              body: imageData.file,
+            });
+          }
+        }
+      } else {
+        toast({
+          title: MAX_FILE_SIZE,
+          duration: 3000,
+        });
+        (document.getElementById('button') as HTMLButtonElement).disabled = false;
+        return
       }
     }
-    /*     await createComment({
-          content: values.content,
-          author: values.accoundId,
-          media: values.media,
-          aspectRatio: aspectratio,
-          mentions: values.mentions,
-          caption: editorStateTextString,
-          path: pathname,
-        }, whisper_to_reply.id); */
+    const mongo_db_media_object = imageDataArray.map(obj => {
+      const { url, file, ...rest } = obj;
+      return rest;
+    });
+
+    values.media = mongo_db_media_object;
+
+    await createComment({
+      content: values.content,
+      author: values.accoundId,
+      media: values.media,
+      mentions: values.mentions,
+      caption: editorStateTextString,
+      path: pathname,
+    }, whisper_to_reply.id);
 
 
     toast({
@@ -288,7 +368,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
                         >
                           <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                             <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1  ">
-                              <WhisperCardLeft author={whisper_to_reply.author} id={user.id} />
+                              <WhisperCardLeft author={whisper_to_reply.author} id={user.id} isReply={true} />
 
                               <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} medias={whisper_to_reply.medias} author={whisper_to_reply.author}
                                 createdAt={whisper_to_reply.createdAt} togglePopup={undefined} mentions={whisper_to_reply.mentions.map((mention: any) => ({
@@ -318,32 +398,11 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
                                     name="media"
                                     render={({ field }: { field: FieldValues }) => (
                                       <FormItem className=" space-y-4 ">
-                                        {imageDataURL && (
-
-                                          <>
-                                            <div id="picture" className="max-h-[430px] py-4 grid-rows-1 grid-cols-1 grid">
-                                              <div style={{ aspectRatio: aspectRatio, maxHeight: "430px" }}>
-                                                <div className="block relative h-full">
-                                                  <picture>
-
-                                                    <img src={imageDataURL}
-                                                      className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full  rounded-xl border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
-                                                    />
-                                                  </picture>
-                                                  <div className=" absolute top-2 right-2">
-                                                    <Image src="/svgs/close.svg" width={20} height={20} alt="" className=" invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
-                                                      onClick={(e) => abortimage(field.onChange)} />
-                                                  </div>
-                                                </div>
-                                              </div>
-
-                                            </div>
-                                          </>
-
-
+                                        {imageDataArray && (
+                                          <DisplayMedia medias={imageDataArray} abortimage={abortimage} />
                                         )}
                                         <FormControl className="outline-none">
-                                          <div className="relative right-1.5 mt-1">
+                                          <div className="relative right-1.5">
                                             <div className="flex w-full">
                                               <div
                                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
@@ -419,7 +478,9 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
                                                 </div>
                                               </div>
                                               <input
-                                                onChange={(e) => handleImage(e, field.onChange)}
+                                                id="file"
+                                                onChange={(e) => handleImage(e, field.onChange, addImageData)}
+                                                onClick={onInputClick}
                                                 ref={inputRef}
                                                 style={{ display: 'none' }}
                                                 accept="image/jpeg,image/png,video/mp4,video/quicktime"
@@ -428,7 +489,6 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
                                               />
                                             </div>
                                           </div>
-
 
                                         </FormControl>
 

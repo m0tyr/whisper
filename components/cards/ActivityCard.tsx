@@ -1,9 +1,9 @@
 'use client'
 import { calculateTimeAgo, limitNewlines, processElements } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { ExtractedElement } from "../plugins/Main";
 import React from "react";
 import Link from "next/link";
+import { ExtractedElement } from "@/lib/types/whisper.types";
 
 interface Props {
     username: string;

@@ -29,8 +29,6 @@ import * as ReactDOM from 'react-dom';
 
 import { $createMentionNode, $isMentionNode, MentionNode } from './MentionNode';
 import { MentionSearchModel } from '@/lib/actions/user.actions';
-import Loader from '@/components/shared/loader/loader';
-import { removeNode } from 'lexical/LexicalNode';
 
 const PUNCTUATION =
   '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';

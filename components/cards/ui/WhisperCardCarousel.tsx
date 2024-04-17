@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useAnimation, useDragControls, useMotionValue,
 import Image from "next/image";
 import { DBImageData } from "@/lib/types/whisper.types";
 import { CAROUSEL_DIRECTION_VALUE } from "@/lib/css/motion";
+import { randomBytes } from "crypto";
 
 interface Props {
     DataArray: DBImageData[];
@@ -17,16 +18,18 @@ interface Props {
 }
 
 const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovider, arprovider, setShowImage, showImage, isReply }: Props) => {
+    const id: string = randomBytes(10).toString('hex');
     const [width, setWidth] = useState(0)
     const [Audiostate, toggleAudio] = useState<boolean>(false)
     const togglePopup = (src: string, ar: string, isVideo: boolean, width: string) => {
-        setShowImage(!showImage);
-        srcprovider(src)
-        typeprovider(isVideo)
-        arprovider(ar)
-        widthprovider(width)
+        if (!isReply) {
+            setShowImage(!showImage);
+            srcprovider(src)
+            typeprovider(isVideo)
+            arprovider(ar)
+            widthprovider(width)
+        }
     };
-    console.log(isReply)
     const carouselRef = useRef<HTMLDivElement>(null);
     const fullcarouselRef = useRef<HTMLDivElement>(null);
     let height = "272px";
@@ -95,8 +98,8 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
     return (
         <AnimatePresence>
             <motion.div ref={carouselRef} className=" overflow-hidden mt-2 active:cursor-grabbing cursor-grab" whileTap={"grabbing"}>
-                <div className={`flex justify-center items-center absolute top-0 ${isReply ? "left-[-20px]" : "left-[-72px]"} h-full w-[72px] gap-2 cursor-pointer`} onClick={handleLeftArrowClick}>
-                <div className={` px-3 ${isReply ? "bg-[#111111] z-[1]": "bg-border opacity-80"} rounded-full py-3 `} >
+                <div className={` mobile:flex hidden justify-center items-center absolute top-0 ${isReply ? "left-[-20px]" : "left-[-72px]"} h-full w-[72px] gap-2 cursor-pointer`} onClick={handleLeftArrowClick}>
+                    <div className={` px-3 ${isReply ? "bg-[#111111] z-[1]" : "bg-border opacity-80"} rounded-full py-3 `} >
 
                         <motion.svg xmlns="http://www.w3.org/2000/svg" whileTap={{ scale: 0.98 }} whileHover={{ scale: 1.02 }} transition={{ duration: 0.01 }} className="outline-none" height="10px" width="10px" viewBox="0 0 34.075 34.075" >
                             <g>
@@ -109,6 +112,7 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
 
                 </div>
                 <motion.div
+                    key={id}
                     ref={fullcarouselRef}
                     drag="x"
                     dragElastic={0.1}
@@ -180,8 +184,8 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
                         </div>
                     ))}
                 </motion.div>
-                <div className={`flex justify-center items-center absolute top-0 ${isReply ? "right-[-20px]" : "right-[-72px]"} h-full w-[72px] gap-2 cursor-pointer`} onClick={handleRightArrowClick}>
-                    <div className={` px-3 ${isReply ? "bg-[#111111]": "bg-border opacity-80"} rounded-full py-3 `} >
+                <div className={`mobile:flex hidden justify-center items-center absolute top-0 ${isReply ? "right-[-20px]" : "right-[-72px]"} h-full w-[72px] gap-2 cursor-pointer`} onClick={handleRightArrowClick}>
+                    <div className={` px-3 ${isReply ? "bg-[#111111]" : "bg-border opacity-80"} rounded-full py-3 `} >
                         <motion.svg xmlns="http://www.w3.org/2000/svg" height="10px" width="10px" className=" justify-center items-center outline-none" whileTap={{ scale: 0.98 }} whileHover={{ scale: 1.02 }} transition={{ duration: 0.01 }} viewBox="0 0 185.343 185.343">
                             <g>
                                 <g>

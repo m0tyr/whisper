@@ -9,6 +9,7 @@ interface Props {
 
     isNotComment?: boolean;
     loadingstate?: boolean;
+    isReply?: boolean;
 }
 import Image from "next/image";
 import Link from "next/link";
@@ -19,7 +20,8 @@ const WhisperCardLeft = ({
     id,
     author,
     isNotComment,
-    loadingstate
+    loadingstate,
+    isReply
 }: Props) => {
     const router = useRouter();
 
@@ -34,9 +36,9 @@ const WhisperCardLeft = ({
     )
     return (<>
         {!isNotComment && (
-            <div className="mt-2 flex flex-col w-10">
+            <div className={` ${isReply ? "" : "mt-2 pb-2 relative"} flex flex-col  w-10`}>
 
-                <div className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]  justify-center" onClick={(e) => {
+                <div className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]   justify-center items-center" onClick={(e) => {
                     if (e.target === e.currentTarget) {
                         ping();
                     }
@@ -46,7 +48,7 @@ const WhisperCardLeft = ({
 
                     </Link>
                 </div>
-                <div className="thread-card_bar " />
+                <div className={` ${isReply ? "" : "relative left-[18px]"} thread-card_bar `} />
             </div>
         )}
         {isNotComment && (
