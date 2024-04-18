@@ -25,7 +25,10 @@ export const computeSHA256 = async (file: File) => {
     .join("");
   return hashHex;
 };
-
+export const isValidEmail = (email : string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 export function processElements(elements: ExtractedElement[]): ExtractedElement[][] {
   let consecutiveLineBreaksCount = 0;
   const sections: ExtractedElement[][] = [];

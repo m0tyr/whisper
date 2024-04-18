@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: true,
-    serverComponentsExternalPackages: ["mongoose"],
-  },
   productionBrowserSourceMaps: false,
   eslint: {
     ignoreDuringBuilds: true,
@@ -22,6 +18,7 @@ const nextConfig = {
     domains: ['utfs.io'],
   },
   images: {
+    
     remotePatterns: [
       {
         protocol: "https",

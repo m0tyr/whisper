@@ -1,15 +1,20 @@
 'use client'
+import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
 
 export default function SettingsPrivacyMenu() {
     return (
         <div className=" pt-3">
-            <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className=" flex flex-row flex-shrink-0 justify-between relative py-4 cursor-pointer">
-                <div className="flex max-w-full flex-shrink-0 flex-grow">
-                    <div className="flex pr-4 relative bottom-0.5">
-                        <svg aria-label="" fill="currentColor" height="24px" role="img" viewBox="0 0 24 24" width="24px"><title></title>
-                            <path d="M2.667 22v-1.355a5.271 5.271 0 0 1 5.271-5.271h8.124a5.271 5.271 0 0 1 5.271 5.271V22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"></path>
-                            <circle cx="12" cy="7.268" fill="none" r="5" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"></circle>
+            <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className=" max-h-[58px] flex flex-row flex-shrink-0 justify-between relative py-4 cursor-pointer">
+                <div className="flex max-w-fulll  flex-shrink-0 flex-grow">
+                    <div className="flex pr-[11px] relative bottom-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 24 24" version="1.1">
+                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <g className=" fill-white" fill-rule="nonzero">
+                                    <path d="M12,3 C13.1134665,3 14.1797059,3.20220299 15.1640018,3.57189248 L13.9807882,4.76434158 C13.3497959,4.59200466 12.6856424,4.5 12,4.5 C7.85786438,4.5 4.5,7.85786438 4.5,12 C4.5,13.4248663 4.89726709,14.7892778 5.63582603,15.9703766 C5.93763522,16.4530279 6.2936779,16.9002326 6.69638725,17.3029889 C7.09848441,17.7051331 7.54490219,18.0607594 8.02668093,18.362333 C9.20843557,19.1020627 10.5739361,19.5 12,19.5 C16.1421356,19.5 19.5,16.1421356 19.5,12 C19.5,11.3433642 19.4156153,10.7064375 19.2570987,10.0994726 L20.4504717,8.89619917 C20.805944,9.8637155 21,10.9091957 21,12 C21,16.9705627 16.9705627,21 12,21 C10.2903875,21 8.64944804,20.5217936 7.23080614,19.6337823 C6.65294072,19.2720624 6.11769706,18.8456754 5.63566512,18.3635872 C5.15289898,17.8807646 4.72601217,17.3445768 4.36400875,16.7656632 C3.47740079,15.3478054 3,13.7081751 3,12 C3,7.02943725 7.02943725,3 12,3 Z M21.0602355,2.67194792 L21.2062344,2.80790979 L21.2062344,2.80790979 C22.2817408,3.88405333 22.284968,5.62715342 21.2134536,6.70727188 L14.9096358,13.0617083 C14.7290905,13.2437034 14.5049144,13.3763896 14.2585034,13.4471032 L10.0460648,14.6559639 C9.78063576,14.7321352 9.50371405,14.5787115 9.4275428,14.3132825 C9.4016852,14.2231782 9.40167829,14.1276195 9.42752286,14.0375115 L10.6377831,9.81789452 C10.7073572,9.57532191 10.8370057,9.35422271 11.0147264,9.17506527 L17.323637,2.81515051 C18.3447664,1.78576584 19.9803222,1.73646142 21.0602355,2.67194792 L21.0602355,2.67194792 Z M18.3885587,3.87153195 L12.0796481,10.2314467 L11.3669295,12.7163662 L13.8447427,12.005298 L20.1485605,5.65086159 C20.6057503,5.19000065 20.6349445,4.46511973 20.2370582,3.97053354 L20.1414651,3.86447482 C19.6554646,3.38237186 18.8706616,3.38553144 18.3885587,3.87153195 Z" >
+                                    </path>
+                                </g>
+                            </g>
                         </svg>
                     </div>
                     <span className="font-normal select-none text-[14px]">
@@ -30,7 +35,7 @@ export default function SettingsPrivacyMenu() {
 
             </motion.div>
 
-            <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className="flex flex-row flex-shrink-0 justify-between relative pt-4 pb-3 cursor-pointer">
+            <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className=" max-h-[58px] flex flex-row flex-shrink-0 justify-between relative pt-4 pb-3 cursor-pointer">
                 <div className="flex max-w-full flex-shrink-0 flex-grow">
                     <div className="flex pr-2 pl-0.5 relative bottom-0.5 right-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className=" fill-white stroke-white stroke-[0.01]" viewBox="0 0 33 42.5" width={30} height={30}>
@@ -55,11 +60,11 @@ export default function SettingsPrivacyMenu() {
 
             </motion.div>
 
-            <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className="flex flex-row flex-shrink-0 justify-between relative pt-4 pb-6 cursor-pointer">
+            <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className="  flex flex-row flex-shrink-0 justify-between relative pt-4 pb-6 cursor-pointer">
                 <div className="flex max-w-full flex-shrink-0 flex-grow">
-                    <div className="flex pr-2 pl-0.5 relative bottom-0.5 right-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 24 24" fill="none">
-                            <path className=" fill-white stroke-white stroke-[0.001]" fill-rule="evenodd" clip-rule="evenodd" d="M8.04283 5.1757C8.59546 4.75121 9.24946 4.43224 10.0136 4.23441C10.0046 4.15752 10 4.0793 10 4C10 2.89543 10.8955 2 12 2C13.1046 2 14 2.89543 14 4C14 4.0793 13.9954 4.15752 13.9864 4.23441C14.7506 4.43224 15.4046 4.75121 15.9572 5.1757C16.933 5.92519 17.4981 6.93095 17.8325 7.93362C18.1644 8.92891 18.2842 9.96595 18.3426 10.8395C18.3663 11.1941 18.3806 11.5351 18.3932 11.8357L18.4018 12.0385C18.4175 12.3994 18.433 12.6684 18.4596 12.8673C18.6553 14.329 18.8982 15.3543 19.2438 16.1741C19.5816 16.9754 20.0345 17.6202 20.7071 18.2929C20.9931 18.5789 21.0787 19.009 20.9239 19.3827C20.7691 19.7564 20.4045 20 20 20H13.7325C13.9026 20.2942 14 20.6357 14 21C14 22.1046 13.1046 23 12 23C10.8955 23 10 22.1046 10 21C10 20.6357 10.0974 20.2942 10.2676 20H4.00003C3.59557 20 3.23093 19.7564 3.07615 19.3827C2.92137 19.009 3.00692 18.5789 3.29292 18.2929C3.96694 17.6189 4.4186 16.9787 4.75553 16.1809C5.1004 15.3642 5.3434 14.3395 5.54043 12.8673C5.56706 12.6684 5.58255 12.3994 5.59827 12.0385L5.60687 11.8357C5.61945 11.5351 5.63371 11.1941 5.65744 10.8395C5.7159 9.96595 5.83561 8.92891 6.16756 7.93362C6.50196 6.93095 7.06705 5.92519 8.04283 5.1757ZM6.06869 18C6.26568 17.6741 6.44135 17.3298 6.59797 16.959C7.04284 15.9056 7.31562 14.6803 7.52276 13.1327C7.56305 12.8316 7.58113 12.4756 7.59638 12.1255L7.60555 11.9095C7.61808 11.6105 7.63109 11.3002 7.65298 10.973C7.70745 10.159 7.81312 9.32109 8.06482 8.56638C8.31407 7.81905 8.6909 7.19981 9.26113 6.7618C9.82482 6.32883 10.6723 6 12 6C13.3278 6 14.1752 6.32883 14.7389 6.7618C15.3092 7.19981 15.686 7.81905 15.9352 8.56638C16.1869 9.32109 16.2926 10.159 16.3471 10.973C16.369 11.3002 16.382 11.6105 16.3945 11.9095L16.3945 11.9095L16.3945 11.9096L16.4037 12.1255C16.4189 12.4756 16.437 12.8316 16.4773 13.1327C16.6832 14.671 16.956 15.8957 17.4008 16.9509C17.5583 17.3244 17.735 17.6714 17.9334 18H6.06869Z" fill="#000000" />
+                    <div className="flex pr-3 pl-0.5 relative bottom-0.5 right-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width={26} height={26}>
+                            <path className=" fill-white stroke-white" d="M633.82 458.1l-90.62-70.05c.19-1.38.8-2.66.8-4.06.05-7.55-2.61-15.27-8.61-21.71-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84c-40.33 8.38-74.66 31.07-97.59 62.57L45.47 3.37C38.49-2.05 28.43-.8 23.01 6.18L3.37 31.45C-2.05 38.42-.8 48.47 6.18 53.9l588.35 454.73c6.98 5.43 17.03 4.17 22.46-2.81l19.64-25.27c5.42-6.97 4.17-17.02-2.81-22.45zM157.23 251.54c-8.61 67.96-36.41 93.33-52.62 110.75-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h241.92L157.23 251.54zM320 512c35.32 0 63.97-28.65 63.97-64H256.03c0 35.35 28.65 64 63.97 64z" />
                         </svg>
                     </div>
                     <span className=" font-normal select-none text-[14px]">
@@ -79,26 +84,20 @@ export default function SettingsPrivacyMenu() {
                 </div>
             </motion.div>
             <hr className="border-x-2 opacity-20 rounded-full " />
-            <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className="flex flex-row flex-shrink-0 justify-between relative pt-6 pb-4 cursor-pointer">
-                <div className="flex max-w-full flex-shrink-0 flex-grow">
+            <div className="flex flex-row flex-shrink-0 justify-between relative pt-6 pb-4 cursor-pointer">
+                <div className="flex flex-row w-full ">
+                    <div className=" my-auto justify-center items-center">
+                        <p className="text-[15px] font-light ">
+                            Profil Privée
+                        </p>
+                    </div>
+                    <div className="ml-auto py-1.5 float-right">
+                        <Switch
+                        />
 
-                    <span className=" font-normal text-[14px] select-none text-red-700">
-                        Compte Privée
-                    </span>
+                    </div>
                 </div>
-                <div className="flex flex-col relative justify-center ">
-                    <span className="w-full justify-center items-center inline-block opacity-60">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="11px" width="11px" className=" fill-red-700 stroke-red-700 justify-center items-center outline-none stroke-2" viewBox="0 0 185.343 185.343">
-                            <g>
-                                <g>
-                                    <path className=" fill-red-700 stroke-red-700 stroke-2" d="M51.707,185.343c-2.741,0-5.493-1.044-7.593-3.149c-4.194-4.194-4.194-10.981,0-15.175    l74.352-74.347L44.114,18.32c-4.194-4.194-4.194-10.987,0-15.175c4.194-4.194,10.987-4.194,15.18,0l81.934,81.934    c4.194,4.194,4.194,10.987,0,15.175l-81.934,81.939C57.201,184.293,54.454,185.343,51.707,185.343z" />
-                                </g>
-                            </g>
-                        </svg>
-
-                    </span>
-                </div>
-            </motion.div>
+            </div>
         </div>
     )
 }

@@ -1,7 +1,7 @@
-import { ClerkProvider } from "@clerk/nextjs"
 import { Inter } from "next/font/google"
 import '../globals.css'
 import { Metadata } from "next";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
     title: "Connexion • Whisper",
@@ -16,12 +16,12 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <ClerkProvider>
             <html lang="fr">
                 <body className={`${inter.className} bg-insanedark`}>
+                    <Toaster />
+
                     {children}
                 </body>
             </html>
-        </ClerkProvider>
     )
 }

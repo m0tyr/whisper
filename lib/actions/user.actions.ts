@@ -5,7 +5,7 @@ import { connectToDB } from "../mongoose"
 import User from "../models/user.model";
 import { revalidatePath } from "next/cache";
 import Whisper from "../models/whisper.model";
-
+import bcrypt from 'bcryptjs';
 interface Params {
   userId: string,
   username: string,
@@ -13,6 +13,38 @@ interface Params {
   bio: string,
   image: string,
   path: string,
+}
+
+export async function Login(email: string, password: string) {
+  try {
+    if (email.trim() !== "" && password.trim() !== "") {
+      connectToDB();
+      const hashpass = await bcrypt.hash(password, 10)
+      console.log(email)
+      console.log(hashpass)
+    }
+    else{
+      throw new Error(`Failed to login the user: data empty `);
+    }
+  } catch (error: any) {
+    throw new Error(`Failed to login the user: ${error.message}`);
+  }
+}
+
+export async function Register(email: string, password: string) {
+  try {
+    if (email.trim() !== "" && password.trim() !== "") {
+      connectToDB();
+      const hashpass = await bcrypt.hash(password, 10)
+      console.log(email)
+      console.log(hashpass)
+    }
+    else{
+      throw new Error(`Failed to login the user: data empty `);
+    }
+  } catch (error: any) {
+    throw new Error(`Failed to login the user: ${error.message}`);
+  }
 }
 
 export async function fetchUser(userId: string) {
@@ -158,14 +190,14 @@ export async function follow(from: string, to: string) {
     console.error('Error:', error.message);
   }
 }
-export async function isFollowing(username:string,foreignusername:string){
-try {
+export async function isFollowing(username: string, foreignusername: string) {
+  try {
     const currentuser = await User.findOne({ username: username });
     const isFollowing = currentuser.user_social_info.following.some((follower: { id: string }) => follower.id === foreignusername);
     return isFollowing
   } catch (error: any) {
-  console.error('Error:', error.message);
-}
+    console.error('Error:', error.message);
+  }
 
 }
 export async function MentionSearchModel(input: string) {

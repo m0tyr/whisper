@@ -137,9 +137,9 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
         })
         toclose()
         console.log(values)
-        
+
     }
-    const [Processing,isProcessing] = useState(false);
+    const [Processing, isProcessing] = useState(false);
     const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
     const [editableDivHeight, setEditableDivHeight] = useState(viewportHeight);
     const editableDiv = document.getElementById('editableDiv');
@@ -388,27 +388,27 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                                                 type="submit"
                                                 className="w-full h-full bg-white rounded-xl py-1 px-4 hover:bg-slate-100
                  transition-all duration-150 !text-small-semibold text-black ">
-                                              {Processing ? (
-                                                <motion.svg
-                                                    aria-label="Chargement…"
-                                                    className="text-black opacity-60"
-                                                    role="img"
-                                                    viewBox="0 0 100 100"
-                                                    width={16}
-                                                    height={16}
-                                                    animate={{ rotate: 3600 }}
-                                                    transition={{duration: 10, repeat: Infinity, delay:0.01 }}
-                                                >
-                                                    <rect fill="black" height="10" opacity="0" rx="5" ry="5" transform="rotate(-90 50 50)" width="28" x="67" y="45"></rect>
-                                                    <rect fill="black" height="10" opacity="0.125" rx="5" ry="5" transform="rotate(-45 50 50)" width="28" x="67" y="45"></rect>
-                                                    <rect fill="black" height="10" opacity="0.25" rx="5" ry="5" transform="rotate(0 50 50)" width="28" x="67" y="45"></rect>
-                                                    <rect fill="black" height="10" opacity="0.375" rx="5" ry="5" transform="rotate(45 50 50)" width="28" x="67" y="45"></rect>
-                                                    <rect fill="black" height="10" opacity="0.5" rx="5" ry="5" transform="rotate(90 50 50)" width="28" x="67" y="45"></rect>
-                                                    <rect fill="black" height="10" opacity="0.625" rx="5" ry="5" transform="rotate(135 50 50)" width="28" x="67" y="45"></rect>
-                                                    <rect fill="black" height="10" opacity="0.75" rx="5" ry="5" transform="rotate(180 50 50)" width="28" x="67" y="45"></rect>
-                                                    <rect fill="black" height="10" opacity="0.875" rx="5" ry="5" transform="rotate(225 50 50)" width="28" x="67" y="45"></rect>
-                                                </motion.svg>
-                                              ) : ("Terminé")}  
+                                                {Processing ? (
+                                                    <motion.svg
+                                                        aria-label="Chargement…"
+                                                        className="text-black opacity-60"
+                                                        role="img"
+                                                        viewBox="0 0 100 100"
+                                                        width={16}
+                                                        height={16}
+                                                        animate={{ rotate: 3600 }}
+                                                        transition={{ duration: 10, repeat: Infinity, delay: 0.01 }}
+                                                    >
+                                                        <rect fill="black" height="10" opacity="0" rx="5" ry="5" transform="rotate(-90 50 50)" width="28" x="67" y="45"></rect>
+                                                        <rect fill="black" height="10" opacity="0.125" rx="5" ry="5" transform="rotate(-45 50 50)" width="28" x="67" y="45"></rect>
+                                                        <rect fill="black" height="10" opacity="0.25" rx="5" ry="5" transform="rotate(0 50 50)" width="28" x="67" y="45"></rect>
+                                                        <rect fill="black" height="10" opacity="0.375" rx="5" ry="5" transform="rotate(45 50 50)" width="28" x="67" y="45"></rect>
+                                                        <rect fill="black" height="10" opacity="0.5" rx="5" ry="5" transform="rotate(90 50 50)" width="28" x="67" y="45"></rect>
+                                                        <rect fill="black" height="10" opacity="0.625" rx="5" ry="5" transform="rotate(135 50 50)" width="28" x="67" y="45"></rect>
+                                                        <rect fill="black" height="10" opacity="0.75" rx="5" ry="5" transform="rotate(180 50 50)" width="28" x="67" y="45"></rect>
+                                                        <rect fill="black" height="10" opacity="0.875" rx="5" ry="5" transform="rotate(225 50 50)" width="28" x="67" y="45"></rect>
+                                                    </motion.svg>
+                                                ) : ("Terminé")}
                                             </Button>
                                         </motion.div>
                                     </div>

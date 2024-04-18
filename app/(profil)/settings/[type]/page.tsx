@@ -3,6 +3,7 @@ import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
 import NavMenu from "@/components/shared/widgets/nav_menu";
 import SettingsAccountMenu from "@/components/shared/widgets/settings_account_menu";
+import SettingsOthersMenu from "@/components/shared/widgets/settings_others_menu";
 import SettingsPrivacyMenu from "@/components/shared/widgets/settings_privacy_menu";
 import { fetchUser, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
 import { calculateTimeAgo } from "@/lib/utils";
@@ -50,7 +51,7 @@ export default async function Page({ params }: { params: { type: string } }) {
             params.type === 'privacy' && <SettingsPrivacyMenu/>
           }
           {
-            params.type === 'others' && <div>testing</div>
+            params.type === 'others' && <SettingsOthersMenu/>
           }
         </div>
 

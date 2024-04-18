@@ -124,9 +124,8 @@ export default function SettingsAccountMenu() {
             <hr className="border-x-2 opacity-20 rounded-full " />
             <motion.div whileTap={{ scale: 0.995 }} transition={{ duration: 0.01 }} className="flex flex-row flex-shrink-0 justify-between relative pt-6 pb-4 cursor-pointer">
                 <div className="flex max-w-full flex-shrink-0 flex-grow">
-
                     <span className=" font-normal text-[14px] select-none text-red-700">
-                        Supprimer le compte
+                        Désactiver le compte
                     </span>
                 </div>
                 <div className="flex flex-col relative justify-center ">
