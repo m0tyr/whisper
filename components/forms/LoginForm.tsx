@@ -27,7 +27,7 @@ export default function LoginForm() {
                 const signInResult = await signIn('credentials', {
                     email: email.toLowerCase(),
                     password: password,
-                    redirect: false,
+                    redirect: true,
                     callbackUrl,
                 })
                 console.log(signInResult)
@@ -51,15 +51,13 @@ export default function LoginForm() {
             console.log(error);
         }
     }
-
-    return (<>
-
+    return (
         <div className="flex flex-col justify-center items-center h-screen pb-10">
             <div className="justify-center items-center w-full max-w-[370px] px-6 py-2">
 
                 <form onSubmit={onSubmit}>
                     <div className="flex flex-col justify-center items-center">
-                        <div className="mb-2">
+                        <div className="mb-6">
                             <span>
                                 Connectez-vous à <p className=" drop-shadow-xl bg-gradient-to-r from-[#314BFF] via-[#929FFF] to-[#9faaf1]  bg-clip-text text-transparent  inline-block font-semibold">Whisper</p>
                             </span>
@@ -87,9 +85,8 @@ export default function LoginForm() {
                             <hr className=" my-0 mx-0 h-[.5px] border-0 rounded-full w-full bg-[rgba(243,245,247,0.15)] " />
                         </div>
                         <motion.div whileTap={{ scale: 0.98 }} onClick={() => {
-                            signIn('google', {
-                                callbackUrl,
-                            });
+                            signIn("google", { callbackUrl: 'http://localhost:3000/'});
+
                         }} className="select-none cursor-pointer flex flex-row py-6 px-6 relative basis-auto box-border items-center border-border border rounded-2xl w-full h-[70px]">
                             <img src="google_logo.png" className=" object-fill " alt="" width={50} height={50} />
                             <div className="flex justify-center flex-grow">
@@ -109,6 +106,5 @@ export default function LoginForm() {
                 </div>
             </div>
         </div>
-    </>
     );
 }
