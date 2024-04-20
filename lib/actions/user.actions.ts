@@ -44,12 +44,12 @@ export async function Register(email: string, password: string) {
 
     // Create user
     const createdUser = await User.create({
-      id: "a12021412040azfaiIJAIZ139", // Generate unique user ID
-      username: "zoegkzeog", // Set username as required in your application
-      name: "zrgijzrigj", // Set name as required in your application
+      id: "a120214120cef4iaej0azfaiIJAIlZ139", // Generate unique user ID
+      username: "ezgkizoekgzo31rg", // Set username as required in your application
+      name: "zrgijzriplplgj", // Set name as required in your application
       email: email,
       password: hashpass,
-      isEmailVerified: undefined, // Handle email verification
+      isEmailVerified: undefined,
       isOAuth: false,
       onboarding: false,
     });

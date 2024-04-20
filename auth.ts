@@ -9,11 +9,12 @@ import type { Adapter } from "@auth/core/adapters"
 import { Register, fetchUserbyEmail, findOrganicAuthUserPass } from "./lib/actions/user.actions";
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
+import { NextResponse } from "next/server";
 
 async function getUser(id: string, name: string,email: string): Promise<any> {
     return {
-        id: 1,
-        name: 'test user',
+        id: id,
+        name: name,
         email: email,
     };
 }
@@ -50,8 +51,11 @@ export const {
                             }
                         } else {
                             const createuser = await Register(credentials.email as string, credentials.password as string)
+                            const usertopath = await findOrganicAuthUserPass(credentials.email as string)
+                            const myuser = getUser(usertopath._id.toString(),usertopath.username as string, usertopath.email  as string)
                             console.log(createuser)
-                            return null;
+                            NextResponse.redirect(new URL("/onboarding", req.url));;
+                            return myuser;
                         }
                     } catch (err) {
                         console.log("authorize error :", err);

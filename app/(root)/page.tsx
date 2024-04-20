@@ -3,7 +3,7 @@
 import TopBar from "@/components/shared/Topbar";
 import TopChat from "@/components/shared/TopChat";
 import { currentUser } from "@clerk/nextjs";
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchUser, fetchUserbyEmail } from "@/lib/actions/user.actions";
 import { redirect, usePathname } from "next/navigation";
 import { fetchwhispers, isliking } from "@/lib/actions/whisper.actions";
 import WhisperCard from "@/components/cards/WhisperCard";
@@ -18,8 +18,12 @@ import { auth, signOut } from "@/auth";
 
 export default async function Page() {
   const session = await auth()
- 
+  const email = session?.user.email
+  const currentUser = await fetchUserbyEmail(email as string)
 
+
+
+  if(!currentUser.onboarding) redirect('/onboarding');
   return (
     <>
       <div>

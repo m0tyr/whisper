@@ -35,8 +35,6 @@ export default function LoginForm() {
                     const signInResult = await signIn('credentials', {
                         email: email.toLowerCase(),
                         password: password,
-                        redirect: true,
-                        redirectTo: DEFAULT_LOGIN_REDIRECT,
                         callbackUrl,
                     })
                     console.log(signInResult)
