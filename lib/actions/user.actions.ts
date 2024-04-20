@@ -35,28 +35,43 @@ export async function Login(email: string, password: string) {
 
 export async function Register(email: string, password: string) {
   try {
-    if (email.trim() !== "" && password.trim() !== "") {
-      const hashpass = await bcrypt.hash(password, 10);
-      console.log(email);
-      console.log(hashpass);
-      const createdUser = await User.create({
-        id: "a12021412040azfaiIJAIZ139",
-        username:"zoegkzeog",
-        name: "zrgijzrigj",
-        email : email,
-        password: hashpass,
-        emailVerified: undefined,
-        isOAuth: false,
-        onboarding: false,
-      });
-      return createdUser;
-    } else {
-      throw new Error("Failed to register the user: data empty.");
+    if (!email || !password) {
+      throw new Error("Failed to register the user: email or password is empty.");
     }
+
+    // Hash the password
+    const hashpass = await bcrypt.hash(password, 10);
+
+    // Create user
+    const createdUser = await User.create({
+      id: "a12021412040azfaiIJAIZ139", // Generate unique user ID
+      username: "zoegkzeog", // Set username as required in your application
+      name: "zrgijzrigj", // Set name as required in your application
+      email: email,
+      password: hashpass,
+      isEmailVerified: undefined, // Handle email verification
+      isOAuth: false,
+      onboarding: false,
+    });
+
+    return createdUser;
   } catch (error: any) {
     throw new Error(`Failed to register the user: ${error.message}`);
   }
 }
+
+export async function findOrganicAuthUserPass(email: string) {
+  try {
+    if (!email) {
+      throw new Error("Problem during operation.");
+    }
+    return await User.findOne({ email: email, isOauth: false })
+
+  } catch (error: any) {
+    throw new Error(`Failed to register the user: ${error.message}`);
+  }
+}
+
 export async function fetchUser(userId: string | undefined) {
   try {
     connectToDB();

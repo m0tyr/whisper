@@ -6,14 +6,15 @@ import User from "./lib/models/user.model";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "./lib/db";
 import type { Adapter } from "@auth/core/adapters"
-import { Register, fetchUserbyEmail } from "./lib/actions/user.actions";
+import { Register, fetchUserbyEmail, findOrganicAuthUserPass } from "./lib/actions/user.actions";
+import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
 
-async function getUser(email: string, password: string): Promise<any> {
+async function getUser(id: string, name: string,email: string): Promise<any> {
     return {
         id: 1,
         name: 'test user',
         email: email,
-        password: password,
     };
 }
 
@@ -25,6 +26,40 @@ export const {
     unstable_update
  } = NextAuth({
         ...authConfig,
+        providers: [
+            CredentialsProvider({
+                name: 'credentials',
+                credentials: {
+                    email: { label: "Email", type: "text", placeholder: "jsmith" },
+                    password: { label: "Password", type: "password" }
+                },
+                async authorize(credentials, req) {
+                    try {
+                        connectToDB();
+                        const user = await findOrganicAuthUserPass(credentials.email as string)
+                        console.log("Authorize User Credentials: ", user);
+                        if (user !== null) {
+                            const res = await bcrypt.compare(credentials.password, user.password)
+                            if (res === true) {
+                                const myuser = getUser(user._id.toString(),user.username as string, user.email  as string)
+                                console.log("UserAccount created: ", myuser);
+                                return myuser;
+                            } else {
+                                console.log("Wrong password");
+                                return null;
+                            }
+                        } else {
+                            const createuser = await Register(credentials.email as string, credentials.password as string)
+                            console.log(createuser)
+                            return null;
+                        }
+                    } catch (err) {
+                        console.log("authorize error :", err);
+                    }
+                }
+            }),
+            ...authConfig.providers,
+        ],
         adapter : <Adapter>MongoDBAdapter(clientPromise),
         session: {
             strategy: 'jwt',
