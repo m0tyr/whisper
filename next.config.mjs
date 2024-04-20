@@ -14,7 +14,7 @@ const nextConfig = {
     },
   ],
   images: {
-    domains: ['img.clerk.com'],
+    domains: ['lh3.googleusercontent.com'],
     domains: ['utfs.io'],
   },
   images: {
@@ -22,7 +22,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "img.clerk.com",
+        hostname: "lh3.googleusercontent.com",
       },
       {
         protocol: "https",

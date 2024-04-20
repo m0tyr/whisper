@@ -16,6 +16,24 @@ const user_social_info = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema({
     user_social_info: user_social_info,
+    email: {
+      type: String,
+      required: true,
+    },
+    isOAuth : {
+      type: Boolean,
+      required: true,
+      default : false
+    },
+    password : {
+      type : String,
+      required: false,
+    },
+    emailVerified: {
+      type: Date,
+      required: true,
+      default: undefined 
+    },
     id: {
       type: String,
       required: true,
@@ -45,6 +63,6 @@ const userSchema = new mongoose.Schema({
 });
   
 
-  const User = mongoose.models.User || mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-  export default User;
+export default User;

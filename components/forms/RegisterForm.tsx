@@ -11,7 +11,7 @@ import { AuthError } from "next-auth";
 import { LoginSchema } from "@/lib/validations/auth";
 import Link from "next/link";
 
-export default function LoginForm() {
+export default function RegisterForm() {
     const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -43,15 +43,13 @@ export default function LoginForm() {
                 } catch (error: any) {
                     if (error instanceof AuthError) {
                         switch (error.type) {
-                                  case "CredentialsSignin":
-                                      return { msg: "Invalid credentials" , status: "error"};
-                                  case "CredentialsSignin":
-                                      throw error;
-                                  default:
-                                      return { msg: "Something went wrong", status: "error" };
-                              }
-                      }
-                      throw error;
+                            case "CredentialsSignin":
+                                return { error: "Invalid operation" }
+                            default:
+                                return { error: "an error occured" }
+                        }
+                    }
+                    throw error;
                 }
 
             } else if (!isValidEmail(email) && isFormValid) {
@@ -65,7 +63,7 @@ export default function LoginForm() {
             else {
                 if (!frontvalidator.success) {
                     toast({
-                        title: "Mot de passe invalide",
+                        title: "Mot de passe trop court (8 minimum)",
                         duration: 2000,
                     }
                     )
@@ -90,7 +88,7 @@ export default function LoginForm() {
                     <div className="flex flex-col justify-center items-center">
                         <div className="mb-6">
                             <span>
-                                Connectez-vous à <p className=" drop-shadow-xl bg-gradient-to-r from-[#314BFF] via-[#929FFF] to-[#9faaf1]  bg-clip-text text-transparent  inline-block font-semibold">Whisper</p>
+                                Inscrivez-vous à <p className=" drop-shadow-xl bg-gradient-to-r from-[#314BFF] via-[#929FFF] to-[#9faaf1]  bg-clip-text text-transparent  inline-block font-semibold">Whisper</p>
                             </span>
                         </div>
                         <div className="bg-[rgb(30,30,30)] rounded-xl w-full mb-2">
@@ -104,7 +102,7 @@ export default function LoginForm() {
                             <div className="w-full h-full">
                                 <div className="flex w-full">
                                     <button id="button" type="submit" className={`w-full px-4 py-4 rounded-xl ${isFormValid ? 'bg-white hover:bg-slate-100' : 'bg-border hover:bg-border cursor-not-allowed'} transition-all duration-150 !text-small-semibold text-black`} disabled={!isFormValid} style={{ cursor: !isFormValid ? 'not-allowed' : 'pointer' }}>
-                                        Se connecter
+                                        S'inscrire
                                     </button>
                                 </div>
                             </div>
@@ -127,7 +125,7 @@ export default function LoginForm() {
                             </div>
                         </motion.div>
                         <div className=" px-3 py-3">
-                            <p className="text-[14px] opacity-55"> <Link href={"/sign-up"}>Pas de compte ?</Link> </p>
+                            <p className="text-[14px] opacity-55"> <Link href={"/sign-in"}>Déjà un compte ?</Link> </p>
                         </div>
                     </div>
 

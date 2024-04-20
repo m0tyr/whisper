@@ -1,23 +1,32 @@
+import { auth } from "@/auth";
 import AccountProfile from "@/components/forms/AccountProfile";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
+export async function generateMetadata() {
+    return {
+      title: "Encore une étape...",
+      description: "a social app concept"
+    };
+  } 
+  
+
 async function Page() {
-    const user = await currentUser();
-    if (!user) return null;
-    const userInfo = await fetchUser(user.id);
+    const session = await auth()
+    if (!session) return null;
+    const userInfo = await fetchUser(session.user.id);
     if (userInfo) {
         if (userInfo?.onboarded) redirect('/');
     }
 
     const userData = {
-        id: user?.id,
-        objectId: userInfo?._id,
-        username: userInfo?.username || user.username,
-        name: userInfo?.name || user.firstName,
+        id: session.user.id,
+        username: userInfo?.username || session.user.name,
+        name: userInfo?.name || "",
         bio: userInfo?.bio || "",
-        image: userInfo?.image || user.imageUrl,
+        image: userInfo?.image || session.user.image,
+        email: userInfo?.email || session.user.email
     };
     return (
         <main className="mx-auto flex max-w-3xl flex-col justify-start px-10 py-20 ">

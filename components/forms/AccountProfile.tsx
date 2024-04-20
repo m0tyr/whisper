@@ -31,17 +31,17 @@ import { Calendar } from "@/components/ui/calendar"
 
 import { UserValidation } from "@/lib/validations/user";
 
-import { updateUser } from "@/lib/actions/user.actions";
+import { fetchUserbyUsername, updateUser } from "@/lib/actions/user.actions";
 
 
 interface Props {
   user: {
-    id: string;
-    objectId: string;
+    id: string | undefined;
     username: string;
     name: string;
     bio: string;
     image: string;
+    email: string;
   };
   btnTitle: string;
 }
@@ -54,7 +54,6 @@ import {
 } from "@/components/ui/popover"
 import { toast } from "@/components/ui/use-toast"
 import { isBase64Image } from "@/lib/utils";
-import { useUploadThing } from '@/lib/uploadthing';
 
 
 
@@ -62,7 +61,6 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
 
   const [files, setFiles] = useState<File[]>([]);
 
-  const { startUpload } = useUploadThing('imageUploader')
 
   const router = useRouter();
 
@@ -88,15 +86,16 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       duration: 20000,
     }
     )
-    if (hasimageChanged) {
-      const imgRes = await startUpload(files)
-
-      if (imgRes && imgRes[0].url) {
-        values.profile_photo = imgRes[0].url;
+    const isUsernameTaken = await fetchUserbyUsername(values.username)
+    if (isUsernameTaken) {
+      toast({
+        title: "Le nom d'utilisateur est déjà pris",
+        duration: 20000,
       }
-    }
-
-    await updateUser({
+      )
+    } else {
+      await updateUser({
+        email: user.email,
         userId: user.id,
         username: values.username,
         name: values.name,
@@ -107,14 +106,16 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       toast({
         title: "Inscrit !",
         duration: 2000,
-  
+
       })
       if (pathname === '/profil/edit') {
         router.back();
       } else {
         router.push('/');
       }
-    
+    }
+
+
   }
 
 

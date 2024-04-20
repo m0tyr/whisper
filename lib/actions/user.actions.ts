@@ -2,12 +2,14 @@
 
 import { connect } from "http2"
 import { connectToDB } from "../mongoose"
-import User from "../models/user.model";
 import { revalidatePath } from "next/cache";
-import Whisper from "../models/whisper.model";
 import bcrypt from 'bcryptjs';
+import User from "../models/user.model";
+import Whisper from "../models/whisper.model";
+import { useId } from "react";
 interface Params {
-  userId: string,
+  email: string,
+  userId: string | undefined,
   username: string,
   name: string,
   bio: string,
@@ -23,7 +25,7 @@ export async function Login(email: string, password: string) {
       console.log(email)
       console.log(hashpass)
     }
-    else{
+    else {
       throw new Error(`Failed to login the user: data empty `);
     }
   } catch (error: any) {
@@ -34,20 +36,28 @@ export async function Login(email: string, password: string) {
 export async function Register(email: string, password: string) {
   try {
     if (email.trim() !== "" && password.trim() !== "") {
-      connectToDB();
-      const hashpass = await bcrypt.hash(password, 10)
-      console.log(email)
-      console.log(hashpass)
-    }
-    else{
-      throw new Error(`Failed to login the user: data empty `);
+      const hashpass = await bcrypt.hash(password, 10);
+      console.log(email);
+      console.log(hashpass);
+      const createdUser = await User.create({
+        id: "a12021412040azfaiIJAIZ139",
+        username:"zoegkzeog",
+        name: "zrgijzrigj",
+        email : email,
+        password: hashpass,
+        emailVerified: undefined,
+        isOAuth: false,
+        onboarding: false,
+      });
+      return createdUser;
+    } else {
+      throw new Error("Failed to register the user: data empty.");
     }
   } catch (error: any) {
-    throw new Error(`Failed to login the user: ${error.message}`);
+    throw new Error(`Failed to register the user: ${error.message}`);
   }
 }
-
-export async function fetchUser(userId: string) {
+export async function fetchUser(userId: string | undefined) {
   try {
     connectToDB();
 
@@ -56,6 +66,16 @@ export async function fetchUser(userId: string) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+export async function fetchUserbyEmail(email: string) {
+  try {
+    connectToDB();
+
+    return await User.findOne({ email: email })
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
 export async function fetchUserbyUsername(username: string) {
   try {
     connectToDB();
@@ -121,6 +141,7 @@ export async function updateAccountUser({
 }
 
 export async function updateUser({
+  email,
   userId,
   username,
   name,
@@ -132,8 +153,9 @@ export async function updateUser({
 
   try {
     await User.findOneAndUpdate(
-      { id: userId },
+      { email: email },
       {
+        id: userId,
         username: username.toLowerCase(),
         name,
         bio,

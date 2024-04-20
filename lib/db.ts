@@ -1,24 +1,29 @@
-// This approach is taken from https://github.com/vercel/next.js/tree/canary/examples/with-mongodb
-import { MongoClient } from "mongodb";
+// lib/mongodb.ts
+import { MongoClient, MongoClientOptions } from "mongodb";
 
 if (!process.env.MONGODB_URL) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
-var uri = process.env.MONGODB_URL;
-var options = {};
+const uri = process.env.MONGODB_URL;
+const options: MongoClientOptions = {};
 
-var client;
-var clientPromise: Promise<MongoClient>;
+let client;
+let clientPromise: Promise<MongoClient>;
 
-if (process.env.NODE_ENV === "development") {
+if (IS_DEVELOPMENT) {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  if (!global._mongoClientPromise) {
+  let globalWithMongo = global as typeof globalThis & {
+    _mongoClientPromise?: Promise<MongoClient>;
+  };
+
+  if (!globalWithMongo._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+    globalWithMongo._mongoClientPromise = client.connect();
   }
-  clientPromise = global._mongoClientPromise;
+  clientPromise = globalWithMongo._mongoClientPromise;
 } else {
   // In production mode, it's best to not use a global variable.
   client = new MongoClient(uri, options);

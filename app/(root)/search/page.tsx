@@ -13,6 +13,7 @@ import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { getMeta } from "@/lib/utils";
 import Loader from "@/components/shared/loader/loader";
 import SearchBar from "@/components/forms/SearchBar";
+import { auth } from "@/auth";
 
 
 
@@ -21,6 +22,9 @@ export default async function Page({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
+  const session = await auth()
+ 
+  if (!session) { redirect('/sign-in')}
   const user = await currentUser();
   if (!user) redirect('/sign-in');
   const userInfo = await fetchUser(user.id);

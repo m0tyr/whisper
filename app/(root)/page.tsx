@@ -19,13 +19,13 @@ import { auth, signOut } from "@/auth";
 export default async function Page() {
   const session = await auth()
  
-  if (!session) { redirect('/sign-in')}
 
   return (
     <>
       <div>
         <p>Welcome {session?.user?.name}!</p>
-
+        <p> {session?.user?.email}!</p>
+        <p> {JSON.stringify(session?.user)}!</p>
       </div>
       <form
            action={async () => {
