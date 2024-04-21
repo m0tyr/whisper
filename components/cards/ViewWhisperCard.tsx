@@ -1,10 +1,8 @@
 "use client"
-import WhisperCardFooter from "../shared/WhisperCardFooter";
 import { useEffect, useRef, useState } from "react";
-import ReplyWhisper from "../forms/ReplyWhisper";
+import { ReplyWhisper } from "../forms/ReplyWhisper";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import ImageClickAnim from "../animations/ImageClickAnim";
 import Image from "next/image";
 import Link from "next/link";
 import {

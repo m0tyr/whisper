@@ -4,7 +4,7 @@ import * as z from "zod";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -54,17 +54,18 @@ import {
 } from "@/components/ui/popover"
 import { toast } from "@/components/ui/use-toast"
 import { isBase64Image } from "@/lib/utils";
+import { ContentPlayer } from "../plugins/ContentPlayer";
 
 
 
 const AccountProfile = ({ user, btnTitle }: Props) => {
-
+  const [isFormValid, setIsFormValid] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 
-
   const router = useRouter();
-
   const pathname = usePathname();
+
+
 
   const form = useForm<z.infer<typeof UserValidation>>({
     resolver: zodResolver(UserValidation),
@@ -76,11 +77,17 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
     },
   });
 
+  const handleFormChange = () => {
+    const { name, username } = form.getValues();
+    setIsFormValid(name.trim() !== "" && username.trim() !== "");
+  };
+
+  useEffect(() => {
+    handleFormChange();
+  }, [form]);
+
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
     console.log(values)
-    const blob = values.profile_photo;
-
-    const hasimageChanged = isBase64Image(blob);
     toast({
       title: "Inscription...",
       duration: 20000,
@@ -144,23 +151,24 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
 
 
   return (
-    <Form {...form}>
+    <Form {...form} >
       <form
+        onChange={handleFormChange}
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8"
+        className="space-y-4"
       >
         <FormField
           control={form.control}
           name='profile_photo'
           render={({ field }) => (
-            <FormItem className='flex items-center gap-4 justify-center mx-20'>
+            <FormItem className='flex items-center max-w-[80%] gap-4'>
               <FormLabel className='justify-center '>
                 {field.value ? (
                   <Image
                     src={field.value}
                     alt='profile_icon'
-                    width={96}
-                    height={96}
+                    width={85}
+                    height={85}
                     priority
                     className='rounded-full justify-center '
                   />
@@ -168,20 +176,16 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                   <Image
                     src='/profil.png'
                     alt='profile_icon'
-                    width={95}
-                    height={95}
+                    width={85}
+                    height={85}
                     className=''
                   />
                 )}
               </FormLabel>
               <FormControl className='flex-1 text-base-semibold text-gray-200'>
-                <Input
-                  type='file'
-                  accept='image/*'
-                  placeholder='Photo de profil'
-                  className='py-1.5 cursor-pointer bg-zinc-900  text-white  file:text-blue file:cursor-pointer'
-                  onChange={(e) => handleImage(e, field.onChange)}
-                />
+                <div className="bg-[rgb(30,30,30)] rounded-xl w-full mb-2 ">
+                  <input onChange={(e) => handleImage(e, field.onChange)} type='file' accept="image/jpeg,image/png,video/mp4,video/quicktime" placeholder='Photo de profil' autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] file:rounded-md file:bg-[rgb(197,197,197)] file:outline-none file:border-0 file:text-white file:cursor-pointer  w-full px-4 py-5 rounded-2xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" />
+                </div>
               </FormControl>
             </FormItem>
           )}
@@ -191,10 +195,10 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           name="name"
           render={({ field }) => (
             <FormItem>
-
-              <FormLabel className="text-white">Nom</FormLabel>
               <FormControl>
-                <Input placeholder="user" {...field} />
+                <div className="bg-[rgb(30,30,30)] rounded-xl w-full mb-2">
+                  <input {...field} autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" type="text" placeholder="Nom" />
+                </div>
               </FormControl>
 
               <FormMessage />
@@ -207,10 +211,13 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           name="username"
           render={({ field }) => (
             <FormItem>
-
-              <FormLabel className="text-white">Pseudo</FormLabel>
               <FormControl>
-                <Input placeholder="user124151253" {...field} />
+                <div>
+                  <div className="bg-[rgb(30,30,30)] rounded-xl w-full">
+                    <input {...field} autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" type="text" placeholder="Nom d'utilisateur" />
+                  </div>
+                  <span className=" font-extralight text-[12px] ">Le nom d'utilisateur doit être unique et d'au moins 3 caractères.</span>
+                </div>
               </FormControl>
 
               <FormMessage />
@@ -223,13 +230,8 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-white">Bio</FormLabel>
               <FormControl >
-                <Textarea
-                  placeholder="Dis-nous en plus sur toi !"
-                  className="resize-none"
-                  {...field}
-                />
+                <textarea placeholder="Ecrivez-nous une bio..."  {...field} autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 mt-1 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" />
               </FormControl>
 
               <FormMessage />
@@ -237,8 +239,29 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           )}
         />
 
-        <Button type="submit" className=" bg-neutral-900 hover:bg-neutral-800 rounded-full text-small-semibold "><p className="text-white">Commencer</p></Button>
-      </form>
+        <div className="mb-2 w-full h-full">
+          <div className="w-full h-full">
+            <div className="flex w-full">
+              <button
+                id="button"
+                type="submit"
+                className={`w-full px-4 py-4 rounded-xl ${isFormValid ? 'bg-white hover:bg-slate-100' : 'bg-border hover:bg-border cursor-not-allowed'
+                  } transition-all duration-150 !text-small-semibold text-black`}
+                disabled={!isFormValid}
+                style={{ cursor: isFormValid ? 'pointer' : 'not-allowed' }}
+              >
+                Continuer
+              </button>
+            </div>
+          </div>
+        </div>      </form>
+      <div className=" w-full flex justify-center items-center">
+        <div className="absolute bottom-5">
+          <p className=" text-[#7c7c7c] text-body-bold inline-block  !text-[12px] !font-normal justify-center items-center">
+            Copyright © 2024 Whisper Inc. Tous droits réservés.
+          </p>
+        </div>
+      </div>
     </Form>
   );
 };

@@ -16,6 +16,7 @@ async function getUser(id: string, name: string,email: string): Promise<any> {
         id: id,
         name: name,
         email: email,
+        image: ""
     };
 }
 
@@ -54,7 +55,6 @@ export const {
                             const usertopath = await findOrganicAuthUserPass(credentials.email as string)
                             const myuser = getUser(usertopath._id.toString(),usertopath.username as string, usertopath.email  as string)
                             console.log(createuser)
-                            NextResponse.redirect(new URL("/onboarding", req.url));;
                             return myuser;
                         }
                     } catch (err) {
@@ -81,14 +81,16 @@ export const {
         },
         callbacks: {
             async session ({token, session}: any) {
+                if(session.providers === "credentials") {
+                    return true;
+                }
                 if(token.sub && session.user){
                     session.user.id = token.sub;
                 }
                 if(token.role && session.user){
                     session.user.role = token.role as "ADMIN" | "USER";
                 }
-                console.log(session)
-                console.log("sessiontoken : ", token)
+             
                 return session;
             },
             async jwt ({token}: any) {
@@ -100,7 +102,6 @@ export const {
             async authorized({ auth, request: { nextUrl } }: any) {
                 const isLoggedIn = !!auth?.user;
                 const isOnProtected = !(nextUrl.pathname.startsWith('/sign-in'));
-                console.log(isLoggedIn)
                 if (isOnProtected) {
                     if (isLoggedIn) return true;
                     return false; // redirect to /sign-in

@@ -39,9 +39,9 @@ const userSchema = new mongoose.Schema({
       type : String,
       required: false,
     },
-    isEmailVerified: {
+    emailVerified: {
       type: Date,
-      required: false,
+      required: false, //temporary set to false because of problem with User validation failed: emailVerified: Path `emailVerified` is required.
       default: undefined 
     },
     id: {
@@ -51,14 +51,17 @@ const userSchema = new mongoose.Schema({
     username: {
       type: String,
       unique: true,
-      required: true,
+      default: undefined
     },
     name: {
       type: String,
-      required: true,
+      default: undefined
+    },
+    bio: {
+      type: String,
+      default: undefined
     },
     image: String,
-    bio: String,
     whispers: [
       {
         type: mongoose.Schema.Types.ObjectId,

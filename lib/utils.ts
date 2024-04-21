@@ -1,9 +1,45 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ExtractedElement } from "./types/whisper.types";
+import { ExtractedElement, Input, MentionsDatas, Root } from "./types/whisper.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function extractMention(json: Root): MentionsDatas {
+  const extractedData: MentionsDatas = { mentions: []};
+
+  const { children } = json.root;
+  children.forEach((paragraph: any) => {
+    paragraph.children.forEach((child: any) => {
+      if (child.type === 'mention') {
+        extractedData.mentions.push(child.text || 'N/A');
+      }
+    });
+  });
+
+  return extractedData;
+}
+
+export function extractElements(input: Input): ExtractedElement[] {
+  const extractedElements: ExtractedElement[] = [];
+
+  // Iterate over each paragraph
+  input.root.children.forEach(paragraph => {
+      // Iterate over each element in the paragraph
+      paragraph.children.forEach(element => {
+          // If it's a linebreak, set text to '\n'
+          const text = element.type === 'linebreak' ? '\n' : element.text;
+          
+          if (text && element.type) {
+              // Extract text and type
+              const { type } = element;
+              extractedElements.push({ text, type });
+          }
+      });
+  });
+
+  return extractedElements;
 }
 
 export function isBase64Image(imageData: string) {

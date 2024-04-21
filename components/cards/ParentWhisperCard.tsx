@@ -3,7 +3,7 @@ import WhisperCardMain from "../shared/WhisperCardMain";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
 import WhisperCardFooter from "../shared/WhisperCardFooter";
 import { useEffect, useRef, useState } from "react";
-import ReplyWhisper from "../forms/ReplyWhisper";
+import { ReplyWhisper } from "../forms/ReplyWhisper";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";

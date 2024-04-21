@@ -1,7 +1,6 @@
-import { fetchUser, fetchUserWhisper, fetchUserbyUsername, isFollowing } from "@/lib/actions/user.actions";
+import { fetchUser, fetchUserWhisper, fetchUserbyEmail, fetchUserbyUsername, isFollowing } from "@/lib/actions/user.actions";
 import { notFound, redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
-import { currentUser } from "@clerk/nextjs";
 import UserCard from "@/components/cards/UserCard";
 import WhisperCard from "@/components/cards/WhisperCard";
 import { auth } from "@/auth";
@@ -28,9 +27,10 @@ export async function generateMetadata({ params }: { params: { username: string 
 }
 export default async function Page({ params }: { params: { username: string } }) {
     const session = await auth();
-
     if (!session) redirect('/sign-in');
-    const currentuserInfo = await fetchUser(session.user.id);
+    const email = session?.user?.email
+    const currentuserInfo = await fetchUserbyEmail(email as string)
+    
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const userInfo = await fetchUserbyUsername(params.username);
     if (!userInfo) {
@@ -47,7 +47,7 @@ export default async function Page({ params }: { params: { username: string } })
     };
     const userposts = await fetchUserWhisper(userInfo.id);
     const currentuserData = {
-        id: currentuserInfo?.id,
+        id: session?.user?.id,
         username: currentuserInfo?.username,
         name: currentuserInfo?.name,
         bio: currentuserInfo?.bio,
@@ -57,6 +57,7 @@ export default async function Page({ params }: { params: { username: string } })
     return (
         <>
             <TopBar user={currentuserData} _id={`${currentuserInfo._id}`} />
+            
             <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
 
                 <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
@@ -80,7 +81,7 @@ export default async function Page({ params }: { params: { username: string } })
                                     user={currentuserData}
                                     _id={`${userInfo._id}`}
                                     id={post._id}
-                                    currentUserId={session.user.id || ""}
+                                    currentUserId={session?.user?.id || ""}
                                     parentId={post.parentId}
                                     content={post.content.map((content: any) => ({
                                         text: content.text,

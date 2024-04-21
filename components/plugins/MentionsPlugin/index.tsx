@@ -313,7 +313,7 @@ function handleMentionNode(node: TextNode): void {
   }
 }
 
-export default function NewMentionsPlugin(): JSX.Element | null {
+export function MentionsPlugin(): JSX.Element | null {
   const composereditor = useLexicalComposerContext();
   const [realeditor] = useLexicalComposerContext();
   const [composerContext] = composereditor;

@@ -3,7 +3,6 @@ import WhisperCardMain from "../shared/WhisperCardMain";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
 import WhisperCardFooter from "../shared/WhisperCardFooter";
 import { useEffect, useLayoutEffect, useState } from "react";
-import ReplyWhisper from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -11,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { getMeta } from "@/lib/utils";
 import { likewhisper } from "@/lib/actions/whisper.actions";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
+import { ReplyWhisper } from "../forms/ReplyWhisper";
 
 interface Props {
     user: any;

@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -6,21 +6,16 @@ import {
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SignedIn, SignOutButton } from "@clerk/nextjs";
-import CreateWhisper from "../forms/CreateWhisper";
 import { motion } from "framer-motion"
 import { useState } from "react";
+import { signOut } from "next-auth/react";
+import { toast } from "@/components/ui/use-toast"
+import CreateWhisper from "../forms/CreateWhisper";
+
 const TopBar = ({ user, _id }: any) => {
-    const isUserLoggedIn = true;
     function handleConfirm() {
         location.href = "/settings";
     }
@@ -29,6 +24,16 @@ const TopBar = ({ user, _id }: any) => {
     const togglePopup = () => {
         setShowPopup(!showPopup);
 
+    };
+    const SignOutUser = async () => {
+        toast({
+            title: "Déconnexion...",
+            duration: 20000,
+        });
+
+        await signOut({
+            redirect: true
+        });
     };
     const username = user ? user.username : '';
 
@@ -40,7 +45,7 @@ const TopBar = ({ user, _id }: any) => {
 
                 <motion.div whileTap={{ scale: 0.92 }} className="flex flex-col w-18 h-18  col-start-2 mx-auto mmy-auto  mobile:ml-4 mobile:col-start-1 mobile:mr-auto ">
                     <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-all duration-300 ">
-                        <Image src="/logo_resize.png" alt="logo" width={45} height={45} />
+                        <Image src="/logo_resize.png" alt="logo" width={45} height={45} priority  />
 
                     </Link>
                 </motion.div>
@@ -183,11 +188,9 @@ const TopBar = ({ user, _id }: any) => {
                                     <DropdownMenuSeparator />
 
                                     <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                                        <SignedIn>
-                                            <SignOutButton>
-                                                Déconnexion
-                                            </SignOutButton>
-                                        </SignedIn>
+                                        <button onClick={SignOutUser}>
+                                            Déconnexion
+                                        </button>
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>

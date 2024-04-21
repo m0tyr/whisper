@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { useId } from "react";
+import { auth } from "@/auth";
 interface Params {
   email: string,
   userId: string | undefined,
@@ -15,6 +16,11 @@ interface Params {
   bio: string,
   image: string,
   path: string,
+}
+
+export async function getSession(){
+  const session = await auth()
+  return session;
 }
 
 export async function Login(email: string, password: string) {
@@ -44,12 +50,12 @@ export async function Register(email: string, password: string) {
 
     // Create user
     const createdUser = await User.create({
-      id: "a120214120cef4iaej0azfaiIJAIlZ139", // Generate unique user ID
-      username: "ezgkizoekgzo31rg", // Set username as required in your application
-      name: "zrgijzriplplgj", // Set name as required in your application
+      id: "a12021aef4120caegahrzjzerjzef4iaej0azfaiIJAIlZ139", // Generate unique user ID
+      image: "https://whisper-local-sample.s3.eu-north-1.amazonaws.com/profil.jpg",
+      bio: "",
       email: email,
       password: hashpass,
-      isEmailVerified: undefined,
+      emailVerified: undefined,
       isOAuth: false,
       onboarding: false,
     });
@@ -81,6 +87,7 @@ export async function fetchUser(userId: string | undefined) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+
 export async function fetchUserbyEmail(email: string) {
   try {
     connectToDB();
@@ -100,6 +107,7 @@ export async function fetchUserbyUsername(username: string) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+
 export async function fetchUserWhisper(userId: string) {
   try {
     connectToDB();
@@ -123,6 +131,7 @@ export async function fetchUserWhisper(userId: string) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+
 export async function updateAccountUser({
   userId,
   username,
@@ -227,6 +236,7 @@ export async function follow(from: string, to: string) {
     console.error('Error:', error.message);
   }
 }
+
 export async function isFollowing(username: string, foreignusername: string) {
   try {
     const currentuser = await User.findOne({ username: username });
@@ -237,6 +247,7 @@ export async function isFollowing(username: string, foreignusername: string) {
   }
 
 }
+
 export async function MentionSearchModel(input: string) {
   const result = await User.find(
     { username: { $regex: input, $options: "i" } },
@@ -244,6 +255,7 @@ export async function MentionSearchModel(input: string) {
   ).limit(10).lean();
   return result;
 }
+
 type SearchResultType = { id: string, name: string, image: string, username: string, isfollowing: boolean };
 
 export async function SearchModel(input: string) {
@@ -267,6 +279,7 @@ export async function SearchModel(input: string) {
     throw error;
   }
 }
+
 export async function getMentionActivityFromUser(username: string) {
   try {
     username = "@" + username

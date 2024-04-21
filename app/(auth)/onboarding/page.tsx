@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import AccountProfile from "@/components/forms/AccountProfile";
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchUser, fetchUserbyEmail } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
@@ -15,7 +15,8 @@ export async function generateMetadata() {
 async function Page() {
     const session = await auth()
     if (!session) return null;
-    const userInfo = await fetchUser(session.user.id);
+    const email = session?.user.email
+    const userInfo = await fetchUserbyEmail(email as string)
     if (userInfo) {
         if (userInfo?.onboarded) redirect('/');
     }
@@ -31,10 +32,10 @@ async function Page() {
     return (
         <main className="mx-auto flex max-w-3xl flex-col justify-start px-10 py-20 ">
 
-            <h1 className="text-white head-text">Vos premiers pas...</h1>
-            <p className="text-white">Parlez-nous de vous !</p>
+            <h1 className="head-text font-black drop-shadow-2xl text-white">Vos premiers pas...</h1>
+            <p className="text-white font-medium drop-shadow-2xl">Parlez-nous de vous !</p>
 
-            <section className="py-20 bg-insanedark px-5 my-4 rounded-xl">
+            <section className="py-6 bg-insanedark my-4 rounded-xl  ">
                 <AccountProfile user={userData} btnTitle='Continue' />
             </section>
         </main>

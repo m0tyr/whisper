@@ -1,14 +1,13 @@
 import WhisperCard from "@/components/cards/WhisperCard";
 import { fetchallParentsFromWhisper, fetchwhisperById } from "@/lib/actions/whisper.actions";
-import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import ViewWhisperCard from "@/components/cards/ViewWhisperCard";
 import ParentWhisperCard from "@/components/cards/ParentWhisperCard";
-import { userInfo } from "os";
 import { Suspense } from "react";
 import Loader from "@/components/shared/loader/loader";
+import { auth } from "@/auth";
 
 export async function generateMetadata({ params }: { params: { id: string, username: string } }) {
 
@@ -25,18 +24,19 @@ export async function generateMetadata({ params }: { params: { id: string, usern
 
 
 export default async function Page({ params }: { params: { id: string, username: string } }) {
-    const user = await currentUser();
-    if (!user) redirect('/sign-in');
-    const currentuserInfo = await fetchUser(user.id);
+    const session = await auth()
+    if (!session) return null;
+    const email = session?.user.email
+    const currentuserInfo = await fetchUser(session?.user?.id);
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const whisperdatas = await fetchwhisperById(params.id);
     const allparents = await fetchallParentsFromWhisper(whisperdatas.parentId);
     const userData = {
-        id: user?.id,
-        username: currentuserInfo?.username || user.username,
-        name: currentuserInfo?.name || user.firstName,
+        id: session?.user?.id,
+        username: currentuserInfo?.username,
+        name: currentuserInfo?.name || session?.user?.name,
         bio: currentuserInfo?.bio || "",
-        image: currentuserInfo?.image || user.imageUrl,
+        image: currentuserInfo?.image || session?.user?.image,
     };
     return (
         <>  <TopBar user={userData} _id={`${currentuserInfo._id}`} />
@@ -53,7 +53,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                     user={userData}
                                     _id={`${currentuserInfo._id}`}
                                     id={`${post._id}`}
-                                    currentUserId={user?.id || ""}
+                                    currentUserId={session?.user?.id || ""}
                                     parentId={post.parentId}
                                     content={post.content.map((content: any) => ({
                                         text: content.text,
@@ -111,7 +111,7 @@ export default async function Page({ params }: { params: { id: string, username:
                             user={userData}
                             _id={`${currentuserInfo._id}`}
                             id={`${whisperdatas._id}`}
-                            currentUserId={user?.id || ""}
+                            currentUserId={session?.user?.id || ""}
                             parentId={whisperdatas.parentId}
                             content={whisperdatas.content.map((content: any) => ({
                                 text: content.text,
@@ -154,7 +154,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                     user={userData}
                                     _id={`${currentuserInfo._id}`}
                                     id={`${post._id}`}
-                                    currentUserId={user?.id || ""}
+                                    currentUserId={session?.user?.id || ""}
                                     parentId={post.parentId}
                                     content={post.content.map((content: any) => ({
                                         text: content.text,

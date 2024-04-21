@@ -1,9 +1,8 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import React, { useCallback } from "react";
+import React from "react";
 import { useEffect } from "react";
-import { $createMentionNode, MentionNode } from "./MentionsPlugin/MentionNode";
+import { MentionNode } from "@/components/plugins/MentionsPlugin/MentionNode";
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { LinkNode } from '@lexical/link';
@@ -13,35 +12,11 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin'
 import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-
-import MentionsPlugin from "./MentionsPlugin";
-import { $createRangeSelection, $getRoot, $getSelection, $setSelection, RangeSelection, TextNode } from "lexical";
-import { InitMention } from "./InitMention";
-import { ExtractedElement, Input, MentionsDatas, Root } from "@/lib/types/whisper.types";
+import { MentionsPlugin } from "@/components/plugins/MentionsPlugin";
 
 
-export function extractElements(input: Input): ExtractedElement[] {
-  const extractedElements: ExtractedElement[] = [];
 
-  // Iterate over each paragraph
-  input.root.children.forEach(paragraph => {
-      // Iterate over each element in the paragraph
-      paragraph.children.forEach(element => {
-          // If it's a linebreak, set text to '\n'
-          const text = element.type === 'linebreak' ? '\n' : element.text;
-          
-          if (text && element.type) {
-              // Extract text and type
-              const { type } = element;
-              extractedElements.push({ text, type });
-          }
-      });
-  });
-
-  return extractedElements;
-}
-
-const EditorCapturePlugin = React.forwardRef((props: any, ref: any) => {
+export const EditorCapturePlugin = React.forwardRef((props: any, ref: any) => {
   const [editor] = useLexicalComposerContext();
   useEffect(() => {
     ref.current = editor;
@@ -70,8 +45,7 @@ const initialConfig = {
   ]
 };
 
-
-export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
+ const ContentPlayer = React.forwardRef((props: any, ref: any) => {
   const { watchtext, placeholder } = props;
   const onChange = () => {
   }
@@ -91,20 +65,7 @@ export const ContentPlayer = React.forwardRef((props: any, ref: any) => {
     </LexicalComposer>
   );
 });
+ 
+export default ContentPlayer
 
 
-
-export function extractMention(json: Root): MentionsDatas {
-  const extractedData: MentionsDatas = { mentions: []};
-
-  const { children } = json.root;
-  children.forEach((paragraph: any) => {
-    paragraph.children.forEach((child: any) => {
-      if (child.type === 'mention') {
-        extractedData.mentions.push(child.text || 'N/A');
-      }
-    });
-  });
-
-  return extractedData;
-}

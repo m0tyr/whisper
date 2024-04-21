@@ -1,28 +1,27 @@
 "use client"
-
 import * as z from "zod";
 import Image from "next/image";
 import { FieldValues, useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler, LegacyRef } from "react";
+import { ChangeEvent, useEffect, useRef, useState, LegacyRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDebounceCallback } from 'usehooks-ts'
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { $generateHtmlFromNodes } from '@lexical/html';
-import { motion, useAnimation, useDragControls, useMotionValue, useTransform } from 'framer-motion';
-
+import { motion } from 'framer-motion';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
-
-
+import { WhisperValidation } from "@/lib/validations/whisper";
+import {  createWhisper } from "@/lib/actions/whisper.actions";
+import { computeSHA256, extractElements, extractMention } from "@/lib/utils";
+import { AnimatePresence } from 'framer-motion'
+import { useToast } from "../ui/use-toast";
+import DisplayMedia from "../shared/ui/DisplayMedia";
+import { DBImageData, ExtractedElement, PrevImageData } from "@/lib/types/whisper.types";
+import { s3GenerateSignedURL } from "@/lib/s3/actions";
+import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
+import ContentPlayer  from "../plugins/ContentPlayer";
 
 interface Props {
   _id: string;
@@ -35,38 +34,15 @@ interface Props {
   };
   toclose: any;
 }
-import { WhisperValidation } from "@/lib/validations/whisper";
-import { useUploadThing } from "@/lib/uploadthing";
-import { image } from "@nextui-org/react";
-import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
-import { computeSHA256, getMeta, isBase64Image } from "@/lib/utils";
-import { AnimatePresence } from 'framer-motion'
-import { useToast } from "../ui/use-toast";
-import { ToastAction } from "../ui/toast";
-import { $createMentionNode, MentionNode } from "../plugins/MentionsPlugin/MentionNode";
-import { ContentPlayer, extractElements, extractMention } from "../plugins/Main";
-import { $createTextNode, $getRoot, $getSelection, TextNode } from "lexical";
-import DisplayMedia from "../shared/ui/DisplayMedia";
-import { DBImageData, ExtractedElement, PrevImageData } from "@/lib/types/whisper.types";
-import { s3GenerateSignedURL } from "@/lib/s3/actions";
-import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
-
-
 
 
 
 
 const CreateWhisper = ({ user, _id, toclose }: Props) => {
-
-  const [files, setFiles] = useState<File[]>([]);
   const { toast } = useToast()
   const inputRef = useRef<HTMLInputElement>(null);
-  const { startUpload } = useUploadThing('imageUploader')
-  const filesTracker = useRef<File[]>([]);
   const router = useRouter();
-  const [aspectRatio, setAspectRatio] = useState("revert");
   const [text, setText] = useState<string>('');
-  const debouncedText = useDebounceCallback(setText, 500);
   const pathname = usePathname();
   const ref: LegacyRef<HTMLDivElement> = useRef<HTMLDivElement>(null);
   const [imageDataArray, setImageDataArray] = useState<PrevImageData[]>([]);
@@ -163,7 +139,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     );
     const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
 
-    const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
+    const editorStateTextString = editorRef.current.getRootElement()?.textContent;
     if (imageDataArray.length === 0 && editorStateTextString === "") {
       (document.getElementById("button") as HTMLButtonElement).disabled = true;
       console.log("in")
@@ -198,7 +174,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     );
     const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
 
-    const editorStateTextString: string = parsedEditorState.read(() => $getRoot().getTextContent())
+    const editorStateTextString: string = editorRef.current.getRootElement()?.textContent;
     const extractedData = extractMention(datas);
     const extractedstuff = extractElements(datas)
     values.mentions = extractedData.mentions;

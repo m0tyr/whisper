@@ -1,39 +1,30 @@
 "use client"
 import * as z from "zod";
 import Image from "next/image";
-import { motion } from "framer-motion"
-import { image } from "@nextui-org/react";
-import { ToastAction } from "../ui/toast";
-import { useToast } from "../ui/use-toast";
-import { Input } from "@/components/ui/input";
-import { AnimatePresence } from 'framer-motion'
-import { Button } from "@/components/ui/button";
-import { useUploadThing } from "@/lib/uploadthing";
-import { computeSHA256, getMeta, isBase64Image } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, useForm } from "react-hook-form";
-import WhisperCardLeft from "../shared/WhisperCardLeft";
 import { usePathname, useRouter } from "next/navigation";
-import { CommentValidation } from "@/lib/validations/whisper";
-import ReplyWhisperCardMain from "../shared/ReplyWhisperCardMain";
-import { ContentPlayer, extractElements, extractMention } from "../plugins/Main";
-import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler } from "react";
-import { GetLastestWhisperfromUserId, createComment } from "@/lib/actions/whisper.actions";
+import { ChangeEvent, useEffect, useRef, useState, LegacyRef } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from 'framer-motion';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
-
-import { $getRoot } from "lexical";
-import { DBImageData, ExtractedElement, PrevImageData } from "@/lib/types/whisper.types";
+import { CommentValidation } from "@/lib/validations/whisper";
+import { createComment } from "@/lib/actions/whisper.actions";
+import { computeSHA256, extractElements, extractMention } from "@/lib/utils";
+import { AnimatePresence } from 'framer-motion'
+import { useToast } from "../ui/use-toast";
 import DisplayMedia from "../shared/ui/DisplayMedia";
-import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
+import { DBImageData, ExtractedElement, PrevImageData } from "@/lib/types/whisper.types";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
+import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
+import WhisperCardLeft from "../shared/WhisperCardLeft";
+import ReplyWhisperCardMain from "../shared/ReplyWhisperCardMain";
+import ContentPlayer from "../plugins/ContentPlayer";
+
 interface Props {
   _id: string;
   user: {
@@ -73,11 +64,8 @@ interface Props {
   aspectRatio: any;
 }
 
-const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspectRatio }: Props) => {
-  const [files, setFiles] = useState<File[]>([]);
+export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspectRatio }: Props) => {
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
-  const [aspectratio, setAspectRatio] = useState("revert");
-  const { startUpload } = useUploadThing('imageUploader')
   const [isSent, setIsSent] = useState(true);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [editableDivHeight, setEditableDivHeight] = useState(viewportHeight);
@@ -179,7 +167,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
     );
     const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
 
-    const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
+    const editorStateTextString = editorRef.current.getRootElement()?.textContent;
     if (imageDataArray.length === 0 && editorStateTextString === "") {
       (document.getElementById("button") as HTMLButtonElement).disabled = true;
       console.log("in")
@@ -242,7 +230,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
     );
     const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
 
-    const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
+    const editorStateTextString = editorRef.current.getRootElement()?.textContent;
     const extractedData = extractMention(datas);
     const extractedstuff = extractElements(datas)
     values.mentions = extractedData.mentions;
@@ -510,15 +498,17 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
 
 
                   <div id="editableDiv"
-                    className='items-center justify-center rounded-b-2xl flex
+                    className='items-center justify-center rounded-b-2xl 
                   bg-good-gray  border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-b-border  w-basic h-20 mx-auto p-4'>
 
-                    <Button id="button"
+                    <motion.button whileTap={{ scale: 0.95 }} transition={{ duration: .01 }}
+                      id="button"
                       type="submit"
-                      className="absolute right-6 bottom-6 bg-white rounded-full py-1 w-[79.5px] h-9 px-4 mt-2 hover:bg-slate-200
+                      className="absolute right-6 bottom-6 bg-white rounded-full py-1 w-[79.5px] h-9 px-4 mt-2 hover:bg-slate-200 disabled:opacity-20
                  transition-all duration-150 !text-small-semibold text-black " disabled>
+
                       Publier
-                    </Button>
+                    </motion.button>
 
                   </div>
 
@@ -539,4 +529,3 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
 }
 
 
-export default ReplyWhisper;

@@ -1,7 +1,6 @@
 'use client'
 import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler, LegacyRef, Key, MutableRefObject } from "react";
 import { AnimatePresence, motion, useAnimation, useDragControls, useMotionValue, useTransform } from 'framer-motion';
-import Image from "next/image";
 import { DBImageData } from "@/lib/types/whisper.types";
 import { CAROUSEL_DIRECTION_VALUE } from "@/lib/css/motion";
 import { randomBytes } from "crypto";
@@ -125,7 +124,7 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
 
                     </div>
                     {DataArray.map(({ s3url, aspectRatio, width, isVideo }: DBImageData, index) => (
-                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: height, width: `${parseInt(width) > 380 ? "380" : width}px` }}>
+                        <div key={index} className="grid mr-2" style={{ aspectRatio: aspectRatio, height: height, width: `${parseInt(width) > 380 ? "380" : width}px` }}>
                             <div className="relative">
                                 {isVideo ? (
                                     <div className="z-0 relative w-full h-full select-none">

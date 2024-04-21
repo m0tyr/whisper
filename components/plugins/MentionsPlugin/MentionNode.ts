@@ -46,7 +46,7 @@ function convertMentionElement(
 }
 
 const mentionStyle = "color: #1da1f2;";
-export class MentionNode extends TextNode {
+export  class MentionNode extends TextNode {
   getStart() {
     throw new Error('Method not implemented.');
   }
