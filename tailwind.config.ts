@@ -230,6 +230,7 @@ module.exports = {
 
       backgroundImage: {
         'add-image': "url('/add_photos.png')",
+        'icon_background':"url('/public/whisper_bg.jpeg')"
       },
 
       boxShadow: {

@@ -187,9 +187,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
             setCurrentModification(from);
             setcachedData(cache);
             setcurrentLimit(limit);
-
         }
-
     };
     const closepopup = () => {
         setopenPopup(!openPopup)
@@ -382,7 +380,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                                     </div>
                                     <div id="editableDiv"
                                         className='items-center justify-center rounded-b-2xl 
-                  bg-good-gray  border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-b-border  w-[500px] h-[80px] mx-auto  p-4 '>
+                  bg-good-gray  border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-b-border  w-[500px] h-[87px] mx-auto  p-4 '>
                                         <motion.div whileTap={{ scale: 0.97 }} className="w-full h-full">
                                             <Button id="button"
                                                 type="submit"

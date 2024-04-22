@@ -54,7 +54,7 @@ import {
 } from "@/components/ui/popover"
 import { toast } from "@/components/ui/use-toast"
 import { isBase64Image } from "@/lib/utils";
-import { ContentPlayer } from "../plugins/ContentPlayer";
+import ContentPlayer from "../plugins/ContentPlayer";
 
 
 
@@ -151,11 +151,12 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
 
 
   return (
+    <>
     <Form {...form} >
       <form
         onChange={handleFormChange}
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4"
+        className="space-y-3"
       >
         <FormField
           control={form.control}
@@ -184,7 +185,8 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
               </FormLabel>
               <FormControl className='flex-1 text-base-semibold text-gray-200'>
                 <div className="bg-[rgb(30,30,30)] rounded-xl w-full mb-2 ">
-                  <input onChange={(e) => handleImage(e, field.onChange)} type='file' accept="image/jpeg,image/png,video/mp4,video/quicktime" placeholder='Photo de profil' autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] file:rounded-md file:bg-[rgb(197,197,197)] file:outline-none file:border-0 file:text-white file:cursor-pointer  w-full px-4 py-5 rounded-2xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" />
+                  <input onChange={(e) => handleImage(e, field.onChange)} type='file' accept="image/jpeg,image/png,video/mp4,video/quicktime" placeholder='Photo de profil' autoComplete="off" style={{ outline: 'none' }}
+                   className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] file:rounded-sm file:bg-[rgb(197,197,197)] file:outline-none file:border-0 file:text-white file:cursor-pointer  w-full px-4 py-5 rounded-2xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" />
                 </div>
               </FormControl>
             </FormItem>
@@ -194,10 +196,10 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className=" space-y-0">
               <FormControl>
                 <div className="bg-[rgb(30,30,30)] rounded-xl w-full mb-2">
-                  <input {...field} autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" type="text" placeholder="Nom" />
+                  <input {...field} autoComplete="off" style={{ outline: 'none' }} maxLength={30} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" type="text" placeholder="Nom" />
                 </div>
               </FormControl>
 
@@ -210,11 +212,11 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           control={form.control}
           name="username"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className=" space-y-0">
               <FormControl>
                 <div>
                   <div className="bg-[rgb(30,30,30)] rounded-xl w-full">
-                    <input {...field} autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" type="text" placeholder="Nom d'utilisateur" />
+                    <input {...field} autoComplete="off" style={{ outline: 'none' }} maxLength={20} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" type="text" placeholder="Nom d'utilisateur" />
                   </div>
                   <span className=" font-extralight text-[12px] ">Le nom d'utilisateur doit être unique et d'au moins 3 caractères.</span>
                 </div>
@@ -229,9 +231,9 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           control={form.control}
           name="bio"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className=" space-y-0">
               <FormControl >
-                <textarea placeholder="Ecrivez-nous une bio..."  {...field} autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 mt-1 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" />
+                <textarea placeholder="Ecrivez-nous une bio..."  {...field} maxLength={150} autoComplete="off" style={{ outline: 'none' }} className="bg-[rgb(30,30,30)] focus:bg-[rgb(42,42,42)] placeholder:text-[14px] placeholder:font-light w-full px-4 py-4 mt-1 rounded-xl opacity-70 focus:border-none border-none focus:ring-0 duration-100" />
               </FormControl>
 
               <FormMessage />
@@ -254,15 +256,12 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
               </button>
             </div>
           </div>
-        </div>      </form>
-      <div className=" w-full flex justify-center items-center">
-        <div className="absolute bottom-5">
-          <p className=" text-[#7c7c7c] text-body-bold inline-block  !text-[12px] !font-normal justify-center items-center">
-            Copyright © 2024 Whisper Inc. Tous droits réservés.
-          </p>
         </div>
-      </div>
+      </form>
+    
     </Form>
+
+    </>
   );
 };
 

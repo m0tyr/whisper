@@ -25,24 +25,22 @@ export default async function Page({
   const session = await auth()
  
   if (!session) { redirect('/sign-in')}
-  const user = await currentUser();
-  if (!user) redirect('/sign-in');
-  const userInfo = await fetchUser(user.id);
-  if (!userInfo?.onboarded) redirect('/onboarding');
+  const currentUser = await fetchUser(session?.user?.id);
+  if (!currentUser?.onboarded) redirect('/onboarding');
   const { q } = searchParams ?? { q: "" };
   const results = await searchwhispersV1(q, 1, 15)
   const userData = {
-    id: user?.id,
-    username: userInfo?.username || user.username,
-    name: userInfo?.name || user.firstName,
-    bio: userInfo?.bio || "",
-    image: userInfo?.image || user.imageUrl,
+    id: session?.user?.id,
+    username: currentUser?.username,
+    name: currentUser?.name || session?.user?.name,
+    bio: currentUser?.bio || "",
+    image: currentUser?.image || session?.user?.image,
   };
 
   return (
     <>
 
-      <TopBar user={userData} _id={`${userInfo._id}`} />
+      <TopBar user={userData} _id={`${currentUser._id}`} />
 
 
       <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
@@ -61,9 +59,9 @@ export default async function Page({
                       <WhisperCard
                         key={post._id}
                         user={userData}
-                        _id={`${userInfo._id}`}
+                        _id={`${currentUser._id}`}
                         id={`${post._id}`}
-                        currentUserId={user?.id || ""}
+                        currentUserId={session.user?.id || ""}
                         parentId={post.parentId}
                         content={post.content.map((content: any) => ({
                           text: content.text,

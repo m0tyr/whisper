@@ -16,12 +16,11 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-            <html lang="fr">
-                <body className={`${inter.className} bg-insanedark`}>
-                    <Toaster />
-
-                    {children}
-                </body>
-            </html>
+        <html lang="fr">
+        <body className={`${inter.className} relative`}>
+            <Toaster />
+                {children}
+        </body>
+    </html>
     )
 }

@@ -62,6 +62,7 @@
     border-radius: 50%;
   }
 
+
   /* Activity */
   .activity-card {
     @apply flex items-center gap-2 rounded-md bg-dark-2 px-7 py-4;
