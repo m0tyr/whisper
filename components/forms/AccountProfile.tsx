@@ -31,7 +31,7 @@ import { Calendar } from "@/components/ui/calendar"
 
 import { UserValidation } from "@/lib/validations/user";
 
-import { fetchUserbyUsername, updateUser } from "@/lib/actions/user.actions";
+import { fetchUserbyUsername, updateUser, usernameCheck } from "@/lib/actions/user.actions";
 
 
 interface Props {
@@ -87,13 +87,12 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
   }, [form]);
 
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
-    console.log(values)
     toast({
       title: "Inscription...",
       duration: 20000,
     }
     )
-    const isUsernameTaken = await fetchUserbyUsername(values.username)
+    const isUsernameTaken = await usernameCheck(values.username)
     if (isUsernameTaken) {
       toast({
         title: "Le nom d'utilisateur est déjà pris",

@@ -44,7 +44,7 @@ const WhisperCardLeft = ({
                     }
                 }}>
                     <Link href={`${author.username}`}>
-                        <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
+                        <Image src={author.image} alt="logo" width={38} height={38} className="cursor-pointer rounded-full" />
 
                     </Link>
                 </div>
@@ -59,14 +59,9 @@ const WhisperCardLeft = ({
                     }
                 }}>
                     <Link href={`${author.username}`} className="absolute top-0.5">
-                        <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
+                        <Image src={author.image} alt="logo" width={38} height={38} className=" cursor-pointer rounded-full" />
 
                     </Link>
-
-
-
-
-
                 </div>
             </div>
         )}

@@ -38,25 +38,26 @@ import { WhisperValidation } from "@/lib/validations/whisper";
 import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
 import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
-import { getMeta, isBase64Image } from "@/lib/utils";
+import { computeSHA256, getMeta, isBase64Image } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
 import { Switch } from "@/components/ui/switch"
 import DataReacher from "../shared/DataReacher";
 import { ModificationValidation } from "@/lib/validations/user";
 import { updateAccountUser } from "@/lib/actions/user.actions";
+import { ProfileImageData } from "@/lib/types/whisper.types";
+import { toast } from "../ui/use-toast";
+import { MAX_FILE_SIZE } from "@/lib/errors/post.errors";
+import { s3GenerateSignedURL } from "@/lib/s3/actions";
 
 
 
 const UpdateProfile = ({ user, _id, toclose }: Props) => {
     const [files, setFiles] = useState<File[]>([]);
-
-    const { startUpload } = useUploadThing('imageUploader')
-
-
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [imageData, setimageData] = useState<ProfileImageData[]>([])
     const router = useRouter();
 
-    const [imageDataURL, setImageDataURL] = useState<string | null>(null);
     const [aspectRatio, setAspectRatio] = useState("revert");
 
     const pathname = usePathname();
@@ -74,32 +75,26 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
 
     const handleImage = (
         e: ChangeEvent<HTMLInputElement>,
-        fieldChange: (value: string) => void
     ) => {
         e.preventDefault();
-
-        const fileReader = new FileReader();
+        const fileread = e.target.files?.[0] as File
+        const CACHEDBLOBURL = URL.createObjectURL(fileread)
 
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
             setFiles(Array.from(e.target.files));
 
             if (!file.type.includes("image")) return;
-
-            fileReader.onload = async (event) => {
-                const imageDataUrl = event.target?.result?.toString() || "";
-                getMeta(imageDataUrl, (err: any, img: any) => {
-                    const width = img.naturalWidth;
-                    const height = img.naturalHeight;
-                    const arvalue = width / height;
-                    const ar = arvalue.toString();
-                    setAspectRatio(ar);
-                });
-                setImageDataURL(imageDataUrl);
-                fieldChange(imageDataUrl);
+            const img = new window.Image();
+            img.src = CACHEDBLOBURL;
+            setimageData([{ file: file, url: CACHEDBLOBURL }]);
+            img.onload = () => {
+                const width = img.naturalWidth;
+                const height = img.naturalHeight;
+                const aspectRatio = (width / height).toString();
+                setAspectRatio(aspectRatio);
             };
 
-            fileReader.readAsDataURL(file);
         }
     };
 
@@ -119,25 +114,70 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
 
 
     async function onSubmit(values: z.infer<typeof ModificationValidation>) {
+        if (!imageData[0]){
+            values.profile_photo = user?.image
+        } else{
+            let allFilesAuthorized = true;
+            if (imageData[0].file.size > 1048576 * 25) {
+                allFilesAuthorized = false;
+            }
+            if (allFilesAuthorized) {
+                const result = await s3GenerateSignedURL({
+                    userId: _id,
+                    fileType: imageData[0].file.type,
+                    fileSize: imageData[0].file.size,
+                    checksum: await computeSHA256(imageData[0].file),
+                });
+    
+                if (result.failure !== undefined) {
+                    toast({
+                        title: result.failure,
+                        duration: 3000,
+                    });
+                    (document.getElementById('button') as HTMLButtonElement).disabled = false;
+                }
+    
+                if (result.success) {
+                    const url = result.success.url;
+                    values.profile_photo = url.split("?")[0]
+                    await fetch(url, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": imageData[0].file.type,
+                        },
+                        body: imageData[0].file,
+                    });
+    
+                }
+    
+            } else {
+                toast({
+                    title: MAX_FILE_SIZE,
+                    duration: 3000,
+                });
+                (document.getElementById('button') as HTMLButtonElement).disabled = false;
+                return
+            }
+        }
+       
         isProcessing(true)
-        if (namecachedata === "") {
+        if (namecachedata.trim() === "") {
             values.name = user?.name
         }
         else {
             values.name = namecachedata
         }
         values.bio = biocachedata
-        await updateAccountUser({
-            userId: values.accoundId,
-            username: user?.username,
-            name: values.name,
-            bio: values.bio,
-            image: user?.image,
-            path: pathname
-        })
+        await updateAccountUser(
+            values.accoundId, //userID
+            user?.username, //username 
+            values.name, // name
+            values.bio, // bio
+            values.profile_photo, //profil picture
+            pathname // pathname
+        )
         toclose()
         console.log(values)
-
     }
     const [Processing, isProcessing] = useState(false);
     const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -204,8 +244,15 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
             setBiocachedata(value);
         }
     };
-
-
+    const EnableImage = () => {
+        if (inputRef.current) {
+            inputRef.current.click();
+        }
+    };
+    const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+        const element = event.target as HTMLInputElement
+        element.value = ''
+    }
     return (
         <>
             <Form {...form} >
@@ -277,10 +324,20 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
 
                                                 )}
                                             />
-                                            <div className="col-start-3 ml-auto">
-                                                <Image src={user?.image} alt="logo" width={47} height={47} className="rounded-full bg-good-gray" />
-                                                <div className="thread-card_bar" />
-                                            </div>
+                                            <motion.div whileTap={{ scale: 0.98 }} className="col-start-3 ml-auto">
+                                                <div className="w-[52px] h-[52px] flex">
+                                                    <Image
+                                                        src={imageData[0] ? imageData[0].url : (user?.image)}
+                                                        alt="logo"
+                                                        width={52}
+                                                        height={52}
+                                                        className="rounded-full bg-good-gray cursor-pointer w-[52px] h-[52px] border-border border"
+                                                        style={{ aspectRatio: "auto 52/52" }}
+                                                        onClick={EnableImage}
+                                                    />
+                                                    <input onChange={(e) => handleImage(e)} onClick={onInputClick} ref={inputRef} type="file" accept="image/png, image/jpeg, image/jpg, image/tiff" style={{ display: 'none' }} />
+                                                </div>
+                                            </motion.div>
                                         </div>
                                         <div>
                                             <FormField

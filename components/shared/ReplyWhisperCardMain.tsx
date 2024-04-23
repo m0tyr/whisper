@@ -35,7 +35,7 @@ import {
 import Link from "next/link";
 import ImageClickAnim from "../animations/ImageClickAnim";
 import { useState } from "react";
-import ReplyWhisper from "../forms/ReplyWhisper";
+import { ReplyWhisper } from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
@@ -57,7 +57,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                 </div>
                 <div>
                     <Link href={`/${author.username}`}>
-                        <p className="text-white text-small-semibold hover:underline">{author.username}</p>
+                        <p className="text-white !text-[15px] text-small-semibold hover:underline">{author.username}</p>
                     </Link>
                 </div>
                 {content && (

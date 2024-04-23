@@ -10,6 +10,9 @@ export const UserValidation = z.object({
     .string()
     .min(3, { message: "3 caractères minimum." })
     .max(30, { message: "30 caractères maximum." })
+    .refine(value => /^[a-zA-Z0-9_]+$/.test(value), {
+      message: "Votre nom d'utilisateur ne peut contenir que des lettres, chiffres et '_'.",
+    })
     .refine(value => !/\s/.test(value), {
       message: "Le nom d'utilisateur ne doit pas contenir d'espaces.",
     }),
@@ -19,7 +22,7 @@ export const UserValidation = z.object({
     .max(30, { message: "30 caractères maximum." }),
 });
 export const ModificationValidation = z.object({
-  profile_photo: z.string().url().nonempty().optional(),
+  profile_photo: z.string().url().nonempty(),
   name: z
     .string()
     .optional(),

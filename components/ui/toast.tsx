@@ -16,7 +16,7 @@ const ToastViewport = React.forwardRef<
 <ToastPrimitives.Viewport
   ref={ref}
   className={cn(
-    "fixed bottom-0 left-1/2 transform -translate-x-1/2 z-[100] text-center drop-shadow-2xl flex items-center min-w-0 max-w-full max-h-screen w-full justify-center flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[330px]",
+    "fixed bottom-0 left-1/2 transform -translate-x-1/2 z-[100] text-center drop-shadow-2xl  flex items-center min-w-0 max-w-full max-h-screen w-full justify-center flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[330px]",
     className
   )}
   {...props}
@@ -25,7 +25,7 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto min-w-0 max-w-full relative text-center h-[52.333px] max-w-[195px] drop-shadow-2xl flex items-center justify-center overflow-hidden rounded-lg border border-slate-200 py-[10px] px-[14px] shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-bottom-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full dark:border-slate-800",
+  "group pointer-events-auto min-w-0 max-w-full relative text-center h-[52.333px] max-w-fit drop-shadow-2xl flex items-center justify-center overflow-hidden rounded-lg border border-slate-200 py-[20px] px-[14px] shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-bottom-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full dark:border-slate-800",
   {
     variants: {
       variant: {

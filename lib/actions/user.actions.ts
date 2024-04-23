@@ -108,6 +108,18 @@ export async function fetchUserbyUsername(username: string) {
   }
 }
 
+export async function usernameCheck(username: string) {
+  try {
+    connectToDB();
+
+    const user = await User.findOne({ username: username });
+    return !!user; // Returns true if user exists, false otherwise
+  } catch (error: any) {
+    console.error(`Failed to check user existence: ${error.message}`);
+    return false;
+  }
+}
+
 export async function fetchUserWhisper(userId: string) {
   try {
     connectToDB();
@@ -132,14 +144,14 @@ export async function fetchUserWhisper(userId: string) {
   }
 }
 
-export async function updateAccountUser({
-  userId,
-  username,
-  name,
-  bio,
-  image,
-  path,
-}: Params): Promise<void> {
+export async function updateAccountUser(
+  userId:  string | undefined,
+  username: string,
+  name: string,
+  bio: string,
+  image: string,
+  path: string,
+): Promise<void> {
   connectToDB();
 
   try {

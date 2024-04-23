@@ -333,7 +333,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
 
                           <div className="grid grid-cols-[auto,1fr] ">
                             <div className="flex flex-col">
-                              <Image src={user?.image} alt="logo" width={37} height={37} className="mt-1.5 rounded-full bg-good-gray align-self-start" />
+                              <Image src={user?.image} alt="logo" width={38} height={38} className="mt-1.5 rounded-full bg-good-gray align-self-start" />
                               <div className="thread-card_bar" />
                             </div>
                             <FormControl className="outline-none">

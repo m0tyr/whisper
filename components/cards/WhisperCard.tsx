@@ -126,7 +126,7 @@ const WhisperCard = ({
 
 
             )}
-            <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3  mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
+            <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3 pt-1  mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }

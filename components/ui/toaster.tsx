@@ -19,10 +19,10 @@ export function Toaster() {
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
-            <div className="flex flex-row justify-center items-center w-full h-full">
+            <div className="flex flex-row  justify-center items-center ">
               {title === 'Publié' ? (
-                <div className="flex flex-row w-full h-full justify-center items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" id="check">
+                <div className="flex flex-row gap-4 w-full h-full justify-center items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" id="check">
                     <path fill="none" d="M0 0h24v24H0V0z" />
                     <path d="M9 16.17L5.53 12.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l4.18 4.18c.39.39 1.02.39 1.41 0L20.29 7.71c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0L9 16.17z" />
                   </svg>
@@ -34,8 +34,8 @@ export function Toaster() {
                   </ToastTitle>
                 </div>
               ) : title === 'Publication...' ? (
-                <div className="flex flex-row w-full h-full justify-center items-center">
-                    <svg aria-label="Chargement…" className="animate-spin text-black opacity-85" role="img" viewBox="0 0 100 100" width={20} height={20}>
+                <div className="flex flex-row gap-4 w-full h-full justify-center items-center">
+                    <svg aria-label="Chargement…" className="animate-spin text-black opacity-85" role="img" viewBox="0 0 100 100" width={28} height={28}>
                       <rect fill="black" height="10" opacity="0" rx="5" ry="5" transform="rotate(-90 50 50)" width="28" x="67" y="45"></rect>
                       <rect fill="black" height="10" opacity="0.125" rx="5" ry="5" transform="rotate(-45 50 50)" width="28" x="67" y="45"></rect>
                       <rect fill="black" height="10" opacity="0.25" rx="5" ry="5" transform="rotate(0 50 50)" width="28" x="67" y="45"></rect>
@@ -53,8 +53,8 @@ export function Toaster() {
                   </ToastTitle>
                 </div>
               ) : title === "Inscription..." ? (
-                <div className="flex flex-row w-full h-full justify-center items-center">
-                   <svg aria-label="Chargement…" className="animate-spin text-black opacity-85" role="img" viewBox="0 0 100 100" width={20} height={20}>
+                <div className="flex flex-row gap-4 w-full h-full justify-center items-center">
+                   <svg aria-label="Chargement…" className="animate-spin text-black opacity-85" role="img" viewBox="0 0 100 100" width={28} height={28}>
                       <rect fill="black" height="10" opacity="0" rx="5" ry="5" transform="rotate(-90 50 50)" width="28" x="67" y="45"></rect>
                       <rect fill="black" height="10" opacity="0.125" rx="5" ry="5" transform="rotate(-45 50 50)" width="28" x="67" y="45"></rect>
                       <rect fill="black" height="10" opacity="0.25" rx="5" ry="5" transform="rotate(0 50 50)" width="28" x="67" y="45"></rect>
@@ -72,7 +72,7 @@ export function Toaster() {
                 </div>
 
               ) : title === FILE_TYPE_NOT_ALLOWED ? (
-                <div className="flex flex-row w-full h-full justify-center items-center">
+                <div className="flex flex-row gap-4 w-full h-full justify-center items-center">
 
                 <ToastTitle className="flex gap-3 items-center justify-center bg-red-600">
                   <div className="mt-0.5 ">

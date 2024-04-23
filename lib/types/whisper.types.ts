@@ -43,12 +43,17 @@ export interface ExtractedElement {
 }
 
 export interface PrevImageData {
-    file : File,
-    s3url : string | undefined;
+    file: File,
+    s3url: string | undefined;
     url: string;
     aspectRatio: string;
     width: string;
     isVideo: boolean;
+}
+
+export interface ProfileImageData {
+    file: File,
+    url: string
 }
 
 export interface DBImageData {
