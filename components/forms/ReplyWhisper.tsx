@@ -369,7 +369,11 @@ export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup
                           <div className="grid grid-cols-[auto,1fr] ">
 
                             <div className="flex flex-col">
-                              <Image src={user?.image} alt="logo" width={38} height={38} className="mt-1.5 rounded-full bg-good-gray align-self-start" />
+                              <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className=" mt-1 col-start-3 ml-auto">
+                                <div className="w-[40px] h-[40px] flex">
+                                  <Image src={user?.image} alt="logo" width={40} height={40} className=" rounded-full bg-good-gray align-self-start" />
+                                </div>
+                              </motion.div>
                               <div className="thread-card_bar" />
                             </div>
                             <FormControl className="outline-none">

@@ -15,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton"
+import { motion } from "framer-motion";
 
 const WhisperCardLeft = ({
     id,
@@ -44,7 +45,11 @@ const WhisperCardLeft = ({
                     }
                 }}>
                     <Link href={`${author.username}`}>
-                        <Image src={author.image} alt="logo" width={38} height={38} className="cursor-pointer rounded-full" />
+                        <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
+                            <div className="w-[40px] h-[40px] flex">
+                                <Image src={author.image} alt="logo" width={40} height={40} className=" cursor-pointer rounded-full border-border border" />
+                            </div>
+                        </motion.div>
 
                     </Link>
                 </div>
@@ -59,8 +64,11 @@ const WhisperCardLeft = ({
                     }
                 }}>
                     <Link href={`${author.username}`} className="absolute top-0.5">
-                        <Image src={author.image} alt="logo" width={38} height={38} className=" cursor-pointer rounded-full" />
-
+                        <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
+                            <div className="w-[40px] h-[40px] flex">
+                                <Image src={author.image} alt="logo" width={40} height={40} className="border-border border cursor-pointer rounded-full" />
+                            </div>
+                        </motion.div>
                     </Link>
                 </div>
             </div>

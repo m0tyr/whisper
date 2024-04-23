@@ -60,29 +60,30 @@ const WhisperCardFooter = ({ id, author, comments, isNotComment, like_count }: P
                         <div className="justify-center flex w-full relative">
                             {comments[0].childrens.length >= 10 ? (
                                 <>
-                                    <div className="w-5 absolute bottom-2 right-2.5">
+                                
+                                    <div className="w-[20px] h-[20px] flex absolute bottom-2 right-2.5">
                                         <Image src={comments[0].childrens[0].author.image} alt="logo" width={20} height={20} className="rounded-full border border-[#4747476e]" />
                                     </div>
-                                    <div className="w-4 absolute left-1 top-1">
+                                    <div className="w-[20px] h-[20px] flex absolute bottom-2 right-2.5">
                                         <Image src={comments[0].childrens[1].author.image} alt="logo" width={16} height={16} className="rounded-full border border-[#4747476e]" />
                                     </div>
-                                    <div className="w-3 absolute left-[1.125rem] top-3.5">
+                                    <div className="w-[20px] h-[20px] flex absolute bottom-2 right-2.5">
                                         <Image src={comments[0].childrens[2].author.image} alt="logo" width={12} height={12} className="rounded-full border border-[#4747476e]" />
                                     </div>
                                 </>
                             ) : comments[0].childrens.length >= 2 ? (
                                 <>
 
-                                    <div className="w-5 absolute left-0.5 top-0">
+                                    <div className="w-[20px] h-[20px] flex absolute left-0.5 top-0">
                                         <Image src={comments[0].childrens[1].author.image} alt="logo" width={18} height={18} className="rounded-full border border-[#4747476e]" />
                                     </div>
-                                    <div className="w-5 absolute top-0 right-3 ">
+                                    <div className="w-[20px] h-[20px] flex absolute top-0 right-3 ">
                                         <Image src={comments[0].childrens[0].author.image} alt="logo" width={18} height={18} className="rounded-full border border-double border-[#4747477e]" />
                                     </div>
                                 </>
                             ) : comments[0].childrens.length === 1 ? (
                                 <>
-                                    <div className="w-5 absolute left-[0.565rem] top-0">
+                                    <div className="w-[20px] h-[20px] flex absolute left-[0.565rem] top-0">
                                         <Image src={comments[0].childrens[0].author.image} alt="logo" width={20} height={20} className="rounded-full border border-[#4747476e]" />
                                     </div>
                                 </>

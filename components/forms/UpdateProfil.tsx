@@ -114,6 +114,8 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
 
 
     async function onSubmit(values: z.infer<typeof ModificationValidation>) {
+        isProcessing(true)
+
         if (!imageData[0]){
             values.profile_photo = user?.image
         } else{
@@ -160,7 +162,6 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
             }
         }
        
-        isProcessing(true)
         if (namecachedata.trim() === "") {
             values.name = user?.name
         }
@@ -331,7 +332,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                                                         alt="logo"
                                                         width={52}
                                                         height={52}
-                                                        className="rounded-full bg-good-gray cursor-pointer w-[52px] h-[52px] border-border border"
+                                                        className="rounded-full bg-good-gray  w-[52px] h-[52px] cursor-pointer border-border border"
                                                         style={{ aspectRatio: "auto 52/52" }}
                                                         onClick={EnableImage}
                                                     />

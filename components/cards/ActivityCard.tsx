@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import Link from "next/link";
 import { ExtractedElement } from "@/lib/types/whisper.types";
+import { motion } from "framer-motion";
+import Image from 'next/image';
 
 interface Props {
     username: string;
@@ -35,8 +37,12 @@ function ActivityCard({
             <div className="w-full mobile:max-w-[580px]"  >
                 <div className="mt-1">
                     <div className="grid grid-cols-[48px_minmax(0,1fr)] gap-1.5">
-                        <div className="relative block mx-auto mt-1.5 w-[36px] h-[36px] justify-center items-center">
-                            <img src={image} alt="" className="rounded-full " />
+                        <div className="relative block mx-auto mt-1.5 w-[40px] h-[40px] justify-center items-center">
+                            <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
+                                <div className="w-[40px] h-[40px] flex">
+                                    <Image src={image} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
+                                </div>
+                            </motion.div>
                         </div>
 
                         <div className="flex py-1 max-w-full cursor-pointer ">
@@ -55,14 +61,14 @@ function ActivityCard({
                                     <span className="max-w-full text-[14px] font-extralight opacity-65 flex">A mentionné votre Nom</span>
                                 </div>
                                 <div className="flex-grow max-w-full inline-block"  >
-                                <span className={`text-white leading-[calc(1.4_*_1em)] line-clamp-3 max-w-full text-left relative !text-[15px] text-small-regular font-normal  mb-0 whitespace-pre-line break-words `} onClick={(e) => {
-                                    if (e.target === e.currentTarget) {
-                                        ping();
-                                    }
-                                }}>
-                                {caption}
+                                    <span className={`text-white leading-[calc(1.4_*_1em)] line-clamp-3 max-w-full text-left relative !text-[15px] text-small-regular font-normal  mb-0 whitespace-pre-line break-words `} onClick={(e) => {
+                                        if (e.target === e.currentTarget) {
+                                            ping();
+                                        }
+                                    }}>
+                                        {caption}
 
-                                </span>
+                                    </span>
                                 </div>
                                 <hr className="border-x-2 opacity-20 rounded-full mt-[0.66rem] " />
 

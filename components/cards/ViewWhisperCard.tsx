@@ -174,7 +174,11 @@ const ViewWhisperCard = ({
 
                             <div className="flex flex-row mb-2  items-center gap-3">
                                 <Link href={`/${author.username}`}>
-                                    <Image src={author.image} alt="logo" width={36} height={36} className=" cursor-pointer rounded-full" />
+                                    <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
+                                        <div className="w-[40px] h-[40px] flex">
+                                            <Image src={author.image} alt="logo" width={40} height={40} className=" border-border border cursor-pointer rounded-full" />
+                                        </div>
+                                    </motion.div>
                                 </Link>
                                 <Link href={`/${author.username}`}>
                                     <p className="text-white text-small-semibold !text-[15px] hover:underline inline  ">{author.username}</p>
@@ -230,7 +234,7 @@ const ViewWhisperCard = ({
                                 </div>
                             </div>
 
-                            {content  && content.length !== 0 && (
+                            {content && content.length !== 0 && (
                                 <div className="relative bottom-1" >
 
                                     <div className="break-words max-w-lg whitespace-pre-wrap pt-[10px] cursor-auto">

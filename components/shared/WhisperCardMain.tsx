@@ -37,7 +37,7 @@ import {
 import Link from "next/link";
 import ImageClickAnim from "../animations/ImageClickAnim";
 import { useEffect, useState } from "react";
-import ReplyWhisper from "../forms/ReplyWhisper";
+import { ReplyWhisper } from "../forms/ReplyWhisper";
 import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton"

@@ -15,8 +15,8 @@ interface Props {
     id: string;
     bio: string;
     _id: any;
-    Isfollowing:boolean;
-    follow_count:number;
+    Isfollowing: boolean;
+    follow_count: number;
     fetchedtype: string;
 }
 
@@ -34,14 +34,14 @@ function UserCard({
 }: Props) {
     const [showPopup, setShowPopup] = useState(false);
 
-    const [isfollowing,setisfollowing] = useState(Isfollowing)
+    const [isfollowing, setisfollowing] = useState(Isfollowing)
     const togglePopup = () => {
         setShowPopup(!showPopup);
 
     };
     const addFollow = async () => {
-        
-        await follow(myusername,username)
+
+        await follow(myusername, username)
         setisfollowing(!isfollowing)
 
     }
@@ -55,8 +55,11 @@ function UserCard({
                             <p className=" text-slate-200 text-body1-normal !text-[15px] ">{`${username}`}</p>
                         </div>
                         <div className=" col-start-2">
-
-                            <Image src={image} alt="pfp" width={85} height={85} className="rounded-full" />
+                            <motion.div whileTap={{ scale: 0.95 }} transition={{duration : 0.01}} className="col-start-3 ml-auto">
+                                <div className="w-[90px] h-[90px] flex">
+                                    <Image src={image} alt="pfp" width={90} height={90} className="rounded-full cursor-pointer border-border border" />
+                                </div>
+                            </motion.div>
                         </div>
                     </div>
                     <div className="mt-4">
