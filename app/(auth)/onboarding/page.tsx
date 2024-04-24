@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import AccountProfile from "@/components/forms/AccountProfile";
 import { fetchUser, fetchUserbyEmail } from "@/lib/actions/user.actions";
-import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 export async function generateMetadata() {

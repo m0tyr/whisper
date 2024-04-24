@@ -40,8 +40,9 @@ export const {
                         connectToDB();
                         const user = await findOrganicAuthUserPass(credentials.email as string)
                         console.log("Authorize User Credentials: ", user);
+                        const password_sample: string = credentials.password as string
                         if (user !== null) {
-                            const res = await bcrypt.compare(credentials.password, user.password)
+                            const res = await bcrypt.compare(password_sample, user.password)
                             if (res === true) {
                                 const myuser = getUser(user._id.toString(),user.username as string, user.email  as string)
                                 console.log("UserAccount created: ", myuser);

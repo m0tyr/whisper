@@ -35,7 +35,6 @@ interface Props {
 }
 
 import { WhisperValidation } from "@/lib/validations/whisper";
-import { useUploadThing } from "@/lib/uploadthing";
 import { image } from "@nextui-org/react";
 import { GetLastestWhisperfromUserId, createWhisper } from "@/lib/actions/whisper.actions";
 import { computeSHA256, getMeta, isBase64Image } from "@/lib/utils";

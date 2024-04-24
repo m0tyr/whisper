@@ -75,10 +75,10 @@ const WhisperCardFooter = ({ id, author, comments, isNotComment, like_count }: P
                                 <>
 
                                     <div className="w-[20px] h-[20px] flex absolute left-0.5 top-0">
-                                        <Image src={comments[0].childrens[1].author.image} alt="logo" width={18} height={18} className="rounded-full border border-[#4747476e]" />
+                                        <Image src={comments[0].childrens[1].author.image} alt="logo" width={20} height={20} className="rounded-full border border-[#4747476e]" />
                                     </div>
                                     <div className="w-[20px] h-[20px] flex absolute top-0 right-3 ">
-                                        <Image src={comments[0].childrens[0].author.image} alt="logo" width={18} height={18} className="rounded-full border border-double border-[#4747477e]" />
+                                        <Image src={comments[0].childrens[0].author.image} alt="logo" width={20} height={20} className="rounded-full border border-double border-[#4747477e]" />
                                     </div>
                                 </>
                             ) : comments[0].childrens.length === 1 ? (

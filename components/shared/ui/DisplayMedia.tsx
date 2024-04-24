@@ -1,4 +1,4 @@
-import Carousel from "@/components/shared/Carousel";
+import Carousel from "@/components/shared/ui/Carousel";
 import { PrevImageData } from "@/lib/types/whisper.types";
 import Image from "next/image";
 

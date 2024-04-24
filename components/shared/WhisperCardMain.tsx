@@ -212,7 +212,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
                                 <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
                                     <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} onClick={togglePopup}
-                                        className="justify-center flex items-center scale-100 transition-transform duration-150 select-none list-none">
+                                        className="justify-center relative flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 
                                         <div className="w-full h-full absolute top-[-1px] left-[-0.25px]">
@@ -228,7 +228,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                                                 className="rounded-full w-[36px] h-[36px] absolute top-[calc(-1_*_(36px_-_100%)_/_2)] block left-[calc(-1_*_(36px_-_100%)_/_2)] select-none list-none"
                                             />
                                         </div>
-                                        <div className="z-10 inset-0 pointer-events-none">
+                                        <div className="z-10 inset-0 pointer-events-none mr-0.5 mb-[1px]">
 
                                             <svg aria-label="Répondre" role="img" viewBox="0 0 24 24" width={20} height={20} ><title>Répondre</title><path className=" fill-transparent stroke-2 stroke-white" d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"></path></svg>
                                         </div>

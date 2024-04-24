@@ -332,12 +332,14 @@ export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
               >
-
-                <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 '
-                  id="editableDiv"
+            
+            <div className='fixed left-1/2 top-[47.333%]  transform -translate-x-1/2 -translate-y-1/2 drop-shadow-xl '
+                  id="editableDiv" 
                   onInput={handleInput}
                 >
-
+                   <div className="flex justify-center items-center p-4">
+                    <span className=" text-white font-bold text-[16px] ">Répondre</span>
+                    </div>
                   <FormField
                     control={form.control}
                     name="content"
@@ -349,7 +351,7 @@ export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup
                           select-text	overflow-y-auto overflow-x-hidden   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
                             border-t-border [overflow-anchor:auto;]  '
                           role="textbox"
-                          style={{ maxHeight: editableDivHeight / 1.15, textAlign: 'left', }}
+                          style={{ maxHeight: editableDivHeight - 193 / 1.15, textAlign: 'left', }}
                           tabIndex={0}
                           id="scroll"
                           onInput={handleInput}

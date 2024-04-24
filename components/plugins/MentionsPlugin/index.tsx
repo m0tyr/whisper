@@ -425,7 +425,7 @@ export function MentionsPlugin(): JSX.Element | null {
                     </div>
                   </div>
                 </div>
-              ) : results.length > 0 ? (
+              ) : results && results.length > 0 ? (
                 <div
                   className='rounded-xl'
                   ref={refs.setFloating}

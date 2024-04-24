@@ -179,8 +179,11 @@ const ParentWhisperCard = ({
                                             }
                                         }}>
                                             <Link href={`${author.username}`}>
-                                                <Image src={author.image} alt="logo" width={37} height={37} className="cursor-pointer rounded-full" />
-
+                                                <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
+                                                    <div className="w-[40px] h-[40px] flex">
+                                                        <Image src={author.image} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
+                                                    </div>
+                                                </motion.div>
                                             </Link>
                                         </div>
                                         <div className="thread-card_bar " />

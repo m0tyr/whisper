@@ -20,11 +20,11 @@ const TopChat = ({ user, _id }: any) => {
     return (
         <>
             <div className="hidden md:block w-full">
-                <div className="pb-5 pt-2 w-full flex flex-row">
+                <div className="pb-3 pt-2 w-full flex flex-row">
                     <Link href={user.username}>
-                    <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
+                        <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
                             <div className="w-[40px] h-[40px] flex">
-                                <Image src={user.image} alt="logo" width={40} height={40} className="border-border border float-left gap-3 mt-0.5 cursor-pointer rounded-full" />
+                                <Image src={user.image} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
                             </div>
                         </motion.div>
                     </Link>
@@ -38,8 +38,10 @@ const TopChat = ({ user, _id }: any) => {
                     />
                     <button
 
-                        className="float-right right-2 bg-white text-black rounded-full py-1 h-9 px-4 transition-all duration-150 text-small-semibold mt-0.5 opacity-50" disabled>
-                        Publier
+                        className="float-right right-2 bg-white  rounded-full py-1 h-9 px-3.5 transition-all duration-150 mt-0.5 opacity-50" disabled>
+                        <span className="font-semibold text-[15px] text-black justify-center items-center">
+                            Publier
+                        </span>
                     </button>
                 </div>
                 <hr className="border-x-2 opacity-20 rounded-full " />

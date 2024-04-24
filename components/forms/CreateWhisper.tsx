@@ -44,7 +44,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const router = useRouter();
   const [text, setText] = useState<string>('');
   const pathname = usePathname();
-  const ref: LegacyRef<HTMLDivElement> = useRef<HTMLDivElement>(null);
   const [imageDataArray, setImageDataArray] = useState<PrevImageData[]>([]);
 
   const addImageData = (file: File, s3url: string | undefined, url: string, aspectRatio: string, width: string, isVideo: boolean) => {
@@ -305,14 +304,13 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                 onSubmit={form.handleSubmit(onSubmit)}
 
               >
-
-                <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 drop-shadow-xl '
-                  id="editableDiv" ref={ref}
-
+                <div className='fixed left-1/2 top-[47.333%]  transform -translate-x-1/2 -translate-y-1/2 drop-shadow-xl '
+                  id="editableDiv" 
                   onInput={handleInput}
-
                 >
-
+                  <div className="flex justify-center items-center p-4">
+                    <span className=" text-white font-bold text-[16px] ">Nouveau Whisper</span>
+                    </div>
                   <FormField
                     control={form.control}
                     name="content"
@@ -321,10 +319,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                       <FormItem >
 
                         <div
-                          className='bg-good-gray p-6 max-h-[calc(100svh - 193px)] min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
+                          className='bg-good-gray p-6 min-h-40 w-basic  mx-auto break-words whitespace-pre-wrap 
                           select-text	overflow-y-auto overflow-x-auto   rounded-t-2xl  border-x-[0.2333333px] border-t-[0.2333333px] border-x-border
                             border-t-border  '
-                          style={{ maxHeight: editableDivHeight / 1.15, textAlign: 'left', }}
+                          style={{ maxHeight: editableDivHeight - 193 / 1.15, textAlign: 'left', }}
                           tabIndex={0}
                           id="editableDiv"
                           onInput={handleInput}
@@ -341,9 +339,9 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                               <div className="thread-card_bar" />
                             </div>
                             <FormControl className="outline-none">
-                              <div className="grid grid-cols-[auto,0.5fr]">
+                              <div className="grid grid-cols-[auto]">
                                 <div className='col-span-2 ml-2 '>
-                                  <span className="text-white text-small-semibold mb-1">{user?.username}</span>
+                                  <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                   <div className="relative">
                                     <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Commencer un whisper..."} />
                                   </div>
@@ -416,10 +414,12 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                     <motion.button whileTap={{ scale: 0.95 }} transition={{ duration: .01 }}
                       id="button"
                       type="submit"
-                      className="absolute right-6 bottom-6 bg-white rounded-full py-1 w-[79.5px] h-9 px-4 mt-2 hover:bg-slate-200 disabled:opacity-20
-                 transition-all duration-150 !text-small-semibold text-black " disabled>
+                      className="absolute right-6 bottom-[22px] text-center items-center justify-center bg-white rounded-full py-1 w-[79.5px] h-9 px-3 mt-2 hover:bg-slate-200 disabled:opacity-20
+                 transition-all duration-150 " disabled>
+                      <span className="font-semibold text-[15px] text-black justify-center items-center">
+                        Publier
+                      </span>
 
-                      Publier
                     </motion.button>
 
                   </div>

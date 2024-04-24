@@ -1,5 +1,5 @@
 'use client'
-import Carousel from "@/components/shared/Carousel";
+import Carousel from "@/components/shared/ui/Carousel";
 import { DBImageData } from "@/lib/types/whisper.types";
 import Image from "next/image";
 import WhisperCardCarousel from "./WhisperCardCarousel";

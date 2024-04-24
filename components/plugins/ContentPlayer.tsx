@@ -58,8 +58,8 @@ const initialConfig = {
       <HashtagPlugin />
   <OnChangePlugin onChange={onChange} />
       <PlainTextPlugin
-        contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[14.75px]" onKeyDown={watchtext} />}
-        placeholder={<div className="absolute top-0 pointer-events-none text-[14.75px] !font-light opacity-50">{placeholder}</div>}
+        contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[15px]" onKeyDown={watchtext} />}
+        placeholder={<div className="absolute top-0 pointer-events-none text-[15px] !font-light opacity-50">{placeholder}</div>}
         ErrorBoundary={LexicalErrorBoundary}
       />
     </LexicalComposer>
