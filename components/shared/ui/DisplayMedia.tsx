@@ -35,12 +35,14 @@ const DisplayMedia = ({ medias, abortimage }: Props) => {
                                 </picture>
                             )}
                             <div className="absolute top-2 right-2">
+                                <div className="px-3 py-3 bg-dark-4 bg-opacity-90 rounded-full absolute bottom-[-2px] left-[-2px] ">
+                                </div>
                                 <Image
                                     src="/svgs/close.svg"
                                     width={20}
                                     height={20}
                                     alt=""
-                                    className="invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
+                                    className="invert-0   rounded-full cursor-pointer"
                                     onClick={(e) => abortimage(medias[0].url)}
                                 />
                             </div>
@@ -86,6 +88,8 @@ const DisplayMedia = ({ medias, abortimage }: Props) => {
                                             </picture>
                                         )}
                                         <div className="absolute top-2 right-2">
+                                            <div className="px-3 py-3 bg-dark-4 bg-opacity-90 rounded-full absolute bottom-[-2px] left-[-2px] ">
+                                            </div>
                                             <Image
                                                 src="/svgs/close.svg"
                                                 width={20}

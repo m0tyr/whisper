@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHandler, LegacyRef, Key, MutableRefObject } from "react";
 import { motion, useAnimation, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import Image from "next/image";
-import { PrevImageData  } from "@/lib/types/whisper.types";
+import { PrevImageData } from "@/lib/types/whisper.types";
 
 interface Props {
     DataArray: PrevImageData[];
@@ -14,7 +14,7 @@ const Carousel = ({ DataArray, abortimage }: Props) => {
     const fullcarouselRef = useRef<HTMLDivElement>(null);
     let height = "272px";
     for (let index = 0; index < DataArray.length; index++) {
-        if(DataArray[index].isVideo){
+        if (DataArray[index].isVideo) {
             height = "272px"; //need to see for scaling aspectratio
         }
     }
@@ -49,7 +49,7 @@ const Carousel = ({ DataArray, abortimage }: Props) => {
                     dragConstraints={{ right: 0, left: -width }}
                     className="flex">
                     {DataArray.map(({ url, aspectRatio, width, isVideo }: PrevImageData, index) => (
-                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: height, width: `${parseInt(width) > 380 ? "380" : width}px` }}>
+                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: `238px`, width: `${parseInt(width) > 380 ? "380" : (parseInt(width) < 230 ? "238" : width)}px` }}>
                             <div className="relative">
                                 {isVideo ? ( // Check if it's a video
                                     <div className="z-0 relative w-full h-full">
@@ -74,6 +74,8 @@ const Carousel = ({ DataArray, abortimage }: Props) => {
                                     </picture>
                                 )}
                                 <div className="absolute top-2 right-2">
+                                    <div className="px-3 py-3 bg-dark-4 bg-opacity-90 rounded-full absolute bottom-[-2px] left-[-2px] ">
+                                    </div>
                                     <Image
                                         src="/svgs/close.svg"
                                         width={20}

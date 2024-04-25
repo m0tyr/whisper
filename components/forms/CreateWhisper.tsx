@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { WhisperValidation } from "@/lib/validations/whisper";
 import { createWhisper } from "@/lib/actions/whisper.actions";
-import { computeSHA256, extractElements, extractMention } from "@/lib/utils";
+import { computeSHA256, extractElements, extractMention, getClampedMultipleMediaAspectRatio } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { useToast } from "../ui/use-toast";
 import DisplayMedia from "../shared/ui/DisplayMedia";
@@ -106,8 +106,9 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       img.onload = () => {
         const width = img.naturalWidth;
         const height = img.naturalHeight;
-        const aspectRatio = (width / height).toString();
-        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio, width.toString(), false);
+        const aspectRatio = getClampedMultipleMediaAspectRatio({ mediaWidth: width, mediaHeight: height });
+        console.log(width)
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(), false);
       };
     } else if (mimeType.includes('video')) {
       const video = document.createElement('video');
@@ -115,8 +116,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       video.addEventListener('loadedmetadata', () => {
         const width = video.videoWidth;
         const height = video.videoHeight;
-        const aspectRatio = (width / height).toString();
-        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio, width.toString(), true);
+        const aspectRatio = getClampedMultipleMediaAspectRatio({ mediaWidth: width, mediaHeight: height });
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(), true);
       });
     } else {
       console.error('Unsupported file type');
@@ -327,8 +328,6 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                           id="editableDiv"
                           onInput={handleInput}
                         >
-
-
                           <div className="grid grid-cols-[auto,1fr] ">
                             <div className="flex flex-col">
                               <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className=" mt-1 col-start-3 ml-auto">
@@ -339,7 +338,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                               <div className="thread-card_bar" />
                             </div>
                             <FormControl className="outline-none">
-                              <div className="grid grid-cols-[auto]">
+                              <div className="grid grid-cols-[auto,0.5fr]">
                                 <div className='col-span-2 ml-2 '>
                                   <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                   <div className="relative">
