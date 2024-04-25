@@ -6,9 +6,10 @@ import { PrevImageData } from "@/lib/types/whisper.types";
 interface Props {
     DataArray: PrevImageData[];
     abortimage: (url: string) => void;
+    GlobalHeight: number;
 }
 
-const Carousel = ({ DataArray, abortimage }: Props) => {
+const Carousel = ({ DataArray, abortimage,GlobalHeight }: Props) => {
     const [width, setWidth] = useState(0)
     const carouselRef = useRef<HTMLDivElement>(null);
     const fullcarouselRef = useRef<HTMLDivElement>(null);
@@ -49,7 +50,7 @@ const Carousel = ({ DataArray, abortimage }: Props) => {
                     dragConstraints={{ right: 0, left: -width }}
                     className="flex">
                     {DataArray.map(({ url, aspectRatio, width, isVideo }: PrevImageData, index) => (
-                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: `238px`, width: `${parseInt(width) > 380 ? "380" : (parseInt(width) < 230 ? "238" : width)}px` }}>
+                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: `${GlobalHeight}` , width: `${parseInt(width) > 380 ? "380" : (parseInt(width) < 230 ? "238" : width)}px` }}>
                             <div className="relative">
                                 {isVideo ? ( // Check if it's a video
                                     <div className="z-0 relative w-full h-full">

@@ -56,7 +56,7 @@ export function deriveMultipleMediaHeight(a: number, b: number): number {
 }
 
 export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
+  return Math.max(Math.max(value, min), max);
 }
 // 
 

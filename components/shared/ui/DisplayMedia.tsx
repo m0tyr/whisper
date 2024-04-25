@@ -1,5 +1,6 @@
 import Carousel from "@/components/shared/ui/Carousel";
 import { PrevImageData } from "@/lib/types/whisper.types";
+import { deriveMultipleMediaHeight } from "@/lib/utils";
 import Image from "next/image";
 
 interface Props {
@@ -7,6 +8,13 @@ interface Props {
     abortimage: (url: string) => void;
 }
 const DisplayMedia = ({ medias, abortimage }: Props) => {
+    let currentGlobalHeight: number = 0;
+    if (medias.length > 2) {
+        currentGlobalHeight = deriveMultipleMediaHeight(
+            parseFloat(medias[0].aspectRatio),
+            parseFloat(medias[1].aspectRatio)
+        );
+    }
     return (
         <>
             {medias.length === 1 && (
@@ -107,7 +115,7 @@ const DisplayMedia = ({ medias, abortimage }: Props) => {
                 </div>
             )}
             {medias.length > 2 && (
-                <Carousel DataArray={medias} abortimage={abortimage} />
+                <Carousel DataArray={medias} abortimage={abortimage} GlobalHeight={currentGlobalHeight} />
             )}
 
         </>

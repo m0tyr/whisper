@@ -106,8 +106,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       img.onload = () => {
         const width = img.naturalWidth;
         const height = img.naturalHeight;
-        const aspectRatio = getClampedMultipleMediaAspectRatio({ mediaWidth: width, mediaHeight: height });
-        console.log(width)
+        const aspectRatio = (width / height).toString();
         addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(), false);
       };
     } else if (mimeType.includes('video')) {
@@ -116,7 +115,9 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       video.addEventListener('loadedmetadata', () => {
         const width = video.videoWidth;
         const height = video.videoHeight;
-        const aspectRatio = getClampedMultipleMediaAspectRatio({ mediaWidth: width, mediaHeight: height });
+        const test = (width / height).toString();
+        console.log(test)
+        const aspectRatio = (width / height).toString();
         addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(), true);
       });
     } else {
