@@ -15,6 +15,11 @@ export interface Root {
     root: { children: any; };
     children: Paragraph[];
 }
+export interface MediaSize {
+    mediaWidth: number;
+    mediaHeight: number;
+  }
+  
 export interface MentionsDatas {
     mentions: string[];
 }
@@ -48,6 +53,7 @@ export interface PrevImageData {
     url: string;
     aspectRatio: string;
     width: string;
+    height:string;
     isVideo: boolean;
 }
 

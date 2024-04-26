@@ -2,23 +2,27 @@ import { ChangeEvent, useEffect, useRef, useLayoutEffect, useState, MouseEventHa
 import { motion, useAnimation, useDragControls, useMotionValue, useTransform } from 'framer-motion';
 import Image from "next/image";
 import { PrevImageData } from "@/lib/types/whisper.types";
+import { deriveMultipleMediaHeight, getClampedMultipleMediaAspectRatio } from "@/lib/utils";
 
 interface Props {
     DataArray: PrevImageData[];
     abortimage: (url: string) => void;
-    GlobalHeight: number;
 }
 
-const Carousel = ({ DataArray, abortimage,GlobalHeight }: Props) => {
+const Carousel = ({ DataArray, abortimage }: Props) => {
     const [width, setWidth] = useState(0)
+
+    let currentGlobalHeight: number = 0;
+    const tempfirstAttachmentAspectRatio = parseFloat(DataArray[0].aspectRatio)
+    const tempsecondAttachmentAspectRatio = parseFloat(DataArray[1].aspectRatio)
+    currentGlobalHeight = deriveMultipleMediaHeight(
+        tempfirstAttachmentAspectRatio,
+        tempsecondAttachmentAspectRatio
+    );
+
     const carouselRef = useRef<HTMLDivElement>(null);
     const fullcarouselRef = useRef<HTMLDivElement>(null);
-    let height = "272px";
-    for (let index = 0; index < DataArray.length; index++) {
-        if (DataArray[index].isVideo) {
-            height = "272px"; //need to see for scaling aspectratio
-        }
-    }
+
     useEffect(() => {
         const updateWidth = () => {
             if (carouselRef.current && fullcarouselRef.current) {
@@ -50,7 +54,7 @@ const Carousel = ({ DataArray, abortimage,GlobalHeight }: Props) => {
                     dragConstraints={{ right: 0, left: -width }}
                     className="flex">
                     {DataArray.map(({ url, aspectRatio, width, isVideo }: PrevImageData, index) => (
-                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: `${GlobalHeight}` , width: `${parseInt(width) > 380 ? "380" : (parseInt(width) < 230 ? "238" : width)}px` }}>
+                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: `${currentGlobalHeight}px`, width: `${Math.floor(currentGlobalHeight * parseFloat(aspectRatio))}px` }}>
                             <div className="relative">
                                 {isVideo ? ( // Check if it's a video
                                     <div className="z-0 relative w-full h-full">
@@ -74,15 +78,15 @@ const Carousel = ({ DataArray, abortimage,GlobalHeight }: Props) => {
                                         />
                                     </picture>
                                 )}
-                                <div className="absolute top-2 right-2">
-                                    <div className="px-3 py-3 bg-dark-4 bg-opacity-90 rounded-full absolute bottom-[-2px] left-[-2px] ">
+                                <div className="absolute top-2 right-2 px-1 py-1">
+                                    <div className="px-[13px] py-[13px] bg-[rgba(0,0,0,0.4)] backdrop-blur-lg rounded-full absolute bottom-[1px] left-[1px] ">
                                     </div>
                                     <Image
                                         src="/svgs/close.svg"
                                         width={20}
                                         height={20}
                                         alt=""
-                                        className="invert-0 bg-dark-4 bg-opacity-90 rounded-full cursor-pointer"
+                                        className="invert-0  bg-opacity-90 rounded-full cursor-pointer"
                                         onClick={(e) => abortimage(url)}
                                     />
                                 </div>

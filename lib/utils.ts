@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ExtractedElement, Input, MentionsDatas, Root } from "./types/whisper.types";
+import { ExtractedElement, Input, MediaSize, MentionsDatas, Root } from "./types/whisper.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -25,10 +25,6 @@ export function extractMention(json: Root): MentionsDatas {
 
  //Media Calculus stuff
  //need to test
-interface MediaSize {
-  mediaWidth: number;
-  mediaHeight: number;
-}
 
 export function getClampedMultipleMediaAspectRatio({ mediaWidth, mediaHeight }: MediaSize): number {
   const aspectRatio = mediaWidth / mediaHeight;
@@ -55,8 +51,10 @@ export function deriveMultipleMediaHeight(a: number, b: number): number {
   }
 }
 
-export function clamp(value: number, min: number, max: number): number {
-  return Math.max(Math.max(value, min), max);
+function clamp(value: number, min: number, max: number): number {
+  if (value < min)
+    return min;
+  return value > max ? max : value;
 }
 // 
 

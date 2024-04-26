@@ -46,8 +46,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const pathname = usePathname();
   const [imageDataArray, setImageDataArray] = useState<PrevImageData[]>([]);
 
-  const addImageData = (file: File, s3url: string | undefined, url: string, aspectRatio: string, width: string, isVideo: boolean) => {
-    setImageDataArray([...imageDataArray, { file, url, aspectRatio, width, isVideo, s3url }]);
+  const addImageData = (file: File, s3url: string | undefined, url: string, aspectRatio: string, width: string,height:string, isVideo: boolean) => {
+    setImageDataArray([...imageDataArray, { file, url, aspectRatio, width,height, isVideo, s3url }]);
   };
   const removeImageData = (urlToRemove: string) => {
     console.log("URL to remove:", urlToRemove);
@@ -91,7 +91,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
     fieldChange: (value: string) => void,
-    addImageData: (file: File, s3url: string | undefined, url: string, aspectRatio: string, witdh: string, isVideo: boolean) => void
+    addImageData: (file: File, s3url: string | undefined, url: string, aspectRatio: string, witdh: string,height:string, isVideo: boolean) => void
   ) => {
     e.preventDefault();
 
@@ -106,8 +106,11 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       img.onload = () => {
         const width = img.naturalWidth;
         const height = img.naturalHeight;
-        const aspectRatio = (width / height).toString();
-        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(), false);
+        const aspectRatio = getClampedMultipleMediaAspectRatio({
+          mediaWidth: width,
+          mediaHeight: height
+      });
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(),height.toString(), false);
       };
     } else if (mimeType.includes('video')) {
       const video = document.createElement('video');
@@ -115,10 +118,11 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
       video.addEventListener('loadedmetadata', () => {
         const width = video.videoWidth;
         const height = video.videoHeight;
-        const test = (width / height).toString();
-        console.log(test)
-        const aspectRatio = (width / height).toString();
-        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(), true);
+        const aspectRatio = getClampedMultipleMediaAspectRatio({
+          mediaWidth: width,
+          mediaHeight: height
+      });
+        addImageData(fileread, undefined, CACHEDBLOBURL, aspectRatio.toString(), width.toString(),height.toString(), true);
       });
     } else {
       console.error('Unsupported file type');
@@ -349,7 +353,7 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
                                     control={form.control}
                                     name="media"
                                     render={({ field }: { field: FieldValues }) => (
-                                      <FormItem className=" space-y-[10px] ">
+                                      <FormItem className=" space-y-[10px]  ">
                                         {imageDataArray && (
                                           <DisplayMedia medias={imageDataArray} abortimage={abortimage} />
                                         )}
