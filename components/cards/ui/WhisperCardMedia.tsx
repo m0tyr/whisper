@@ -32,7 +32,7 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
         <>
             {medias.length === 1 && (
                 <div className="max-h-[430px] my-1 grid-rows-1 grid-cols-1 grid">
-                    <div style={{ aspectRatio: medias[0].aspectRatio, maxHeight: "430px" }}>
+                    <div style={{ aspectRatio: `${parseFloat(medias[0].width) / parseFloat(medias[0].height)}px`, maxHeight: "430px" }}>
                         <div className="block relative h-full">
                             {medias[0].isVideo ? (
                                 <div className="z-0 relative w-full h-full">
@@ -90,17 +90,16 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
             {medias.length === 2 && (
                 <div className="pt-1.5 ">
                     {(() => {
-                        let aspectRatio;
-                        if (parseFloat(medias[0].aspectRatio) + parseFloat(medias[1].aspectRatio) > 2.5) {
-                            aspectRatio = 2.1413333333333333;
-                        } else {
-                            aspectRatio = (parseFloat(medias[0].aspectRatio) + parseFloat(medias[1].aspectRatio)).toString();
-                        }
+                         const tempfirstAttachmentAspectRatio = parseFloat(medias[0].aspectRatio)
+                         const tempsecondAttachmentAspectRatio = parseFloat(medias[1].aspectRatio)
+                         let aspectRatio;
+                         aspectRatio = (tempfirstAttachmentAspectRatio + tempsecondAttachmentAspectRatio).toString();
+ 
 
                         return (
                             <div className="grid grid-rows-[100%] max-h-[430px]  gap-[6px]" style={{
                                 aspectRatio: aspectRatio,
-                                gridTemplateColumns: `minmax(0, ${Math.min(133, Math.floor(parseFloat(medias[0].aspectRatio) * 100))}fr) minmax(0, ${Math.min(133, Math.floor(parseFloat(medias[1].aspectRatio) * 100))}fr)`,
+                                gridTemplateColumns: `minmax(0, ${Math.floor(tempfirstAttachmentAspectRatio * 100)}fr) minmax(0, ${Math.floor(tempsecondAttachmentAspectRatio * 100)}fr)`
                             }}>
                                 {medias.map(({ s3url, aspectRatio, isVideo, width }, index) => (
                                     <div className="block relative max-h-[430px] " key={index}>

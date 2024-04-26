@@ -9,6 +9,7 @@ export const WhisperValidation = z.object({
     s3url: z.string().optional(),
     aspectRatio: z.string(),
     width: z.string(),
+    height: z.string(),
     isVideo: z.boolean(),
   })).optional(),
   mentions: z.array(z.string()).optional(),

@@ -66,5 +66,6 @@ export interface DBImageData {
     s3url?: string | undefined;
     aspectRatio: string;
     width: string;
+    height: string;
     isVideo: boolean;
 }

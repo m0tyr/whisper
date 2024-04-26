@@ -41,7 +41,7 @@ export function deriveMultipleMediaHeight(a: number, b: number): number {
   }
 
   if ((isFourThirds(a) && isFourThirds(b)) || (isThreeFourths(a) && isThreeFourths(b))) {
-    return 184;
+    return 272;
   } else if ((isFourThirds(a) && isThreeFourths(b)) || (isThreeFourths(a) && isFourThirds(b))) {
     return 235;
   } else if (a === 1 && b === 1) {

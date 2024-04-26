@@ -21,6 +21,7 @@ const mediaSUBSchema = new mongoose.Schema({
     s3url : String,
     aspectRatio: String,
     width : String,
+    height: String,
     isVideo: Boolean
 })
   const interaction_info = new mongoose.Schema({

@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useAnimation, useDragControls, useMotionValue,
 import { DBImageData } from "@/lib/types/whisper.types";
 import { CAROUSEL_DIRECTION_VALUE } from "@/lib/css/motion";
 import { randomBytes } from "crypto";
+import { deriveMultipleMediaHeight } from "@/lib/utils";
 
 interface Props {
     DataArray: DBImageData[];
@@ -20,6 +21,14 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
     const id: string = randomBytes(10).toString('hex');
     const [width, setWidth] = useState(0)
     const [Audiostate, toggleAudio] = useState<boolean>(false)
+    let currentGlobalHeight: number = 0;
+    const tempfirstAttachmentAspectRatio = parseFloat(DataArray[0].aspectRatio)
+    const tempsecondAttachmentAspectRatio = parseFloat(DataArray[1].aspectRatio)
+    currentGlobalHeight = deriveMultipleMediaHeight(
+        tempfirstAttachmentAspectRatio,
+        tempsecondAttachmentAspectRatio
+    );
+
     const togglePopup = (src: string, ar: string, isVideo: boolean, width: string) => {
         if (!isReply) {
             setShowImage(!showImage);
@@ -31,12 +40,6 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
     };
     const carouselRef = useRef<HTMLDivElement>(null);
     const fullcarouselRef = useRef<HTMLDivElement>(null);
-    let height = "272px";
-    for (let index = 0; index < DataArray.length; index++) {
-        if (DataArray[index].isVideo) {
-            height = "272px"; //need to see for scaling aspectratio
-        }
-    }
     useEffect(() => {
         const updateWidth = () => {
             if (carouselRef.current && fullcarouselRef.current) {
@@ -123,8 +126,8 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
                     <div className="w-[48px] flex-shrink-0 cursor-grab active:cursor-grabbing">
 
                     </div>
-                    {DataArray.map(({ s3url, aspectRatio, width, isVideo }: DBImageData, index) => (
-                        <div key={index} className="grid mr-2" style={{ aspectRatio: aspectRatio, height: height, width: `${parseInt(width) > 380 ? "380" : width}px` }}>
+                    {DataArray.map(({ s3url, aspectRatio, width, height, isVideo }: DBImageData, index) => (
+                        <div key={index} className="grid mr-2" style={{ aspectRatio: aspectRatio, height: currentGlobalHeight, width: `${Math.floor(currentGlobalHeight * parseFloat(aspectRatio))}px` }}>
                             <div className="relative">
                                 {isVideo ? (
                                     <div className="z-0 relative w-full h-full select-none">
