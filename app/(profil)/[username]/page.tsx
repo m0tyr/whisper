@@ -91,6 +91,7 @@ export default async function Page({ params }: { params: { username: string } })
                                         s3url: media.s3url,
                                         aspectRatio: media.aspectRatio,
                                         width: media.width,
+                                        height:media.height,
                                         isVideo: media.isVideo
                                     }))} 
                                     author={{ image: userposts.image, username: userposts.username, id: userposts.id }}

@@ -183,7 +183,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                             <div
                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
                                 <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} onClick={LikeWhisper}
+                                    <motion.div whileTap={{ scale: 0.85 }} transition={{ duration: 0, delay: 0.01, ease: "backIn" }} onClick={LikeWhisper}
                                         className="justify-center outline-none flex items-center scale-100 transition-transform duration-150 select-none list-none">
                                         <div className="w-full h-full absolute top-[-1px] left-[-0.25px]">
                                             <motion.div
@@ -211,7 +211,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                             <div
                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
                                 <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} onClick={togglePopup}
+                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }} onClick={togglePopup}
                                         className="justify-center relative flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 

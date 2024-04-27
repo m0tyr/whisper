@@ -115,9 +115,9 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
     async function onSubmit(values: z.infer<typeof ModificationValidation>) {
         isProcessing(true)
 
-        if (!imageData[0]){
+        if (!imageData[0]) {
             values.profile_photo = user?.image
-        } else{
+        } else {
             let allFilesAuthorized = true;
             if (imageData[0].file.size > 1048576 * 25) {
                 allFilesAuthorized = false;
@@ -129,7 +129,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                     fileSize: imageData[0].file.size,
                     checksum: await computeSHA256(imageData[0].file),
                 });
-    
+
                 if (result.failure !== undefined) {
                     toast({
                         title: result.failure,
@@ -137,7 +137,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                     });
                     (document.getElementById('button') as HTMLButtonElement).disabled = false;
                 }
-    
+
                 if (result.success) {
                     const url = result.success.url;
                     values.profile_photo = url.split("?")[0]
@@ -148,9 +148,9 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                         },
                         body: imageData[0].file,
                     });
-    
+
                 }
-    
+
             } else {
                 toast({
                     title: MAX_FILE_SIZE,
@@ -160,7 +160,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                 return
             }
         }
-       
+
         if (namecachedata.trim() === "") {
             values.name = user?.name
         }
@@ -268,7 +268,34 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                                 onSubmit={form.handleSubmit(onSubmit)}
                             >
 
-                                <div className='fixed left-1/2 top-1/2  transform -translate-x-1/2 -translate-y-1/2 '
+                                <motion.div
+                                    initial={{
+                                        opacity: 0,
+                                        scale: 0.98,
+                                        x: "-50%",
+                                        y: "-50%"
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        x: "-50%",
+                                        y: "-50%",
+                                        transition: {
+                                            ease: "easeOut",
+                                            duration: 0.05,
+                                            delay: 0.1
+                                        },
+                                    }}
+                                    exit={{
+                                        opacity: 0,
+                                        scale: 0.95,
+                                        transition: {
+                                            ease: "easeIn",
+                                            duration: 0.05,
+                                            delay: 0.1
+                                        },
+                                    }}
+                                    className='fixed left-1/2 top-1/2 shadow-[0_12px_24px_0_rgba(0,0,0,0.08)]  '
                                     id="editableDiv"
 
                                     onInput={handleInput}
@@ -468,7 +495,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
                                         </motion.div>
                                     </div>
 
-                                </div>
+                                </motion.div>
                             </form>
                         </div>
                     </motion.div>

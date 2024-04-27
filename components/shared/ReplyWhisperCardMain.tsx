@@ -61,11 +61,11 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                     </Link>
                 </div>
                 {content && (
-                    <div className="relative bottom-1" >
+                    <div className="relative bottom-1 w-full" >
 
                         <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5">
                             {sections.map((section, index) => (
-                                <span key={index} className={`text-white leading-[calc(1.4_*_1em)] overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] font-light mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
+                                <span key={index} className={`text-white leading-[calc(1.4_*_1em)] overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] font-normal mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
                                     {section.map((line, subIndex) => (
                                         line.type === 'mention' ? (
                                             <div className="inline-block text-[#1da1f2]" key={`mention_${subIndex}`}>

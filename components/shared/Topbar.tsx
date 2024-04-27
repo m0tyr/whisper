@@ -14,7 +14,6 @@ import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast"
 import CreateWhisper from "../forms/CreateWhisper";
-
 const TopBar = ({ user, _id }: any) => {
     function handleConfirm() {
         location.href = "/settings";

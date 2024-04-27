@@ -63,6 +63,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                         s3url: media.s3url,
                                         aspectRatio: media.aspectRatio,
                                         width: media.width,
+                                        height:media.height,
                                         isVideo: media.isVideo
                                     }))}
                                     author={{
@@ -121,6 +122,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                 s3url: media.s3url,
                                 aspectRatio: media.aspectRatio,
                                 width: media.width,
+                                height:media.height,
                                 isVideo: media.isVideo
                             }))} author={{ image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }}
                             createdAt={whisperdatas.createdAt}
@@ -164,6 +166,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                         s3url: media.s3url,
                                         aspectRatio: media.aspectRatio,
                                         width: media.width,
+                                        height:media.height,
                                         isVideo: media.isVideo
                                     }))} author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
                                     createdAt={post.createdAt}

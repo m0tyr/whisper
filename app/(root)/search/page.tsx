@@ -71,6 +71,7 @@ export default async function Page({
                           s3url: media.s3url,
                           aspectRatio: media.aspectRatio,
                           width: media.width,
+                          height:media.height,
                           isVideo: media.isVideo
                         }))} 
                         author={{
