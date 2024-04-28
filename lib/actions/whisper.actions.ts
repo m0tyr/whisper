@@ -5,6 +5,9 @@ import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
 import { DBImageData, ExtractedElement } from "../types/whisper.types";
+import { notify } from "./notifications.actions";
+import { Activity } from "lucide-react";
+import { ActivityType } from "../types/notification.types";
 
 
 interface Params {
@@ -54,11 +57,17 @@ export async function isliking(userid: string, liketracker: any) {
     }
 }
 
-export async function likewhisper(username: string, whisper_id: string) {
-    const liker = await User.findOne({ username: username });
+export async function likewhisper(user_liking: string, whisper_id: string,user_getting_the_like: string) {
+    const liker = await User.findOne({ username: user_liking });
     const tolike = await Whisper.findOne({ _id: whisper_id });
     const isLiking = tolike.interaction_info.liketracker.some((liketracker: { id: string }) => liketracker.id === liker.id);
     if (!isLiking) {
+        await notify({
+            activity_type: ActivityType.LIKE,
+            source_id: whisper_id,
+            targetUserID: user_getting_the_like,
+            sourceUserID: liker.id
+        });
         tolike.interaction_info.liketracker.push({
             id: liker.id
         })
@@ -103,7 +112,10 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
             .sort({ createdAt: 'desc' })
             .skip(skipamount)
             .limit(pagesize)
-            .populate({ path: 'author', model: User })
+            .populate({
+                path: 'author',
+                select: "_id id username name image"
+            })
             .populate({
                 path: 'children',
                 populate: {
@@ -293,4 +305,3 @@ export async function fetchallParentsFromWhisper(parentid: string) {
 
 
 }
-

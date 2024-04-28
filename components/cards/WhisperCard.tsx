@@ -89,7 +89,7 @@ const WhisperCard = ({
     }
 
     const LikeWhisper = async () => {
-        like_info.like_count = await likewhisper(user.username, id)
+        like_info.like_count = await likewhisper(user.username, id, author.id)
         setisliking(!isliking)
     }
 

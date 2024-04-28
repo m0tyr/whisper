@@ -50,7 +50,7 @@ export async function Register(email: string, password: string) {
 
     // Create user
     const createdUser = await User.create({
-      id: "a12021aef4120caegahrzjzerjzef4iaej0azfaiIJAIlZ139", // Generate unique user ID
+      id: "a12021aef4120caegahrzjzerjzef4iaej0azfaiIJAIlZ139", // Placeholder Need to change
       image: "https://whisper-local-sample.s3.eu-north-1.amazonaws.com/profil.jpg",
       bio: "",
       email: email,
