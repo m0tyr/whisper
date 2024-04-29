@@ -14,6 +14,7 @@ import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast"
 import CreateWhisper from "../forms/CreateWhisper";
+import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
 const TopBar = ({ user, _id }: any) => {
     function handleConfirm() {
         location.href = "/settings";
@@ -34,6 +35,9 @@ const TopBar = ({ user, _id }: any) => {
             redirect: true
         });
     };
+    const {data: notificationCount} =  useNotificationsCountQuery(user.id);
+
+
     const username = user ? user.username : '';
 
 
@@ -113,14 +117,20 @@ const TopBar = ({ user, _id }: any) => {
                             <div className="relative">
                                 <Link href="/activity" className="py-5 px-5 my-1 mx-1 flex justify-center">
                                     <div className="h-full justify-center items-center">
-                                        <div className=" justify-center items-center w-full h-full flex">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className=" absolute top-3 fill-red-800 stroke-red-800 drop-shadow-2xl" width={6} height={6} viewBox="0 0 122.88 122.88">
-                                            <g>
-                                                <path d="M61.44,0c33.93,0,61.44,27.51,61.44,61.44s-27.51,61.44-61.44,61.44S0,95.37,0,61.44S27.51,0,61.44,0L61.44,0z" />
-                                            </g>
-                                        </svg>
-                                        </div>
-                                      
+                                        {notificationCount && notificationCount !== 0 ? (
+                                            <div className=" justify-center items-center w-full h-full flex">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className=" absolute top-3 fill-red-800 stroke-red-800 drop-shadow-2xl" width={6} height={6} viewBox="0 0 122.88 122.88">
+                                                    <g>
+                                                        <path d="M61.44,0c33.93,0,61.44,27.51,61.44,61.44s-27.51,61.44-61.44,61.44S0,95.37,0,61.44S27.51,0,61.44,0L61.44,0z" />
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                        ) : (
+                                            null
+                                        )
+                                        }
+
+
 
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" className="opacity-20">
                                             <path d="M12 9.229c.234-1.12 1.547-6.229 5.382-6.229 2.22 0 4.618 1.551 4.618 5.003 0 3.907-3.627 8.47-10 12.629-6.373-4.159-10-8.722-10-12.629 0-3.484 2.369-5.005 4.577-5.005 3.923 0 5.145 5.126 5.423 6.231zm-12-1.226c0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-7.962-9.648-9.028-12-3.737-2.338-5.262-12-4.27-12 3.737z" fill="white" />

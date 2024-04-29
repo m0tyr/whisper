@@ -41,10 +41,7 @@ export default async function Page({ params }: { params: { type: string } }) {
 
                 {datas ? (
                     datas.map(whisper => (
-                        <ActivityCard username={whisper.author.username} image={whisper.author.image} _id={whisper._id} caption={whisper.caption} createdAt={whisper.createdAt} content={whisper.content.map((content: any) => ({
-                            text: content.text,
-                            type: content.type
-                          }))}  />
+                        <ActivityCard username={whisper.author.username} image={whisper.author.image} notification_link={whisper._id} caption={whisper.caption} createdAt={whisper.createdAt} type={""} />
                     ))
                 ) : (
                     <div className=" justify-center items-center m-auto" >

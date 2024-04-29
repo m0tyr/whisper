@@ -8,6 +8,8 @@ import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { useId } from "react";
 import { auth } from "@/auth";
+import { notify } from "./notifications.actions";
+import { ActivityType } from "../types/notification.types";
 interface Params {
   email: string,
   userId: string | undefined,
@@ -230,6 +232,11 @@ export async function follow(from: string, to: string) {
       foreignuser.user_social_info.followers.push({ id: from });
       currentuser.user_social_info.following.push({ id: to });
       foreignuser.user_social_info.follow_count++;
+      await notify({
+        activity_type: ActivityType.FOLLOW,
+        targetUserID: foreignuser.id,
+        sourceUserID: currentuser.id
+      })
     } else {
       const foreignuserFollowerIndex = foreignuser.user_social_info.followers.findIndex((follower: { id: string }) => follower.id === from);
       const currentuserFollowingIndex = currentuser.user_social_info.following.findIndex((following: { id: string }) => following.id === to);

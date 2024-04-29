@@ -110,6 +110,12 @@ export function processElements(elements: ExtractedElement[]): ExtractedElement[
   const sections: ExtractedElement[][] = [];
   let currentSection: ExtractedElement[] = [];
 
+
+  /* Constraint the final whisper content to contain no more than two linebreak in a row 
+     its still a front-end operation done every time we load a whisper this implementation needs to be done
+     before posting so that it doesnt compute everytime we load.
+  */
+
   for (const element of elements) {
     if (element.type === 'linebreak') {
       consecutiveLineBreaksCount++;

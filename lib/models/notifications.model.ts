@@ -6,10 +6,10 @@ const { Schema } = mongoose;
 
 const notificationSchema = new Schema({
     activity_type: { type: String, enum: Object.values(ActivityType), required: true }, 
-    source_id: { type: String, required: true }, // activity data recorded
+    source_id: { type: String, required: false }, // activity data recorded
     targetUserID: { type: String, required: true },
     sourceUserID: { type: String, required: true },
-    isActive: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
     time: { type: Date, default: Date.now } 
 });
 

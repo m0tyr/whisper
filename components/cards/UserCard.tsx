@@ -45,6 +45,7 @@ function UserCard({
         setisfollowing(!isfollowing)
 
     }
+    console.log(image)
     return (
         <>
             <div className=" w-[99%] mx-auto">
@@ -57,7 +58,7 @@ function UserCard({
                         <div className=" col-start-2">
                             <motion.div whileTap={{ scale: 0.95 }} transition={{duration : 0.01}} className="col-start-3 ml-auto">
                                 <div className="w-[90px] h-[90px] flex">
-                                    <Image src={image} alt="pfp" width={90} height={90} className="rounded-full cursor-pointer border-border border" />
+                                    <img src={image} alt="pfp" width={90} height={90} className="rounded-full cursor-pointer border-border border" />
                                 </div>
                             </motion.div>
                         </div>
