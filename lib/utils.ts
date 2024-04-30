@@ -6,14 +6,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function extractMention(json: Root): MentionsDatas {
-  const extractedData: MentionsDatas = { mentions: [] };
+export function extractMention(json: Root): MentionsDatas[] {
+  const extractedData: MentionsDatas[] = [];
 
   const { children } = json.root;
   children.forEach((paragraph: any) => {
     paragraph.children.forEach((child: any) => {
       if (child.type === 'mention') {
-        extractedData.mentions.push(child.text || 'N/A');
+        extractedData.push({
+          id: child.id || 'N/A',
+          mention: child.text || 'N/A'
+        });
       }
     });
   });
@@ -23,8 +26,8 @@ export function extractMention(json: Root): MentionsDatas {
 
 
 
- //Media Calculus stuff
- //need to test
+//Media Calculus stuff
+//need to test
 
 export function getClampedMultipleMediaAspectRatio({ mediaWidth, mediaHeight }: MediaSize): number {
   const aspectRatio = mediaWidth / mediaHeight;

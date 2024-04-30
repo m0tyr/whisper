@@ -2,15 +2,16 @@
 import WhisperCardMain from "../shared/WhisperCardMain";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
 import WhisperCardFooter from "../shared/WhisperCardFooter";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton"
-import { getMeta } from "@/lib/utils";
 import { likewhisper } from "@/lib/actions/whisper.actions";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
-import { ReplyWhisper } from "../forms/ReplyWhisper";
+
+import dynamic from "next/dynamic";
+const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper"), {
+    ssr: false,
+})
 
 interface Props {
     user: any;
@@ -105,7 +106,7 @@ const WhisperCard = ({
                         id='top'
                         className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
 
-                    <ReplyWhisper whisper_to_reply={{
+                    <DynamicReplyWhisper whisper_to_reply={{
                         id: id,
                         currentUserId: currentUserId,
                         parentId: parentId,

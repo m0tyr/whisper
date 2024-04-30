@@ -18,7 +18,7 @@ import { computeSHA256, extractElements, extractMention, getClampedMultipleMedia
 import { AnimatePresence } from 'framer-motion'
 import { useToast } from "../ui/use-toast";
 import DisplayMedia from "../shared/ui/DisplayMedia";
-import { DBImageData, ExtractedElement, PrevImageData } from "@/lib/types/whisper.types";
+import { DBImageData, ExtractedElement, MentionsDatas, PrevImageData } from "@/lib/types/whisper.types";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
@@ -64,7 +64,7 @@ interface Props {
   aspectRatio: any;
 }
 
-export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspectRatio }: Props) => {
+const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspectRatio }: Props) => {
   const [imageDataURL, setImageDataURL] = useState<string | null>(null);
   const [isSent, setIsSent] = useState(true);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -212,7 +212,7 @@ export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup
     defaultValues: {
       content: [] as ExtractedElement[],
       media: [] as DBImageData[],
-      mentions: [],
+      mentions: [] as MentionsDatas[], 
       accoundId: _id,
     },
   });
@@ -237,7 +237,7 @@ export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup
     const editorStateTextString = editorRef.current.getRootElement()?.textContent;
     const extractedData = extractMention(datas);
     const extractedstuff = extractElements(datas)
-    values.mentions = extractedData.mentions;
+    values.mentions = extractedData;
     values.content = extractedstuff
     if (imageDataArray.length >= 1) {
       if (imageDataArray.length > 4) {
@@ -515,4 +515,4 @@ export const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup
 
 }
 
-
+export default ReplyWhisper;

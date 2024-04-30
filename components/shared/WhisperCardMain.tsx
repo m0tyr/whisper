@@ -35,15 +35,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import ImageClickAnim from "../animations/ImageClickAnim";
-import { useEffect, useState } from "react";
-import { ReplyWhisper } from "../forms/ReplyWhisper";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton"
 import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
-import DisplayMedia from "./ui/DisplayMedia";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
 
 export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {

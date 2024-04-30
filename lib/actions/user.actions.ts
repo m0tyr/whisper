@@ -270,7 +270,7 @@ export async function isFollowing(username: string, foreignusername: string) {
 export async function MentionSearchModel(input: string) {
   const result = await User.find(
     { username: { $regex: input, $options: "i" } },
-    { _id: 0, name: 1, image: 1, username: 1 }
+    { _id: 0, name: 1, image: 1, username: 1, id : 1 }
   ).limit(10).lean();
   return result;
 }

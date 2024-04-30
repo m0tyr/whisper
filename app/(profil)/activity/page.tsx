@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import ActivityCard from "@/components/cards/ActivityCard";
 import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
-import { getAllNotifications } from "@/lib/actions/notifications.actions";
+import { getNotifications } from "@/lib/actions/notifications.actions";
 import { fetchUser, getActivityFromUser, fetchUserbyEmail } from "@/lib/actions/user.actions";
 import { calculateTimeAgo } from "@/lib/utils";
 import { redirect } from "next/navigation";
@@ -25,7 +25,7 @@ export default async function Page() {
         bio: currentUser?.bio || "",
         image: currentUser?.image || session?.user?.image,
     };
-    const datas = await getAllNotifications(userData.id as string);
+    const datas = await getNotifications(userData.id as string, "all");
     return (
         <>
             <TopBar user={userData} _id={`${currentUser._id}`} />
@@ -42,22 +42,6 @@ export default async function Page() {
                         <p className="text-[13.5px] opacity-55 font-light">Aucune {'activité'}</p>
                     </div>
                 )}
-                {/* 
-                {datas ? (
-                    datas.map(whisper => (
-                        <div key={whisper._id}>
-                            <div>
-                               <span>{whisper.username}</span> 
-                               <span>{calculateTimeAgo(whisper.createdAt.toString())}</span>
-                            </div>
-                            <p>{whisper.caption}</p>
-                        </div>
-                    ))
-                ) : (
-                    <div className=" justify-center items-center flex flex-grow">
-                        <p className="text-[13.5px] opacity-55 font-light">Aucune Activité</p>
-                    </div>
-                )} */}
             </section>
         </>
 

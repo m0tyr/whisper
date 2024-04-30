@@ -135,12 +135,12 @@ export default function LoginForm() {
                 </form>
 
                 <div className="relative w-full flex flex-col select-none">
-                    <div className="flex flex-row items-center  h-8 drop-shadow-2xl px-8 py-8 justify-center ">
-                        <span className=" text-white inline-block text-[15px] font-bold justify-center items-center drop-shadow-2xl">
+                    <div className="flex flex-row items-center  h-8  px-8 py-8 justify-center ">
+                        <span  aria-label="Powered By Taiyo engine & Quantum Inc"  className=" text-white inline-block text-[15px] font-bold justify-center items-center ">
                             Powered by
                         </span>
-                        <img src="/taiyo_logo.png" alt="Taiyo" className="drop-shadow-2xl" width={60} height={60} />
-                        <img src="/qtm_logo_w_moon.png" alt="Quantum" className="drop-shadow-2xl" width={40} height={40} />
+                        <img src="/taiyo_logo.png" aria-label="taiyo engine" alt="Taiyo_team" width={60} height={60} />
+                        <img src="/qtm_logo_w_moon.png" aria-label="quantum" alt="Quantum_team" width={40} height={40} />
                     </div>
 
                 </div>

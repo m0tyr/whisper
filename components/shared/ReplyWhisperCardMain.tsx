@@ -18,25 +18,7 @@ interface Props {
     }[];
 }
 import { calculateTimeAgo, processElements } from "@/lib/utils";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import ImageClickAnim from "../animations/ImageClickAnim";
-import { useState } from "react";
-import { ReplyWhisper } from "../forms/ReplyWhisper";
-import { motion } from "framer-motion";
 import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";

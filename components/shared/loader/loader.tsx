@@ -1,4 +1,3 @@
-"use client"
 
 export default function Loader() {
     return (<div className="flex flex-grow justify-center items-center">

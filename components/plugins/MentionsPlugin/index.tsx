@@ -191,12 +191,14 @@ class MentionTypeaheadOption extends MenuOption {
   name: string;
   image: string;
   username: string;
+  id: string;
 
-  constructor(name: string, image: string, username: string) {
+  constructor(name: string, image: string, username: string, id: string) {
     super(name);
     this.name = name;
     this.image = image;
     this.username = username;
+    this.id = id
   }
 }
 
@@ -248,70 +250,12 @@ function MentionsTypeaheadMenuItem({
 
   );
 }
-function replaceWithMentionNode(node: TextNode): void {
-  const textContent = node.getTextContent();
-  const mentionMatch = textContent.match(/@\w+/);
 
-  if (mentionMatch) {
-    const mentionText = mentionMatch[0];
-    const mentionNode = $createMentionNode(mentionText).toggleUnmergeable();
 
-    // Créer un nouveau nœud de texte pour le texte avant la mention
-    const beforeText = textContent.slice(0, textContent.indexOf(mentionText));
-    const beforeTextNode = $createTextNode(beforeText);
 
-    // Créer un nouveau nœud de texte pour le texte après la mention
-    const afterText = textContent.slice(textContent.indexOf(mentionText) + mentionText.length);
-    const afterTextNode = $createTextNode(afterText);
 
-    // Remplacer le nœud de texte existant par les nouveaux nœuds de texte et de mention
-    node.replace(beforeTextNode);
-    beforeTextNode.insertAfter(mentionNode);
-    mentionNode.insertAfter(afterTextNode);
-  }
-}
-// Function to replace a node with a text node
-function replaceWithTextNode(node: TextNode): void {
-  const textContent = node.getTextContent();
-  const textNode = $createTextNode(textContent);
-  node.replace(textNode);
-}
 
-// Function to handle text node transformation
-function handleTextNode(node: TextNode): void {
-  const textContent = node.getTextContent();
-  const mentionMatches = Array.from(textContent.matchAll(mentionRegex));
 
-  if (mentionMatches.length >= 1) {
-    const nodemen = $createMentionNode(node.getTextContent())
-    node.replace(nodemen)
-/*       replaceWithMentionNode(node);
- */      return;
-  }
-
-}
-
-// Function to handle mention node transformation
-function handleMentionNode(node: TextNode): void {
-  const textContent = node.getTextContent();
-  const mentionMatches = Array.from(textContent.matchAll(mentionRegex));
-
-  if (mentionMatches.length === 1) {
-    const mentionMatch = mentionMatches[0];
-    const mentionStartIndex = mentionMatch.index!;
-    const mentionLength = mentionMatch[0].length;
-
-    if (mentionLength < 1 && $isMentionNode(node.getPreviousSibling())) {
-      replaceWithTextNode(node);
-      return;
-    }
-
-    if (mentionMatch.input.length > mentionStartIndex) {
-      replaceWithMentionNode(node);
-      return;
-    }
-  }
-}
 
 export function MentionsPlugin(): JSX.Element | null {
   const composereditor = useLexicalComposerContext();
@@ -326,26 +270,26 @@ export function MentionsPlugin(): JSX.Element | null {
 
   const options = useMemo(() => {
     if (results !== null) {
-      return results.map((result: { name: any; image: any; username: any; }) => {
-        const { name, image, username } = result;
-        return new MentionTypeaheadOption(name, image, username);
+      return results.map((result: { name: any; image: any; username: any; id: any; }) => {
+        const { name, image, username, id } = result;
+        return new MentionTypeaheadOption(name, image, username, id);
       }).slice(0, SUGGESTION_LIST_LENGTH_LIMIT);
     }
     return [];
   }, [results]);
   const onSelectOption = useCallback(
     (
-      selectedOption: { name: string; image: string; username: string },
+      selectedOption: { name: string; image: string; username: string,id: string },
       nodeToReplace: TextNode | null,
       closeMenu: () => void
     ) => {
-      console.log(nodeToReplace)
       realeditor.update(() => {
-        const mentionNode = $createMentionNode(selectedOption.username);
+        const mentionNode = $createMentionNode(selectedOption.username, selectedOption.id);
         if (nodeToReplace) {
           nodeToReplace.replace(mentionNode);
           mentionNode.select();
           closeMenu();
+          console.log(nodeToReplace)
         }
       }
       );

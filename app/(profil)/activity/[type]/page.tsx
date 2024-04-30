@@ -2,7 +2,9 @@ import { auth } from "@/auth";
 import ActivityCard from "@/components/cards/ActivityCard";
 import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
+import { getNotifications } from "@/lib/actions/notifications.actions";
 import { fetchUser, fetchUserbyEmail, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
+import { ActivityType, UserNotification } from "@/lib/types/notification.types";
 import { calculateTimeAgo } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
@@ -26,9 +28,23 @@ export default async function Page({ params }: { params: { type: string } }) {
       bio: currentUser?.bio || "",
       image: currentUser?.image || session?.user?.image,
     };
-    const datas = await getActivityFromUser(userData.username, params.type || 'activité');
     if (params.type === null) {
-        params.type = 'activité';
+        params.type = 'all';
+    }
+    
+    //Ugly
+
+    let datas: UserNotification[] = []
+    if(params.type === "replies"){
+        datas = await getNotifications(userData.id as string, ActivityType.REPLY);
+    } else if (params.type === "follows") {
+        datas = await getNotifications(userData.id as string, ActivityType.FOLLOW);
+    } else if (params.type === "quotes") {
+        datas = await getNotifications(userData.id as string, ActivityType.QUOTE);
+    } else if (params.type === "mentions") {
+        datas = await getNotifications(userData.id as string, ActivityType.MENTION);
+    } else if (params.type === "reposts") {
+        datas = await getNotifications(userData.id as string, ActivityType.REPOST);
     }
 
     return (
@@ -40,12 +56,12 @@ export default async function Page({ params }: { params: { type: string } }) {
                 </div>
 
                 {datas ? (
-                    datas.map(whisper => (
-                        <ActivityCard username={whisper.author.username} image={whisper.author.image} notification_link={whisper._id} caption={whisper.caption} createdAt={whisper.createdAt} type={""} />
+                    datas.map(notification => (
+                        <ActivityCard username={notification.user_notification_sender.username} image={notification.user_notification_sender.image} notification_link={`${notification.notification_link}`} caption={notification.caption} createdAt={notification.time.toString()} type={notification.activity_type}  />
                     ))
                 ) : (
                     <div className=" justify-center items-center m-auto" >
-                        <p className="text-[13.5px] opacity-55 font-light">Aucune {params.type || 'activité'}</p>
+                        <p className="text-[13.5px] opacity-55 font-light">Aucune {'activité'}</p>
                     </div>
                 )}
 

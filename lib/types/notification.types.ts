@@ -2,15 +2,16 @@ import { UserDefinition } from "./user.types";
 import { ExtractedElement } from "./whisper.types";
 
 export enum ActivityType {
-    LIKE = 'like',
-    MENTION = 'mention',
-    FOLLOW = 'follow',
-    REPLY = 'reply',
+    LIKE = 'like', // done
+    MENTION = 'mention', // done
+    FOLLOW = 'follow', // done
+    REPLY = 'reply', // done
     QUOTE = 'quote',
     REPOST = 'repost'
 }
 
 export interface Notification{
+    _id:string;
     activity_type: string;
     source_id: string;
     targetUserID: string;

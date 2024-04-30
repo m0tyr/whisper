@@ -1,6 +1,11 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
-import { ReplyWhisper } from "../forms/ReplyWhisper";
+
+import dynamic from "next/dynamic";
+const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper"), {
+    ssr: false,
+})
+
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -119,7 +124,7 @@ const ViewWhisperCard = ({
 
     const [isliking, setisliking] = useState(isLiking)
     const LikeWhisper = async () => {
-        like_info.like_count = await likewhisper(user.username, id)
+        like_info.like_count = await likewhisper(user.username, id, author.id)
         setisliking(!isliking)
     }
 
@@ -137,7 +142,7 @@ const ViewWhisperCard = ({
                         id='top'
                         className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
 
-                    <ReplyWhisper whisper_to_reply={{
+                    <DynamicReplyWhisper whisper_to_reply={{
                         id: id,
                         currentUserId: currentUserId,
                         parentId: parentId,

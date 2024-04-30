@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
-import { DBImageData, ExtractedElement } from "../types/whisper.types";
+import { DBImageData, ExtractedElement, MentionsDatas } from "../types/whisper.types";
 import { notify } from "./notifications.actions";
 import { Activity } from "lucide-react";
 import { ActivityType } from "../types/notification.types";
@@ -12,20 +12,19 @@ import { ActivityType } from "../types/notification.types";
 
 interface Params {
     content: ExtractedElement[] | undefined;
-    author: string;
+    author: any;
     media?: DBImageData[];
     path: string;
     caption: string;
-    mentions?: string[];
+    mentions?: MentionsDatas[];
 }
-
 
 export async function createWhisper({ content, author, media, path, caption, mentions }: Params) {
     try {
         connectToDB();
-        const mentionData = mentions?.map(mention => ({
-            link: `/${mention.substring(1)}`,
-            text: mention,
+        const mentionData = mentions?.map(factor => ({
+            link: `/${factor.mention.substring(1)}`,
+            text: factor.mention,
             version: 1
         }));
         const createdWhisper = await Whisper.create({
@@ -39,6 +38,18 @@ export async function createWhisper({ content, author, media, path, caption, men
                 liketracker: []
             }
         });
+        if (mentions) {
+            for (const mention of mentions) {
+                await notify({
+                    activity_type: ActivityType.MENTION,
+                    source_id: `${createdWhisper._id}`,
+                    targetUserID: mention.id,
+                    sourceUserID: `${author}`,
+                });
+            }
+        }
+
+
         await User.findByIdAndUpdate(author, {
             $push: { whispers: createdWhisper._id }
         })
@@ -57,7 +68,7 @@ export async function isliking(userid: string, liketracker: any) {
     }
 }
 
-export async function likewhisper(user_liking: string, whisper_id: string,user_getting_the_like: string) {
+export async function likewhisper(user_liking: string, whisper_id: string, user_getting_the_like: string) {
     const liker = await User.findOne({ username: user_liking });
     const tolike = await Whisper.findOne({ _id: whisper_id });
     const isLiking = tolike.interaction_info.liketracker.some((liketracker: { id: string }) => liketracker.id === liker.id);
@@ -102,8 +113,12 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
 export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
-        connectToDB();
+        await new Promise((resolve) => {
+            setTimeout(resolve, 4000); // Wait for 4 seconds
+        });
 
+        connectToDB();
+        
         const skipamount = (pagenumber - 1) * pagesize;
 
         const posts_query = Whisper.find({
@@ -178,20 +193,21 @@ export async function searchwhispersV1(input: string | string[] | undefined, pag
     }
 }
 
-
 export async function createComment({ content, author, media, path, mentions, caption }: Params, whisperId: any) {
-    connectToDB()
 
+    connectToDB();
     try {
         const isactive = await Whisper.findById(whisperId);
+
+        console.log(isactive)
 
         if (!isactive) {
             throw new Error("Whisper indisponible ou supprimé...")
             //add error page
         }
-        const mentionData: any = mentions?.map(mention => ({
-            link: `/${mention.substring(1)}`,
-            text: mention,
+        const mentionData = mentions?.map(factor => ({
+            link: `/${factor.mention.substring(1)}`,
+            text: factor.mention,
             version: 1
         }));
 
@@ -210,6 +226,22 @@ export async function createComment({ content, author, media, path, mentions, ca
 
         await commentitem.save()
 
+        if (mentions) {
+            for (const mention of mentions) {
+                await notify({
+                    activity_type: ActivityType.MENTION,
+                    source_id: `${commentitem._id}`,
+                    targetUserID: mention.id,
+                    sourceUserID: `${author}`,
+                });
+            }
+        }
+        await notify({
+            activity_type: ActivityType.REPLY,
+            source_id: `${commentitem._id}`,
+            targetUserID: `${isactive.author}`,
+            sourceUserID: `${author}`
+        })
         isactive.children.push(commentitem._id)
 
         await isactive.save()
@@ -221,7 +253,6 @@ export async function createComment({ content, author, media, path, mentions, ca
         throw new Error("l'ajout du commentaire à échoué...")
     }
 }
-
 
 export async function fetchwhisperById(id: string) {
     try {
@@ -258,7 +289,6 @@ export async function fetchwhisperById(id: string) {
 
     }
 }
-
 
 export async function fetchallParentsFromWhisper(parentid: string) {
     let computeparent: { [key: string]: any } = {};

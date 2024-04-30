@@ -18,10 +18,11 @@ export interface Root {
 export interface MediaSize {
     mediaWidth: number;
     mediaHeight: number;
-  }
-  
+}
+
 export interface MentionsDatas {
-    mentions: string[];
+    id: string, 
+    mention: string;
 }
 export interface Element {
     detail?: number;
@@ -53,7 +54,7 @@ export interface PrevImageData {
     url: string;
     aspectRatio: string;
     width: string;
-    height:string;
+    height: string;
     isVideo: boolean;
 }
 

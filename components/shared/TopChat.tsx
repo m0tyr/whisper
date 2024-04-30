@@ -2,7 +2,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import CreateWhisper from "../forms/CreateWhisper";
+import dynamic from "next/dynamic";
+
+const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
+    ssr: false,
+})
 import { motion } from 'framer-motion';
 import { useToast } from '../ui/use-toast';
 import { ToastAction } from '../ui/toast';
@@ -56,7 +60,7 @@ const TopChat = ({ user, _id }: any) => {
                         id='top'
                         className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full 
                          " onClick={togglePopup}></motion.div>
-                    <CreateWhisper user={user} _id={_id} toclose={togglePopup} />
+                    <DynamicCreateWhisper user={user} _id={_id} toclose={togglePopup} />
 
                 </>
             )}

@@ -11,6 +11,7 @@ import { UserDefinition } from "../types/user.types";
 interface Params {
     activity_type: string;
     source_id?: string;
+
     targetUserID: string;
     sourceUserID: string;
 }
@@ -18,6 +19,10 @@ interface Params {
 export async function notify(params: Params): Promise<void> {
     try {
         connectToDB();
+        if( params.sourceUserID === params.targetUserID){
+            console.log("You cant send notificatio to yourself");
+            return;
+        }
         if (params.activity_type === ActivityType.FOLLOW) {
             console.log("test")
             const existingNotification = await Notifications.findOne({
@@ -37,12 +42,8 @@ export async function notify(params: Params): Promise<void> {
             });
             return;
         }
-        if (params.targetUserID === params.sourceUserID) {
-            console.log("Notification targetUserID is the same as sourceUserID. Skipping notification.");
-            return;
-        }
-
         const existingNotification = await Notifications.findOne({
+            activity_type: params.activity_type,
             targetUserID: params.targetUserID,
             sourceUserID: params.sourceUserID,
             source_id: params.source_id
@@ -83,25 +84,37 @@ export async function countActiveNotifications(userId: string): Promise<number> 
     }
 }
 
-export async function getAllNotifications(userId: string) {
+export async function getNotifications(userId: string, type: string) {
     try {
         connectToDB();
+        if (type === "all"){
+            const notifications: Notification[] = await Notifications.find({
+                targetUserID: userId
+            }).sort({ time: 'desc' })
+            return await ComputeNotifications({ notifications });
+        } else {
+            const notifications: Notification[] = await Notifications.find({
+                activity_type: type,
+                targetUserID: userId
+            }).sort({ time: 'desc' })
+            return await ComputeNotifications({ notifications });
 
-        const notifications: Notification[] = await Notifications.find({
-            targetUserID: userId
-        }).sort({ time: 'desc' })
-        return await ComputeNotifications(notifications);
+        }
+      
     } catch (error: any) {
         console.error("Error getting notifications:", error);
         throw error;
     }
 }
-export async function ComputeNotifications(notifications: Notification[]) {
+
+export async function ComputeNotifications({ notifications }: { notifications: Notification[]; }) {
     try {
         const user_notification_output: UserNotification[] = [];
 
         for (const notification of notifications) {
-            const { activity_type, source_id, sourceUserID, isActive, time } = notification;
+            const { _id, activity_type, source_id, sourceUserID, isActive, time } = notification;
+            
+            await markAsRead(_id)
 
             let notification_content = undefined;
 
@@ -129,9 +142,6 @@ export async function ComputeNotifications(notifications: Notification[]) {
     }
 }
 
-
-
-
 async function getNotificationContent(source_id: string) {
     try {
         const whisper = await Whisper.findOne({ _id: source_id }, { caption: 1, _id: 1 });
@@ -139,6 +149,15 @@ async function getNotificationContent(source_id: string) {
     } catch (error) {
         console.error("Error fetching whisper content:", error);
         return undefined;
+    }
+}
+
+async function markAsRead(id: string) {
+    try {
+        await Notifications.findOneAndUpdate({ _id: id }, { isActive: false });
+    } catch (error: any) {
+        console.error("Error marking notification as read:", error);
+        throw error;
     }
 }
 

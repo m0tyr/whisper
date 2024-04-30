@@ -12,7 +12,10 @@ export const WhisperValidation = z.object({
     height: z.string(),
     isVideo: z.boolean(),
   })).optional(),
-  mentions: z.array(z.string()).optional(),
+  mentions: z.array(z.object({
+    id: z.string(),
+    mention: z.string()
+  })).optional(),
   accoundId: z.string(),
 });
 
@@ -28,7 +31,10 @@ export const CommentValidation = z.object({
     height: z.string(),
     isVideo: z.boolean(),
   })).optional(),
-  mentions: z.array(z.string()).optional(),
+  mentions: z.array(z.object({
+    id: z.string(),
+    mention: z.string()
+  })).optional(),
   accoundId: z.string(),
 })
 export const SearchValidation = z.object({

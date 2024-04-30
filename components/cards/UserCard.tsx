@@ -45,7 +45,6 @@ function UserCard({
         setisfollowing(!isfollowing)
 
     }
-    console.log(image)
     return (
         <>
             <div className=" w-[99%] mx-auto">
