@@ -113,10 +113,7 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
 export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
-        await new Promise((resolve) => {
-            setTimeout(resolve, 4000); // Wait for 4 seconds
-        });
-
+    
         connectToDB();
         
         const skipamount = (pagenumber - 1) * pagesize;
