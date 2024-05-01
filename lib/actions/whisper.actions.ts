@@ -8,6 +8,7 @@ import { DBImageData, ExtractedElement, MentionsDatas } from "../types/whisper.t
 import { notify } from "./notifications.actions";
 import { Activity } from "lucide-react";
 import { ActivityType } from "../types/notification.types";
+import { redis } from "../redis";
 
 
 interface Params {
@@ -110,14 +111,28 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
 }
 
 
-export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
+export async function fetchwhispers(userID:string ,pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
-    
-        connectToDB();
-        
         const skipamount = (pagenumber - 1) * pagesize;
 
+        const allposts_count = await Whisper.countDocuments({
+            parentId: {
+                $in: [null, undefined]
+            }
+        })
+
+        const CACHEDFEED = await redis.get("custom_feed_v1_" + userID)
+        if(CACHEDFEED){
+            const isnext =  allposts_count > skipamount + CACHEDFEED.length;
+            const posts_exec = JSON.parse(CACHEDFEED)
+            return {posts_exec, isnext };
+        }
+        await new Promise((resolve) => {
+            setTimeout(resolve, 4000); // Wait for 4 seconds
+        });
+        connectToDB();
+        
         const posts_query = Whisper.find({
             parentId: { $in: [null, undefined] }
         })
@@ -136,17 +151,15 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
                     select: "_id username parentId image"
                 }
             })
-        const allposts_count = await Whisper.countDocuments({
-            parentId: {
-                $in: [null, undefined]
-            }
-        })
+
 
         const posts_exec = await posts_query.exec();
 
         const isnext = allposts_count > skipamount + posts_exec.length;
-
-
+        await redis.set("custom_feed_v1_" + userID, JSON.stringify(posts_exec))
+        await redis.expire("custom_feed_v1_" + userID, 100)
+        console.log("database queried")
+        console.log(await custom_feed_v1(userID))
         revalidatePath(path)
         return { posts_exec, isnext };
     } catch (error: any) {
@@ -154,6 +167,18 @@ export async function fetchwhispers(pagenumber = 1, pagesize = 15, path = '/') {
 
 
     }
+}
+
+async function custom_feed_v1(userID: string){
+    try {
+        const user = await User.findById(userID)
+        .select('user_social_info')
+        .exec();
+        console.log(user)
+    } catch (error: any) {
+        console.error("Error generating custom feed :", error);
+        throw error;
+    }    
 }
 
 export async function searchwhispersV1(input: string | string[] | undefined, pagenumber: number, pagesize: number) {
@@ -195,8 +220,6 @@ export async function createComment({ content, author, media, path, mentions, ca
     connectToDB();
     try {
         const isactive = await Whisper.findById(whisperId);
-
-        console.log(isactive)
 
         if (!isactive) {
             throw new Error("Whisper indisponible ou supprimé...")

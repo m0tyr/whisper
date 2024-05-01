@@ -54,6 +54,7 @@
     "framer-motion": "^11.0.8",
     "image-size": "^1.1.1",
     "image-size-from-url": "^1.0.2",
+    "ioredis": "^5.4.1",
     "lexical": "^0.14.2",
     "lexical-beautiful-mentions": "^0.1.33",
     "lucide-react": "^0.331.0",

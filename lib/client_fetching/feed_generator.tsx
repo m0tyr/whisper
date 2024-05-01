@@ -8,14 +8,14 @@ interface Props {
   }
   
 export default async function FeedGenerator({currentUser, userData}: Props) {
-    const fetchedPosts = await fetchwhispers(1, 30);
+    const fetchedPosts = await fetchwhispers(currentUser.id, 1, 30);
     return (
         <>
-            {fetchedPosts && fetchedPosts.posts_exec.length === 0 ? (
+            {fetchedPosts && fetchedPosts?.posts_exec?.length === 0 ? (
                 <p className="text-white text-body1-bold">No Whispers found...</p>
             ) : (
                 <>
-                    {fetchedPosts && fetchedPosts.posts_exec.map((post: any) => (
+                    {fetchedPosts && fetchedPosts?.posts_exec?.map((post: any) => (
                         <WhisperCard
                             key={post._id}
                             user={userData}
