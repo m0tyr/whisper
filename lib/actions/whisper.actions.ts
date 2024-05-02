@@ -4,11 +4,12 @@ import { revalidatePath } from "next/cache";
 import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
-import { DBImageData, ExtractedElement, MentionsDatas } from "../types/whisper.types";
+import { DBImageData, ExtractedElement, FeedOptions, MentionsDatas } from "../types/whisper.types";
 import { notify } from "./notifications.actions";
 import { Activity } from "lucide-react";
 import { ActivityType } from "../types/notification.types";
 import { redis } from "../redis";
+import { cp } from "fs";
 
 
 interface Params {
@@ -111,55 +112,46 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
 }
 
 
-export async function fetchwhispers(userID:string ,pagenumber = 1, pagesize = 15, path = '/') {
+export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
         const skipamount = (pagenumber - 1) * pagesize;
 
-        const allposts_count = await Whisper.countDocuments({
-            parentId: {
-                $in: [null, undefined]
-            }
+        const max_count = 200
+
+        //if we see a custom_feed object from this userID then we instantly retrieve it until he "force-refresh" the page
+        /*   const CACHEDFEED = await redis.get("custom_feed_v1_" + userID)
+          if (CACHEDFEED) {
+              const isnext = max_count > skipamount + CACHEDFEED.length;
+              const posts_exec = JSON.parse(CACHEDFEED)
+              return { posts_exec, isnext };
+          } */
+
+        //Feed Algorithm V1
+        const posts_exec = await custom_feed_v1(userID, {
+            skipamount: skipamount,
+            pagesize: pagesize,
+            affinity_deep_search_min_value: 0,
+            affinity_deep_search_max_value: 30,
+            affinity_deep_talk_value: 0.09,
+            affinity_deep_like_value: 0.04,
+            ranking_like_effect: 0.2,
+            ranking_time_effect: 0.7
         })
+/*         console.log(Object.keys(posts_exec));
+ */        const isnext = max_count > skipamount + posts_exec.length;
 
-        const CACHEDFEED = await redis.get("custom_feed_v1_" + userID)
-        if(CACHEDFEED){
-            const isnext =  allposts_count > skipamount + CACHEDFEED.length;
-            const posts_exec = JSON.parse(CACHEDFEED)
-            return {posts_exec, isnext };
-        }
-        await new Promise((resolve) => {
-            setTimeout(resolve, 4000); // Wait for 4 seconds
-        });
-        connectToDB();
-        
-        const posts_query = Whisper.find({
-            parentId: { $in: [null, undefined] }
-        })
-            .sort({ createdAt: 'desc' })
-            .skip(skipamount)
-            .limit(pagesize)
-            .populate({
-                path: 'author',
-                select: "_id id username name image"
-            })
-            .populate({
-                path: 'children',
-                populate: {
-                    path: 'author',
-                    model: User,
-                    select: "_id username parentId image"
-                }
-            })
+        /*   for (const key in posts_exec) {
+              if (Object.hasOwnProperty.call(posts_exec, key)) {
+                  const object_feed = posts_exec[key];
+                  console.log(`Object feed ${key}: ${object_feed.length} posts`);
+              }
+          } */
+        //REDIS Caching
 
+        /*  await redis.set("custom_feed_v1_" + userID, JSON.stringify(posts_exec))
+         await redis.expire("custom_feed_v1_" + userID, 100) */
 
-        const posts_exec = await posts_query.exec();
-
-        const isnext = allposts_count > skipamount + posts_exec.length;
-        await redis.set("custom_feed_v1_" + userID, JSON.stringify(posts_exec))
-        await redis.expire("custom_feed_v1_" + userID, 100)
-        console.log("database queried")
-        console.log(await custom_feed_v1(userID))
         revalidatePath(path)
         return { posts_exec, isnext };
     } catch (error: any) {
@@ -167,18 +159,6 @@ export async function fetchwhispers(userID:string ,pagenumber = 1, pagesize = 15
 
 
     }
-}
-
-async function custom_feed_v1(userID: string){
-    try {
-        const user = await User.findById(userID)
-        .select('user_social_info')
-        .exec();
-        console.log(user)
-    } catch (error: any) {
-        console.error("Error generating custom feed :", error);
-        throw error;
-    }    
 }
 
 export async function searchwhispersV1(input: string | string[] | undefined, pagenumber: number, pagesize: number) {
@@ -353,5 +333,141 @@ export async function fetchallParentsFromWhisper(parentid: string) {
     let reversedObject = Object.fromEntries(reversedArray);
     return reversedObject;
 
+
+}
+
+
+async function custom_feed_v1(userID: string, options: FeedOptions) {
+    try {
+        const feed_output: { [key: string]: any } = {};
+        const user = await User.findById(userID)
+            .select('user_social_info')
+            .exec();
+
+        for (const following of user.user_social_info.following) {
+            const following_user = await User.findOne({ username: following.id }, { id: 1, user_social_info: 1 });
+            const id = following_user.id.toString();
+            const isNotFollowing = false
+            const following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing)
+
+            const sub_following_search = following_user.user_social_info.following
+            for (const sub_follower of sub_following_search) {
+                const isNotFollowing = true
+                const sub_following_user = await User.findOne({ username: sub_follower.id }, { id: 1 });
+                const id = sub_following_user.id.toString();
+                const sub_following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing)
+                if (sub_following_user_info) {
+                    feed_output[sub_following_user_info.affinity] = sub_following_user_info?.posts_exec;
+                }
+            }
+            if (following_user_info) {
+                feed_output[following_user_info.affinity] = following_user_info?.posts_exec;
+            }
+
+        }
+
+        const sortedFeed = Object.entries(feed_output).sort(([keyA], [keyB]) => parseFloat(keyB) - parseFloat(keyA));
+        const sortedFeedOutput = Object.fromEntries(sortedFeed);
+        const ranked_feed = await ranking_algorithm(sortedFeedOutput,options)
+        console.log(ranked_feed)
+        return ranked_feed;
+    } catch (error: any) {
+        console.error("Error generating custom feed :", error);
+        throw error;
+    }
+}
+async function ranking_algorithm(input: any,options: FeedOptions) {
+    const ranked_feed: any = {};
+    for (const [key, value] of Object.entries(input)) {
+        const posts = value as any[];
+        const rankedPosts = posts.map((post: any) => {
+            const timeSinceCreation = Date.now() - new Date(post.createdAt).getTime();
+            let rankScore = Math.abs(0.5 - ((post.interaction_info.like_count * (options.ranking_like_effect * 1000) + timeSinceCreation / (options.ranking_time_effect * 10000)) / posts.length / 10000));
+            rankScore = Math.max(0, Math.min(1, rankScore));
+            return { ...post.toObject(), rankScore };
+        });
+        rankedPosts.sort((a, b) => b.rankScore - a.rankScore);
+
+        ranked_feed[key] = rankedPosts;
+    }
+
+    return ranked_feed;
+}
+
+async function calcul_affinity(username: string, userID: string, id: string, options: FeedOptions, isNotFollowing: boolean) {
+    const posts_query = Whisper.find({
+        author: id,
+        parentId: { $in: [null, undefined] }
+    })
+        .sort({
+            createdAt: 'desc',
+            'interaction_info.like_count': 'desc'
+        })
+        .skip(options.skipamount)
+        .limit(options.pagesize)
+        .populate({
+            path: 'author',
+            select: "_id id username name image"
+        })
+        .populate({
+            path: 'children',
+            populate: {
+                path: 'author',
+                model: User,
+                select: "_id username parentId image"
+            }
+        });
+
+
+    const posts_exec = await posts_query.exec();
+
+    let time_sample = 0
+
+    let talk_value = 0
+
+    let like_value = 0
+    for (const post of posts_exec) {
+        time_sample += Date.now() - post.createdAt;
+        post.interaction_info.liketracker.map((id: any) => {
+            if (id === userID) {
+                like_value += options.affinity_deep_like_value
+            }
+        });
+        post.children.map((child: any) => {
+            if (child.author.id === userID) {
+                talk_value += options.affinity_deep_talk_value;
+            }
+        });
+    }
+    time_sample = time_sample / 7000;
+    const count_affinity = await Whisper.countDocuments({
+        author: userID,
+        "content.type": "mention",
+        "content.text": { $regex: `@${username}\\b`, $options: 'i' }
+    })
+        .sort({ createdAt: 'desc' })
+        .skip(options.affinity_deep_search_min_value)
+        .limit(options.affinity_deep_search_max_value);
+
+    // Normalize values
+    const affinity_value_1 = Math.min(1, talk_value / (options.affinity_deep_talk_value * posts_exec.length));
+    const affinity_value_2 = Math.min(1, count_affinity / options.affinity_deep_search_max_value);
+    const affinity_value_3 = Math.min(1, time_sample / (100000 * posts_exec.length));
+
+    // Calculate the affinity
+
+    if (isNotFollowing) {
+        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3) - 0.0999;
+        if (isNaN(affinity)) {
+            return;
+        }
+        return { affinity, posts_exec }
+    } else {
+        let affinity = affinity_value_1 + affinity_value_2 + affinity_value_3;
+        if (isNaN(affinity)) {
+            return;
+        }
+        return { affinity, posts_exec }
+    }
 
 }

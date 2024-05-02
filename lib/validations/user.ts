@@ -8,7 +8,7 @@ export const UserValidation = z.object({
     .max(30, { message: "30 caractères maximum." }),
   username: z
     .string()
-    .min(3, { message: "3 caractères minimum." })
+    .min(2, { message: "2 caractères minimum." })
     .max(30, { message: "30 caractères maximum." })
     .refine(value => /^[a-zA-Z0-9_]+$/.test(value), {
       message: "Votre nom d'utilisateur ne peut contenir que des lettres, chiffres et '_'.",

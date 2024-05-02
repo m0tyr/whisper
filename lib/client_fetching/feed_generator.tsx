@@ -8,7 +8,8 @@ interface Props {
   }
   
 export default async function FeedGenerator({currentUser, userData}: Props) {
-    const fetchedPosts = await fetchwhispers(currentUser.id, 1, 30);
+    const fetched = await fetchwhispers(currentUser.id, 1, 30);
+    const fetchedPosts = fetched.posts_exec
     return (
         <>
             {fetchedPosts && fetchedPosts?.posts_exec?.length === 0 ? (
@@ -71,5 +72,5 @@ export default async function FeedGenerator({currentUser, userData}: Props) {
                 </>
             )}
         </>
-    );
+    ); 
 };
