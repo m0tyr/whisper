@@ -29,6 +29,13 @@ export function extractMention(json: Root): MentionsDatas[] {
 //Media Calculus stuff
 //need to test
 
+export function shuffleArray<T>(array: T[]): void {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 export function getClampedMultipleMediaAspectRatio({ mediaWidth, mediaHeight }: MediaSize): number {
   const aspectRatio = mediaWidth / mediaHeight;
   return clamp(aspectRatio, 3 / 4, 4 / 3);

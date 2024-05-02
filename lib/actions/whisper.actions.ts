@@ -10,6 +10,7 @@ import { Activity } from "lucide-react";
 import { ActivityType } from "../types/notification.types";
 import { redis } from "../redis";
 import { cp } from "fs";
+import { shuffleArray } from "../utils";
 
 
 interface Params {
@@ -108,56 +109,6 @@ export async function GetLastestWhisperfromUserId({ author }: any) {
         return lastWhisper;
     } catch (error: any) {
         throw new Error(`Error retrieving last whisper: ${error.message}`);
-    }
-}
-
-
-export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 15, path = '/') {
-
-    try {
-        const skipamount = (pagenumber - 1) * pagesize;
-
-        const max_count = 200
-
-        //if we see a custom_feed object from this userID then we instantly retrieve it until he "force-refresh" the page
-        /*   const CACHEDFEED = await redis.get("custom_feed_v1_" + userID)
-          if (CACHEDFEED) {
-              const isnext = max_count > skipamount + CACHEDFEED.length;
-              const posts_exec = JSON.parse(CACHEDFEED)
-              return { posts_exec, isnext };
-          } */
-
-        //Feed Algorithm V1
-        const posts_exec = await custom_feed_v1(userID, {
-            skipamount: skipamount,
-            pagesize: pagesize,
-            affinity_deep_search_min_value: 0,
-            affinity_deep_search_max_value: 30,
-            affinity_deep_talk_value: 0.09,
-            affinity_deep_like_value: 0.04,
-            ranking_like_effect: 0.2,
-            ranking_time_effect: 0.7
-        })
-/*         console.log(Object.keys(posts_exec));
- */        const isnext = max_count > skipamount + posts_exec.length;
-
-        /*   for (const key in posts_exec) {
-              if (Object.hasOwnProperty.call(posts_exec, key)) {
-                  const object_feed = posts_exec[key];
-                  console.log(`Object feed ${key}: ${object_feed.length} posts`);
-              }
-          } */
-        //REDIS Caching
-
-        /*  await redis.set("custom_feed_v1_" + userID, JSON.stringify(posts_exec))
-         await redis.expire("custom_feed_v1_" + userID, 100) */
-
-        revalidatePath(path)
-        return { posts_exec, isnext };
-    } catch (error: any) {
-        throw new Error(`error onfetchpots: ${error.message} `)
-
-
     }
 }
 
@@ -336,6 +287,90 @@ export async function fetchallParentsFromWhisper(parentid: string) {
 
 }
 
+export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 15, path = '/') {
+
+    try {
+        const skipamount = (pagenumber - 1) * pagesize;
+
+        const max_count = 200
+
+        //if we see a custom_feed object from this userID then we instantly retrieve it until he "force-refresh" the page
+        /*   const CACHEDFEED = await redis.get("custom_feed_v1_" + userID)
+          if (CACHEDFEED) {
+              const isnext = max_count > skipamount + CACHEDFEED.length;
+              const posts_exec = JSON.parse(CACHEDFEED)
+              return { posts_exec, isnext };
+          } */
+
+        //Feed Algorithm V1
+        const output_feed = await custom_feed_v1(userID, {
+            skipamount: skipamount,
+            pagesize: pagesize,
+            affinity_deep_search_min_value: 0,
+            affinity_deep_search_max_value: 30,
+            affinity_deep_talk_value: 0.09,
+            affinity_deep_like_value: 0.04,
+            ranking_like_effect: 0.2,
+            ranking_time_effect: 0.7
+        })
+/*         console.log(Object.keys(posts_exec));
+ */        const isnext = max_count > skipamount + output_feed.ranked_feed_redis.length;
+        let posts_exec: any[] = [];
+        for (const [affinity, feed_items] of Object.entries(output_feed.ranked_feed)) {
+            posts_exec.push(feed_items)
+        }
+        console.log(posts_exec)
+        /*   for (const key in posts_exec) {
+              if (Object.hasOwnProperty.call(posts_exec, key)) {
+                  const object_feed = posts_exec[key];
+                  console.log(`Object feed ${key}: ${object_feed.length} posts`);
+              }
+          } */
+        //REDIS Caching
+
+        /*  await redis.set("custom_feed_v1_" + userID, JSON.stringify(posts_exec))
+         await redis.expire("custom_feed_v1_" + userID, 100) */
+
+        revalidatePath(path)
+        return { posts_exec, isnext };
+    } catch (error: any) {
+        throw new Error(`error onfetchpots: ${error.message} `)
+
+
+    }
+}
+
+async function interpolate_feed(postsByRank:any){
+    const rankedPosts: [number, number][] = [];
+    let lastPerson: string | null = null;
+    const remainingPosts: [string, { id: number; rank: number }][] = [];
+
+    // Flatten postsByRank into a list of (person, post) tuples
+    for (const [rank, posts] of Object.entries(postsByRank)) {
+        for (const post of posts as any) {
+            remainingPosts.push([rank, post]);
+        }
+    }
+
+    while (remainingPosts.length > 0) {
+        // Shuffle the remaining posts to avoid bias towards any specific person's posts
+        shuffleArray(remainingPosts);
+
+        for (const [rank, post] of remainingPosts) {
+            if (lastPerson !== rank) {
+                const combinedScore = parseFloat(rank) + post.rank;
+                rankedPosts.push([post.id, combinedScore]);
+                lastPerson = rank;
+                // Remove the selected post from the remaining posts
+                remainingPosts.splice(remainingPosts.findIndex(([r, p]) => r === rank && p.id === post.id), 1);
+            }
+        }
+    }
+
+    // Sort the posts based on combined score
+    rankedPosts.sort((a, b) => b[1] - a[1]);
+    return rankedPosts;
+}
 
 async function custom_feed_v1(userID: string, options: FeedOptions) {
     try {
@@ -368,30 +403,34 @@ async function custom_feed_v1(userID: string, options: FeedOptions) {
 
         const sortedFeed = Object.entries(feed_output).sort(([keyA], [keyB]) => parseFloat(keyB) - parseFloat(keyA));
         const sortedFeedOutput = Object.fromEntries(sortedFeed);
-        const ranked_feed = await ranking_algorithm(sortedFeedOutput,options)
-        console.log(ranked_feed)
+        const ranked_feed = await ranking_algorithm(sortedFeedOutput, options)
         return ranked_feed;
     } catch (error: any) {
         console.error("Error generating custom feed :", error);
         throw error;
     }
 }
-async function ranking_algorithm(input: any,options: FeedOptions) {
+async function ranking_algorithm(input: any, options: FeedOptions) {
     const ranked_feed: any = {};
+    const ranked_feed_redis: any = {};
     for (const [key, value] of Object.entries(input)) {
         const posts = value as any[];
         const rankedPosts = posts.map((post: any) => {
             const timeSinceCreation = Date.now() - new Date(post.createdAt).getTime();
             let rankScore = Math.abs(0.5 - ((post.interaction_info.like_count * (options.ranking_like_effect * 1000) + timeSinceCreation / (options.ranking_time_effect * 10000)) / posts.length / 10000));
             rankScore = Math.max(0, Math.min(1, rankScore));
-            return { ...post.toObject(), rankScore };
+            return { cached_posts: { id: post._id.toString(), rankScore }, rendered_posts: { ...post.toObject(), rankScore } };
         });
-        rankedPosts.sort((a, b) => b.rankScore - a.rankScore);
-
-        ranked_feed[key] = rankedPosts;
+        rankedPosts.sort((a, b) => b.cached_posts.rankScore - a.cached_posts.rankScore);
+        ranked_feed[key] = rankedPosts.map((post: any) => {
+            return post.rendered_posts
+        });
+        ranked_feed_redis[key + "_redis"] = rankedPosts.map((post: any) => {
+            return post.cached_posts
+        });;
     }
 
-    return ranked_feed;
+    return { ranked_feed_redis, ranked_feed };
 }
 
 async function calcul_affinity(username: string, userID: string, id: string, options: FeedOptions, isNotFollowing: boolean) {
