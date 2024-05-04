@@ -310,6 +310,7 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
             affinity_deep_search_max_value: 30,
             affinity_deep_talk_value: 0.09,
             affinity_deep_like_value: 0.04,
+            affinity_deep_followage_value: 0.045,
             ranking_like_effect: 0.2,
             ranking_time_effect: 0.7
         })
@@ -319,7 +320,6 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
         for (const [affinity, feed_items] of Object.entries(output_feed.ranked_feed)) {
             posts_exec.push(feed_items)
         }
-        console.log(posts_exec)
         /*   for (const key in posts_exec) {
               if (Object.hasOwnProperty.call(posts_exec, key)) {
                   const object_feed = posts_exec[key];
@@ -382,19 +382,23 @@ async function custom_feed_v1(userID: string, options: FeedOptions) {
         for (const following of user.user_social_info.following) {
             const following_user = await User.findOne({ username: following.id }, { id: 1, user_social_info: 1 });
             const id = following_user.id.toString();
-            const isNotFollowing = false
-            const following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing)
-
             const sub_following_search = following_user.user_social_info.following
+            let followage_affinity_boost = 0;
             for (const sub_follower of sub_following_search) {
                 const isNotFollowing = true
+                if (user.user_social_info.following.some((item: { id: any; }) => item.id === sub_follower.id)) {
+                    followage_affinity_boost += options.affinity_deep_followage_value;
+                }
                 const sub_following_user = await User.findOne({ username: sub_follower.id }, { id: 1 });
                 const id = sub_following_user.id.toString();
-                const sub_following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing)
+                const sub_following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing,)
                 if (sub_following_user_info) {
                     feed_output[sub_following_user_info.affinity] = sub_following_user_info?.posts_exec;
                 }
             }
+            const isNotFollowing = false
+            console.log(followage_affinity_boost)
+            const following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing, followage_affinity_boost)
             if (following_user_info) {
                 feed_output[following_user_info.affinity] = following_user_info?.posts_exec;
             }
@@ -433,7 +437,7 @@ async function ranking_algorithm(input: any, options: FeedOptions) {
     return { ranked_feed_redis, ranked_feed };
 }
 
-async function calcul_affinity(username: string, userID: string, id: string, options: FeedOptions, isNotFollowing: boolean) {
+async function calcul_affinity(username: string, userID: string, id: string, options: FeedOptions, isNotFollowing: boolean, followage_affinity_boost?:number) {
     const posts_query = Whisper.find({
         author: id,
         parentId: { $in: [null, undefined] }
@@ -492,17 +496,20 @@ async function calcul_affinity(username: string, userID: string, id: string, opt
     const affinity_value_1 = Math.min(1, talk_value / (options.affinity_deep_talk_value * posts_exec.length));
     const affinity_value_2 = Math.min(1, count_affinity / options.affinity_deep_search_max_value);
     const affinity_value_3 = Math.min(1, time_sample / (100000 * posts_exec.length));
-
+    let affinity_value_4 = 0;
+    if(followage_affinity_boost){
+        affinity_value_4 = Math.min(1, followage_affinity_boost)
+    }
     // Calculate the affinity
 
     if (isNotFollowing) {
-        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3) - 0.0999;
+        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4) - 0.0999;
         if (isNaN(affinity)) {
             return;
         }
         return { affinity, posts_exec }
     } else {
-        let affinity = affinity_value_1 + affinity_value_2 + affinity_value_3;
+        let affinity = affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4;
         if (isNaN(affinity)) {
             return;
         }
