@@ -79,7 +79,7 @@ export default async function Page({ params }: { params: { username: string } })
                             {userposts.whispers.map((post: any) => (
                                 <WhisperCard
                                     user={currentuserData}
-                                    _id={`${userInfo._id}`}
+                                    _id={`${currentuserInfo._id}`}
                                     id={post._id}
                                     currentUserId={session?.user?.id || ""}
                                     parentId={post.parentId}

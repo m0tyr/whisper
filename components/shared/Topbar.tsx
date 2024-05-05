@@ -19,6 +19,8 @@ const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
     ssr: false,
 })
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
+import { requestNewFeed } from "@/lib/actions/whisper.actions";
+import { getPathPrefix } from "@/lib/utils";
 
 const TopBar = ({ user, _id }: any) => {
     function handleConfirm() {
@@ -40,9 +42,10 @@ const TopBar = ({ user, _id }: any) => {
             redirect: true
         });
     };
-    const {data: notificationCount} =  useNotificationsCountQuery(user.id);
-
-
+/*     const {data: notificationCount} =  useNotificationsCountQuery(user.id);
+ */
+    const notificationCount = 0
+    const data = 0
     const username = user ? user.username : '';
 
 
@@ -63,7 +66,13 @@ const TopBar = ({ user, _id }: any) => {
                     <nav className="h-full grid grid-cols-[repeat(5,20%)] ">
                         <motion.div
                             whileTap={{ scale: 0.9 }}
-
+                            onClick={async () => {
+                                await requestNewFeed(user.id,getPathPrefix())
+                                if(getPathPrefix() !== "/"){
+                                    return;
+                                }
+                                window.location.reload();
+                            }}
                         >
                             <div className="relative">
                                 <Link href="/" className="py-5 px-5 my-1 mx-1 flex justify-center">

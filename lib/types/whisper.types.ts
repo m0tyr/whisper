@@ -71,6 +71,30 @@ export interface DBImageData {
     isVideo: boolean;
 }
 
+export interface PostSkeleton {
+        _id: string;
+        interaction_info: any;
+        content: any[];
+        author: {
+            username: string;
+        };
+        mentions: any[];
+        media: any[];
+        children: any[];
+        caption: string;
+        createdAt: Date;
+        __v: number;
+        rankScore: number;
+}
+
+export interface UserTweet {
+    affinity: number;
+    tweets: PostSkeleton[];
+}
+
+export type Feed = PostSkeleton[];
+
+
 export interface FeedOptions {
     skipamount: number;
     pagesize: number;

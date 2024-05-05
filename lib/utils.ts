@@ -25,7 +25,11 @@ export function extractMention(json: Root): MentionsDatas[] {
 }
 
 
-
+export const getPathPrefix = () => {
+  const path = window.location.pathname;
+  const parts = path.split('/');
+  return "/" + parts[1]; // Retourne le premier segment après le nom de domaine
+};
 //Media Calculus stuff
 //need to test
 
