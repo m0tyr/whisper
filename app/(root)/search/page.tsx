@@ -7,7 +7,6 @@ import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect, usePathname } from "next/navigation";
 import { fetchwhispers, searchwhispersV1 } from "@/lib/actions/whisper.actions";
 import WhisperCard from "@/components/cards/WhisperCard";
-import { Suspense } from "react";
 import LoadingSkeleton from "@/components/shared/loader/LoadingSkeleton";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { getMeta } from "@/lib/utils";

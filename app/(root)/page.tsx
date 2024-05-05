@@ -1,10 +1,9 @@
 import { auth } from "@/auth"
-import WhisperCard from "@/components/cards/WhisperCard"
 import TopChat from "@/components/shared/TopChat"
 import TopBar from "@/components/shared/Topbar"
 import FeedSkeleton from "@/components/shared/loader/feed_skeleton"
 import { fetchUserbyEmail, getSession } from "@/lib/actions/user.actions"
-import FeedGenerator from "@/lib/client_fetching/feed_generator"
+import FeedGenerator from "@/lib/client_fetching/feed_generator" 
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
@@ -23,10 +22,11 @@ export default async function Page() {
     bio: currentUser?.bio || "",
     image: currentUser?.image || session?.user?.image,
   };
+  
   return (
     <>
 
-      <TopBar user={userData} _id={`${currentUser._id}`} />
+      <TopBar user={userData} _id={`${currentUser._id}`}  />
 
 
       <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">

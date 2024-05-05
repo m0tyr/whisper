@@ -23,6 +23,7 @@ interface Params {
     mentions?: MentionsDatas[];
 }
 export async function requestNewFeed(userID:string,path:string){
+    console.log(path)
     if( path !== "/"){
         return;
     }
@@ -405,7 +406,7 @@ async function ranking_algorithm(input: any, options: FeedOptions) {
         const posts = value as any[];
         const rankedPosts = posts.map((post: any) => {
             const timeSinceCreation = Date.now() - new Date(post.createdAt).getTime();
-            let rankScore = Math.abs(0.5 - ((post.interaction_info.like_count * (options.ranking_like_effect * 1000) + timeSinceCreation / (options.ranking_time_effect * 100000)) / posts.length / 10000));
+            let rankScore = Math.abs(((post.interaction_info.like_count * (options.ranking_like_effect * 1000) + timeSinceCreation / (options.ranking_time_effect * 100000)) / posts.length / 10000));
             rankScore = Math.max(0, Math.min(10, rankScore + parseFloat(key)));
             return { cached_posts: { id: post._id.toString(), rankScore }, rendered_posts: { ...post.toObject(), rankScore } };
         });

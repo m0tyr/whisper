@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SearchValidation } from "@/lib/validations/whisper";
+import { Suspense } from "react";
+import Loader from "../shared/loader/loader";
+import { motion } from "framer-motion"
 
 type SearchResultType = {
   id: string;
@@ -67,19 +70,19 @@ const SearchBar = () => {
   }, []);
 
   //Handling listbox position
-  useEffect(() => {          
+  useEffect(() => {
     const default_w = 598
     function handleResize() {
-      if(searchResultsRef.current){
+      if (searchResultsRef.current) {
         const newLeftValue = window.innerWidth / 2 - default_w / 2 + 2.8;
         setLeftValue(newLeftValue);
       }
     }
     if (typeof document !== "undefined") {
-        if(searchResultsRef.current){
-          const newLeftValue = window.innerWidth / 2 - default_w / 2 + 2.8;
-          setLeftValue(newLeftValue);
-        }
+      if (searchResultsRef.current) {
+        const newLeftValue = window.innerWidth / 2 - default_w / 2 + 2.8;
+        setLeftValue(newLeftValue);
+      }
     }
     window.addEventListener('resize', handleResize);
     return () => {
@@ -117,10 +120,10 @@ const SearchBar = () => {
             <FormItem>
               <FormControl>
                 <div className="w-[600px]">
-                  <div className="w-full flex flex-row pr-2">
-                    <div className={`${isInputFocused && inputValue ? 'w-0' : 'w-3'}`}></div>
+                  <div className="w-full flex flex-row pr-2 transition-all duration-150">
+                    <div className={` transition-all duration-150 ${isInputFocused && inputValue ? 'w-0' : 'w-3'}`}></div>
                     <div className="w-full h-[60px] shadow-xl">
-                      <label className={`bg-[rgb(10,10,10)] px-3 py-3 flex w-full h-[60px] ${isInputFocused && inputValue ? 'rounded-t-2xl' : 'rounded-2xl'} border-x-[1px] border-y-[1px] border-x-border border-y-border`}>
+                      <label className={`bg-[rgb(10,10,10)] transition-all duration-150 px-3 py-3 flex w-full h-[60px] ${isInputFocused && inputValue ? 'rounded-t-2xl' : 'rounded-2xl'} border-x-[1px] border-y-[1px] border-x-border border-y-border`}>
                         <div className="px-2 py-2 flex justify-center items-center mx-auto my-auto">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox={isInputFocused && inputValue ? '0 0 50 50' : '0 0 48 48'} width='22px' height='22px' className="">
                             <path fill="#706f6f" d="M 20.5 6 C 12.515556 6 6 12.515562 6 20.5 C 6 28.484438 12.515556 35 20.5 35 C 23.773158 35 26.788919 33.893018 29.220703 32.050781 L 38.585938 41.414062 A 2.0002 2.0002 0 1 0 41.414062 38.585938 L 32.050781 29.220703 C 33.893017 26.788918 35 23.773156 35 20.5 C 35 12.515562 28.484444 6 20.5 6 z M 20.5 10 C 26.322685 10 31 14.677319 31 20.5 C 31 23.295711 29.914065 25.820601 28.148438 27.697266 A 2.0002 2.0002 0 0 0 27.701172 28.144531 C 25.824103 29.912403 23.29771 31 20.5 31 C 14.677315 31 10 26.322681 10 20.5 C 10 14.677319 14.677315 10 20.5 10 z" />
@@ -132,7 +135,7 @@ const SearchBar = () => {
                           autoComplete="off"
                           placeholder="Rechercher"
                           type="search"
-                          className="search-cancel:bg-[url(https://picsum.photos/16/16)] placeholder:text-[15px] placeholder:font-[150] placeholder:text-white placeholder:opacity-50 w-full h-full outline-none bg-[rgb(10,10,10)] font-light text-[15px]"
+                          className="search-cancel:bg-[url(https://picsum.photos/16/16)] placeholder:text-[15px] placeholder:font-[150] placeholder:text-white placeholder:opacity-50 w-full h-full outline-none bg-[rgb(10,10,10)] font-light text-[15px] "
                           onChange={handleInputChange}
                           onFocus={handleFocus}
                           value={inputValue}
@@ -147,7 +150,7 @@ const SearchBar = () => {
                         )}
                       </label>
                     </div>
-                    <div className={`${isInputFocused && inputValue ? 'w-0' : 'w-3'}`}></div>
+                    <div className={` transition-all duration-150 ${isInputFocused && inputValue ? 'w-0' : 'w-3'}`}></div>
                   </div>
                 </div>
               </FormControl>
@@ -162,22 +165,28 @@ const SearchBar = () => {
             transform: `translate(${leftValue}px, 140px)`,
           }}
         >
-          <div
+          <motion.div
+            initial={{scale:0.9 , y: 20}}
+            animate={{scale: 1 ,y: 0}}
+            transition={{ duration: 2 }}
             ref={searchResultsRef}
             className="max-w-[592px] min-w-[592px] 
         flex flex-col items-center max-h-[484px] 
-        overflow-x-hidden overflow-y-scroll 
+        overflow-x-hidden overflow-y-scroll  
          bg-[rgb(10,10,10)]  rounded-b-2xl border-x-[1px] border-b-[1px] border-x-border border-b-border  shadow-xl"
             style={{ scrollbarWidth: 'none' }}>
-            <div className="flex flex-col ">
-              <ul className="max-w-[592px] min-w-[592px]  flex overflow-x-hidden overflow-y-scroll flex-col items-center justify-center " style={{ scrollbarWidth: 'none' }}>
+            <div
+              className="flex flex-col transition-all duration-150"
+            >
+              <ul
+                className="max-w-[592px] min-w-[592px]  flex overflow-x-hidden overflow-y-scroll flex-col items-center justify-center transition-all duration-150" style={{ scrollbarWidth: 'none' }}>
                 <SearchValue key={`search_value_${inputValue}`} inputValue={inputValue} svgViewBox={isInputFocused && inputValue ? '0 0 50 50' : '0 0 48 48'} onClick={SelectedQuery} />
                 {searchResult.map((result, index) => (
                   <SearchResult key={index} id={result.id} name={result.name} username={result.username} isfollowing={result.isfollowing} image={result.image} />
                 ))}
               </ul>
             </div>
-          </div>
+          </motion.div>
         </div>
 
 
