@@ -43,8 +43,8 @@ const TopBar = ({ user, _id }: any) => {
             redirect: true
         });
     };
-    /*     const {data: notificationCount} =  useNotificationsCountQuery(user.id);
-     */
+    const { data: notificationCount } = useNotificationsCountQuery(user.id);
+
     const refreshFeed = async () => {
         if (window.scrollY > 0) {
             window.scrollTo({
@@ -52,15 +52,15 @@ const TopBar = ({ user, _id }: any) => {
                 behavior: "smooth"
             });
             return;
-        } 
+        }
         await requestNewFeed(user.id, getPathPrefix())
         if (getPathPrefix() !== "/") {
             return;
         }
         window.location.reload()
     }
-    const notificationCount = 0
-    const data = 0
+    /*     const notificationCount = 0
+        const data = 0 */
     const username = user ? user.username : '';
     return (
         <>

@@ -168,7 +168,7 @@ const SearchBar = () => {
           <motion.div
             initial={{scale:0.9 , y: 20}}
             animate={{scale: 1 ,y: 0}}
-            transition={{ duration: 2 }}
+            transition={{ duration: 0.5 }}
             ref={searchResultsRef}
             className="max-w-[592px] min-w-[592px] 
         flex flex-col items-center max-h-[484px] 

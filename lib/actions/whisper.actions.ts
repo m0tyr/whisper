@@ -22,9 +22,9 @@ interface Params {
     caption: string;
     mentions?: MentionsDatas[];
 }
-export async function requestNewFeed(userID:string,path:string){
+export async function requestNewFeed(userID: string, path: string) {
     console.log(path)
-    if( path !== "/"){
+    if (path !== "/") {
         return;
     }
     await redis.del("custom_feed_v1_" + userID)
@@ -317,9 +317,10 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
             affinity_deep_search_min_value: 0,
             affinity_deep_search_max_value: 30,
             affinity_deep_talk_value: 0.09,
-            affinity_deep_like_value: 0.14,
+            affinity_deep_like_value: 0.17,
             affinity_deep_followage_value: 0.025,
-            ranking_like_effect: 0.2,
+            ranking_media_effect: 0.009,
+            ranking_like_effect: 0.05,
             ranking_time_effect: 0.7
         });
 
@@ -327,7 +328,8 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
         const my_username = await User.findById(userID)
             .select('username')
             .exec();
-        const posts_exec = interpolate_feed(my_username, output_feed.ranked_feed)
+        const posts_exec = interpolate_feed(my_username, userID, output_feed.ranked_feed)
+        posts_exec.sort((a, b) => a.rankScore - b.rankScore);
 
         //REDIS Caching
         await redis.set("custom_feed_v1_" + userID, JSON.stringify(posts_exec))
@@ -340,23 +342,34 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
 
     }
 }
-function interpolate_feed(username: string, feed_object: any) {
+function interpolate_feed(my_username: any, my_id: string, feed_object: { [key: string]: any[] }): any[] {
     const feed_final: any[] = [];
     const seenIds = new Set<string>();
-
-    for (let index = 0; index < 20; index++) {
+    let maxLength = 0;
+    for (const value of Object.values(feed_object)) {
+        maxLength = Math.max(maxLength, value.length);
+    }
+    for (let index = 0; index < maxLength; index++) {
         for (const [key, value] of Object.entries(feed_object)) {
             if (Array.isArray(value) && value.length > index) {
                 const currentItem = value[index];
-                if (!seenIds.has(currentItem._id.toString())) {
+                for (let index = 0; index < currentItem.interaction_info.liketracker.length; index++) {
+                    const likerId = currentItem.interaction_info.liketracker[index].id;
+                    if (likerId === my_id) {
+                        break;
+                    }
+                }
+
+                if (!seenIds.has(currentItem._id.toString()) && currentItem.author.username !== my_username.username) {
+                    currentItem.rankScore = Math.abs(currentItem.rankScore);
                     feed_final.push(currentItem);
                     seenIds.add(currentItem._id.toString());
                 }
             }
         }
     }
-    return feed_final
 
+    return feed_final;
 }
 async function custom_feed_v1(userID: string, options: FeedOptions) {
     try {
@@ -405,9 +418,12 @@ async function ranking_algorithm(input: any, options: FeedOptions) {
     for (const [key, value] of Object.entries(input)) {
         const posts = value as any[];
         const rankedPosts = posts.map((post: any) => {
+            const maxTime = 1000 * 60 * 60 * 24 * 30; 
             const timeSinceCreation = Date.now() - new Date(post.createdAt).getTime();
-            let rankScore = Math.abs(((post.interaction_info.like_count * (options.ranking_like_effect * 1000) + timeSinceCreation / (options.ranking_time_effect * 100000)) / posts.length / 10000));
-            rankScore = Math.max(0, Math.min(10, rankScore + parseFloat(key)));
+            const normalizedScore = Math.min(1, timeSinceCreation / maxTime);            
+            const asMedia = options.ranking_media_effect * post.media.length;
+            let rankScore = Math.abs((post.interaction_info.like_count * (options.ranking_like_effect)));
+            rankScore = Math.max(0, Math.min(2000, ((rankScore + parseFloat(key)) - (asMedia)) + (normalizedScore * 10)));
             return { cached_posts: { id: post._id.toString(), rankScore }, rendered_posts: { ...post.toObject(), rankScore } };
         });
         rankedPosts.sort((a, b) => b.cached_posts.rankScore - a.cached_posts.rankScore);
@@ -486,20 +502,21 @@ async function calcul_affinity(username: string, userID: string, id: string, opt
     const affinity_value_1 = Math.min(1, talk_value / (options.affinity_deep_talk_value * posts_exec.length));
     const affinity_value_2 = Math.min(1, count_affinity / options.affinity_deep_search_max_value);
     const affinity_value_3 = (Math.min(1, time_sample / (10000 * posts_exec.length)));
-    let affinity_value_4 = 0;
+    const affinity_value_4 = Math.min(1, like_value)
+    let affinity_value_5 = 0;
     if (followage_affinity_boost) {
-        affinity_value_4 = Math.min(1, followage_affinity_boost)
+        affinity_value_5 = Math.min(1, followage_affinity_boost)
     }
     // Calculate the affinity
 
     if (isNotFollowing) {
-        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4) - 0.0999;
+        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4 + affinity_value_5) - 0.1999;
         if (isNaN(affinity)) {
             return;
         }
         return { affinity, posts_exec }
     } else {
-        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4);
+        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4 + affinity_value_5);
         if (isNaN(affinity)) {
             return;
         }
