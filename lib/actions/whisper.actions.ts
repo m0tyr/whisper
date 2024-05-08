@@ -4,14 +4,11 @@ import { revalidatePath } from "next/cache";
 import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { connectToDB } from "../mongoose"
-import { DBImageData, ExtractedElement, FeedOptions, MentionsDatas, PostSkeleton } from "../types/whisper.types";
+import { DBImageData, ExtractedElement, MentionsDatas } from "../types/whisper.types";
 import { notify } from "./notifications.actions";
-import { Activity } from "lucide-react";
 import { ActivityType } from "../types/notification.types";
 import { redis } from "../redis";
-import { cp } from "fs";
-import { shuffleArray } from "../utils";
-import { Console } from "console";
+import { custom_feed_v1, interpolate_feed } from "./feed.actions";
 
 
 interface Params {
@@ -21,14 +18,6 @@ interface Params {
     path: string;
     caption: string;
     mentions?: MentionsDatas[];
-}
-export async function requestNewFeed(userID: string, path: string) {
-    console.log(path)
-    if (path !== "/") {
-        return;
-    }
-    await redis.del("custom_feed_v1_" + userID)
-    revalidatePath(path)
 }
 
 export async function createWhisper({ content, author, media, path, caption, mentions }: Params) {
@@ -296,6 +285,7 @@ export async function fetchallParentsFromWhisper(parentid: string) {
 
 }
 
+
 export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 15, path = '/') {
 
     try {
@@ -310,25 +300,26 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
             return { posts_exec, isnext };
         }
 
-        //Feed Algorithm V1
+        //Feed Algorithm V1 
         const output_feed = await custom_feed_v1(userID, {
             skipamount: skipamount,
             pagesize: pagesize,
             affinity_deep_search_min_value: 0,
             affinity_deep_search_max_value: 30,
-            affinity_deep_talk_value: 0.09,
-            affinity_deep_like_value: 0.17,
-            affinity_deep_followage_value: 0.025,
-            ranking_media_effect: 0.009,
-            ranking_like_effect: 0.05,
-            ranking_time_effect: 0.7
+            affinity_deep_talk_value: 0.091023,
+            affinity_deep_like_value: 0.171244,
+            affinity_deep_followage_value: 0.005333333333336,
+            ranking_media_effect: 0.0911941241333,
+            ranking_like_effect: -1.58341341341,
+            ranking_time_effect: 0.0781824129,
+            ranking_default_like_effect: 0.86530391510359
         });
 
         const isnext = max_count > skipamount + output_feed.ranked_feed_redis.length;
         const my_username = await User.findById(userID)
             .select('username')
             .exec();
-        const posts_exec = interpolate_feed(my_username, userID, output_feed.ranked_feed)
+        const posts_exec = await interpolate_feed(my_username, userID, output_feed.ranked_feed)
         posts_exec.sort((a, b) => a.rankScore - b.rankScore);
 
         //REDIS Caching
@@ -342,185 +333,4 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
 
     }
 }
-function interpolate_feed(my_username: any, my_id: string, feed_object: { [key: string]: any[] }): any[] {
-    const feed_final: any[] = [];
-    const seenIds = new Set<string>();
-    let maxLength = 0;
-    for (const value of Object.values(feed_object)) {
-        maxLength = Math.max(maxLength, value.length);
-    }
-    for (let index = 0; index < maxLength; index++) {
-        for (const [key, value] of Object.entries(feed_object)) {
-            if (Array.isArray(value) && value.length > index) {
-                const currentItem = value[index];
-                for (let index = 0; index < currentItem.interaction_info.liketracker.length; index++) {
-                    const likerId = currentItem.interaction_info.liketracker[index].id;
-                    if (likerId === my_id) {
-                        break;
-                    }
-                }
 
-                if (!seenIds.has(currentItem._id.toString()) && currentItem.author.username !== my_username.username) {
-                    currentItem.rankScore = Math.abs(currentItem.rankScore);
-                    feed_final.push(currentItem);
-                    seenIds.add(currentItem._id.toString());
-                }
-            }
-        }
-    }
-
-    return feed_final;
-}
-async function custom_feed_v1(userID: string, options: FeedOptions) {
-    try {
-        const feed_output: { [key: string]: any } = {};
-        const user = await User.findById(userID)
-            .select('user_social_info')
-            .exec();
-
-        for (const following of user.user_social_info.following) {
-            const following_user = await User.findOne({ username: following.id }, { id: 1, user_social_info: 1 });
-            const id = following_user.id.toString();
-            const sub_following_search = following_user.user_social_info.following
-            let followage_affinity_boost = 0;
-            for (const sub_follower of sub_following_search) {
-                const isNotFollowing = true
-                if (user.user_social_info.following.some((item: { id: any; }) => item.id === sub_follower.id)) {
-                    followage_affinity_boost += options.affinity_deep_followage_value;
-                }
-                const sub_following_user = await User.findOne({ username: sub_follower.id }, { id: 1 });
-                const id = sub_following_user.id.toString();
-                const sub_following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing,)
-                if (sub_following_user_info) {
-                    feed_output[sub_following_user_info.affinity] = sub_following_user_info?.posts_exec;
-                }
-            }
-            const isNotFollowing = false
-            const following_user_info = await calcul_affinity(following.id, userID, id, options, isNotFollowing, followage_affinity_boost)
-            if (following_user_info) {
-                feed_output[following_user_info.affinity] = following_user_info?.posts_exec;
-            }
-
-        }
-
-        const sortedFeed = Object.entries(feed_output).sort(([keyA], [keyB]) => parseFloat(keyB) - parseFloat(keyA));
-        const sortedFeedOutput = Object.fromEntries(sortedFeed);
-        const ranked_feed = await ranking_algorithm(sortedFeedOutput, options)
-        return ranked_feed;
-    } catch (error: any) {
-        console.error("Error generating custom feed :", error);
-        throw error;
-    }
-}
-async function ranking_algorithm(input: any, options: FeedOptions) {
-    const ranked_feed: any = {};
-    const ranked_feed_redis: any = {};
-    for (const [key, value] of Object.entries(input)) {
-        const posts = value as any[];
-        const rankedPosts = posts.map((post: any) => {
-            const maxTime = 1000 * 60 * 60 * 24 * 30; 
-            const timeSinceCreation = Date.now() - new Date(post.createdAt).getTime();
-            const normalizedScore = Math.min(1, timeSinceCreation / maxTime);            
-            const asMedia = options.ranking_media_effect * post.media.length;
-            let rankScore = Math.abs((post.interaction_info.like_count * (options.ranking_like_effect)));
-            rankScore = Math.max(0, Math.min(2000, ((rankScore + parseFloat(key)) - (asMedia)) + (normalizedScore * 10)));
-            return { cached_posts: { id: post._id.toString(), rankScore }, rendered_posts: { ...post.toObject(), rankScore } };
-        });
-        rankedPosts.sort((a, b) => b.cached_posts.rankScore - a.cached_posts.rankScore);
-        ranked_feed[key] = rankedPosts.map((post: any) => {
-            return post.rendered_posts
-        });
-        ranked_feed_redis[key + "_redis"] = rankedPosts.map((post: any) => {
-            return post.cached_posts
-        });;
-    }
-
-    return { ranked_feed_redis, ranked_feed };
-}
-
-async function calcul_affinity(username: string, userID: string, id: string, options: FeedOptions, isNotFollowing: boolean, followage_affinity_boost?: number) {
-    const posts_query = Whisper.find({
-        author: id,
-        parentId: { $in: [null, undefined] }
-    })
-        .sort({
-            createdAt: 'desc',
-            'interaction_info.like_count': 'desc'
-        })
-        .skip(options.skipamount)
-        .limit(options.pagesize)
-        .populate({
-            path: 'author',
-            select: "_id id username name image"
-        })
-        .populate({
-            path: 'children',
-            populate: {
-                path: 'author',
-                model: User,
-                select: "_id username parentId image"
-            }
-        });
-
-
-    let posts_exec = await posts_query.exec();
-
-    let time_sample = 0
-
-    let talk_value = 0
-
-    let like_value = 0
-    for (const post of posts_exec) {
-        time_sample += Date.now() - post.createdAt;
-        post.interaction_info.liketracker.map((id: any) => {
-            if (id === userID) {
-                like_value += options.affinity_deep_like_value
-            }
-        });
-        post.children.map((child: any) => {
-            if (child.author.id === userID) {
-                talk_value += options.affinity_deep_talk_value;
-            }
-        });
-    }
-    posts_exec = posts_exec.filter(post => {
-        return !post.interaction_info.liketracker.some((id: any) => {
-            return id === userID;
-        });
-    });
-    time_sample = time_sample;
-    const count_affinity = await Whisper.countDocuments({
-        author: userID,
-        "content.type": "mention",
-        "content.text": { $regex: `@${username}\\b`, $options: 'i' }
-    })
-        .sort({ createdAt: 'desc' })
-        .skip(options.affinity_deep_search_min_value)
-        .limit(options.affinity_deep_search_max_value);
-
-    // Normalize values
-    const affinity_value_1 = Math.min(1, talk_value / (options.affinity_deep_talk_value * posts_exec.length));
-    const affinity_value_2 = Math.min(1, count_affinity / options.affinity_deep_search_max_value);
-    const affinity_value_3 = (Math.min(1, time_sample / (10000 * posts_exec.length)));
-    const affinity_value_4 = Math.min(1, like_value)
-    let affinity_value_5 = 0;
-    if (followage_affinity_boost) {
-        affinity_value_5 = Math.min(1, followage_affinity_boost)
-    }
-    // Calculate the affinity
-
-    if (isNotFollowing) {
-        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4 + affinity_value_5) - 0.1999;
-        if (isNaN(affinity)) {
-            return;
-        }
-        return { affinity, posts_exec }
-    } else {
-        let affinity = (affinity_value_1 + affinity_value_2 + affinity_value_3 + affinity_value_4 + affinity_value_5);
-        if (isNaN(affinity)) {
-            return;
-        }
-        return { affinity, posts_exec }
-    }
-
-}

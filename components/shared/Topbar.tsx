@@ -19,7 +19,7 @@ const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
     ssr: false,
 })
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
-import { requestNewFeed } from "@/lib/actions/whisper.actions";
+import { requestNewFeed } from "@/lib/actions/feed.actions";
 import { getPathPrefix } from "@/lib/utils";
 
 const TopBar = ({ user, _id }: any) => {
