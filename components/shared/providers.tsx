@@ -12,8 +12,8 @@ export function Providers({
     return (
 
         <ReactQueryProvider>
-            {children}
-            <Toaster />
+                {children}
+                <Toaster />
         </ReactQueryProvider>
     );
 }

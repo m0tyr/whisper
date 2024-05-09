@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { FILE_TYPE_NOT_ALLOWED, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
-import { useState } from "react";
 
 export function Toaster() {
   const { toasts } = useToast()

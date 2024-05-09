@@ -20,7 +20,6 @@ const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
 })
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";
-import { getPathPrefix } from "@/lib/utils";
 
 const TopBar = ({ user, _id }: any) => {
     const pathname = usePathname();
@@ -31,7 +30,6 @@ const TopBar = ({ user, _id }: any) => {
 
     const togglePopup = () => {
         setShowPopup(!showPopup);
-
     };
     const SignOutUser = async () => {
         toast({
@@ -53,8 +51,8 @@ const TopBar = ({ user, _id }: any) => {
             });
             return;
         }
-        await requestNewFeed(user.id, getPathPrefix())
-        if (getPathPrefix() !== "/") {
+        await requestNewFeed(user.id, pathname)
+        if (pathname !== "/") {
             return;
         }
         window.location.reload()
@@ -236,8 +234,6 @@ const TopBar = ({ user, _id }: any) => {
 
                 </div>
             </header>
-
-
             <nav className="z-[1] w-full backdrop-blur-3xl bg-[rgba(16,16,16,.90)]  fixed bottom-0 my-auto  mobile:hidden grid grid-cols-[repeat(5,20%)] ">
                 <motion.div
                     whileTap={{ scale: 0.9 }}

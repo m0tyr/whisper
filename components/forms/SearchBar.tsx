@@ -16,6 +16,7 @@ import { SearchValidation } from "@/lib/validations/whisper";
 import { Suspense } from "react";
 import Loader from "../shared/loader/loader";
 import { motion } from "framer-motion"
+import { useSearchBar } from "@/hooks/useSearchBar";
 
 type SearchResultType = {
   id: string;
@@ -27,71 +28,20 @@ type SearchResultType = {
 
 
 const SearchBar = () => {
-  const searchResultsRef = useRef<HTMLDivElement>(null);
-  const maindiv = useRef<HTMLDivElement>(null)
-  const [inputValue, setInputValue] = useState("");
-  const [searchResult, setSearchResult] = useState<SearchResultType[]>([]);
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [leftValue, setLeftValue] = useState(0);
-
-  const handleFocus = () => {
-    setIsInputFocused(true);
-  };
-  const SelectedQuery = () => {
-    setIsInputFocused(false);
-  }
-
-  //On input make a call to db with onsubmit
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputValue(value);
-    onSubmit({ username: value });
-  };
-  //Clear Button
-  const handleClearInput = () => {
-    setInputValue("");
-  };
-
-
-  //Handling hidding the listbox menu when clicking outside of it
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      searchResultsRef.current &&
-      !searchResultsRef.current.contains(event.target as Node)
-    ) {
-      setIsInputFocused(false);
-    }
-  };
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  //Handling listbox position
-  useEffect(() => {
-    const default_w = 598
-    function handleResize() {
-      if (searchResultsRef.current) {
-        const newLeftValue = window.innerWidth / 2 - default_w / 2 + 2.8;
-        setLeftValue(newLeftValue);
-      }
-    }
-    if (typeof document !== "undefined") {
-      if (searchResultsRef.current) {
-        const newLeftValue = window.innerWidth / 2 - default_w / 2 + 2.8;
-        setLeftValue(newLeftValue);
-      }
-    }
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-
-
+  const {
+    searchResultsRef,
+    maindiv,
+    inputValue,
+    searchResult,
+    setSearchResult,
+    isInputFocused,
+    setIsInputFocused,
+    leftValue,
+    handleFocus,
+    SelectedQuery,
+    handleClearInput,
+    handleInputChange,
+  } = useSearchBar()
   const form = useForm<z.infer<typeof SearchValidation>>({
     resolver: zodResolver(SearchValidation),
     defaultValues: {
@@ -136,7 +86,7 @@ const SearchBar = () => {
                           placeholder="Rechercher"
                           type="search"
                           className="search-cancel:bg-[url(https://picsum.photos/16/16)] placeholder:text-[15px] placeholder:font-[150] placeholder:text-white placeholder:opacity-50 w-full h-full outline-none bg-[rgb(10,10,10)] font-light text-[15px] "
-                          onChange={handleInputChange}
+                          onChange={(e) => handleInputChange(e, onSubmit)}
                           onFocus={handleFocus}
                           value={inputValue}
                         />
@@ -166,8 +116,8 @@ const SearchBar = () => {
           }}
         >
           <motion.div
-            initial={{scale:0.9 , y: 20}}
-            animate={{scale: 1 ,y: 0}}
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             ref={searchResultsRef}
             className="max-w-[592px] min-w-[592px] 
