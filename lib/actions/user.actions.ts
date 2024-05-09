@@ -339,3 +339,17 @@ export async function getActivityFromUser(username: string, type: string) {
     throw new Error(`Error fetching mentions: ${error.message}`);
   }
 }
+
+
+export async function FamousUserSuggestion() {
+  try {
+    connectToDB();
+    const famousUsers = await User.find({}, { id: 1, name: 1, image: 1, username: 1, 'user_social_info.followers': 1 })
+      .sort({ 'user_social_info.followers': -1 })
+      .limit(16)
+      .lean();
+    return famousUsers;
+  } catch (error: any) {
+    throw new Error(`Error fetching: ${error.message}`);
+  }
+}

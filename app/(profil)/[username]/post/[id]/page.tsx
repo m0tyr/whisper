@@ -1,6 +1,6 @@
 import WhisperCard from "@/components/cards/WhisperCard";
-import { fetchallParentsFromWhisper, fetchwhisperById } from "@/lib/actions/whisper.actions";
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchallParentsFromWhisper, fetchwhisperById, likewhisper } from "@/lib/actions/whisper.actions";
+import { fetchUser, follow } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import ViewWhisperCard from "@/components/cards/ViewWhisperCard";
@@ -38,6 +38,10 @@ export default async function Page({ params }: { params: { id: string, username:
         bio: currentuserInfo?.bio || "",
         image: currentuserInfo?.image || session?.user?.image,
     };
+    const likeAction = async (myusername: string, whisperid: string, username: string) => {
+        "use server";
+        return await likewhisper(myusername, whisperid, username)
+    }
     return (
         <>  <TopBar user={userData} _id={`${currentuserInfo._id}`} />
 
@@ -103,6 +107,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                             id: likeid.id
                                         }))
                                     }}
+                                    likewhisper={likeAction}
                                 />
                             );
                         })}
@@ -145,7 +150,9 @@ export default async function Page({ params }: { params: { id: string, username:
                                 liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
                                     id: likeid.id
                                 }))
-                            }} />
+                            }}
+                            likewhisper={likeAction}
+                             />
                     </div>
                     <div>
                         <Suspense fallback={
@@ -201,6 +208,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                             id: likeid.id
                                         }))
                                     }}
+                                    likewhisper={likeAction}
                                 />
                             )
                             )}

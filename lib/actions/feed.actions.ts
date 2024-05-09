@@ -179,15 +179,16 @@ export async function interpolate_feed(my_username: any, my_id: string, feed_obj
     for (let index = 0; index < maxLength; index++) {
         for (const [key, value] of Object.entries(feed_object)) {
             if (Array.isArray(value) && value.length > index) {
+                let isLiked = false
                 const currentItem = value[index];
                 for (let index = 0; index < currentItem.interaction_info.liketracker.length; index++) {
                     const likerId = currentItem.interaction_info.liketracker[index].id;
                     if (likerId === my_id) {
-                        break;
+                        isLiked = true
                     }
                 }
 
-                if (!seenIds.has(currentItem._id.toString()) && currentItem.author.username !== my_username.username) {
+                if (!seenIds.has(currentItem._id.toString()) && currentItem.author.username !== my_username.username && !isLiked) {
                     currentItem.rankScore = Math.abs(currentItem.rankScore);
                     feed_final.push(currentItem);
                     seenIds.add(currentItem._id.toString());

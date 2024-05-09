@@ -5,7 +5,6 @@ import WhisperCardFooter from "../shared/WhisperCardFooter";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { likewhisper } from "@/lib/actions/whisper.actions";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 
 import dynamic from "next/dynamic";
@@ -44,6 +43,7 @@ interface Props {
         like_count: number;
         liketracker: []
     }
+    likewhisper:any;
 }
 
 const WhisperCard = ({
@@ -60,6 +60,7 @@ const WhisperCard = ({
     isNotComment,
     mentions,
     like_info,
+    likewhisper
 }: Props) => {
     const whisperData = {
         id: id,

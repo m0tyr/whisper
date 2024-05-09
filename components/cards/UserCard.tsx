@@ -1,11 +1,9 @@
 "use client"
-import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import UpdateProfile from "../forms/UpdateProfil";
 import React from "react";
 import Link from "next/link";
-import { follow } from "@/lib/actions/user.actions";
 
 interface Props {
     myusername: string;
@@ -17,6 +15,7 @@ interface Props {
     _id: any;
     Isfollowing: boolean;
     follow_count: number;
+    follow: any;
     fetchedtype: string;
 }
 
@@ -30,6 +29,7 @@ function UserCard({
     _id,
     follow_count,
     Isfollowing,
+    follow,
     fetchedtype
 }: Props) {
     const [showPopup, setShowPopup] = useState(false);
@@ -40,11 +40,9 @@ function UserCard({
 
     };
     const addFollow = async () => {
-
-        await follow(myusername, username)
-        setisfollowing(!isfollowing)
-
-    }
+        await follow(myusername, username);
+        setisfollowing(!isfollowing);
+    };
     return (
         <>
             <div className=" w-[99%] mx-auto">

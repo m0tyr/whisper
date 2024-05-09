@@ -9,28 +9,34 @@ import Image from 'next/image';
 import { ActivityType } from "@/lib/types/notification.types";
 
 interface Props {
-    username: string;
-    image: string;
+    my_username:string;
+    username: string | undefined;
+    image: string | undefined;
     notification_link: string | undefined;
     caption?: string | undefined;
     createdAt: string;
+    isFollowing:boolean | undefined;
+    follow:any;
     type: string;
 }
 
 function ActivityCard({
+    my_username,
     username,
     image,
     notification_link,
     caption,
     createdAt,
+    isFollowing,
+    follow,
     type
 }: Props) {
     const router = useRouter();
     const ping = () => {
         router.push(`/${username}/post/${notification_link}`)
     }
-    const [followtracker, setfollowtracker] = useState(false);
-
+    const [followtracker, setfollowtracker] = useState(isFollowing as boolean);
+    const profil_pic = image as string;
     return (
         <>
             {type === ActivityType.LIKE ? (
@@ -40,7 +46,7 @@ function ActivityCard({
                             <div className="relative block mx-auto mt-1.5 w-[40px] h-[40px] justify-center items-center">
                                 <motion.div onClick={() => { router.push(`/${username}`) }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto cursor-pointer">
                                     <div className="w-[40px] h-[40px] flex">
-                                        <Image src={image} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
+                                        <Image src={profil_pic} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
 
                                     </div>
                                     <div className=" bg-insanedark px-0.5 py-0.5 rounded-full absolute top-5 right-[-5px]">
@@ -113,7 +119,7 @@ function ActivityCard({
                                 <div className="relative block mx-auto mt-1  w-[40px] h-[40px] justify-center items-center">
                                     <motion.div onClick={() => { router.push(`/${username}`) }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto cursor-pointer ">
                                         <div className="w-[40px] h-[40px] flex">
-                                            <Image src={image} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
+                                            <Image src={profil_pic} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
 
                                         </div>
                                         <div className=" bg-insanedark px-0.5 py-0.5 rounded-full absolute top-5 right-[-5px]">
@@ -145,9 +151,10 @@ function ActivityCard({
                                             <span className="max-w-full text-[14px] font-extralight opacity-65 flex">A commencé à vous Suivre</span>
 
                                         </div>
-                                        <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: .01 }} className=" h-[34px] rounded-xl hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)]  inline-flex w-[104px] justify-center items-center"
-                                            onClick={(event) => {
+                                        <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: .01 }} className="cursor-pointer h-[34px] rounded-xl hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)]  inline-flex w-[104px] justify-center items-center"
+                                            onClick={ async (event) => {
                                                 event.preventDefault();
+                                                await follow(my_username,username)
                                                 setfollowtracker(!followtracker);
                                             }}
                                         >
@@ -174,7 +181,7 @@ function ActivityCard({
                                     <div className="relative block mx-auto mt-1.5 w-[40px] h-[40px] justify-center items-center">
                                         <motion.div onClick={() => { router.push(`/${username}`) }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto cursor-pointer">
                                             <div className="w-[40px] h-[40px] flex">
-                                                <Image src={image} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
+                                                <Image src={profil_pic} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
 
                                             </div>
                                             <div className=" bg-insanedark px-0.5 py-0.5 rounded-full absolute top-5 right-[-5px]">
@@ -245,7 +252,7 @@ function ActivityCard({
                                     <div className="relative block mx-auto mt-1.5 w-[40px] h-[40px] justify-center items-center">
                                         <motion.div onClick={() => { router.push(`/${username}`) }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto cursor-pointer">
                                             <div className="w-[40px] h-[40px] flex">
-                                                <Image src={image} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
+                                                <Image src={profil_pic} alt="pfp" width={40} height={40} className="rounded-full cursor-pointer border-border border" />
 
                                             </div>
                                             <div className=" bg-insanedark px-0.5 py-0.5 rounded-full absolute top-5 right-[-5px]">

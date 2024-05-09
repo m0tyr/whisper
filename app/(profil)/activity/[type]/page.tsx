@@ -3,7 +3,7 @@ import ActivityCard from "@/components/cards/ActivityCard";
 import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
 import { getNotifications } from "@/lib/actions/notifications.actions";
-import { fetchUser, fetchUserbyEmail, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
+import { fetchUser, fetchUserbyEmail, follow, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
 import { ActivityType, UserNotification } from "@/lib/types/notification.types";
 import { calculateTimeAgo } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs";
@@ -33,7 +33,6 @@ export default async function Page({ params }: { params: { type: string } }) {
     }
     
     //Ugly
-
     let datas: UserNotification[] = []
     if(params.type === "replies"){
         datas = await getNotifications(userData.id as string, ActivityType.REPLY);
@@ -46,7 +45,11 @@ export default async function Page({ params }: { params: { type: string } }) {
     } else if (params.type === "reposts") {
         datas = await getNotifications(userData.id as string, ActivityType.REPOST);
     }
-
+    
+    const addtofollowing = async (myusername: string, username: string) => {
+        "use server";
+        await follow(myusername, username)
+    }
     return (
         <>
             <TopBar user={userData} _id={`${currentUser._id}`} />
@@ -57,7 +60,7 @@ export default async function Page({ params }: { params: { type: string } }) {
 
                 {datas ? (
                     datas.map(notification => (
-                        <ActivityCard username={notification.user_notification_sender.username} image={notification.user_notification_sender.image} notification_link={`${notification.notification_link}`} caption={notification.caption} createdAt={notification.time.toString()} type={notification.activity_type}  />
+                        <ActivityCard username={notification?.user_notification_sender?.user.username} image={notification?.user_notification_sender?.user.image} notification_link={`${notification.notification_link}`} caption={notification.caption} createdAt={notification.time.toString()} type={notification.activity_type} my_username={userData.username} isFollowing={notification?.user_notification_sender?.isFollowing} follow={addtofollowing}  />
                     ))
                 ) : (
                     <div className=" justify-center items-center m-auto" >

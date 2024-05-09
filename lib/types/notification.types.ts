@@ -22,7 +22,7 @@ export interface Notification{
 
 export interface UserNotification{
     activity_type: string;
-    user_notification_sender: UserDefinition;
+    user_notification_sender: UserDefinition | undefined;
     isActive: boolean;
     caption?: string | undefined;
     notification_link?: string | undefined;

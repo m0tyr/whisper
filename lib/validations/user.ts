@@ -4,7 +4,7 @@ export const UserValidation = z.object({
   profile_photo: z.string().url().optional(),
   name: z
     .string()
-    .min(3, { message: "3 caractères minimum." })
+    .min(1, { message: "1 caractères minimum." })
     .max(30, { message: "30 caractères maximum." }),
   username: z
     .string()

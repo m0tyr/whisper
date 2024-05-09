@@ -3,7 +3,7 @@ import ActivityCard from "@/components/cards/ActivityCard";
 import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/shared/Topbar";
 import { getNotifications } from "@/lib/actions/notifications.actions";
-import { fetchUser, getActivityFromUser, fetchUserbyEmail } from "@/lib/actions/user.actions";
+import { fetchUser, getActivityFromUser, fetchUserbyEmail, follow } from "@/lib/actions/user.actions";
 import { calculateTimeAgo } from "@/lib/utils";
 import { redirect } from "next/navigation";
 export function generateMetadata() {
@@ -26,6 +26,10 @@ export default async function Page() {
         image: currentUser?.image || session?.user?.image,
     };
     const datas = await getNotifications(userData.id as string, "all");
+    const addtofollowing = async (myusername: string, username: string) => {
+        "use server";
+        await follow(myusername, username)
+    }
     return (
         <>
             <TopBar user={userData} _id={`${currentUser._id}`} />
@@ -35,7 +39,7 @@ export default async function Page() {
                 </div>
                 {datas ? (
                     datas.map(notification => (
-                        <ActivityCard username={notification.user_notification_sender.username} image={notification.user_notification_sender.image} notification_link={`${notification.notification_link}`} caption={notification.caption} createdAt={notification.time.toString()} type={notification.activity_type}  />
+                        <ActivityCard username={notification?.user_notification_sender?.user.username} image={notification?.user_notification_sender?.user.image} notification_link={`${notification.notification_link}`} caption={notification.caption} createdAt={notification.time.toString()} type={notification.activity_type} my_username={userData.username} isFollowing={notification?.user_notification_sender?.isFollowing} follow={addtofollowing}  />
                     ))
                 ) : (
                     <div className=" justify-center items-center m-auto" >

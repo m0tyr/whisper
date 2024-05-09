@@ -1,9 +1,11 @@
-import { fetchUser, fetchUserWhisper, fetchUserbyEmail, fetchUserbyUsername, isFollowing } from "@/lib/actions/user.actions";
+'use server'
+import { fetchUser, fetchUserWhisper, fetchUserbyEmail, fetchUserbyUsername, follow, isFollowing } from "@/lib/actions/user.actions";
 import { notFound, redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import UserCard from "@/components/cards/UserCard";
 import WhisperCard from "@/components/cards/WhisperCard";
 import { auth } from "@/auth";
+import { likewhisper } from "@/lib/actions/whisper.actions";
 
 
 export async function generateMetadata({ params }: { params: { username: string } }) {
@@ -30,7 +32,7 @@ export default async function Page({ params }: { params: { username: string } })
     if (!session) redirect('/sign-in');
     const email = session?.user?.email
     const currentuserInfo = await fetchUserbyEmail(email as string)
-    
+
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const userInfo = await fetchUserbyUsername(params.username);
     if (!userInfo) {
@@ -54,10 +56,19 @@ export default async function Page({ params }: { params: { username: string } })
         image: currentuserInfo?.image,
     };
     const isfollowing = await isFollowing(currentuserData.username, userData.username)
+
+    const addtofollowing = async (myusername: string, username: string) => {
+        "use server";
+        await follow(myusername, username)
+    }
+    const likeAction = async (myusername: string, whisperid: string, username: string) => {
+        "use server";
+        return await likewhisper(myusername, whisperid, username)
+    }
     return (
         <>
             <TopBar user={currentuserData} _id={`${currentuserInfo._id}`} />
-            
+
             <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
 
                 <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
@@ -71,6 +82,7 @@ export default async function Page({ params }: { params: { username: string } })
                         fetchedtype={"whisper"}
                         follow_count={userData.follow_count}
                         Isfollowing={isfollowing}
+                        follow={addtofollowing}
                     />
                     {userposts.whispers.length === 0 ? (
                         <p className="text-white text-body1-bold ">No Whispers found...</p>
@@ -91,9 +103,9 @@ export default async function Page({ params }: { params: { username: string } })
                                         s3url: media.s3url,
                                         aspectRatio: media.aspectRatio,
                                         width: media.width,
-                                        height:media.height,
+                                        height: media.height,
                                         isVideo: media.isVideo
-                                    }))} 
+                                    }))}
                                     author={{ image: userposts.image, username: userposts.username, id: userposts.id }}
                                     createdAt={post.createdAt}
                                     comments={[
@@ -124,6 +136,7 @@ export default async function Page({ params }: { params: { username: string } })
                                             id: likeid.id
                                         }))
                                     }}
+                                    likewhisper={likeAction}
                                 />
                             ))}
                         </>

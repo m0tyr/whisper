@@ -62,6 +62,7 @@ interface Props {
         like_count: number;
         liketracker: []
     }
+    likewhisper:any;
 }
 
 const ViewWhisperCard = ({
@@ -78,7 +79,8 @@ const ViewWhisperCard = ({
     isNotComment,
     aspectRatio,
     mentions,
-    like_info
+    like_info,
+    likewhisper
 }: Props) => {
     const whisperData = {
         id: id,

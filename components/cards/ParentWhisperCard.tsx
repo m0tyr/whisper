@@ -64,6 +64,7 @@ interface Props {
         like_count: number;
         liketracker: []
     }
+    likewhisper: any;
 }
 
 const ParentWhisperCard = ({
@@ -80,7 +81,8 @@ const ParentWhisperCard = ({
     isNotComment,
     aspectRatio,
     mentions,
-    like_info
+    like_info,
+    likewhisper
 }: Props) => {
     const whisperData = {
         id: id,

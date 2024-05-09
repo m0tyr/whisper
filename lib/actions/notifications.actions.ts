@@ -87,17 +87,18 @@ export async function countActiveNotifications(userId: string): Promise<number> 
 export async function getNotifications(userId: string, type: string) {
     try {
         connectToDB();
+        const my_username = await User.findOne({ id : userId}, {username:1})
         if (type === "all"){
             const notifications: Notification[] = await Notifications.find({
                 targetUserID: userId
             }).sort({ time: 'desc' })
-            return await ComputeNotifications({ notifications });
+            return await ComputeNotifications({ notifications,my_username });
         } else {
             const notifications: Notification[] = await Notifications.find({
                 activity_type: type,
                 targetUserID: userId
             }).sort({ time: 'desc' })
-            return await ComputeNotifications({ notifications });
+            return await ComputeNotifications({ notifications,my_username });
 
         }
       
@@ -107,7 +108,7 @@ export async function getNotifications(userId: string, type: string) {
     }
 }
 
-export async function ComputeNotifications({ notifications }: { notifications: Notification[]; }) {
+export async function ComputeNotifications({ notifications,my_username }: { notifications: Notification[]; my_username: any }) {
     try {
         const user_notification_output: UserNotification[] = [];
 
@@ -125,7 +126,7 @@ export async function ComputeNotifications({ notifications }: { notifications: N
             }
             const user_notification: UserNotification = {
                 activity_type: activity_type,
-                user_notification_sender: await getSourceNotifier(sourceUserID),
+                user_notification_sender: await getSourceNotifier(sourceUserID, my_username),
                 isActive: isActive,
                 caption: notification_content?.caption,
                 notification_link: notification_content?._id,
@@ -161,10 +162,17 @@ async function markAsRead(id: string) {
     }
 }
 
-async function getSourceNotifier(sourceUserID: string) {
+async function getSourceNotifier(sourceUserID: string,my_username: any) {
     try {
-        const user = await User.findOne({ id: sourceUserID }, { username: 1, name: 1, id: 1, image: 1 });
-        return user;
+        const user = await User.findOne({ id: sourceUserID }, { username: 1, name: 1, id: 1, image: 1, 'user_social_info.followers': 1 });
+         let isFollowing = false
+        
+        for (const obj of user.user_social_info.followers){
+            if(obj.id === my_username.username){
+                isFollowing = true
+            }
+         }
+        return { user,isFollowing };
     } catch (error) {
         console.error("Error fetching user:", error);
     }
