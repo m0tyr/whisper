@@ -1,4 +1,3 @@
-import { auth } from "@/auth"
 import TopChat from "@/components/shared/TopChat"
 import TopBar from "@/components/shared/Topbar"
 import FeedSkeleton from "@/components/shared/loader/feed_skeleton"
@@ -6,9 +5,7 @@ import { fetchUserbyEmail, getSession } from "@/lib/actions/user.actions"
 import FeedGenerator from "@/lib/client_fetching/feed_generator" 
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
-
-
-
+import { headers } from 'next/headers'
 
 export default async function Page() {
   const session = await getSession()
@@ -22,7 +19,10 @@ export default async function Page() {
     bio: currentUser?.bio || "",
     image: currentUser?.image || session?.user?.image,
   };
-  
+  const header = headers()
+  const ip = (header.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0]
+
+  console.log(ip)
   return (
     <>
 

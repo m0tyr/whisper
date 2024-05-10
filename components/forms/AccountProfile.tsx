@@ -43,7 +43,6 @@ interface Props {
     image: string;
     email: string;
   };
-  btnTitle: string;
 }
 
 
@@ -54,11 +53,10 @@ import {
 } from "@/components/ui/popover"
 import { toast } from "@/components/ui/use-toast"
 import { isBase64Image } from "@/lib/utils";
-import ContentPlayer from "../plugins/ContentPlayer";
+import { motion } from "framer-motion";
 
 
-
-const AccountProfile = ({ user, btnTitle }: Props) => {
+const AccountProfile = ({ user }: Props) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 
@@ -243,7 +241,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
         <div className="mb-2 w-full h-full">
           <div className="w-full h-full">
             <div className="flex w-full">
-              <button
+              <motion.button whileTap={{ scale: 0.99, scaleX: 0.98 }}
                 id="button"
                 type="submit"
                 className={`w-full px-4 py-4 rounded-xl ${isFormValid ? 'bg-white hover:bg-slate-100' : 'bg-border hover:bg-border cursor-not-allowed'
@@ -252,7 +250,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
                 style={{ cursor: isFormValid ? 'pointer' : 'not-allowed' }}
               >
                 Continuer
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>

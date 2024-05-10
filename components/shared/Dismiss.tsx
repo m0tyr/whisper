@@ -1,21 +1,26 @@
 
 const Dismiss = ({ title, onDismiss ,  action , onAction }: any) => {
   return (
-    <div className="bg-gray-100 p-4 rounded-md shadow-md">
+    <div className="bg-good-gray flex flex-col justify-center items-center  rounded-2xl  border-[0.2333333px]
+    border-border shadow-md w-[280px]">
       <h2 className="text-lg font-bold mb-2">{title}</h2>
-      <div className="flex justify-end">
+      <div className="flex flex-row w-full">
+      <div className="flex justify-center items-center shrink-0 relative h-14 w-full">
         <button
-          className="bg-gray-300 text-gray-800 py-2 px-4 rounded-md mr-2 hover:bg-gray-400 transition-colors"
+          className=" text-white rounded-xl transition-colors"
           onClick={onDismiss}
         >
           Annuler
         </button>
+        </div>
+        <div className="flex justify-center items-center shrink-0 relative h-14 w-full">
         <button
-          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+          className="text-red-600  rounded-xl  transition-colors"
           onClick={onAction}
         >
           {action}
         </button>
+        </div>
       </div>
     </div>
   );

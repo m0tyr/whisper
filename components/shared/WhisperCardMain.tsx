@@ -41,6 +41,7 @@ import router, { useRouter } from "next/navigation";
 import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
+import Dismiss from "./Dismiss";
 
 export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {
     const router = useRouter();
@@ -53,6 +54,12 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
         setisliking(!isliking)
 
     }
+    const [showPopup, setShowPopup] = useState(false);
+
+    const opendismiss = () => {
+        setShowPopup(!showPopup);
+
+    };
     let sections = processElements(content)
     return (
         <>
@@ -104,7 +111,8 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                                     <DropdownMenuSeparator />
 
                                     <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                                        Supprimer
+                                        <button onClick={opendismiss}>Supprimer</button>
+
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
@@ -267,6 +275,50 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                     </div>
                 </div>
             </div>
+
+            {showPopup && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0, zIndex: 0 }}
+                        animate={{ opacity: 1, zIndex: 51 }}
+                        exit={{ opacity: 0 }}
+                        transition={{}}
+                        id='top'
+                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={opendismiss}></motion.div>
+                    <motion.div
+                        initial={{
+                            opacity: 0,
+                            scale: 0.98,
+                            x: "-50%",
+                            y: "-50%"
+                        }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            x: "-50%",
+                            y: "-50%",
+                            transition: {
+                                ease: "easeOut",
+                                duration: 0.05,
+                                delay: 0.1
+                            },
+                        }}
+                        exit={{
+                            opacity: 0,
+                            scale: 0.95,
+                            transition: {
+                                ease: "easeIn",
+                                duration: 0.05,
+                                delay: 0.1
+                            },
+                        }}
+                        className='fixed left-1/2 top-[47.333%] '
+                        id="editableDiv">
+                        <Dismiss title={'Supprimer vôtre whisper'} onDismiss={opendismiss} action={'Supprimer'} onAction={opendismiss} />
+                    </motion.div>
+                </>
+            )
+            }
         </>
     )
 
