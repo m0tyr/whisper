@@ -141,37 +141,30 @@ export default function LoginForm() {
                 </form>
 
                 <div className="relative w-full flex flex-col select-none">
-                    <div className="flex flex-row items-center  h-8  px-8 py-8 justify-center ">
-                        <motion.span
-                            initial={{ opacity: 0, scaleX: 0.8 }}
-                            animate={{ opacity: 1, scaleX: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ delay: 0.01, duration: 0.5, type: 'spring', stiffness: 100 }}
-                            aria-label="Powered By Taiyo engine & Quantum Inc" className=" bg-navcolor py-4 z-[1] text-white inline-block text-[15px] font-bold justify-center items-center ">
+                    <motion.div
+                        initial={{ opacity: 0, scaleX: 0.8 }}
+                        animate={{ opacity: 1, scaleX: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ delay: 0.01, duration: 0.5, type: 'spring', stiffness: 100 }}
+                        className="flex flex-row items-center  h-8  px-8 py-8 justify-center ">
+                        <span 
+                            aria-label="Powered By Taiyo engine & Quantum Inc" className=" bg-[#121212] py-4 z-[1] text-white inline-block text-[15px] font-bold justify-center items-center ">
                             Powered by
-                        </motion.span>
-                        <motion.img
-                            initial={{ opacity: 0, x: -30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ delay: 0.02, duration: 0.5, type: 'spring', stiffness: 100 }}
+                        </span>
+                        <img
                             src="/taiyo_logo.png" aria-label="taiyo engine" alt="Taiyo_team" width={60} height={60} />
-                        <motion.img
-                            initial={{ opacity: 0, x: -60 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ delay: 0.03, duration: 0.5, type: 'spring', stiffness: 100 }}
+                        <img   
                             src="/qtm_logo_w_moon.png" aria-label="quantum" alt="Quantum_team" width={40} height={40} />
-                    </div>
-
-                </div>
-                <div className="w-full flex justify-center items-center absolute left-0 right-0 bottom-5">
-                    <p className=" text-[#7c7c7c] text-body-bold inline-block  !text-[12px] !font-normal justify-center items-center">
-                        Copyright © 2024 Whisper Inc. Tous droits réservés.
-                    </p>
-                </div>
+                </motion.div>
 
             </div>
+            <div className="w-full flex justify-center items-center absolute left-0 right-0 bottom-5">
+                <p className=" text-[#7c7c7c] text-body-bold inline-block  !text-[12px] !font-normal justify-center items-center">
+                    Copyright © 2024 Whisper Inc. Tous droits réservés.
+                </p>
+            </div>
+
         </div>
+        </div >
     );
 }

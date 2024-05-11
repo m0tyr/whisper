@@ -184,15 +184,15 @@ const TopBar = ({ user, _id }: any) => {
 
                 <div className="flex flex-col w-18 h-18 mr-4 col-start-3 ml-auto">
                     <DropdownMenu modal={false} >
-                        <DropdownMenuTrigger className=" cursor-pointer ">
+                        <DropdownMenuTrigger className=" cursor-pointer  outline-none ">
 
-                            <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: .001 }} >
+                            <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: .001 }} className=" outline-none" >
                                 <Image
                                     src="/svgs/threedot.svg"
                                     alt="logo"
                                     width={45}
                                     height={45}
-                                    className="flex" />
+                                    className="flex outline-none" />
 
 
                             </motion.div>
@@ -203,17 +203,15 @@ const TopBar = ({ user, _id }: any) => {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 1, delay: .1 }}
                         >
-                            <DropdownMenuContent className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                            <DropdownMenuContent className="w-[170px] mr-3 drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
                                 <DropdownMenuGroup className="text-white text-[14px]">
                                     <DropdownMenuItem >
                                         Apparence
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
 
-                                    <DropdownMenuItem>
-                                        <button className="text-white" onClick={handleConfirm}>
+                                    <DropdownMenuItem  onClick={handleConfirm}>
                                             Paramètres
-                                        </button>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
 
@@ -222,10 +220,8 @@ const TopBar = ({ user, _id }: any) => {
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
 
-                                    <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                                        <button onClick={SignOutUser}>
+                                    <DropdownMenuItem  onClick={SignOutUser} className="!text-[rgb(255,48,64)]">
                                             Déconnexion
-                                        </button>
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>

@@ -23,6 +23,9 @@ export async function custom_feed_v1(userID: string, options: FeedOptions) {
         const user = await User.findById(userID)
             .select('user_social_info')
             .exec();
+        if(user.user_social_info.following.length === 0){
+            return;
+        }
 
         for (const following of user.user_social_info.following) {
             const following_user = await User.findOne({ username: following.id }, { id: 1, user_social_info: 1 });

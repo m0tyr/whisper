@@ -315,12 +315,14 @@ export async function fetchwhispers(userID: string, pagenumber = 1, pagesize = 1
             ranking_time_effect: 0.0781824129,
             ranking_default_like_effect: 0.86530391510359
         });
-
-        const isnext = max_count > skipamount + output_feed.ranked_feed_redis.length;
+        if(!output_feed){
+            return;
+        }
+        const isnext = max_count > skipamount + output_feed?.ranked_feed_redis.length;
         const my_username = await User.findById(userID)
             .select('username')
             .exec();
-        const posts_exec = await interpolate_feed(my_username, userID, output_feed.ranked_feed)
+        const posts_exec = await interpolate_feed(my_username, userID, output_feed?.ranked_feed)
         posts_exec.sort((a, b) => a.rankScore - b.rankScore);
 
         //REDIS Caching

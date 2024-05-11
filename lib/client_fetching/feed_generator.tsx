@@ -13,7 +13,7 @@ interface Props {
 export default async function FeedGenerator({ currentUser, userData }: Props) {
     const fetchedPosts = await fetchwhispers(currentUser.id, 1, 30);
     let suggestions: any;
-    if(fetchedPosts && fetchedPosts.posts_exec.length === 0){
+    if(!fetchedPosts){
         suggestions = await FamousUserSuggestion()
     }
     const likeAction = async (myusername: string, whisperid: string, username: string) => {
@@ -26,7 +26,7 @@ export default async function FeedGenerator({ currentUser, userData }: Props) {
     }
     return (
         <>
-            {fetchedPosts && fetchedPosts.posts_exec.length === 0 ? (
+            {!fetchedPosts ? (
               <FeedUserCard suggestions={suggestions} follow={addtofollowing} my_username={currentUser.username} />
             ) : (
                 <>

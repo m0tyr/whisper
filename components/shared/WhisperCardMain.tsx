@@ -20,20 +20,7 @@ interface Props {
     Isliking: boolean;
 }
 import { calculateTimeAgo, getMeta, processElements } from "@/lib/utils";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -42,6 +29,7 @@ import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
 import Dismiss from "./Dismiss";
+import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
 
 export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {
     const router = useRouter();
@@ -69,55 +57,12 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                     ping();
                 }
             }} >
+
                 <div className="float-right mt-[1.333333px]  text-white text-small-regular font-light opacity-50 flex h-5">
 
                     <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
 
-                    <DropdownMenu modal={false} >
-                        <DropdownMenuTrigger className=" cursor-pointer ">
-
-                            <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: .01 }} className="ml-2 relative bottom-1.5 left-0  text-sm align-middle group hover:bg-[#6262624c] transition-all duration-100 rounded-full w-8 h-8  flex items-center justify-center">
-                                <svg aria-label="Plus" role="img" viewBox="0 0 24 24" className="h-5 w-5" fill="#fff">
-                                    <title>Plus</title>
-                                    <circle cx="12" cy="12" r="1.5"></circle>
-                                    <circle cx="6" cy="12" r="1.5"></circle>
-                                    <circle cx="18" cy="12" r="1.5"></circle>
-                                </svg>
-
-
-                            </motion.div>
-                        </DropdownMenuTrigger>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 1, delay: .1 }}
-                        >
-                            <DropdownMenuContent className="w-48 mr-36 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
-                                <DropdownMenuGroup className="text-white text-[14px]">
-                                    <DropdownMenuItem >
-                                        Enregistrer
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-
-                                    <DropdownMenuItem>
-                                        Bloquer
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-
-                                    <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                                        Signaler
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-
-                                    <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                                        <button onClick={opendismiss}>Supprimer</button>
-
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                        </motion.div>
-                    </DropdownMenu>
+                  <WhisperDropDownAction opendismiss={opendismiss} />
                 </div>
                 <div onClick={(e) => {
                     if (e.target === e.currentTarget) {
@@ -312,9 +257,9 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                                 delay: 0.1
                             },
                         }}
-                        className='fixed left-1/2 top-[47.333%] '
+                        className=' fixed left-1/2 top-[47.333%] w-[280px] '
                         id="editableDiv">
-                        <Dismiss title={'Supprimer vôtre whisper'} onDismiss={opendismiss} action={'Supprimer'} onAction={opendismiss} />
+                            <Dismiss title={'Supprimer vôtre whisper'} onDismiss={opendismiss} action={'Supprimer'} onAction={opendismiss} />
                     </motion.div>
                 </>
             )
