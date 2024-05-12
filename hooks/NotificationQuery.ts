@@ -1,8 +1,6 @@
 
-import { auth } from '@/auth';
 import { countActiveNotifications } from '@/lib/actions/notifications.actions';
 import { useQuery } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
 
 export function useNotificationsCountQuery(sessionID: string) {
 

@@ -6,6 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { m, motion } from "framer-motion";
 
 const ToastProvider = ToastPrimitives.Provider
 
@@ -13,14 +14,14 @@ const ToastViewport = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
 >(({ className, ...props }, ref) => (
-<ToastPrimitives.Viewport
-  ref={ref}
-  className={cn(
-    "fixed bottom-0 left-1/2 transform -translate-x-1/2 z-[100] text-center drop-shadow-2xl  flex items-center min-w-0 max-w-full max-h-screen w-full justify-center flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[330px]",
-    className
-  )}
-  {...props}
-/>
+  <ToastPrimitives.Viewport
+    ref={ref}
+    className={cn(
+      "fixed bottom-0 left-1/2 -translate-x-1/2 z-[100] text-center drop-shadow-2xl  flex items-center min-w-0 max-w-full max-h-screen w-full justify-center flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[330px]",
+      className
+    )}
+    {...props}
+  />
 ))
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
@@ -43,14 +44,15 @@ const toastVariants = cva(
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
+  VariantProps<typeof toastVariants>
 >(({ className, variant, ...props }, ref) => {
   return (
+
     <ToastPrimitives.Root
       ref={ref}
       className={cn(toastVariants({ variant }), className)}
       {...props}
-    />
+      />
   )
 })
 Toast.displayName = ToastPrimitives.Root.displayName

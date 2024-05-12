@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion"
-import { useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import { signOut } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast"
 import dynamic from "next/dynamic";
@@ -20,17 +20,22 @@ const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
 })
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";
+import Dismiss from "./Dismiss";
+import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from "@/constants/message";
+import { useModal } from "@/hooks/useModal";
+import { Modal } from "./Modal";
 
 const TopBar = ({ user, _id }: any) => {
     const pathname = usePathname();
     function handleConfirm() {
         location.href = "/settings";
     }
-    const [showPopup, setShowPopup] = useState(false);
-
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
-    };
+    const {
+        togglePopup,
+        opendismiss,
+        showDismiss,
+        showPopup,
+    } = useModal()
     const SignOutUser = async () => {
         toast({
             title: "Déconnexion...",
@@ -116,7 +121,7 @@ const TopBar = ({ user, _id }: any) => {
 
                         >
                             <div className="relative">
-                                <div onClick={togglePopup} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
+                                <div onClick={togglePopup(false)} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
                                     <div className="h-full justify-center items-center">
 
 
@@ -272,7 +277,7 @@ const TopBar = ({ user, _id }: any) => {
 
                 >
                     <div className="relative">
-                        <div onClick={togglePopup} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
+                        <div onClick={togglePopup(false)} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
                             <div className="h-full justify-center items-center">
 
 
@@ -334,23 +339,7 @@ const TopBar = ({ user, _id }: any) => {
                     </div>
                 </motion.div>
             </nav>
-
-            {showPopup && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
-
-                    <DynamicCreateWhisper user={user} _id={_id} toclose={togglePopup} />
-
-                </>
-
-
-            )}
+           <Modal type="create" _id={_id} user={user} togglePopup={togglePopup} opendismiss={opendismiss} showDismiss={showDismiss} showPopup={showPopup} />
         </>
 
 

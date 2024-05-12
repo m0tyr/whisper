@@ -1,7 +1,36 @@
 import { motion } from "framer-motion";
 
-const Dismiss = ({ title, onDismiss, action, onAction }: any) => {
+const Dismiss = ({ title, content, onDismiss, action, onAction }: any) => {
   return (
+    <motion.div
+    initial={{
+        opacity: 0,
+        scale: 0.98,
+        x: "-50%",
+        y: "-50%"
+    }}
+    animate={{
+        opacity: 1,
+        scale: 1,
+        x: "-50%",
+        y: "-50%",
+        transition: {
+            ease: "easeOut",
+            duration: 0.05,
+            delay: 0.1
+        },
+    }}
+    exit={{
+        opacity: 0,
+        scale: 0.95,
+        transition: {
+            ease: "easeIn",
+            duration: 0.05,
+            delay: 0.1
+        },
+    }}
+    className=' fixed left-1/2 top-[47.333%] w-[280px] z-[9999] '
+    >
     <div className="bg-good-gray flex flex-col justify-center items-center  rounded-2xl  border-[0.2333333px]
     border-border shadow-md w-[280px]">
       <div className="flex flex-col cursor-default">
@@ -11,13 +40,13 @@ const Dismiss = ({ title, onDismiss, action, onAction }: any) => {
         <div className=" flex mb-2 px-5 justify-center items-center text-center">
 
           <p className="text-md font-light text-[rgb(255,255,255,0.533333)] mb-2">
-            milan_frb_ ne pourra pas trouver votre profil ni votre contenu sur Threads ou sur Instagram. Personne ne verra ses réponses à vos publications, et ce compte ne sera pas informé que vous l’avez bloqué.
+            {content}
           </p>
         </div>
 
       </div>
       <div className="flex flex-row select-none w-full border-t border-t-border">
-        <motion.div whileTap={{ backgroundColor: "#141414" }} transition={{ duration: .01 }} onClick={onDismiss} className=" rounded-bl-2xl flex justify-center items-center shrink-0 relative h-14 w-[140px]  border-r border-r-border ">
+        <motion.div whileTap={{ backgroundColor: "#141414" }} transition={{ duration: .01 }} onClick={onDismiss} className=" cursor-pointer rounded-bl-2xl flex justify-center items-center shrink-0 relative h-14 w-[140px]  border-r border-r-border ">
           <div
             className=" text-white rounded-xl transition-colors"
             
@@ -25,7 +54,7 @@ const Dismiss = ({ title, onDismiss, action, onAction }: any) => {
             Annuler
           </div>
         </motion.div>
-        <motion.div whileTap={{ backgroundColor: "#141414" }} transition={{ duration: .01 }} onClick={onAction} className="rounded-br-2xl flex justify-center items-center shrink-0 relative h-14  w-[140px] ">
+        <motion.div whileTap={{ backgroundColor: "#141414" }} transition={{ duration: .01 }} onClick={onAction} className=" cursor-pointer rounded-br-2xl flex justify-center items-center shrink-0 relative h-14  w-[140px] ">
           <div
             className="text-red-500  rounded-xl  transition-colors"
             
@@ -37,6 +66,8 @@ const Dismiss = ({ title, onDismiss, action, onAction }: any) => {
 
       </div>
     </div>
+    </motion.div>
+
   );
 };
 

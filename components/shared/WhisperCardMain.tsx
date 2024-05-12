@@ -160,7 +160,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                             <div
                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
                                 <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }} onClick={togglePopup}
+                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }} onClick={togglePopup(false)}
                                         className="justify-center relative flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 
@@ -230,37 +230,8 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                         transition={{}}
                         id='top'
                         className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={opendismiss}></motion.div>
-                    <motion.div
-                        initial={{
-                            opacity: 0,
-                            scale: 0.98,
-                            x: "-50%",
-                            y: "-50%"
-                        }}
-                        animate={{
-                            opacity: 1,
-                            scale: 1,
-                            x: "-50%",
-                            y: "-50%",
-                            transition: {
-                                ease: "easeOut",
-                                duration: 0.05,
-                                delay: 0.1
-                            },
-                        }}
-                        exit={{
-                            opacity: 0,
-                            scale: 0.95,
-                            transition: {
-                                ease: "easeIn",
-                                duration: 0.05,
-                                delay: 0.1
-                            },
-                        }}
-                        className=' fixed left-1/2 top-[47.333%] w-[280px] '
-                        id="editableDiv">
-                            <Dismiss title={'Supprimer vôtre whisper'} onDismiss={opendismiss} action={'Supprimer'} onAction={opendismiss} />
-                    </motion.div>
+
+                            <Dismiss title={'Supprimer votre whisper'} onDismiss={opendismiss} action={'Supprimer'} onAction={opendismiss} />
                 </>
             )
             }

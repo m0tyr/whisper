@@ -10,7 +10,6 @@ export interface Child {
 export interface Paragraph {
     children: Child[];
 }
-
 export interface Root {
     root: { children: any; };
     children: Paragraph[];
@@ -21,7 +20,7 @@ export interface MediaSize {
 }
 
 export interface MentionsDatas {
-    id: string, 
+    id: string,
     mention: string;
 }
 export interface Element {
@@ -71,3 +70,28 @@ export interface DBImageData {
     isVideo: boolean;
 }
 
+export interface Whisper_to_Reply {
+    id: string;
+    currentUserId: string;
+    parentId: string | null;
+    content: ExtractedElement[];
+    medias: DBImageData[];
+    mentions: {
+        link: string,
+        text: string,
+        version: number
+    }[];
+    author: {
+        username: string;
+        image: string;
+        id: string;
+    };
+    createdAt: string;
+    comments: {
+        posts: {
+            number: number;
+        }
+        childrens: any;
+    }[]
+    isComment?: boolean;
+}

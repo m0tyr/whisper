@@ -2,25 +2,19 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from "next/dynamic";
-
-const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
-    ssr: false,
-})
 import { motion } from 'framer-motion';
 import { useToast } from '../ui/use-toast';
-import { ToastAction } from '../ui/toast';
+import { Modal } from './Modal';
+import { useModal } from '@/hooks/useModal';
 
 const TopChat = ({ user, _id }: any) => {
-    const [showPopup, setShowPopup] = useState(false);
-
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
-        console.log("test")
-
-    };
     const { toast } = useToast()
-
+    const {
+        togglePopup,
+        opendismiss,
+        showDismiss,
+        showPopup,
+    } = useModal()
     return (
         <>
             <div className="hidden md:block w-full">
@@ -36,7 +30,7 @@ const TopChat = ({ user, _id }: any) => {
 
                         name=""
                         placeholder="Commencer un Whisper.."
-                        onClick={togglePopup}
+                        onClick={togglePopup(true)}
                         readOnly
                         className="bg-navcolor w-full text-small-regular cursor-pointer rounded-full pl-3 pr-12 outline-none font text-gray-300 opacity-65 px-12"
                     />
@@ -50,20 +44,8 @@ const TopChat = ({ user, _id }: any) => {
                 </div>
                 <hr className="border-x-2 opacity-20 rounded-full " />
             </div>
-            {showPopup && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full 
-                         " onClick={togglePopup}></motion.div>
-                    <DynamicCreateWhisper user={user} _id={_id} toclose={togglePopup} />
+            <Modal type="create" _id={_id} user={user} togglePopup={togglePopup} opendismiss={opendismiss} showDismiss={showDismiss} showPopup={showPopup} />
 
-                </>
-            )}
         </>
     );
 };

@@ -7,6 +7,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 export const useCreatePost = () => {
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+    const [dismisstate, setdismisstate] = useState(false)
     const [text, setText] = useState<string>('');
     const pathname = usePathname();
     const editorRef: any = useRef();
@@ -67,11 +68,14 @@ export const useCreatePost = () => {
         var getText = document.getElementById("editable_content")?.textContent || "";
         var result = getText;
         if (result?.trim() === "" && imageDataArray.length === 0) {
+            setdismisstate(false);
             (document.getElementById('button') as HTMLButtonElement).disabled = true;
         } else {
+            setdismisstate(true);
             (document.getElementById('button') as HTMLButtonElement).disabled = false;
         }
     }
+
     const handleImage = (
         e: ChangeEvent<HTMLInputElement>,
         fieldChange: (value: string) => void,
@@ -109,25 +113,21 @@ export const useCreatePost = () => {
         } else {
             console.error('Unsupported file type');
         }
+        setdismisstate(true);
         (document.getElementById('button') as HTMLButtonElement).disabled = false;
-        console.log(imageDataArray)
-
     };
     const abortimage = (
         src: string,
     ) => {
         removeImageData(src)
         URL.revokeObjectURL(src)
-        const stringifiedEditorState = JSON.stringify(
-            editorRef.current.getEditorState().toJSON(),
-        );
-        const parsedEditorState = editorRef.current.parseEditorState(stringifiedEditorState);
-
         const editorStateTextString = editorRef.current.getRootElement()?.textContent;
         if (imageDataArray.length === 0 && editorStateTextString === "") {
+            setdismisstate(false);
             (document.getElementById("button") as HTMLButtonElement).disabled = true;
             console.log("in")
         } else {
+            setdismisstate(true);
             (document.getElementById('button') as HTMLButtonElement).disabled = false;
         }
     }
@@ -156,6 +156,8 @@ export const useCreatePost = () => {
         addImage,
         WatchText,
         editorRef,
+        dismisstate,
+        setdismisstate,
         onInputClick
     };
 

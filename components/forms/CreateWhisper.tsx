@@ -1,27 +1,21 @@
 "use client"
 import * as z from "zod";
-import Image from "next/image";
 import { FieldValues, useForm } from "react-hook-form";
-import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useRef, useState, LegacyRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from 'framer-motion';
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
 } from "@/components/ui/form";
 import { WhisperValidation } from "@/lib/validations/whisper";
 import { createWhisper } from "@/lib/actions/whisper.actions";
-import { computeSHA256, extractElements, extractMention, getClampedMultipleMediaAspectRatio } from "@/lib/utils";
+import { computeSHA256, extractElements, extractMention } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { useToast } from "../ui/use-toast";
-import DisplayMedia from "../shared/ui/DisplayMedia";
-import { DBImageData, ExtractedElement, MentionsDatas, PrevImageData } from "@/lib/types/whisper.types";
+import { DBImageData, ExtractedElement, MentionsDatas } from "@/lib/types/whisper.types";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
-import ContentPlayer from "../plugins/ContentPlayer";
 import { useCreatePost } from "@/hooks/useCreatePost";
 import PostComposer from "../shared/widgets/composer_post_card";
 import PostComposerDialog from "../shared/widgets/composer_post_dialog";
@@ -36,11 +30,12 @@ interface Props {
     image: string;
   };
   toclose: any;
+  posting: () => void;
 }
 
 
 
-const CreateWhisper = ({ user, _id, toclose }: Props) => {
+const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
   const { toast } = useToast()
   const {
     inputRef,
@@ -55,6 +50,8 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
     addImage,
     WatchText,
     editorRef,
+    dismisstate,
+    setdismisstate,
     onInputClick
   } = useCreatePost();
   
@@ -69,8 +66,10 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   });
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
+    setdismisstate(false);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
-    toclose()
+    posting()
+    toclose(false)
     toast({
       title: "Publication...",
       duration: 20000,
@@ -176,6 +175,14 @@ const CreateWhisper = ({ user, _id, toclose }: Props) => {
   }
   return (
     <>
+       <motion.div
+                        initial={{ opacity: 0, zIndex: 0 }}
+                        animate={{ opacity: 1, zIndex: 51 }}
+                        exit={{ opacity: 0 }}
+                        transition={{}}
+                        id='top'
+                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={toclose(dismisstate)}></motion.div>
+
       <Form {...form} >
         <AnimatePresence>
           <motion.div

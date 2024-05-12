@@ -30,6 +30,8 @@ import { likewhisper } from "@/lib/actions/whisper.actions";
 import WhisperCardMedia from "./ui/WhisperCardMedia";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
+import { Modal } from "../shared/Modal";
+import { useModal } from "@/hooks/useModal";
 
 interface Props {
     user: any;
@@ -93,14 +95,14 @@ const ViewWhisperCard = ({
         isNotComment: isNotComment,
 
     };
-    const [showPopup, setShowPopup] = useState(false);
+    const {
+        togglePopup,
+        opendismiss,
+        showDismiss,
+        showPopup,
+    } = useModal()
+
     const router = useRouter();
-
-
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
-
-    };
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
@@ -135,37 +137,22 @@ const ViewWhisperCard = ({
 
     return (
         <>
-            {showPopup && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
-
-                    <DynamicReplyWhisper whisper_to_reply={{
-                        id: id,
-                        currentUserId: currentUserId,
-                        parentId: parentId,
-                        content: content,
-                        medias: medias,
-                        author: {
-                            username: author.username,
-                            image: author.image,
-                            id: author.id
-                        },
-                        createdAt: createdAt,
-                        comments: comments,
-                        isComment: isNotComment,
-                        mentions: mentions
-                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={aspectRatio} />
-
-                </>
-
-
-            )}
+         <Modal whisper_to_reply={{
+                id: id,
+                currentUserId: currentUserId,
+                parentId: parentId,
+                content: content,
+                medias: medias,
+                author: {
+                    username: author.username,
+                    image: author.image,
+                    id: author.id
+                },
+                createdAt: createdAt,
+                comments: comments,
+                isComment: isNotComment,
+                mentions: mentions
+            }} _id={_id} user={user} type={"reply"} togglePopup={togglePopup} opendismiss={opendismiss} showDismiss={showDismiss} showPopup={showPopup} />
             <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 pb-1.5 mobile:px-0 px-2.5   w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
@@ -284,7 +271,7 @@ const ViewWhisperCard = ({
                                     <div
                                         className=" w-[36px] h-[36px] flex justify-center items-center" >
                                         <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                            <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} onClick={togglePopup}
+                                            <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} onClick={togglePopup(true)}
                                                 className="justify-center flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 

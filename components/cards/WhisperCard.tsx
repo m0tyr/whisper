@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 
 import dynamic from "next/dynamic";
+import { useModal } from "@/hooks/useModal";
+import { Modal } from "../shared/Modal";
 const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper"), {
     ssr: false,
 })
@@ -43,7 +45,7 @@ interface Props {
         like_count: number;
         liketracker: []
     }
-    likewhisper:any;
+    likewhisper: any;
 }
 
 const WhisperCard = ({
@@ -72,8 +74,12 @@ const WhisperCard = ({
         isNotComment: isNotComment,
         mentions: mentions,
     };
-
-    const [showPopup, setShowPopup] = useState(false);
+    const {
+        togglePopup,
+        opendismiss,
+        showDismiss,
+        showPopup,
+    } = useModal()
 
     const router = useRouter();
 
@@ -82,10 +88,7 @@ const WhisperCard = ({
     const isLiking = liketrackerIDs.includes(user.id);
 
     const [isliking, setisliking] = useState(isLiking)
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
 
-    };
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
@@ -97,37 +100,23 @@ const WhisperCard = ({
 
     return (
         <>
-            {showPopup && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
-
-                    <DynamicReplyWhisper whisper_to_reply={{
-                        id: id,
-                        currentUserId: currentUserId,
-                        parentId: parentId,
-                        content: content,
-                        medias: medias,
-                        author: {
-                            username: author.username,
-                            image: author.image,
-                            id: author.id
-                        },
-                        createdAt: createdAt,
-                        comments: comments,
-                        isComment: isNotComment,
-                        mentions: mentions
-                    }} _id={_id} user={user} toclose={togglePopup} togglePopup={undefined} aspectRatio={"1"} />
-
-                </>
-
-
-            )}
+            <Modal whisper_to_reply={{
+                id: id,
+                currentUserId: currentUserId,
+                parentId: parentId,
+                content: content,
+                medias: medias,
+                author: {
+                    username: author.username,
+                    image: author.image,
+                    id: author.id
+                },
+                createdAt: createdAt,
+                comments: comments,
+                isComment: isNotComment,
+                mentions: mentions
+            }} _id={_id} user={user} type={"reply"} togglePopup={togglePopup} opendismiss={opendismiss} showDismiss={showDismiss} showPopup={showPopup} />
+            
             <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3 pt-1  mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();

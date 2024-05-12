@@ -1,4 +1,3 @@
-import UpdateProfile from "@/components/forms/UpdateProfil";
 import { ProfileImageData } from "@/lib/types/whisper.types";
 import { usePathname } from "next/navigation";
 import { useState,useRef, ChangeEvent, useEffect } from "react";

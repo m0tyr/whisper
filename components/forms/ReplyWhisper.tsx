@@ -18,7 +18,7 @@ import { computeSHA256, extractElements, extractMention, getClampedMultipleMedia
 import { AnimatePresence } from 'framer-motion'
 import { useToast } from "../ui/use-toast";
 import DisplayMedia from "../shared/ui/DisplayMedia";
-import { DBImageData, ExtractedElement, MentionsDatas, PrevImageData } from "@/lib/types/whisper.types";
+import { DBImageData, ExtractedElement, MentionsDatas, PrevImageData, Whisper_to_Reply } from "@/lib/types/whisper.types";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
@@ -37,37 +37,12 @@ interface Props {
     bio: string;
     image: string;
   };
-  whisper_to_reply: {
-    id: string;
-    currentUserId: string;
-    parentId: string | null;
-    content: ExtractedElement[];
-    medias: DBImageData[];
-    mentions: {
-      link: string,
-      text: string,
-      version: number
-    }[];
-    author: {
-      username: string;
-      image: string;
-      id: string;
-    };
-    createdAt: string;
-    comments: {
-      posts: {
-        number: number;
-      }
-      childrens: any;
-    }[]
-    isComment?: boolean;
-  }
+  whisper_to_reply: Whisper_to_Reply;
   toclose: any;
-  togglePopup: any;
-  aspectRatio: any;
+  posting: any;
 }
 
-const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspectRatio }: Props) => {
+const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) => {
 
   const { toast } = useToast()
   const {
@@ -83,6 +58,8 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
     addImage,
     WatchText,
     editorRef,
+    dismisstate,
+    setdismisstate,
     onInputClick
   } = useCreatePost();
 
@@ -96,8 +73,10 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
     },
   });
   async function onSubmit(values: z.infer<typeof CommentValidation>) {
+    setdismisstate(false);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
-    toclose();
+    posting()
+    toclose(false);
     toast({
       title: "Publication...",
       duration: 20000,
@@ -199,6 +178,13 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose, togglePopup, aspec
   }
   return (
     <>
+      <motion.div
+                        initial={{ opacity: 0, zIndex: 0 }}
+                        animate={{ opacity: 1, zIndex: 51 }}
+                        exit={{ opacity: 0 }}
+                        transition={{}}
+                        id='top'
+                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={toclose(dismisstate)}></motion.div>
       <Form {...form} >
         <AnimatePresence>
           <motion.div
