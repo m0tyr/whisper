@@ -181,7 +181,7 @@ const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
                         exit={{ opacity: 0 }}
                         transition={{}}
                         id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={toclose(dismisstate)}></motion.div>
+                        className="fixed top-0 left-0 inset-0 bg-transparent bg-opacity-75 w-full " onClick={toclose(dismisstate)}></motion.div>
 
       <Form {...form} >
         <AnimatePresence>

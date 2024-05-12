@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const Dismiss = ({ title, content, onDismiss, action, onAction }: any) => {
+const PopOver = ({ title, content, onDismiss, action, onAction }: any) => {
   return (
     <motion.div
     initial={{
@@ -71,4 +71,4 @@ const Dismiss = ({ title, content, onDismiss, action, onAction }: any) => {
   );
 };
 
-export default Dismiss;
+export default PopOver;

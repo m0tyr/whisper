@@ -28,7 +28,7 @@ import router, { useRouter } from "next/navigation";
 import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
-import Dismiss from "./Dismiss";
+import Dismiss from "./PopOver";
 import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
 
 export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {

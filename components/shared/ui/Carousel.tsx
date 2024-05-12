@@ -52,7 +52,11 @@ const Carousel = ({ DataArray, abortimage }: Props) => {
                     dragElastic={0.1}
                     transition={{ type: "spring", stiffness: 100 }}
                     dragConstraints={{ right: 0, left: -width }}
-                    className="flex">
+                    className="flex"
+                    onDrag={(event) => {
+                        event.stopPropagation()
+                    }}
+                    >
                     {DataArray.map(({ url, aspectRatio, width, isVideo }: PrevImageData, index) => (
                         <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: `${currentGlobalHeight}px`, width: `${Math.floor(currentGlobalHeight * parseFloat(aspectRatio))}px` }}>
                             <div className="relative">

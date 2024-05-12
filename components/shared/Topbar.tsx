@@ -20,7 +20,7 @@ const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
 })
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";
-import Dismiss from "./Dismiss";
+import Dismiss from "./PopOver";
 import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from "@/constants/message";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "./Modal";
@@ -32,8 +32,8 @@ const TopBar = ({ user, _id }: any) => {
     }
     const {
         togglePopup,
-        opendismiss,
-        showDismiss,
+        openPopOver,
+        showPopOver,
         showPopup,
     } = useModal()
     const SignOutUser = async () => {
@@ -67,6 +67,7 @@ const TopBar = ({ user, _id }: any) => {
     const username = user ? user.username : '';
     return (
         <>
+                   <Modal type="create" _id={_id} user={user} togglePopup={togglePopup} openPopOver={openPopOver} showPopOver={showPopOver} showPopup={showPopup} />
             <header className="backdrop-blur-3xl topbar top-0 left-0 right-0 w-full h-[74px] grid-cols-[1fr_50vw_1fr] mobile:grid-cols-[1fr_max-content_1fr] grid max-w-[1230px] mx-auto">
                 <div className="mobile:block mobile:col-start-1 hidden"></div>
 
@@ -143,7 +144,12 @@ const TopBar = ({ user, _id }: any) => {
                                     <div className="h-full justify-center items-center">
                                         {notificationCount && notificationCount !== 0 ? (
                                             <div className=" justify-center items-center w-full h-full flex">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className=" absolute top-3 fill-red-800 stroke-red-800 drop-shadow-2xl" width={6} height={6} viewBox="0 0 122.88 122.88">
+                                                 <svg xmlns="http://www.w3.org/2000/svg" className=" absolute top-1.5 fill-[#FF0034] stroke-[#FF0034] drop-shadow-2xl" width={6} height={6} viewBox="0 0 122.88 122.88">
+                                                    <g>
+                                                        <path d="M61.44,0c33.93,0,61.44,27.51,61.44,61.44s-27.51,61.44-61.44,61.44S0,95.37,0,61.44S27.51,0,61.44,0L61.44,0z" />
+                                                    </g>
+                                                </svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className=" absolute top-1.5 fill-[#FF0034] animate-ping stroke-[#FF0034] drop-shadow-2xl" width={6} height={6} viewBox="0 0 122.88 122.88">
                                                     <g>
                                                         <path d="M61.44,0c33.93,0,61.44,27.51,61.44,61.44s-27.51,61.44-61.44,61.44S0,95.37,0,61.44S27.51,0,61.44,0L61.44,0z" />
                                                     </g>
@@ -339,7 +345,6 @@ const TopBar = ({ user, _id }: any) => {
                     </div>
                 </motion.div>
             </nav>
-           <Modal type="create" _id={_id} user={user} togglePopup={togglePopup} opendismiss={opendismiss} showDismiss={showDismiss} showPopup={showPopup} />
         </>
 
 

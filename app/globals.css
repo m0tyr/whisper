@@ -12,6 +12,7 @@
   .main-container {
     @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark px-6 pb-10 pt-20;
   }
+
   .activity-container {
     @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pb-10 pt-16;
   }
@@ -20,24 +21,27 @@
     content: attr(data-placeholder);
     color: gray;
   }
-  #search::-webkit-search-cancel-button{
+
+  #search::-webkit-search-cancel-button {
     opacity: 0;
     width: 0;
     height: 0;
     pointer-events: none;
-}
+  }
 
   body {
     overflow-y: scroll;
     overflow-x: hidden;
   }
+
   :root {
     color-scheme: dark;
   }
+
   #data:empty:before {
     content: attr(data-placeholder);
     color: #888;
-}
+  }
 
   .stop-scrolling {
     position: fixed;
@@ -48,16 +52,18 @@
   .head-text {
     @apply text-heading2-bold text-light-1;
   }
-  .disable{
+
+  .disable {
     width: 0px !important;
-    top: initial!important;
-    left: initial!important;
+    top: initial !important;
+    left: initial !important;
   }
 
   #editable-span[contenteditable]:empty::before {
     content: "Commencer un whisper...";
     color: gray;
   }
+
   .tiptap[content-editable] {
     border-radius: 50%;
   }
@@ -87,36 +93,42 @@
     @apply relative mt-2 w-0.5 flex-grow rounded-full bg-neutral-700;
     left: 46.66666667%;
   }
+
   .big_thread-card_bar {
     @apply relative mt-2 mb-1 w-0.5 flex-grow rounded-full bg-neutral-800;
     left: 46.66666667%;
   }
+
   [contenteditable=true]:empty:before {
     content: attr(placeholder);
     pointer-events: none;
     color: gray;
-    display: block; /* For Firefox */
+    display: block;
+    /* For Firefox */
   }
-  
+
   #typeahead-menu {
     z-index: 51;
     background-color: #181818;
   }
 
-  #main-pop{
+  #main-pop {
     width: 280px !important;
   }
-  li{
+
+  li {
     width: 100%;
     cursor: pointer;
   }
-  .selected{
+
+  .selected {
     background-color: #2e2e2e;
   }
-  .text{
+
+  .text {
     display: flex;
     width: 100%;
-  } 
+  }
 
   /* User card */
   .user-card {
@@ -157,6 +169,16 @@
     color: #181818;
   }
 
+  .your-component,
+  .your-component--dragged {
+    display: flex;
+  }
+
+  .your-component--dragged {
+    display: flex;
+    pointer-events: none;
+  }
+
 
 
   .filter-green {
@@ -164,7 +186,7 @@
   }
 
   .topbar {
-    @apply fixed z-10  flex w-full items-center justify-between bg-navcolor;
+    @apply fixed z-10 flex w-full items-center justify-between bg-navcolor;
   }
 
   .bottombar {

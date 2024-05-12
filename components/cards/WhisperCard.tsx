@@ -76,8 +76,8 @@ const WhisperCard = ({
     };
     const {
         togglePopup,
-        opendismiss,
-        showDismiss,
+        openPopOver,
+        showPopOver,
         showPopup,
     } = useModal()
 
@@ -115,7 +115,7 @@ const WhisperCard = ({
                 comments: comments,
                 isComment: isNotComment,
                 mentions: mentions
-            }} _id={_id} user={user} type={"reply"} togglePopup={togglePopup} opendismiss={opendismiss} showDismiss={showDismiss} showPopup={showPopup} />
+            }} _id={_id} user={user} type={"reply"} togglePopup={togglePopup} openPopOver={openPopOver} showPopOver={showPopOver} showPopup={showPopup} />
             
             <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3 pt-1  mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {

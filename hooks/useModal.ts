@@ -2,14 +2,14 @@ import { MouseEventHandler, useState } from "react";
 
 export const useModal = () => {
     const [showPopup, setShowPopup] = useState(false);
-    const [showDismiss, setDismiss] = useState(false)
-    const opendismiss = (isActuallyDismissing: boolean): MouseEventHandler<HTMLDivElement> => {
+    const [showPopOver, setPopOver] = useState(false)
+    const openPopOver = (isActuallyDismissing: boolean): MouseEventHandler<HTMLDivElement> => {
         return () => {
         if(isActuallyDismissing) {
             setShowPopup(!showPopup);
-            setDismiss(!showDismiss)
+            setPopOver(!showPopOver)
         }else {
-            setDismiss(!showDismiss)
+            setPopOver(!showPopOver)
         }        
     }
     };
@@ -17,7 +17,7 @@ export const useModal = () => {
         return () => {
             console.log(dismiss_state)
             if (dismiss_state && showPopup) {
-                setDismiss(!showDismiss);
+                setPopOver(!showPopOver)
             } else{
                 setShowPopup(!showPopup);
             }
@@ -25,8 +25,8 @@ export const useModal = () => {
     };
     return {
         togglePopup,
-        opendismiss,
-        showDismiss,
+        openPopOver,
+        showPopOver,
         showPopup,
         
     }

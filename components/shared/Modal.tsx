@@ -1,6 +1,6 @@
 import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from "@/constants/message"
 import { motion } from "framer-motion"
-import Dismiss from "./Dismiss"
+import PopOver from "./PopOver"
 import dynamic from "next/dynamic"
 import { Whisper_to_Reply } from "@/lib/types/whisper.types"
 const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
@@ -21,8 +21,8 @@ interface ModalProps {
     };
     whisper_to_reply?: Whisper_to_Reply;
     togglePopup: any;
-    opendismiss: any;
-    showDismiss: any;
+    openPopOver: any;
+    showPopOver: any;
     showPopup: any;
 }
 
@@ -33,7 +33,7 @@ export const Modal = ({ ...props }: ModalProps) => {
         <>
         {props.type === 'create' && (
             <>
-                {props.showDismiss && (
+                {props.showPopOver && (
                     <>
                         <motion.div
                             initial={{ opacity: 0, zIndex: 0 }}
@@ -42,20 +42,29 @@ export const Modal = ({ ...props }: ModalProps) => {
                             transition={{}}
                             id='top'
                             className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full "
-                            onClick={() => props.opendismiss(false)}>
+                            onClick={() => props.openPopOver(false)}>
                         </motion.div>
     
-                        <Dismiss
+                        <PopOver
                             title={DISMISS_ABANDON_WHPR_TITLE}
                             content={DISMISS_ABANDON_WHPR_CONTENT}
-                            onDismiss={props.opendismiss(false)}
+                            onDismiss={props.openPopOver(false)}
                             action={DISMISS_ABANDON_WHPR_ACTION}
-                            onAction={props.opendismiss(true)} />
+                            onAction={props.openPopOver(true)} />
                     </>
                 )}
     
                 {props.showPopup && (
                     <>
+                      <motion.div
+                            initial={{ opacity: 0, zIndex: 0 }}
+                            animate={{ opacity: 1, zIndex: 51 }}
+                            exit={{ opacity: 0 }}
+                            transition={{}}
+                            id='top'
+                            className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full "
+                            onClick={props.togglePopup}>
+                        </motion.div>
                         <DynamicCreateWhisper
                             user={props.user as any}
                             _id={props._id as string}
@@ -68,7 +77,7 @@ export const Modal = ({ ...props }: ModalProps) => {
     
         {props.type === 'reply' && (
             <>
-             {props.showDismiss && (
+             {props.showPopOver && (
                     <>
                         <motion.div
                             initial={{ opacity: 0, zIndex: 0 }}
@@ -77,15 +86,15 @@ export const Modal = ({ ...props }: ModalProps) => {
                             transition={{}}
                             id='top'
                             className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full "
-                            onClick={() => props.opendismiss(false)}>
+                            onClick={() => props.openPopOver(false)}>
                         </motion.div>
     
-                        <Dismiss
+                        <PopOver
                             title={DISMISS_ABANDON_WHPR_TITLE}
                             content={DISMISS_ABANDON_WHPR_CONTENT}
-                            onDismiss={props.opendismiss(false)}
+                            onDismiss={props.openPopOver(false)}
                             action={DISMISS_ABANDON_WHPR_ACTION}
-                            onAction={props.opendismiss(true)} />
+                            onAction={props.openPopOver(true)} />
                     </>
                 )}
                 
