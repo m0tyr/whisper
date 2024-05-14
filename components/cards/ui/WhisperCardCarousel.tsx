@@ -127,6 +127,14 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
                     style={{ scrollBehavior: 'smooth' }}
                     transition={{ type: "spring", stiffness: 100 }}
                     dragConstraints={{ right: 0, left: -width }}
+                    onDrag={() => {
+                        if (fullcarouselRef.current)
+                            fullcarouselRef.current.style.pointerEvents = "none";
+                    }}
+                    onDragEnd={() => {
+                        if (fullcarouselRef.current)
+                            fullcarouselRef.current.style.pointerEvents = "auto";
+                    }}
                     className="flex flex-row translate-x-0"
                 >
                     <div className="w-[48px] flex-shrink-0 cursor-grab active:cursor-grabbing"></div>

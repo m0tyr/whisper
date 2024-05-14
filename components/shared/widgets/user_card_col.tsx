@@ -127,6 +127,14 @@ export default function UserCardColumn({ grid_display, suggestions, follow, my_u
                 transition={{ type: "spring", stiffness: 100 }}
                 dragConstraints={{ right: 0, left: -width }}
                 className={wrapper}
+                onDrag={() => {
+                    if (fullcarouselRef.current)
+                        fullcarouselRef.current.style.pointerEvents = "none";
+                }}
+                onDragEnd={() => {
+                    if (fullcarouselRef.current)
+                        fullcarouselRef.current.style.pointerEvents = "auto";
+                }}
             >
                 {renderRows()}
             </motion.div>

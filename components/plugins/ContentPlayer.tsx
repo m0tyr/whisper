@@ -16,7 +16,7 @@ import { MentionsPlugin } from "@/components/plugins/MentionsPlugin";
 
 
 
-export const EditorCapturePlugin = React.forwardRef((props: any, ref: any) => {
+const EditorCapturePlugin = React.forwardRef((props: any, ref: any) => {
   const [editor] = useLexicalComposerContext();
   useEffect(() => {
     ref.current = editor;
@@ -31,6 +31,14 @@ export const EditorCapturePlugin = React.forwardRef((props: any, ref: any) => {
 const theme = {
 
 }
+const urlRegExp = new RegExp(
+  /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/,
+);
+
+export function validateUrl(url: string): boolean {
+  return url === 'https://' || urlRegExp.test(url);
+}
+
 function onError(error: any) {
   console.error(error);
 }
@@ -41,24 +49,28 @@ const initialConfig = {
   nodes: [
     MentionNode,
     LinkNode,
-    HashtagNode,
+    HashtagNode
   ]
 };
 
  const ContentPlayer = React.forwardRef((props: any, ref: any) => {
   const { watchtext, placeholder } = props;
+
   const onChange = () => {
   }
+  window.onload = function() {
+      document?.getElementById("editable_content")?.focus();
+};
   return (
     <LexicalComposer initialConfig={initialConfig} >
       <MentionsPlugin/>
       <EditorCapturePlugin ref={ref} />
       <HistoryPlugin />
-      <LinkPlugin />
+      <LinkPlugin validateUrl={validateUrl} />
       <HashtagPlugin />
   <OnChangePlugin onChange={onChange} />
       <PlainTextPlugin
-        contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[15px]" onKeyDown={watchtext} />}
+        contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[15px]" onKeyDown={watchtext} autoFocus/>}
         placeholder={<div className="absolute top-0 pointer-events-none text-[15px] !font-light opacity-50">{placeholder}</div>}
         ErrorBoundary={LexicalErrorBoundary}
       />

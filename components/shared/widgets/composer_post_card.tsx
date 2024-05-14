@@ -71,7 +71,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                 <div className='col-span-2 ml-2 '>
                                     <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                     <div className="relative">
-                                        <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."} />
+                                        <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."}/>
                                     </div>
                                     <FormField
                                         control={form.control}
