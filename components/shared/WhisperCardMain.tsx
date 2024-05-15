@@ -28,8 +28,9 @@ import router, { useRouter } from "next/navigation";
 import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
-import Dismiss from "./PopOver";
+import PopOver from "./PopOver";
 import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
+import { DELETE_WHPR_ACTION, DELETE_WHPR_CONTENT, DELETE_WHPR_TITLE } from "@/constants/message";
 
 export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {
     const router = useRouter();
@@ -231,7 +232,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                         id='top'
                         className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={opendismiss}></motion.div>
 
-                            <Dismiss title={'Supprimer votre whisper'} onDismiss={opendismiss} action={'Supprimer'} onAction={opendismiss} />
+                            <PopOver title={DELETE_WHPR_TITLE} content={DELETE_WHPR_CONTENT} onDismiss={opendismiss} action={DELETE_WHPR_ACTION} onAction={opendismiss} />
                 </>
             )
             }
