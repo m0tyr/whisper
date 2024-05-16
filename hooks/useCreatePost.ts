@@ -8,7 +8,6 @@ export const useCreatePost = () => {
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
     const [dismisstate, setdismisstate] = useState(false)
-    const [text, setText] = useState<string>('');
     const pathname = usePathname();
     const editorRef: any = useRef();
     const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -143,8 +142,6 @@ export const useCreatePost = () => {
     return {
         inputRef,
         router,
-        text,
-        setText,
         pathname,
         viewportHeight,
         editableDivHeight,

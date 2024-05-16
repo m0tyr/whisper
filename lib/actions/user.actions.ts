@@ -10,6 +10,7 @@ import { useId } from "react";
 import { auth } from "@/auth";
 import { notify } from "./notifications.actions";
 import { ActivityType } from "../types/notification.types";
+import { UserObject } from "../types/user.types";
 interface Params {
   email: string,
   userId: string | undefined,
@@ -80,7 +81,7 @@ export async function findOrganicAuthUserPass(email: string) {
   }
 }
 
-export async function fetchUser(userId: string | undefined) {
+export async function fetchUser(userId: string) {
   try {
     connectToDB();
 
@@ -89,7 +90,22 @@ export async function fetchUser(userId: string | undefined) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
+export async function getUser(userID: string): Promise<UserObject> {
+  try {
+    connectToDB();
+    const user = await User.findOne({ id: userID })
 
+    return {
+        username: user.username,
+        name: user.name,
+        id: user.id,
+        image: user.image,
+        bio: user.bio
+      };
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
 export async function fetchUserbyEmail(email: string) {
   try {
     connectToDB();
