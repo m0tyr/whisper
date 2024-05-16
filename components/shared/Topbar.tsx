@@ -15,17 +15,16 @@ import { signOut } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast"
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-const DynamicCreateWhisper = dynamic(() => import("../forms/CreateWhisper"), {
-    ssr: false,
-})
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";
-import Dismiss from "./PopOver";
-import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from "@/constants/message";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "./Modal";
+import { useSessionUser } from "@/hooks/useSessionUser";
 
-const TopBar = ({ user, _id }: any) => {
+const TopBar = ({ _id }: any) => {
+    
+    const [user] = useSessionUser();
+    console.log(user)
     const pathname = usePathname();
     function handleConfirm() {
         location.href = "/settings";
@@ -46,7 +45,7 @@ const TopBar = ({ user, _id }: any) => {
             redirect: true
         });
     };
-    const { data: notificationCount } = useNotificationsCountQuery(user.id);
+    const { data: notificationCount } = useNotificationsCountQuery(user?.id);
 
     const refreshFeed = async () => {
         if (window.scrollY > 0) {

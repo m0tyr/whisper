@@ -18,6 +18,7 @@ export default async function Page() {
     name: currentUser?.name || session?.user?.name,
     bio: currentUser?.bio || "",
     image: currentUser?.image || session?.user?.image,
+    _id: currentUser?._id
   };
   const header = headers()
   const ip = (header.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0]
@@ -26,7 +27,7 @@ export default async function Page() {
   return (
     <>
 
-      <TopBar user={userData} _id={`${currentUser._id}`}  />
+      <TopBar _id={`${currentUser._id}`}  />
 
 
       <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">

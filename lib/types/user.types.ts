@@ -1,9 +1,9 @@
 export interface UserDefinition {
-    user: User;
+    user: UserObject;
     isFollowing: boolean;
 }
 
-interface User {
+export interface UserObject {
     username: string;
     name: string;
     id: string;

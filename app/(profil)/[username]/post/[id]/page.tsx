@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: { id: string, username:
     const session = await auth()
     if (!session) return null;
     const email = session?.user.email
-    const currentuserInfo = await fetchUser(session?.user?.id);
+    const currentuserInfo = await fetchUser(session?.user.id as string);
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const whisperdatas = await fetchwhisperById(params.id);
     const allparents = await fetchallParentsFromWhisper(whisperdatas.parentId);
