@@ -8,4 +8,5 @@ export interface UserObject {
     name: string;
     id: string;
     image: string;
+    bio: string;
 }

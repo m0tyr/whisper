@@ -100,6 +100,7 @@ export async function getUser(userID: string): Promise<UserObject> {
         name: user.name,
         id: user.id,
         image: user.image,
+        bio: user.bio
       };
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
