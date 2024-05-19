@@ -19,24 +19,19 @@ import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import { useCreatePost } from "@/hooks/useCreatePost";
 import PostComposer from "../shared/widgets/composer_post_card";
 import PostComposerDialog from "../shared/widgets/composer_post_dialog";
-
-interface Props {
-  _id: string;
-  user: {
-    id: string;
-    username: string;
-    name: string;
-    bio: string;
-    image: string;
-  };
-  toclose: any;
-  posting: () => void;
-}
+import { useSessionUser } from "@/hooks/useSessionUser";
+import { useContext } from "react";
+import { ModalContextApi } from "@/contexts/create_post.provider";
+import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 
 
-const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
+
+
+const CreateWhisper = () => {
   const { toast } = useToast()
+  const [user] = useSessionUser()
+  const { ModifyDismissState, exitMainContext } = useWhisperModal();
   const {
     inputRef,
     router,
@@ -50,8 +45,6 @@ const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
     addImage,
     WatchText,
     editorRef,
-    dismisstate,
-    setdismisstate,
     onInputClick
   } = useCreatePost();
   
@@ -61,32 +54,26 @@ const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
       content: [] as ExtractedElement[],
       media: [] as DBImageData[],
       mentions: [] as MentionsDatas[],
-      accoundId: _id,
+      accoundId: user?.id as string,
     },
   });
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-    setdismisstate(false);
+    ModifyDismissState(false);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
-    posting()
-    toclose(false)
     toast({
       title: "Publication...",
       duration: 20000,
     }
     )
+    exitMainContext()
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
-
-    const stringifiedEditorState = JSON.stringify(
-      editorRef.current.getEditorState().toJSON(),
-    );
     const editorStateTextString: string = editorRef.current.getRootElement()?.textContent;
     const mentions = extractMention(datas);
     const extractedstuff = extractElements(datas)
     values.mentions = mentions;
     values.content = extractedstuff
-    console.log(values.mentions)
     if (imageDataArray.length >= 1) {
       if (imageDataArray.length > 4) {
         toast({
@@ -106,7 +93,7 @@ const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
       if (allFilesAuthorized) {
         for (const imageData of imageDataArray) {
           const result = await s3GenerateSignedURL({
-            userId: _id,
+            userId: user?.id as string,
             fileType: imageData.file.type,
             fileSize: imageData.file.size,
             checksum: await computeSHA256(imageData.file),
@@ -175,25 +162,7 @@ const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
   }
   return (
     <>
-       <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-transparent bg-opacity-75 w-full " onClick={toclose(dismisstate)}></motion.div>
-
       <Form {...form} >
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: 1,
-            }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.01, delay: .1 }}
-
-          >
             <div className="relative ">
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -242,7 +211,7 @@ const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
                       render={({ field }: { field: FieldValues }) => (
                         <FormItem className=" space-y-0" >
                           <PostComposer
-                            user={{ username: user.username, image: user?.image }}
+                            user={{ username: user?.username as string, image: user?.image as string}}
                             form={form.control}
                             editorRef={editorRef}
                             WatchText={WatchText}
@@ -268,13 +237,7 @@ const CreateWhisper = ({ user, _id, toclose, posting }: Props) => {
                 <div id="parent" className=" fixed top-0  z-[51]"></div>
               </div>
             </div>
-          </motion.div>
-
-        </AnimatePresence>
-      </Form >
-
-
-
+      </Form>
     </>
   )
 

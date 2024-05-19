@@ -1,13 +1,15 @@
 'use client'
+import { ModalContextApi } from "@/contexts/create_post.provider";
 import { PrevImageData } from "@/lib/types/whisper.types";
 import { getClampedMultipleMediaAspectRatio } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 
 export const useCreatePost = () => {
+    const { setdismisstate } = useContext(ModalContextApi);
+
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
-    const [dismisstate, setdismisstate] = useState(false)
     const pathname = usePathname();
     const editorRef: any = useRef();
     const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -153,8 +155,6 @@ export const useCreatePost = () => {
         addImage,
         WatchText,
         editorRef,
-        dismisstate,
-        setdismisstate,
         onInputClick
     };
 

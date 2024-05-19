@@ -1,27 +1,105 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+'use client';
+import CreateWhisper from '@/components/forms/CreateWhisper';
+import { Modal } from '@/components/shared/Modal';
+import PopOver from '@/components/shared/PopOver';
+import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from '@/constants/message';
+import { useCreatePost } from '@/hooks/useCreatePost';
+import { UserObject } from '@/lib/types/user.types';
+import { WhisperTypes, Whisper_to_Reply } from '@/lib/types/whisper.types';
+import { AnimatePresence } from 'framer-motion';
+import { createContext, useMemo, ReactNode, useState, MouseEventHandler, useEffect } from 'react';
 
-interface CreatePostContextProps {
-  dismisstate: boolean;
-  setDismisstate: React.Dispatch<React.SetStateAction<boolean>>;
+interface ModalContextDataProps {
+  modalType: string | null;
+  modalProps: Record<string, any>;
 }
 
-const CreatePostContext = createContext<CreatePostContextProps | undefined>(undefined);
+const ModalContextData = createContext<ModalContextDataProps>({
+  modalType: null,
+  modalProps: {},
+});
 
-export const CreatePostProvider = ({ children }: { children: ReactNode }) => {
-  const [dismisstate, setDismisstate] = useState(false);
-  
+interface ModalContextApiProps {
+  toggleModal: (CreatePostStateSetter: boolean, dismiss_state: boolean) => () => void;
+  openPopOver: (isActuallyDismissing: boolean) => React.MouseEventHandler<HTMLDivElement>;
+  setModalProps: (Prop: any) => void;
+  setModalType: (type: WhisperTypes) => void;
+  setdismisstate: (state: boolean) => void;
+}
+
+const ModalContextApi = createContext<ModalContextApiProps>({
+  toggleModal: () => () => { },
+  openPopOver: () => () => { },
+  setModalProps: () => { },
+  setModalType: () => { },
+  setdismisstate: () => { },
+});
+
+function ModalContextProvider({ children }: { children: ReactNode }) {
+  const [showModal, setShowModal] = useState(false);
+  const [showPopOver, setShowPopOver] = useState(false);
+  const [modalType, setModalType] = useState<string | null>(null);
+  const [modalProps, setModalProps] = useState<Record<string, any>>({});
+  const [dismissState, setdismisstate] = useState(false);
+
+  const openPopOver = (isActuallyDismissing: boolean): MouseEventHandler<HTMLDivElement> => {
+    return () => {
+      if (isActuallyDismissing) {
+        setShowModal(!showModal);
+        setShowPopOver(!showPopOver)
+      } else {
+        setShowPopOver(!showPopOver)
+      }
+    }
+  };
+
+  const toggleModal = (CreatePostStateSetter: boolean, dismiss_state: boolean): any => {
+    return () => {
+      if (dismiss_state && showModal) {
+        setShowPopOver(!showPopOver);
+      } else {
+        setShowModal(CreatePostStateSetter);
+      }
+    };
+  };
+
+  const memoizedContextApiValue = useMemo(
+    () => ({
+      toggleModal,
+      openPopOver,
+      setModalProps,
+      setModalType,
+      setdismisstate
+    }),
+    []
+  );
 
   return (
-    <CreatePostContext.Provider value={{ dismisstate, setDismisstate }}>
-      {children}
-    </CreatePostContext.Provider>
+    <ModalContextData.Provider value={{ modalType, modalProps }}>
+      <ModalContextApi.Provider value={memoizedContextApiValue}>
+        <AnimatePresence>
+          {showModal && (
+            <>
+              <Modal OnClickOutsideAction={toggleModal(false,dismissState)} />
+              <CreateWhisper />
+              {showPopOver && (
+                <>
+                  <Modal OnClickOutsideAction={openPopOver(false)} />
+                  <PopOver
+                    title={DISMISS_ABANDON_WHPR_TITLE}
+                    content={DISMISS_ABANDON_WHPR_CONTENT}
+                    onDismiss={openPopOver(false)}
+                    action={DISMISS_ABANDON_WHPR_ACTION}
+                    onAction={openPopOver(true)} />
+                </>
+              )}
+            </>
+          )}
+        </AnimatePresence>
+        {children}
+      </ModalContextApi.Provider>
+    </ModalContextData.Provider>
   );
-};
+}
 
-export const useCreatePostContext = () => {
-  const context = useContext(CreatePostContext);
-  if (!context) {
-    throw new Error('useCreatePostContext must be used within a CreatePostProvider');
-  }
-  return context;
-};
+export { ModalContextData, ModalContextApi, ModalContextProvider };
