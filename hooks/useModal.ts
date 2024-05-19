@@ -1,33 +1,42 @@
 import { MouseEventHandler, useState } from "react";
+import { useSessionUser } from "./useSessionUser";
 
 export const useModal = () => {
-    const [showPopup, setShowPopup] = useState(false);
-    const [showPopOver, setPopOver] = useState(false)
+    const [showModal, setShowModal] = useState(false);
+    const [showPopOver, setShowPopOver] = useState(false);
+    const [modalType, setModalType] = useState<string | null>(null);
+    const [modalProps, setModalProps] = useState<Record<string, any>>({});
+
     const openPopOver = (isActuallyDismissing: boolean): MouseEventHandler<HTMLDivElement> => {
         return () => {
         if(isActuallyDismissing) {
-            setShowPopup(!showPopup);
-            setPopOver(!showPopOver)
+            setShowModal(!showModal);
+            setShowPopOver(!showPopOver)
         }else {
-            setPopOver(!showPopOver)
+            setShowPopOver(!showPopOver)
         }        
     }
     };
-    const togglePopup = (dismiss_state: boolean): any => {
+    const toggleModal = (dismiss_state: boolean): any  => {
         return () => {
-            console.log(dismiss_state)
-            if (dismiss_state && showPopup) {
-                setPopOver(!showPopOver)
+            setShowModal(!showModal);
+            if (dismiss_state && showModal) {
+                setShowPopOver(!showPopOver)
             } else{
-                setShowPopup(!showPopup);
+                setShowModal(!showModal);
             }
+            console.log("test")
         };
     };
+
     return {
-        togglePopup,
-        openPopOver,
+        showModal,
         showPopOver,
-        showPopup,
-        
+        modalType,
+        setModalType,
+        setModalProps,
+        modalProps,
+        toggleModal,
+        openPopOver,
     }
 }

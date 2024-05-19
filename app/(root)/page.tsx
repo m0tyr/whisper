@@ -23,7 +23,6 @@ export default async function Page() {
   const header = headers()
   const ip = (header.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0]
 
-  console.log(ip)
   return (
     <>
 
@@ -36,14 +35,14 @@ export default async function Page() {
           <TopChat user={userData} _id={`${currentUser._id}`} />
 
 
-          <div className="">
+       {/*    <div className="">
             <div>
               <Suspense fallback={<FeedSkeleton feed_length={10} />}>
                 <FeedGenerator currentUser={currentUser} userData={userData}  />
               </Suspense>
 
             </div>
-          </div>
+          </div> */}
 
 
 

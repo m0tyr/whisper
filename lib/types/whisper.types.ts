@@ -95,3 +95,5 @@ export interface Whisper_to_Reply {
     }[]
     isComment?: boolean;
 }
+
+export type WhisperTypes = 'create' | 'reply';

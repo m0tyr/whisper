@@ -4,33 +4,29 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useToast } from '../ui/use-toast';
-import { Modal } from './Modal';
-import { useModal } from '@/hooks/useModal';
+import { useSessionUser } from '@/hooks/useSessionUser';
+import { useCreateWhisper } from '@/hooks/useCreateWhisper';
 
-const TopChat = ({ user, _id }: any) => {
-    const { toast } = useToast()
-    const {
-        togglePopup,
-        opendismiss,
-        showDismiss,
-        showPopup,
-    } = useModal()
+const TopChat = () => {
+    const [user]  = useSessionUser();
+    const { launchCreateContext } = useCreateWhisper();
+
+    const userImage = user?.image as string
     return (
         <>
             <div className="hidden md:block w-full">
                 <div className="pb-3 pt-2 w-full flex flex-row">
-                    <Link href={user.username}>
+                    <Link href={'/'}>
                         <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
                             <div className="w-[40px] h-[40px] flex">
-                                <Image src={user.image} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
+                                <Image src={userImage} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
                             </div>
                         </motion.div>
                     </Link>
                     <input
-
                         name=""
                         placeholder="Commencer un Whisper.."
-                        onClick={togglePopup(true)}
+                        onClick={() => {launchCreateContext()}}
                         readOnly
                         className="bg-navcolor w-full text-small-regular cursor-pointer rounded-full pl-3 pr-12 outline-none font text-gray-300 opacity-65 px-12"
                     />
@@ -44,8 +40,6 @@ const TopChat = ({ user, _id }: any) => {
                 </div>
                 <hr className="border-x-2 opacity-20 rounded-full " />
             </div>
-            <Modal type="create" _id={_id} user={user} togglePopup={togglePopup} opendismiss={opendismiss} showDismiss={showDismiss} showPopup={showPopup} />
-
         </>
     );
 };

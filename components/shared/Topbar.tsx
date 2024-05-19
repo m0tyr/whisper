@@ -10,31 +10,24 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion"
-import { MouseEventHandler, useState } from "react";
+import { MouseEventHandler, useContext, useState } from "react";
 import { signOut } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast"
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";
-import { useModal } from "@/hooks/useModal";
-import { Modal } from "./Modal";
 import { useSessionUser } from "@/hooks/useSessionUser";
+import { useCreateWhisper } from "@/hooks/useCreateWhisper";
 
 const TopBar = ({ _id }: any) => {
     
     const [user] = useSessionUser();
-    console.log(user)
+    const { launchCreateContext } = useCreateWhisper();
     const pathname = usePathname();
     function handleConfirm() {
         location.href = "/settings";
     }
-    const {
-        togglePopup,
-        openPopOver,
-        showPopOver,
-        showPopup,
-    } = useModal()
     const SignOutUser = async () => {
         toast({
             title: "Déconnexion...",
@@ -45,7 +38,7 @@ const TopBar = ({ _id }: any) => {
             redirect: true
         });
     };
-    const { data: notificationCount } = useNotificationsCountQuery(user?.id);
+    const { data: notificationCount } = useNotificationsCountQuery(user?.id as string);
 
     const refreshFeed = async () => {
         if (window.scrollY > 0) {
@@ -55,7 +48,7 @@ const TopBar = ({ _id }: any) => {
             });
             return;
         }
-        await requestNewFeed(user.id, pathname)
+        await requestNewFeed(user?.id as string, pathname)
         if (pathname !== "/") {
             return;
         }
@@ -66,7 +59,6 @@ const TopBar = ({ _id }: any) => {
     const username = user ? user.username : '';
     return (
         <>
-                   <Modal type="create" _id={_id} user={user} togglePopup={togglePopup} openPopOver={openPopOver} showPopOver={showPopOver} showPopup={showPopup} />
             <header className="backdrop-blur-3xl topbar top-0 left-0 right-0 w-full h-[74px] grid-cols-[1fr_50vw_1fr] mobile:grid-cols-[1fr_max-content_1fr] grid max-w-[1230px] mx-auto">
                 <div className="mobile:block mobile:col-start-1 hidden"></div>
 
@@ -121,7 +113,7 @@ const TopBar = ({ _id }: any) => {
 
                         >
                             <div className="relative">
-                                <div onClick={togglePopup(false)} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
+                                <div onClick={() => {launchCreateContext()}} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
                                     <div className="h-full justify-center items-center">
 
 
@@ -282,7 +274,7 @@ const TopBar = ({ _id }: any) => {
 
                 >
                     <div className="relative">
-                        <div onClick={togglePopup(false)} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
+                        <div onClick={() => {launchCreateContext()}} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
                             <div className="h-full justify-center items-center">
 
 
