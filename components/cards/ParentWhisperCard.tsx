@@ -34,7 +34,6 @@ import { likewhisper } from "@/lib/actions/whisper.actions";
 import WhisperCardMedia from "./ui/WhisperCardMedia";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
-import { useModal } from "@/hooks/useModal";
 import { Modal } from "../shared/Modal";
 interface Props {
     user: any;
@@ -96,12 +95,7 @@ const ParentWhisperCard = ({
         comments: comments,
         isNotComment: isNotComment,
     };
-    const {
-        togglePopup,
-        openPopOver,
-        showPopOver,
-        showPopup,
-    } = useModal()
+
 
     const router = useRouter();
     const ping = () => {
@@ -137,22 +131,6 @@ const ParentWhisperCard = ({
 
     return (
         <>
-           <Modal whisper_to_reply={{
-                id: id,
-                currentUserId: currentUserId,
-                parentId: parentId,
-                content: content,
-                medias: medias,
-                author: {
-                    username: author.username,
-                    image: author.image,
-                    id: author.id
-                },
-                createdAt: createdAt,
-                comments: comments,
-                isComment: isNotComment,
-                mentions: mentions
-            }} _id={_id} user={user} type={"reply"} togglePopup={togglePopup} openPopOver={openPopOver} showPopOver={showPopOver} showPopup={showPopup} />
             <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 py-1.5 mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
@@ -310,7 +288,7 @@ const ParentWhisperCard = ({
                                         <div
                                             className=" w-[36px] h-[36px] flex justify-center items-center" >
                                             <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                                <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} onClick={togglePopup(true)}
+                                                <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} 
                                                     className="justify-center flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 

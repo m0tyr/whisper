@@ -22,6 +22,7 @@ import PostComposerDialog from "../shared/widgets/composer_post_dialog";
 import { useSessionUser } from "@/hooks/useSessionUser";
 import { useContext } from "react";
 import { ModalContextApi } from "@/contexts/create_post.provider";
+import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 
 
@@ -30,7 +31,7 @@ import { ModalContextApi } from "@/contexts/create_post.provider";
 const CreateWhisper = () => {
   const { toast } = useToast()
   const [user] = useSessionUser()
-  const { setdismisstate } = useContext(ModalContextApi);
+  const { ModifyDismissState, exitMainContext } = useWhisperModal();
   const {
     inputRef,
     router,
@@ -58,13 +59,14 @@ const CreateWhisper = () => {
   });
 
   async function onSubmit(values: z.infer<typeof WhisperValidation>) {
-    setdismisstate(false);
+    ModifyDismissState(false);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
     toast({
       title: "Publication...",
       duration: 20000,
     }
     )
+    exitMainContext()
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
     const editorStateTextString: string = editorRef.current.getRootElement()?.textContent;
@@ -72,7 +74,6 @@ const CreateWhisper = () => {
     const extractedstuff = extractElements(datas)
     values.mentions = mentions;
     values.content = extractedstuff
-    console.log(values.mentions)
     if (imageDataArray.length >= 1) {
       if (imageDataArray.length > 4) {
         toast({

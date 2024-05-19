@@ -67,7 +67,7 @@ export default async function Page({ params }: { params: { username: string } })
     }
     return (
         <>
-            <TopBar user={currentuserData} _id={`${currentuserInfo._id}`} />
+            <TopBar />
 
             <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
 

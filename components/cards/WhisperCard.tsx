@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 
 import dynamic from "next/dynamic";
-import { useModal } from "@/hooks/useModal";
 import { Modal } from "../shared/Modal";
 const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper"), {
     ssr: false,
@@ -74,12 +73,6 @@ const WhisperCard = ({
         isNotComment: isNotComment,
         mentions: mentions,
     };
-    const {
-        togglePopup,
-        openPopOver,
-        showPopOver,
-        showPopup,
-    } = useModal()
 
     const router = useRouter();
 
@@ -100,22 +93,7 @@ const WhisperCard = ({
 
     return (
         <>
-            <Modal whisper_to_reply={{
-                id: id,
-                currentUserId: currentUserId,
-                parentId: parentId,
-                content: content,
-                medias: medias,
-                author: {
-                    username: author.username,
-                    image: author.image,
-                    id: author.id
-                },
-                createdAt: createdAt,
-                comments: comments,
-                isComment: isNotComment,
-                mentions: mentions
-            }} _id={_id} user={user} type={"reply"} togglePopup={togglePopup} openPopOver={openPopOver} showPopOver={showPopOver} showPopup={showPopup} />
+         
             
             <div className="rounded-3xl hover:opacity-100 transition-all duration-300 pb-3 pt-1  mobile:px-0 px-2.5  w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
@@ -130,7 +108,7 @@ const WhisperCard = ({
                             <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />
 
                             <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
-                                medias={whisperData.medias} createdAt={whisperData.createdAt} togglePopup={togglePopup} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
+                                medias={whisperData.medias} createdAt={whisperData.createdAt} togglePopup={undefined} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
 
                         </div>
                         {comments[0].posts.number == 0 && like_info.like_count == 0 ? <div></div> :

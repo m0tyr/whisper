@@ -3,13 +3,12 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useToast } from '../ui/use-toast';
 import { useSessionUser } from '@/hooks/useSessionUser';
-import { useCreateWhisper } from '@/hooks/useCreateWhisper';
+import { useWhisperModal } from '@/hooks/useWhisperModal';
 
 const TopChat = () => {
-    const [user]  = useSessionUser();
-    const { launchCreateContext } = useCreateWhisper();
+    const [user] = useSessionUser();
+    const { launchCreateContext } = useWhisperModal();
 
     const userImage = user?.image as string
     return (
@@ -19,14 +18,13 @@ const TopChat = () => {
                     <Link href={'/'}>
                         <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
                             <div className="w-[40px] h-[40px] flex">
-                                <Image src={userImage} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
-                            </div>
+                                    <Image src={userImage} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />                            </div>
                         </motion.div>
                     </Link>
                     <input
                         name=""
                         placeholder="Commencer un Whisper.."
-                        onClick={() => {launchCreateContext()}}
+                        onClick={() => { launchCreateContext() }}
                         readOnly
                         className="bg-navcolor w-full text-small-regular cursor-pointer rounded-full pl-3 pr-12 outline-none font text-gray-300 opacity-65 px-12"
                     />

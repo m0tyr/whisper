@@ -4,7 +4,6 @@ import { Modal } from '@/components/shared/Modal';
 import PopOver from '@/components/shared/PopOver';
 import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from '@/constants/message';
 import { useCreatePost } from '@/hooks/useCreatePost';
-import { useModal } from '@/hooks/useModal';
 import { UserObject } from '@/lib/types/user.types';
 import { WhisperTypes, Whisper_to_Reply } from '@/lib/types/whisper.types';
 import { AnimatePresence } from 'framer-motion';
@@ -21,7 +20,7 @@ const ModalContextData = createContext<ModalContextDataProps>({
 });
 
 interface ModalContextApiProps {
-  toggleModal: (dismiss_state: boolean) => () => void;
+  toggleModal: (CreatePostStateSetter: boolean, dismiss_state: boolean) => () => void;
   openPopOver: (isActuallyDismissing: boolean) => React.MouseEventHandler<HTMLDivElement>;
   setModalProps: (Prop: any) => void;
   setModalType: (type: WhisperTypes) => void;
@@ -54,13 +53,12 @@ function ModalContextProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const toggleModal = (dismiss_state: boolean): any => {
+  const toggleModal = (CreatePostStateSetter: boolean, dismiss_state: boolean): any => {
     return () => {
-      console.log("Toggle Modal", dismiss_state)
       if (dismiss_state && showModal) {
-        setShowPopOver(!showPopOver)
+        setShowPopOver(!showPopOver);
       } else {
-        setShowModal(!showModal);
+        setShowModal(CreatePostStateSetter);
       }
     };
   };
@@ -82,7 +80,7 @@ function ModalContextProvider({ children }: { children: ReactNode }) {
         <AnimatePresence>
           {showModal && (
             <>
-              <Modal OnClickOutsideAction={toggleModal(dismissState)} />
+              <Modal OnClickOutsideAction={toggleModal(false,dismissState)} />
               <CreateWhisper />
               {showPopOver && (
                 <>

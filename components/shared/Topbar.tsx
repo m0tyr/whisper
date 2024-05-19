@@ -18,12 +18,12 @@ import { usePathname } from "next/navigation";
 import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";
 import { useSessionUser } from "@/hooks/useSessionUser";
-import { useCreateWhisper } from "@/hooks/useCreateWhisper";
+import { useWhisperModal } from "@/hooks/useWhisperModal";
 
-const TopBar = ({ _id }: any) => {
+const TopBar = () => {
     
     const [user] = useSessionUser();
-    const { launchCreateContext } = useCreateWhisper();
+    const { launchCreateContext } = useWhisperModal();
     const pathname = usePathname();
     function handleConfirm() {
         location.href = "/settings";

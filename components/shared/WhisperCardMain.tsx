@@ -161,7 +161,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                             <div
                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
                                 <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }} onClick={togglePopup(false)}
+                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }}
                                         className="justify-center relative flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 
@@ -222,20 +222,6 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                 </div>
             </div>
 
-            {showPopup && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={opendismiss}></motion.div>
-
-                            <PopOver title={DELETE_WHPR_TITLE} content={DELETE_WHPR_CONTENT} onDismiss={opendismiss} action={DELETE_WHPR_ACTION} onAction={opendismiss} />
-                </>
-            )
-            }
         </>
     )
 
