@@ -48,9 +48,11 @@ function CreateWhisperContextProvider({ children }: { children: ReactNode }) {
         CreateGenericDialog(
           DISMISS_ABANDON_WHPR_TITLE,
           DISMISS_ABANDON_WHPR_CONTENT,
-          DISMISS_ABANDON_WHPR_ACTION
+          DISMISS_ABANDON_WHPR_ACTION,
+          toggleModal(false,false)
         )
       } else {
+        setdismisstate(false)
         setShowModal(CreatePostStateSetter);
       }
     };

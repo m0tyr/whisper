@@ -20,6 +20,9 @@ import { motion } from "framer-motion";
 
 const WhisperDropDownAction = () => {
     const { CreateGenericDialog } = useDialog()
+    const DeleteWhisper = () => {
+        window.alert("deleted whisper")
+    }
     return (
         <DropdownMenu modal={false} >
             <DropdownMenuTrigger className=" cursor-pointer ">
@@ -62,7 +65,8 @@ const WhisperDropDownAction = () => {
                                 CreateGenericDialog(
                                     DELETE_WHPR_TITLE,
                                     DELETE_WHPR_CONTENT,
-                                    DELETE_WHPR_ACTION
+                                    DELETE_WHPR_ACTION,
+                                    DeleteWhisper
                                 )
                             }} className="!text-[rgb(255,48,64)]">
                             Supprimer

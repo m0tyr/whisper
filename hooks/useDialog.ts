@@ -1,17 +1,23 @@
-import { DialogContext } from "@/contexts/dialog.provider"
-import { useContext } from "react"
+import { DialogContext, DialogGenericType } from "@/contexts/dialog.provider"
+import { SetStateAction, useContext } from "react"
 
 export const useDialog = () => {
     const { setShowDialog, setDialog } = useContext(DialogContext)
 
-    const CreateGenericDialog = (title: string,content: string, action:string) => {
+    const CreateGenericDialog = (
+        title: string, 
+        content: string, 
+        action: string, 
+        onAction: () => void
+    ) => {
         setDialog({
             title,
             content,
-            action
-        })
-        setShowDialog(true)
-    }
+            action,
+            onAction,
+        });
+        setShowDialog(true);
+    };
     return {
         CreateGenericDialog
     }

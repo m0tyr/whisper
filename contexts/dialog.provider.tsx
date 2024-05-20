@@ -5,10 +5,11 @@ import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABAN
 import { AnimatePresence } from 'framer-motion';
 import { createContext, useMemo, ReactNode, useState, Dispatch, SetStateAction } from 'react';
 
-interface DialogGenericType {
+export interface DialogGenericType {
     title: string;
     content: string;
     action: string;
+    onAction: () => void;
 }
 
 
@@ -28,13 +29,17 @@ function DialogContextProvider({ children }: { children: ReactNode }) {
     const [dialog, setDialog] = useState<DialogGenericType>({
         title: '',
         content: '',
-        action: ''
+        action: '',
+        onAction: () => {},
     });
     const setShowDialog = (OpenState: boolean) => {
         revealdialog(OpenState)
     }
     const ExecuteDialogBehavior = () => {
-        revealdialog(false)
+        if (dialog.onAction) {
+            dialog.onAction();
+        }
+        revealdialog(false);
     }
     const memoizedContextApiValue = useMemo(
         () => ({

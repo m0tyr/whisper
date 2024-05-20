@@ -5,6 +5,7 @@ import Image from "next/image";
 import WhisperCardCarousel from "./WhisperCardCarousel";
 import ShowImage from "@/components/shared/ShowImage";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 interface Props {
     medias: DBImageData[];
@@ -69,6 +70,7 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
                                 </div>
 
                             ) : (
+                                <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: 0.01 }} className="flex select-none h-full list-none text-inherit" style={{ width:  medias[0].width }}>
                                 <picture>
                                     <img
                                         draggable="false"
@@ -80,6 +82,7 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
                                         }}
                                     />
                                 </picture>
+                                </motion.div>
                             )}
 
                         </div>
@@ -136,6 +139,7 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
 
                                             </div>
                                         ) : (
+                                            <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: 0.01 }} className="flex select-none h-full list-none text-inherit" style={{ width: width }}>
                                             <picture>
                                                 <img
                                                     draggable="false"
@@ -147,6 +151,7 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
                                                     }}
                                                 />
                                             </picture>
+                                            </motion.div>
                                         )}
 
                                     </div>
