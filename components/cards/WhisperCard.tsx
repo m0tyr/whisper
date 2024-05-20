@@ -9,15 +9,13 @@ import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 
 import dynamic from "next/dynamic";
 import { Modal } from "../shared/Modal";
+import { useSessionUser } from "@/hooks/useSessionUser";
 const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper"), {
     ssr: false,
 })
 
 interface Props {
-    user: any;
-    _id: string;
     id: string;
-    currentUserId: string;
     parentId: string | null;
     content: ExtractedElement[];
     medias: DBImageData[];
@@ -48,10 +46,7 @@ interface Props {
 }
 
 const WhisperCard = ({
-    user,
-    _id,
     id,
-    currentUserId,
     parentId,
     content,
     author,
@@ -63,22 +58,25 @@ const WhisperCard = ({
     like_info,
     likewhisper
 }: Props) => {
+    const [user] = useSessionUser()
     const whisperData = {
         id: id,
+        currentUserId: user?.id as string,
+        parentId: parentId,
         content: content,
-        author: author,
         medias: medias,
+        mentions: mentions,
+        author: author,
         createdAt: createdAt,
         comments: comments,
         isNotComment: isNotComment,
-        mentions: mentions,
     };
 
     const router = useRouter();
 
     const liketrackerIDs = like_info.liketracker.map((item: { id: string }) => item.id);
 
-    const isLiking = liketrackerIDs.includes(user.id);
+    const isLiking = liketrackerIDs.includes(user?.id as string);
 
     const [isliking, setisliking] = useState(isLiking)
 
@@ -87,7 +85,7 @@ const WhisperCard = ({
     }
 
     const LikeWhisper = async () => {
-        like_info.like_count = await likewhisper(user.username, id, author.id)
+        like_info.like_count = await likewhisper(user?.username as string, id, author.id)
         setisliking(!isliking)
     }
 
@@ -107,8 +105,8 @@ const WhisperCard = ({
 
                             <WhisperCardLeft author={whisperData.author} isNotComment={whisperData.isNotComment} id={id} />
 
-                            <WhisperCardMain author={whisperData.author} id={whisperData.id} content={whisperData.content}
-                                medias={whisperData.medias} createdAt={whisperData.createdAt} togglePopup={undefined} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
+                            <WhisperCardMain whisper_data={whisperData} author={whisperData.author} id={whisperData.id} content={whisperData.content}
+                                medias={whisperData.medias} createdAt={whisperData.createdAt} mentions={whisperData.mentions} LikeWhisper={LikeWhisper} Isliking={isliking} />
 
                         </div>
                         {comments[0].posts.number == 0 && like_info.like_count == 0 ? <div></div> :

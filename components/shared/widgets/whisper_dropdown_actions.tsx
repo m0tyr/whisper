@@ -12,13 +12,14 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { DELETE_WHPR_ACTION, DELETE_WHPR_CONTENT, DELETE_WHPR_TITLE } from "@/constants/message";
+import { useDialog } from "@/hooks/useDialog";
 import { motion } from "framer-motion";
 
-interface Props {
-    opendismiss: () => void;
-}
 
-const WhisperDropDownAction = ({opendismiss}: Props) => {
+
+const WhisperDropDownAction = () => {
+    const { CreateGenericDialog } = useDialog()
     return (
         <DropdownMenu modal={false} >
             <DropdownMenuTrigger className=" cursor-pointer ">
@@ -39,7 +40,7 @@ const WhisperDropDownAction = ({opendismiss}: Props) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1, delay: .1 }}
             >
-                <DropdownMenuContent   className="w-[170px] mr-3 drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                <DropdownMenuContent className="w-[170px] mr-3 drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
                     <DropdownMenuGroup className="text-white text-[14px]">
                         <DropdownMenuItem >
                             Enregistrer
@@ -56,7 +57,14 @@ const WhisperDropDownAction = ({opendismiss}: Props) => {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem onClick={opendismiss} className="!text-[rgb(255,48,64)]">
+                        <DropdownMenuItem onClick={
+                            () => {
+                                CreateGenericDialog(
+                                    DELETE_WHPR_TITLE,
+                                    DELETE_WHPR_CONTENT,
+                                    DELETE_WHPR_ACTION
+                                )
+                            }} className="!text-[rgb(255,48,64)]">
                             Supprimer
                         </DropdownMenuItem>
                     </DropdownMenuGroup>

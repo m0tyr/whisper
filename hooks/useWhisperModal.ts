@@ -1,9 +1,9 @@
 import { MouseEventHandler, useContext, useState } from "react";
 import { useSessionUser } from "./useSessionUser";
-import { ModalContextApi } from "@/contexts/create_post.provider";
+import { CreateWhisperContextApi } from "@/contexts/create_whisper.provider";
 
 export const useWhisperModal = () => {
-    const { setdismisstate, setModalProps, setModalType, toggleModal } = useContext(ModalContextApi);
+    const { setdismisstate, setModalProps, setModalType, toggleModal } = useContext(CreateWhisperContextApi);
     
     const [user] = useSessionUser()
 

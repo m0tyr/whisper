@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const PopOver = ({ title, content, onDismiss, action, onAction }: any) => {
+const DirectDialog = ({ title, content, onDismiss, action, onAction }: any) => {
   return (
     <motion.div
     initial={{
@@ -71,4 +71,4 @@ const PopOver = ({ title, content, onDismiss, action, onAction }: any) => {
   );
 };
 
-export default PopOver;
+export default DirectDialog;

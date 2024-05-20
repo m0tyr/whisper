@@ -1,12 +1,12 @@
 'use client'
-import { ModalContextApi } from "@/contexts/create_post.provider";
+import { CreateWhisperContextApi } from "@/contexts/create_whisper.provider";
 import { PrevImageData } from "@/lib/types/whisper.types";
 import { getClampedMultipleMediaAspectRatio } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 
 export const useCreatePost = () => {
-    const { setdismisstate } = useContext(ModalContextApi);
+    const { setdismisstate } = useContext(CreateWhisperContextApi);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();

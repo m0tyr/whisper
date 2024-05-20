@@ -1,6 +1,7 @@
 'use client'
 
 interface Props {
+    whisper_data: any;
     id: string;
     content: ExtractedElement[];
     medias: DBImageData[];
@@ -10,7 +11,6 @@ interface Props {
         id: string;
     };
     createdAt: string;
-    togglePopup: any;
     mentions: {
         link: string,
         text: string,
@@ -26,14 +26,16 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import router, { useRouter } from "next/navigation";
 import React from "react";
-import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
+import { DBImageData, ExtractedElement, Whisper_to_Reply } from "@/lib/types/whisper.types";
 import WhisperCardMedia from "../cards/ui/WhisperCardMedia";
-import PopOver from "./PopOver";
+import PopOver from "./DirectDialog";
 import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
 import { DELETE_WHPR_ACTION, DELETE_WHPR_CONTENT, DELETE_WHPR_TITLE } from "@/constants/message";
+import { useWhisperModal } from "@/hooks/useWhisperModal";
 
-export default function WhisperCardMain({ id, content, medias, author, createdAt, togglePopup, mentions, LikeWhisper, Isliking }: Props) {
+export default function WhisperCardMain({ whisper_data,id, content, medias, author, createdAt, mentions, LikeWhisper, Isliking }: Props) {
     const router = useRouter();
+    const { launchReplyContext } = useWhisperModal()
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)
     }
@@ -43,12 +45,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
         setisliking(!isliking)
 
     }
-    const [showPopup, setShowPopup] = useState(false);
-
-    const opendismiss = () => {
-        setShowPopup(!showPopup);
-
-    };
+ 
     let sections = processElements(content)
     return (
         <>
@@ -63,7 +60,7 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
 
                     <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
 
-                  <WhisperDropDownAction opendismiss={opendismiss} />
+                  <WhisperDropDownAction />
                 </div>
                 <div onClick={(e) => {
                     if (e.target === e.currentTarget) {
@@ -161,7 +158,9 @@ export default function WhisperCardMain({ id, content, medias, author, createdAt
                             <div
                                 className=" w-[36px] h-[36px] flex justify-center items-center" >
                                 <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }}
+                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }} onClick={() => {launchReplyContext(
+                                        whisper_data as Whisper_to_Reply
+                                    )}}
                                         className="justify-center relative flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 

@@ -15,7 +15,7 @@ import { signOut } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast"
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { useNotificationsCountQuery } from "@/hooks/NotificationQuery";
+import { useNotificationsCountQuery } from "@/hooks/queries/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";
 import { useSessionUser } from "@/hooks/useSessionUser";
 import { useWhisperModal } from "@/hooks/useWhisperModal";

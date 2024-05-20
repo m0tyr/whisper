@@ -17,33 +17,22 @@ import { createComment } from "@/lib/actions/whisper.actions";
 import { computeSHA256, extractElements, extractMention, getClampedMultipleMediaAspectRatio } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { useToast } from "../ui/use-toast";
-import DisplayMedia from "../shared/ui/DisplayMedia";
 import { DBImageData, ExtractedElement, MentionsDatas, PrevImageData, Whisper_to_Reply } from "@/lib/types/whisper.types";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
-import WhisperCardLeft from "../shared/WhisperCardLeft";
-import ReplyWhisperCardMain from "../shared/ReplyWhisperCardMain";
-import ContentPlayer from "../plugins/ContentPlayer";
 import { useCreatePost } from "@/hooks/useCreatePost";
 import PostComposer from "../shared/widgets/composer_post_card";
 import PostComposerDialog from "../shared/widgets/composer_post_dialog";
+import { useSessionUser } from "@/hooks/useSessionUser";
+import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 interface Props {
-  _id: string;
-  user: {
-    id: string;
-    username: string;
-    name: string;
-    bio: string;
-    image: string;
-  };
   whisper_to_reply: Whisper_to_Reply;
-  toclose: any;
-  posting: any;
 }
 
-const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) => {
-
+const ReplyWhisper = ({ whisper_to_reply }: Props) => {
+  const [user] = useSessionUser()
+  const { ModifyDismissState, exitMainContext } = useWhisperModal();
   const { toast } = useToast()
   const {
     inputRef,
@@ -58,8 +47,6 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) =
     addImage,
     WatchText,
     editorRef,
-    dismisstate,
-    setdismisstate,
     onInputClick
   } = useCreatePost();
 
@@ -69,25 +56,20 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) =
       content: [] as ExtractedElement[],
       media: [] as DBImageData[],
       mentions: [] as MentionsDatas[],
-      accoundId: _id,
+      accoundId: user?.id as string,
     },
   });
   async function onSubmit(values: z.infer<typeof CommentValidation>) {
-    setdismisstate(false);
+    ModifyDismissState(false);
     (document.getElementById('button') as HTMLButtonElement).disabled = true;
-    posting()
-    toclose(false);
     toast({
       title: "Publication...",
       duration: 20000,
     }
     )
+    exitMainContext()
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
-
-    const stringifiedEditorState = JSON.stringify(
-      editorRef.current.getEditorState().toJSON(),
-    );
     const editorStateTextString = editorRef.current.getRootElement()?.textContent;
     const extractedData = extractMention(datas);
     const extractedstuff = extractElements(datas)
@@ -112,7 +94,7 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) =
       if (allFilesAuthorized) {
         for (const imageData of imageDataArray) {
           const result = await s3GenerateSignedURL({
-            userId: _id,
+            userId: user?.id as string,
             fileType: imageData.file.type,
             fileSize: imageData.file.size,
             checksum: await computeSHA256(imageData.file),
@@ -178,21 +160,8 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) =
   }
   return (
     <>
-      <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-transparent bg-opacity-75 w-full " onClick={toclose(dismisstate)}></motion.div>
       <Form {...form} >
         <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.01, delay: .1 }}
-          >
             <div className="relative">
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -237,23 +206,23 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) =
                       control={form.control}
                       name="content"
                       render={({ field }: { field: FieldValues }) => (
-                        <FormItem className="[overflow-anchor:none;] space-y-0" >                     
-                                <PostComposer
-                                  whisper_to_reply={whisper_to_reply}
-                                  user={{ username: user.username, image: user?.image, id: user.id }}
-                                  form={form.control}
-                                  editorRef={editorRef}
-                                  WatchText={WatchText}
-                                  imageDataArray={imageDataArray}
-                                  addImageData={addImageData}
-                                  abortimage={abortimage}
-                                  addImage={addImage}
-                                  onInputClick={onInputClick}
-                                  inputRef={inputRef}
-                                  editableDivHeight={editableDivHeight}
-                                  handleInput={handleInput}
-                                  handleImage={handleImage}
-                                />
+                        <FormItem className="[overflow-anchor:none;] space-y-0" >
+                          <PostComposer
+                            whisper_to_reply={whisper_to_reply}
+                            user={{ username: user?.username as string, image: user?.image as string, id: user?.id as string }}
+                            form={form.control}
+                            editorRef={editorRef}
+                            WatchText={WatchText}
+                            imageDataArray={imageDataArray}
+                            addImageData={addImageData}
+                            abortimage={abortimage}
+                            addImage={addImage}
+                            onInputClick={onInputClick}
+                            inputRef={inputRef}
+                            editableDivHeight={editableDivHeight}
+                            handleInput={handleInput}
+                            handleImage={handleImage}
+                          />
                         </FormItem>
                       )}
                     />
@@ -263,8 +232,6 @@ const ReplyWhisper = ({ user, whisper_to_reply, _id, toclose,posting }: Props) =
                 </motion.div>
               </form>
             </div>
-          </motion.div>
-
         </AnimatePresence>
       </Form >
 

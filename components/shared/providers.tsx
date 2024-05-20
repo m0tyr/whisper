@@ -4,7 +4,8 @@ import { ReactQueryProvider } from "@/contexts/react_query.provider";
 import { Toaster } from "../ui/toaster";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from 'next-auth';
-import { ModalContextProvider } from "@/contexts/create_post.provider";
+import { CreateWhisperContextProvider } from "@/contexts/create_whisper.provider";
+import { DialogContextProvider } from "@/contexts/dialog.provider";
 
 
 export function Providers({
@@ -18,10 +19,12 @@ export function Providers({
 
     <ReactQueryProvider>
       <SessionProvider session={session}>
-        <ModalContextProvider>
+        <DialogContextProvider>
+        <CreateWhisperContextProvider>
           {children}
           <Toaster />
-        </ModalContextProvider>
+        </CreateWhisperContextProvider>
+        </DialogContextProvider>
       </SessionProvider>
     </ReactQueryProvider>
   );

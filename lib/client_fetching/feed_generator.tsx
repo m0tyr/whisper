@@ -6,12 +6,11 @@ import FeedUserCard from "@/components/shared/widgets/feed_user_card";
 import { FamousUserSuggestion, follow } from "../actions/user.actions";
 
 interface Props {
-    currentUser: any;
-    userData: any;
+    userID: string;
 }
 
-export default async function FeedGenerator({ currentUser, userData }: Props) {
-    const fetchedPosts = await fetchwhispers(currentUser.id, 1, 30);
+export default async function FeedGenerator({ userID }: Props) {
+    const fetchedPosts = await fetchwhispers(userID, 1, 30);
     let suggestions: any;
     if(!fetchedPosts){
         suggestions = await FamousUserSuggestion()
@@ -27,15 +26,12 @@ export default async function FeedGenerator({ currentUser, userData }: Props) {
     return (
         <>
             {!fetchedPosts ? (
-              <FeedUserCard suggestions={suggestions} follow={addtofollowing} my_username={currentUser.username} />
+              <FeedUserCard suggestions={suggestions} follow={addtofollowing} />
             ) : (
                 <>
                     {fetchedPosts && fetchedPosts.posts_exec.map((post: any) => (
                         <WhisperCard
-                            user={userData}
-                            _id={currentUser._id}
                             id={post._id}
-                            currentUserId={userData.id || ""}
                             parentId={post.parentId}
                             content={post.content.map((content: any) => ({
                                 text: content.text,
