@@ -126,7 +126,7 @@ export default function LoginForm() {
 
                             </div>
                         </div>
-                        <motion.div whileTap={{ scale: 0.98, scaleX: 0.95 }} onClick={() => {
+                        <motion.div whileTap={{ scale: 0.98, scaleX: 0.98 }} onClick={() => {
                             setIsDisabled(true);
                             signIn("google", { callbackUrl: 'http://localhost:3000/' });
                         }}
@@ -141,11 +141,7 @@ export default function LoginForm() {
                 </form>
 
                 <div className="relative w-full flex flex-col select-none">
-                    <motion.div
-                        initial={{ opacity: 0, scaleX: 0.8 }}
-                        animate={{ opacity: 1, scaleX: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ delay: 0.01, duration: 0.5, type: 'spring', stiffness: 100 }}
+                    <motion.div whileHover={{ scale: 1.01}}
                         className="flex flex-row items-center  h-8  px-8 py-8 justify-center ">
                         <span 
                             aria-label="Powered By Taiyo engine & Quantum Inc" className=" bg-[#121212] py-4 z-[1] text-white inline-block text-[15px] font-bold justify-center items-center ">

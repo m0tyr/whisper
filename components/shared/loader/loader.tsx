@@ -1,7 +1,12 @@
 
+
 export default function Loader() {
     return (<div className="flex flex-grow justify-center items-center">
-        <svg aria-label="Chargement…" className="animate-spin absolute left-[50%] top-[50%] text-white opacity-60" role="img" viewBox="0 0 100 100" width={20} height={20}>
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 100 100"
+             aria-label="Chargement…" className="animate-load absolute left-[50%] top-[50%] text-white opacity-60" role="img">
             <rect fill="white" height="10" opacity="0" rx="5" ry="5" transform="rotate(-90 50 50)" width="28" x="67" y="45"></rect>
             <rect fill="white" height="10" opacity="0.125" rx="5" ry="5" transform="rotate(-45 50 50)" width="28" x="67" y="45"></rect>
             <rect fill="white" height="10" opacity="0.25" rx="5" ry="5" transform="rotate(0 50 50)" width="28" x="67" y="45"></rect>

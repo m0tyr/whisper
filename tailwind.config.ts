@@ -242,6 +242,10 @@ module.exports = {
         mobile: "680px",
       },
       keyframes: {
+        "load": {
+          '0%': { transform: 'rotate(180deg)' },
+          '100%': { transform: 'rotate(540deg)' },
+        },
         "accordion-down": {
           from: { height: 0 },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -252,6 +256,7 @@ module.exports = {
         },
       },
       animation: {
+        "load": 'load 0.8s steps(8, end) infinite',
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

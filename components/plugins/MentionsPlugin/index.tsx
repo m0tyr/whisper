@@ -5,13 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { useLexicalTextEntity } from '@lexical/react/useLexicalTextEntity';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { mergeRegister } from '@lexical/utils'
 import {
   useFloating,
-  FloatingPortal,
-  autoPlacement,
   offset,
   flip,
   shift,
@@ -22,13 +18,14 @@ import {
   MenuTextMatch,
   useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
-import { $createRangeSelection, $createTextNode, $getSelection, $isRangeSelection, $isTextNode, $setSelection, COMMAND_PRIORITY_EDITOR, LexicalEditor, TextNode } from 'lexical';
+import { LexicalEditor, TextNode } from 'lexical';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { $createMentionNode, $isMentionNode, MentionNode } from './MentionNode';
+import { $createMentionNode } from './MentionNode';
 import { MentionSearchModel } from '@/lib/actions/user.actions';
+import BasicLoader from '@/components/shared/loader/basicloader';
 
 const PUNCTUATION =
   '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
@@ -111,11 +108,11 @@ const mentionRegex = new RegExp(mentionRegexPattern + mentionSymbolPattern + men
 
 
 // TODO !!
-// use this has the backend call with use server directive : ~done
+// use this has the backend call with use server directive : done
 // make a cache data that will store the previous states of the search until refresh : done
 // make a call with server actions to the backend at every mention results added to the list : done
-// map the data to return parsed for postiung after exportDom etc... : not done
-// filter function should return due to current index of letter so sofien would be first for sofie and sofiane shouldn't : not done
+// map the data to return parsed for postiung after exportDom etc... : done
+// filter function should return due to current index of letter so sofien would be first for sofie and sofiane shouldn't : done
 const dummyLookupService = {
   search(string: string, callback: (results: Array<any>) => void): void {
     setTimeout(async () => {
@@ -260,10 +257,8 @@ function MentionsTypeaheadMenuItem({
 export function MentionsPlugin(): JSX.Element | null {
   const composereditor = useLexicalComposerContext();
   const [realeditor] = useLexicalComposerContext();
-  const [composerContext] = composereditor;
   const [queryString, setQueryString] = useState<string | null>(null);
   const { results, loading } = useMentionLookupService(queryString);
-  const [isTransform, setTransform] = useState(false)
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0,
   });
@@ -353,16 +348,7 @@ export function MentionsPlugin(): JSX.Element | null {
                       <div className='flex flex-col flex-shrink w-full px-1 py-0.5'>
                         <div className='flex flex-row flex-wrap p-2'>
                           <div className='flex h-[36px] justify-center items-center mx-auto'>
-                            <svg aria-label="Chargement…" className="animate-spin text-white opacity-60" role="img" viewBox="0 0 100 100" width={20} height={20}>
-                              <rect fill="white" height="10" opacity="0" rx="5" ry="5" transform="rotate(-90 50 50)" width="28" x="67" y="45"></rect>
-                              <rect fill="white" height="10" opacity="0.125" rx="5" ry="5" transform="rotate(-45 50 50)" width="28" x="67" y="45"></rect>
-                              <rect fill="white" height="10" opacity="0.25" rx="5" ry="5" transform="rotate(0 50 50)" width="28" x="67" y="45"></rect>
-                              <rect fill="white" height="10" opacity="0.375" rx="5" ry="5" transform="rotate(45 50 50)" width="28" x="67" y="45"></rect>
-                              <rect fill="white" height="10" opacity="0.5" rx="5" ry="5" transform="rotate(90 50 50)" width="28" x="67" y="45"></rect>
-                              <rect fill="white" height="10" opacity="0.625" rx="5" ry="5" transform="rotate(135 50 50)" width="28" x="67" y="45"></rect>
-                              <rect fill="white" height="10" opacity="0.75" rx="5" ry="5" transform="rotate(180 50 50)" width="28" x="67" y="45"></rect>
-                              <rect fill="white" height="10" opacity="0.875" rx="5" ry="5" transform="rotate(225 50 50)" width="28" x="67" y="45"></rect>
-                            </svg>
+                           <BasicLoader width={22} height={22} color='white' />
                           </div>
                         </div>
                       </div>

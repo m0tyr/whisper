@@ -21,7 +21,7 @@ import { useSessionUser } from "@/hooks/useSessionUser";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 const TopBar = () => {
-    
+
     const [user] = useSessionUser();
     const { launchCreateContext } = useWhisperModal();
     const pathname = usePathname();
@@ -113,7 +113,7 @@ const TopBar = () => {
 
                         >
                             <div className="relative">
-                                <div onClick={() => {launchCreateContext()}} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
+                                <div onClick={() => { launchCreateContext() }} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
                                     <div className="h-full justify-center items-center">
 
 
@@ -135,7 +135,7 @@ const TopBar = () => {
                                     <div className="h-full justify-center items-center">
                                         {notificationCount && notificationCount !== 0 ? (
                                             <div className=" justify-center items-center w-full h-full flex">
-                                                 <svg xmlns="http://www.w3.org/2000/svg" className=" absolute top-1.5 fill-[#FF0034] stroke-[#FF0034] drop-shadow-2xl" width={6} height={6} viewBox="0 0 122.88 122.88">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className=" absolute top-1.5 fill-[#FF0034] stroke-[#FF0034] drop-shadow-2xl" width={6} height={6} viewBox="0 0 122.88 122.88">
                                                     <g>
                                                         <path d="M61.44,0c33.93,0,61.44,27.51,61.44,61.44s-27.51,61.44-61.44,61.44S0,95.37,0,61.44S27.51,0,61.44,0L61.44,0z" />
                                                     </g>
@@ -205,25 +205,22 @@ const TopBar = () => {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 1, delay: .1 }}
                         >
-                            <DropdownMenuContent className="w-[170px] mr-3 drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
-                                <DropdownMenuGroup className="text-white text-[14px]">
+                            <DropdownMenuContent className="w-[180px] drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                                <DropdownMenuGroup className="text-white text-[14px] m-1">
                                     <DropdownMenuItem >
                                         Apparence
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
 
-                                    <DropdownMenuItem  onClick={handleConfirm}>
-                                            Paramètres
+                                    <DropdownMenuItem onClick={handleConfirm}>
+                                        Paramètres
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
 
                                     <DropdownMenuItem >
                                         Vos J'aime
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
 
-                                    <DropdownMenuItem  onClick={SignOutUser} className="!text-[rgb(255,48,64)]">
-                                            Déconnexion
+                                    <DropdownMenuItem onClick={SignOutUser} className="!text-[rgb(255,48,64)]">
+                                        Déconnexion
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
@@ -274,7 +271,7 @@ const TopBar = () => {
 
                 >
                     <div className="relative">
-                        <div onClick={() => {launchCreateContext()}} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
+                        <div onClick={() => { launchCreateContext() }} className=" cursor-pointer py-5 px-5 my-1 mx-1 flex justify-center">
                             <div className="h-full justify-center items-center">
 
 
