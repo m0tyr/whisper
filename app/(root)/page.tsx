@@ -31,9 +31,9 @@ export default async function Page() {
           <TopChat />
           <div className="">
             <div>
-             {/*  <Suspense fallback={<FeedSkeleton feed_length={15} />}>
+             <Suspense fallback={<FeedSkeleton feed_length={15} />}>
                 <FeedGenerator  userID={userData.id as string} />
-              </Suspense> */}
+              </Suspense> 
 
             </div>
           </div>

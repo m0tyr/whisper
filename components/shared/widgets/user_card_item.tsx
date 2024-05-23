@@ -30,7 +30,7 @@ export default function UserCardItem({ myusername, suggestion, follow }: Props) 
                         e.stopPropagation();
                         router.push(`/${suggestion.username}`)
                     }
-                }} className=" flex flex-col justify-center  items-center mr-2 w-[156px] h-[204px] pt-[12px] pb-[12px] px-[12px] bg-[#1E1E1E] rounded-2xl ">
+                }} className=" flex flex-col justify-center  items-center mr-2 w-[156px] h-[204px] pt-[12px] pb-[12px] px-[12px] bg-[#161616] rounded-2xl ">
                 <motion.a href={`/${suggestion.username}`} whileTap={{ scale: 0.98 }} transition={{ duration: .01 }} className=" cursor-pointer flex w-[80px] select-none">
                     <img src={suggestion.image} alt="" className="rounded-full border border-border" width={80} height={80} />
                 </motion.a>

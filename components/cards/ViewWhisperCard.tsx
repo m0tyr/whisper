@@ -159,7 +159,7 @@ const ViewWhisperCard = ({
                                 <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
 
                                     <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
-                                    <WhisperDropDownAction opendismiss={() => {}} />
+                                    <WhisperDropDownAction  />
 
                                 </div>
                             </div>
