@@ -84,9 +84,9 @@ function UserCard({
                             <>
                                 <div className="grid grid-cols-[1fr,1fr] gap-2">
 
-                                    <motion.div whileTap={{ scale: 0.95 }} className="col-start-1">
+                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0}} className="col-start-1">
                                         <button
-                                            className={`w-full rounded-xl h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
+                                            className={`w-full rounded-xl h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} duration-0 hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
                                             onClick={addFollow}
                                         >
                                             {!isfollowing ? "Suivre" : "Suivi(e)"}
