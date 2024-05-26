@@ -7,6 +7,7 @@ import "../globals.css";
 import { Toaster } from "@/components/ui/toaster"
 import { ReactQueryProvider } from "@/contexts/react_query.provider";
 import { Providers } from "@/components/shared/providers";
+import { auth } from "@/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,22 +17,21 @@ export const metadata: Metadata = {
   description: "a social app concept"
 }
 
-export default function RootLayout({
-  
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+  const session = await auth();
   return (
+    <html lang="fr">
+      <body className={inter.className}>
+        <Providers session={session}>
+          {children}
+        </Providers>
 
-        <html lang="fr">
-          <body className={inter.className}>
-          <Providers>
-            {children}
-            </Providers>
-          </body>
-        </html>
 
+      </body>
+    </html>
   );
 }

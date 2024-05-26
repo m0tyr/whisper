@@ -22,9 +22,9 @@ export default async function Page({
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const session = await auth()
- 
-  if (!session) { redirect('/sign-in')}
-  const currentUser = await fetchUser(session?.user?.id);
+
+  if (!session) { redirect('/sign-in') }
+  const currentUser = await fetchUser(session?.user?.id as string);
   if (!currentUser?.onboarded) redirect('/onboarding');
   const { q } = searchParams ?? { q: "" };
   const results = await searchwhispersV1(q, 1, 15)
@@ -39,7 +39,7 @@ export default async function Page({
   return (
     <>
 
-      <TopBar user={userData} _id={`${currentUser._id}`} />
+      <TopBar />
 
 
       <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
@@ -57,10 +57,7 @@ export default async function Page({
                     {results?.whispers.map((post: any) => (
                       <WhisperCard
                         key={post._id}
-                        user={userData}
-                        _id={`${currentUser._id}`}
                         id={`${post._id}`}
-                        currentUserId={session.user?.id || ""}
                         parentId={post.parentId}
                         content={post.content.map((content: any) => ({
                           text: content.text,
@@ -70,9 +67,9 @@ export default async function Page({
                           s3url: media.s3url,
                           aspectRatio: media.aspectRatio,
                           width: media.width,
-                          height:media.height,
+                          height: media.height,
                           isVideo: media.isVideo
-                        }))} 
+                        }))}
                         author={{
                           image: post.author.image,
                           username: post.author.username,
@@ -104,7 +101,7 @@ export default async function Page({
                           link: mention.link,
                           text: mention.text,
                           version: mention.version
-                        }))}
+                        }))} likewhisper={undefined}
                       />
 
                     )

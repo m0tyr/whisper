@@ -32,7 +32,7 @@ export default async function Page() {
     }
     return (
         <>
-            <TopBar user={userData} _id={`${currentUser._id}`} />
+            <TopBar />
             <section className="mobile:activity-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-16 pb-[4.55rem] px-0">
                 <div className="max-w-full overflow-x-auto " aria-hidden="true">
                     <NavActivity currenttype="all" />

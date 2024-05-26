@@ -113,4 +113,5 @@ export const {
                 return true;
             },
         },
+        trustHost: true
         })

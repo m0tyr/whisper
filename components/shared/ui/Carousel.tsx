@@ -56,43 +56,45 @@ const Carousel = ({ DataArray, abortimage }: Props) => {
                     onDrag={(event) => {
                         event.stopPropagation()
                     }}
-                    >
+                >
                     {DataArray.map(({ url, aspectRatio, width, isVideo }: PrevImageData, index) => (
-                        <div className="grid mr-2" style={{ aspectRatio: aspectRatio, height: `${currentGlobalHeight}px`, width: `${Math.floor(currentGlobalHeight * parseFloat(aspectRatio))}px` }}>
-                            <div className="relative">
-                                {isVideo ? ( // Check if it's a video
-                                    <div className="z-0 relative w-full h-full">
-                                        <video
-                                            loop
-                                            autoPlay
-                                            playsInline
-                                            src={url}
-                                            className='w-full h-full '
-                                            muted
+                        <div key={index} className="flex mr-1.5">
+                            <div className="grid" style={{ aspectRatio: aspectRatio, height: `${currentGlobalHeight}px`, width: `${Math.floor(currentGlobalHeight * parseFloat(aspectRatio))}px` }}>
+                                <div className="relative">
+                                    {isVideo ? ( // Check if it's a video
+                                        <div className="z-0 relative w-full h-full">
+                                            <video
+                                                loop
+                                                autoPlay
+                                                playsInline
+                                                src={url}
+                                                className='w-full h-full '
+                                                muted
 
+                                            />
+                                        </div>
+                                    ) : (
+                                        <picture>
+                                            <img
+                                                draggable="false"
+                                                src={url}
+                                                className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
+                                                alt={`Image 0`}
+                                            />
+                                        </picture>
+                                    )}
+                                    <div className="absolute top-2 right-2 px-1 py-1">
+                                        <div className="px-[13px] py-[13px] bg-[rgba(0,0,0,0.4)] backdrop-blur-lg rounded-full absolute bottom-[1px] left-[1px] ">
+                                        </div>
+                                        <Image
+                                            src="/svgs/close.svg"
+                                            width={20}
+                                            height={20}
+                                            alt=""
+                                            className="invert-0  bg-opacity-90 rounded-full cursor-pointer"
+                                            onClick={(e) => abortimage(url)}
                                         />
                                     </div>
-                                ) : (
-                                    <picture>
-                                        <img
-                                            draggable="false"
-                                            src={url}
-                                            className='w-full max-w-full object-cover absolute top-0 bottom-0 left-0 right-0 h-full rounded-lg border-x-[.15px] border-y-[.15px] border-x-[rgba(243,245,247,.13333)] border-y-[rgba(243,245,247,.13333)]'
-                                            alt={`Image 0`}
-                                        />
-                                    </picture>
-                                )}
-                                <div className="absolute top-2 right-2 px-1 py-1">
-                                    <div className="px-[13px] py-[13px] bg-[rgba(0,0,0,0.4)] backdrop-blur-lg rounded-full absolute bottom-[1px] left-[1px] ">
-                                    </div>
-                                    <Image
-                                        src="/svgs/close.svg"
-                                        width={20}
-                                        height={20}
-                                        alt=""
-                                        className="invert-0  bg-opacity-90 rounded-full cursor-pointer"
-                                        onClick={(e) => abortimage(url)}
-                                    />
                                 </div>
                             </div>
                         </div>

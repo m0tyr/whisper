@@ -103,15 +103,15 @@ function UserCard({
                             </>
                         )}
                     </div>
-                    <div className="text-center text-gray-2 h-full grid grid-cols-[1fr_1fr_1fr] w-full justify-center items-center text-base-regular ">
-                        <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'whisper' ? 'border-white text-white' : 'border-gray-2'} block`}>
+                    <div className="text-center text-gray-2 h-full mt-0.5 mb-1 grid grid-cols-[1fr_1fr_1fr] w-full justify-center items-center text-base-regular ">
+                        <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'whisper' ? 'border-[#F3F5F7] text-[#F3F5F7]' : 'border-gray-2'} block`}>
                             <Link href={`/${username}`} className="hover:text-gray  transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
                                 <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
                                     Whispers
                                 </motion.div>
                             </Link>
                         </motion.div>
-                        <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'replies' ? 'border-white text-white' : 'border-gray-2'} block`}>
+                        <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'replies' ? 'border-white text-white' : 'border-[#777777]'} block`}>
                             <Link href={`/${username}/replies`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
                                 <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
                                     Réponses

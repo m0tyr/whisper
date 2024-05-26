@@ -69,18 +69,13 @@ interface Props {
 
 const ViewWhisperCard = ({
     user,
-    _id,
     id,
-    currentUserId,
-    parentId,
     content,
     author,
     medias,
     createdAt,
     comments,
     isNotComment,
-    aspectRatio,
-    mentions,
     like_info,
     likewhisper
 }: Props) => {
@@ -92,7 +87,6 @@ const ViewWhisperCard = ({
         createdAt: createdAt,
         comments: comments,
         isNotComment: isNotComment,
-
     };
 
     const router = useRouter();

@@ -90,7 +90,7 @@ export async function fetchUser(userId: string) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }
-export async function getUser(userID: string): Promise<UserObject> {
+export async function getUser(userID: string) {
   try {
     connectToDB();
     const user = await User.findOne({ id: userID })

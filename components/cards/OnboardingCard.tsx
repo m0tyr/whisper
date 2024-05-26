@@ -42,14 +42,20 @@ function OnboardingCard({
                         <AccountProfile user={user} />
                     </motion.section>
                 </main>
-            </AnimatePresence>
-            <div className="h-full w-full flex justify-center items-center relative">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay:0.25, duration: 0.6, type: 'spring', stiffness: 50 }}
+             className="h-full w-full flex justify-center items-center relative">
                 <div className="absolute bottom-5">
                     <p className="text-[#7c7c7c] inline-block text-[12px] font-normal justify-center items-center">
                         Copyright © 2024 Whisper Inc. Tous droits réservés.
                     </p>
                 </div>
-            </div>
+            </motion.div>
+            </AnimatePresence>
+
         </>
     )
 

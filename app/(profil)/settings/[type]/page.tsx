@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: { type: string } }) {
 
   return (
     <>
-      <TopBar user={userData} _id={`${currentUser._id}`} />
+      <TopBar />
       <section className="mobile:activity-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-16 pb-[4.55rem] px-0">
         <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
           <div className=" pt-5 pb-3" >

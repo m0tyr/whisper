@@ -10,19 +10,28 @@ import PostComposerButton from './widgets/composer_post_button';
 const TopChat = () => {
     const [user] = useSessionUser();
     const { launchCreateContext } = useWhisperModal();
-
-    const userImage = user?.image as string
     return (
         <>
             <motion.div whileTap={{ scale: 0.99 }} transition={{ duration: 0.01 }} className="  hidden md:block w-full py-1.5">
                 <div className="pb-3 pt-2 w-full flex flex-row">
-                    <Link href={`/${user?.username as string}`}>
-                        <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
-                            <div className="w-[40px] h-[40px] flex">
-                                <Image src={userImage} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
-                            </div>
-                        </motion.div>
-                    </Link>
+                    {user ? (
+                        <Link href={`/${user?.username as string}`}>
+                            <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
+                                <div className="w-[40px] h-[40px] flex">
+                                    <Image src={user?.image} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
+                                </div>
+                            </motion.div>
+                        </Link>
+                    ) : (
+                        <Link href="/">
+                            <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
+                                <div className="w-[40px] h-[40px] flex rounded-full bg-[#161616]">
+                                </div>
+                            </motion.div>
+                        </Link>
+                    )
+                    }
+
                     <input
                         name=""
                         placeholder="Commencer un Whisper.."

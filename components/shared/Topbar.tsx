@@ -214,12 +214,10 @@ const TopBar = () => {
                         <DropdownMenuTrigger className=" cursor-pointer  outline-none ">
 
                             <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: .001 }} className=" outline-none" >
-                                <Image
-                                    src="/svgs/threedot.svg"
-                                    alt="logo"
-                                    width={45}
-                                    height={45}
-                                    className="flex outline-none" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="30" viewBox="0 0 24 24" width="30" className=" hover:opacity-100  duration-150 opacity-20">
+                                <g clip-rule="evenodd" fill="#f9f9f3" fill-rule="evenodd">
+                                    <path fill="#f9f9f3" d="m2 12c0-5.52285 4.47715-10 10-10 5.5228 0 10 4.47715 10 10 0 5.5228-4.4772 10-10 10-5.52285 0-10-4.4772-10-10zm10-8c-4.41828 0-8 3.58172-8 8 0 4.4183 3.58172 8 8 8 4.4183 0 8-3.5817 8-8 0-4.41828-3.5817-8-8-8z"/><path d="m10.7 8.00001c0 .71797.582 1.3 1.3 1.3.7179 0 1.3-.58203 1.3-1.3s-.5821-1.3-1.3-1.3c-.718 0-1.3.58203-1.3 1.3z"/><path d="m10.7 16c0 .718.582 1.3 1.3 1.3.7179 0 1.3-.582 1.3-1.3s-.5821-1.3-1.3-1.3c-.718 0-1.3.582-1.3 1.3z"/><path d="m10.7 12c0 .718.582 1.3 1.3 1.3.7179 0 1.3-.582 1.3-1.3s-.5821-1.3-1.3-1.3c-.718 0-1.3.582-1.3 1.3z"/>
+                            </g></svg>
 
 
                             </motion.div>
@@ -230,7 +228,7 @@ const TopBar = () => {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 1, delay: .1 }}
                         >
-                            <DropdownMenuContent className="w-[180px] drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                            <DropdownMenuContent sideOffset={-10}  className="w-[180px] drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
                                 <DropdownMenuGroup className="text-white text-[14px] m-1">
                                     <DropdownMenuItem >
                                         Apparence

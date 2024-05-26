@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: { id: string, username:
         return await likewhisper(myusername, whisperid, username)
     }
     return (
-        <>  <TopBar user={userData} _id={`${currentuserInfo._id}`} />
+        <>  <TopBar  />
 
             <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
 
@@ -160,10 +160,7 @@ export default async function Page({ params }: { params: { id: string, username:
                         }>
                             {whisperdatas.children.map((post: any) => (
                                 <WhisperCard
-                                    user={userData}
-                                    _id={`${currentuserInfo._id}`}
                                     id={`${post._id}`}
-                                    currentUserId={session?.user?.id || ""}
                                     parentId={post.parentId}
                                     content={post.content.map((content: any) => ({
                                         text: content.text,

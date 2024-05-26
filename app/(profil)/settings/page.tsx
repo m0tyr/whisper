@@ -4,9 +4,6 @@ import NavMenu from "@/components/shared/widgets/nav_menu";
 import SettingsAccountMenu from "@/components/shared/widgets/settings_account_menu";
 
 import { fetchUser, fetchUserbyEmail, getActivityFromUser } from "@/lib/actions/user.actions";
-import { currentUser } from "@clerk/nextjs";
-import { motion } from "framer-motion";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export function generateMetadata() {
@@ -30,7 +27,7 @@ async function Page() {
   };
   return (
     <>
-      <TopBar user={userData} _id={`${currentUser._id}`} />
+      <TopBar />
       <section className="mobile:activity-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-16 pb-[4.55rem] px-0">
         <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
           <div className=" pt-5 pb-3" >
