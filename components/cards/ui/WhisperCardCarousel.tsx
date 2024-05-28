@@ -105,19 +105,6 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
     return (
         <AnimatePresence>
             <motion.div ref={carouselRef} className=" overflow-hidden mt-2 active:cursor-grabbing cursor-grab" whileTap={"grabbing"}>
-                <div className={` mobile:flex hidden justify-center items-center absolute top-0 ${isReply ? "left-[-20px]" : "left-[-72px]"} h-full w-[72px] gap-2 cursor-pointer`} onClick={handleLeftArrowClick}>
-                    <div className={` px-3 ${isReply ? "bg-[#111111] z-[1]" : "bg-border opacity-80"} rounded-full py-3 `} >
-
-                        <motion.svg xmlns="http://www.w3.org/2000/svg" whileTap={{ scale: 0.98 }} whileHover={{ scale: 1.02 }} transition={{ duration: 0.01 }} className="outline-none" height="10px" width="10px" viewBox="0 0 34.075 34.075" >
-                            <g>
-                                <g>
-                                    <path className=" fill-white stroke-white" d="M24.57,34.075c-0.505,0-1.011-0.191-1.396-0.577L8.11,18.432c-0.771-0.771-0.771-2.019,0-2.79    L23.174,0.578c0.771-0.771,2.02-0.771,2.791,0s0.771,2.02,0,2.79l-13.67,13.669l13.67,13.669c0.771,0.771,0.771,2.021,0,2.792    C25.58,33.883,25.075,34.075,24.57,34.075z" />
-                                </g>
-                            </g>
-                        </motion.svg>
-                    </div>
-
-                </div>
                 <motion.div
                     key={id}
                     ref={fullcarouselRef}
@@ -197,18 +184,6 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
                         </div>
                     ))}
                 </motion.div>
-
-                <div className={`mobile:flex hidden justify-center items-center absolute top-0 ${isReply ? "right-[-20px]" : "right-[-72px]"} h-full w-[72px] gap-2 cursor-pointer`} onClick={handleRightArrowClick}>
-                    <div className={` px-3 ${isReply ? "bg-[#111111]" : "bg-border opacity-80"} rounded-full py-3 `} >
-                        <motion.svg xmlns="http://www.w3.org/2000/svg" height="10px" width="10px" className=" justify-center items-center outline-none" whileTap={{ scale: 0.98 }} whileHover={{ scale: 1.02 }} transition={{ duration: 0.01 }} viewBox="0 0 185.343 185.343">
-                            <g>
-                                <g>
-                                    <path className=" fill-white stroke-white" d="M51.707,185.343c-2.741,0-5.493-1.044-7.593-3.149c-4.194-4.194-4.194-10.981,0-15.175    l74.352-74.347L44.114,18.32c-4.194-4.194-4.194-10.987,0-15.175c4.194-4.194,10.987-4.194,15.18,0l81.934,81.934    c4.194,4.194,4.194,10.987,0,15.175l-81.934,81.939C57.201,184.293,54.454,185.343,51.707,185.343z" />
-                                </g>
-                            </g>
-                        </motion.svg>
-                    </div>
-                </div>
             </motion.div>
         </AnimatePresence>
     )
