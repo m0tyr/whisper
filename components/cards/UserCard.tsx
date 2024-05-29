@@ -45,16 +45,16 @@ function UserCard({
     };
     return (
         <>
-            <div className=" w-[99%] mx-auto">
-                <div className="my-3 mobile:mx-0 mx-3">
-                    <div className="grid grid-cols-1 items-center columns-12">
-                        <div className=" col-start-1">
+            <div className=" w-full">
+                <div className="mt-3 mobile:mx-0 mx-3  py-1 px-6">
+                    <div className="grid grid-cols-1 relative items-center columns-12">
+                        <div className=" absolute bottom-10px col-start-1">
                             <h2 className="text-white text-heading3-bold !text-[24px]  ">{name}</h2>
                             <p className=" text-slate-200 text-body1-normal !text-[15px] ">{`${username}`}</p>
                         </div>
                         <div className=" col-start-2">
                             <motion.div whileTap={{ scale: 0.95 }} transition={{duration : 0.01}} className="col-start-3 ml-auto">
-                                <div className="w-[90px] h-[90px] flex">
+                                <div className="w-[85px] h-[85px] flex">
                                     <img src={image} alt="pfp" width={90} height={90} className="rounded-full cursor-pointer border-border border" />
                                 </div>
                             </motion.div>
@@ -70,7 +70,7 @@ function UserCard({
                     </div>
                 </div>
                 <div>
-                    <div className="mobile:mx-0 mx-3">
+                    <div className="mobile:mx-0 mx-3  py-3 px-5">
                         {myusername === username ? (
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <button
@@ -106,23 +106,23 @@ function UserCard({
                     <div className="text-center text-gray-2 h-full mt-0.5 mb-1 grid grid-cols-[1fr_1fr_1fr] w-full justify-center items-center text-base-regular ">
                         <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'whisper' ? 'border-[#F3F5F7] text-[#F3F5F7]' : 'border-gray-2'} block`}>
                             <Link href={`/${username}`} className="hover:text-gray  transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
-                                <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
+                                <motion.span whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
                                     Whispers
-                                </motion.div>
+                                </motion.span>
                             </Link>
                         </motion.div>
                         <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'replies' ? 'border-white text-white' : 'border-[#777777]'} block`}>
                             <Link href={`/${username}/replies`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
-                                <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
+                                <motion.span whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
                                     Réponses
-                                </motion.div>
+                                </motion.span>
                             </Link>
                         </motion.div>
                         <motion.div className={`w-full h-12 border-b border-solid ${fetchedtype === 'reposts' ? 'border-white text-white' : 'border-gray-2'} block`}>
                             <Link href={`/${username}/reposts`} className="hover:text-gray transition-all duration-150 text-[15px] mx-auto my-auto px-0 py-2.5 flex justify-center items-center font-normal">
-                                <motion.div whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
+                                <motion.span whileTap={{ scale: 0.98, opacity: 0.7 }} transition={{ duration: 0.01 }}>
                                     Republications
-                                </motion.div>
+                                </motion.span>
                             </Link>
                         </motion.div>
                     </div>

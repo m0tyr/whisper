@@ -5,6 +5,9 @@
 @layer components {
 
   /* main */
+  * {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  }
 
 
 

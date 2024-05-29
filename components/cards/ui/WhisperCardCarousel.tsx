@@ -124,7 +124,7 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
                     }}
                     className="flex flex-row translate-x-0"
                 >
-                    <div className="w-[48px] flex-shrink-0 cursor-grab active:cursor-grabbing"></div>
+                    <div className="w-[calc(48px_+_18.5px)] flex-shrink-0 cursor-grab active:cursor-grabbing"></div>
                     {DataArray.map(({ s3url, aspectRatio, width, height, isVideo }: DBImageData, index) => (
                         <div key={index} className="flex mr-1.5">
                         <div /* TODO make the width directly the value of Math.floor to not have a werid deform when loading */ className="grid " style={{ aspectRatio: aspectRatio, height: currentGlobalHeight, width: `${Math.floor(currentGlobalHeight * parseFloat(aspectRatio))}px` }}>

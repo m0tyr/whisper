@@ -106,7 +106,7 @@ export default function UserCardColumn({ grid_display, suggestions, follow, my_u
     return (
 
         <motion.div ref={carouselRef} onDrag={onDragStart} onDragEnd={onDragEnd}
-            className="flex flex-row  overflow-x-hidden active:cursor-grabbing cursor-grab ml-[1.25rem]">
+            className="flex flex-row  overflow-x-hidden active:cursor-grabbing cursor-grab pl-[1.25rem]">
             <div className={` mobile:flex hidden justify-center items-center absolute top-0   left-[-72px] h-full w-[72px] gap-2 cursor-pointer`} onClick={handleLeftArrowClick}>
                 <div className={` px-3 "bg-[#111111] z-[1]"  rounded-full py-3 `} >
 

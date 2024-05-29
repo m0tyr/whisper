@@ -43,7 +43,7 @@ const WhisperDropDownAction = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1, delay: .1 }}
             >
-                <DropdownMenuContent className="w-[180px] drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
+                <DropdownMenuContent alignOffset={-17} className="w-[180px] drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]">
                     <DropdownMenuGroup className="text-white text-[14px] m-1">
                         <DropdownMenuItem >
                             Enregistrer

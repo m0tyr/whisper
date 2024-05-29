@@ -12,8 +12,8 @@ const TopChat = () => {
     const { launchCreateContext } = useWhisperModal();
     return (
         <>
-            <motion.div whileTap={{ scale: 0.99 }} transition={{ duration: 0.01 }} className="  hidden md:block w-full py-1.5">
-                <div className="pb-2 pt-3.5 px-8 w-full flex flex-row">
+            <motion.div whileTap={{ scale: 0.99 }} transition={{ duration: 0.01 }} className=" cursor-text  hidden md:block w-full py-1.5">
+                <div className="pb-2 pt-4 px-5 w-full flex flex-row">
                     {user ? (
                         <Link href={`/${user?.username as string}`}>
                             <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
@@ -37,7 +37,7 @@ const TopChat = () => {
                         placeholder="Commencer un Whisper.."
                         onClick={() => { launchCreateContext() }}
                         readOnly
-                        className="bg-good-gray w-full text-small-regular cursor-pointer rounded-full pl-3 pr-12 outline-none font text-gray-300 opacity-65 px-12"
+                        className="bg-good-gray w-full text-small-regular cursor-text  rounded-full pl-3 pr-12 outline-none font text-gray-300 opacity-65 px-12"
                     />
                     <PostComposerButton isFixed={false} />
                 </div>
