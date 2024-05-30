@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import WhisperCardMain from "../shared/WhisperCardMain";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
 import WhisperCardFooter from "../shared/WhisperCardFooter";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useWhisper } from '@/contexts/whisper_post.provider';
+import { useWhisper } from '@/contexts/WhisperPostContext';
 
 const WhisperCard = () => {
     const {

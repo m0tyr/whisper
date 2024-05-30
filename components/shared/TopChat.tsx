@@ -18,14 +18,14 @@ const TopChat = () => {
                         <Link href={`/${user?.username as string}`}>
                             <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
                                 <div className="w-[40px] h-[40px] flex">
-                                    <Image src={user?.image} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
+                                    <Image src={user?.image} alt="logo" width={40} height={40} className=" float-left cursor-pointer rounded-full" />
                                 </div>
                             </motion.div>
                         </Link>
                     ) : (
                         <Link href="/">
                             <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
-                                <div className="w-[40px] h-[40px] flex rounded-full bg-[#161616]">
+                                <div className="w-[40px] h-[40px] flex rounded-full bg-[#141414]">
                                 </div>
                             </motion.div>
                         </Link>

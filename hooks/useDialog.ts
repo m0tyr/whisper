@@ -1,5 +1,5 @@
-import { DialogContext, DialogGenericType } from "@/contexts/dialog.provider"
-import { SetStateAction, useContext } from "react"
+import { DialogContext } from "@/contexts/DialogContext"
+import { useContext } from "react"
 
 export const useDialog = () => {
     const { setShowDialog, setDialog } = useContext(DialogContext)

@@ -21,7 +21,6 @@ import PostComposer from "../shared/widgets/composer_post_card";
 import PostComposerDialog from "../shared/widgets/composer_post_dialog";
 import { useSessionUser } from "@/hooks/useSessionUser";
 import { useContext } from "react";
-import { CreateWhisperContextApi } from "@/contexts/create_whisper.provider";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 
@@ -44,8 +43,8 @@ const CreateWhisper = () => {
     abortimage,
     addImage,
     WatchText,
+    onInputClick,
     editorRef,
-    onInputClick
   } = useCreatePost();
   
   const form = useForm<z.infer<typeof WhisperValidation>>({

@@ -30,6 +30,7 @@ interface PostComposerProps {
 }
 
 const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, handleInput, editableDivHeight, form, editorRef, WatchText, imageDataArray, addImageData, abortimage, addImage, onInputClick, inputRef, handleImage }) => {
+
     return (
         <>
             {whisper_to_reply ? (

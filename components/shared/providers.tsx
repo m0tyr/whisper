@@ -1,11 +1,11 @@
 'use client';
 
-import { ReactQueryProvider } from "@/contexts/react_query.provider";
 import { Toaster } from "../ui/toaster";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from 'next-auth';
-import { CreateWhisperContextProvider } from "@/contexts/create_whisper.provider";
-import { DialogContextProvider } from "@/contexts/dialog.provider";
+import { DialogContextProvider } from "@/contexts/DialogContext";
+import { ReactQueryProvider } from "@/contexts/ReactQueryCustomProvider";
+import { CreateWhisperModalContextProvider } from "@/contexts/CreateWhisperModalContext";
 
 
 export function Providers({
@@ -20,10 +20,10 @@ export function Providers({
     <ReactQueryProvider>
       <SessionProvider session={session}>
         <DialogContextProvider>
-        <CreateWhisperContextProvider>
+        <CreateWhisperModalContextProvider>
           {children}
           <Toaster />
-        </CreateWhisperContextProvider>
+        </CreateWhisperModalContextProvider>
         </DialogContextProvider>
       </SessionProvider>
     </ReactQueryProvider>

@@ -20,20 +20,6 @@ import {
     FormDescription,
 } from "@/components/ui/form";
 
-
-
-interface Props {
-    _id: string;
-    user: {
-        id: string;
-        username: string;
-        name: string;
-        bio: string;
-        image: string;
-    };
-    toclose: any;
-}
-
 import { computeSHA256 } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
 import { motion } from "framer-motion"
@@ -46,10 +32,14 @@ import { MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import useUpdateProfil from "@/hooks/useUpdateProfil";
 import BasicLoader from "../shared/loader/basicloader";
+import { useWhisperModal } from "@/hooks/useWhisperModal";
+import { useSessionUser } from "@/hooks/useSessionUser";
 
 
 
-const UpdateProfile = ({ user, _id, toclose }: Props) => {
+const UpdateProfile = () => {
+    const [user] = useSessionUser()
+    const { exitMainContext } = useWhisperModal();
     const {
         inputRef,
         imageData,
@@ -85,7 +75,7 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
             }
             if (allFilesAuthorized) {
                 const result = await s3GenerateSignedURL({
-                    userId: _id,
+                    userId: user?.id as string,
                     fileType: imageData[0].file.type,
                     fileSize: imageData[0].file.size,
                     checksum: await computeSHA256(imageData[0].file),
@@ -132,12 +122,12 @@ const UpdateProfile = ({ user, _id, toclose }: Props) => {
         await updateAccountUser(
             values.accoundId, //userID
             user?.username, //username 
-            values.name, // name
-            values.bio, // bio
+            values.name as string, // name
+            values.bio as string, // bio
             values.profile_photo, //profil picture
             pathname // pathname
         )
-        toclose()
+        exitMainContext()
         console.log(values)
     }
     const form = useForm<z.infer<typeof ModificationValidation>>({

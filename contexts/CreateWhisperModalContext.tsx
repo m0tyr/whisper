@@ -2,40 +2,37 @@
 import CreateWhisper from '@/components/forms/CreateWhisper';
 import ReplyWhisper from '@/components/forms/ReplyWhisper';
 import { Modal } from '@/components/shared/Modal';
-import DirectDialog from '@/components/shared/DirectDialog';
 import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from '@/constants/message';
-import { useCreatePost } from '@/hooks/useCreatePost';
-import { UserObject } from '@/lib/types/user.types';
 import { WhisperTypes, Whisper_to_Reply } from '@/lib/types/whisper.types';
 import { AnimatePresence } from 'framer-motion';
 import { createContext, useMemo, ReactNode, useState, MouseEventHandler, useEffect } from 'react';
 import { useDialog } from '@/hooks/useDialog';
 
-interface CreateWhisperContextDataProps {
+interface CreateWhisperModalContextDataProps {
   modalType: string | null;
   modalProps: Record<string, any>;
 }
 
-const CreateWhisperContextData = createContext<CreateWhisperContextDataProps>({
+const CreateWhisperModalContextData = createContext<CreateWhisperModalContextDataProps>({
   modalType: null,
   modalProps: {},
 });
 
-interface CreateWhisperContextApiProps {
+interface CreateWhisperModalContextApiProps {
   toggleModal: (CreatePostStateSetter: boolean, dismiss_state: boolean) => () => void;
   setModalProps: (Prop: any) => void;
   setModalType: (type: WhisperTypes) => void;
   setdismisstate: (state: boolean) => void;
 }
 
-const CreateWhisperContextApi = createContext<CreateWhisperContextApiProps>({
+const CreateWhisperModalContextApi = createContext<CreateWhisperModalContextApiProps>({
   toggleModal: () => () => { },
   setModalProps: () => { },
   setModalType: () => { },
   setdismisstate: () => { },
 });
 
-function CreateWhisperContextProvider({ children }: { children: ReactNode }) {
+function CreateWhisperModalContextProvider({ children }: { children: ReactNode }) {
   const { CreateGenericDialog } = useDialog()
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
@@ -69,8 +66,8 @@ function CreateWhisperContextProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <CreateWhisperContextData.Provider value={{ modalType, modalProps }}>
-      <CreateWhisperContextApi.Provider value={memoizedContextApiValue}>
+    <CreateWhisperModalContextData.Provider value={{ modalType, modalProps }}>
+      <CreateWhisperModalContextApi.Provider value={memoizedContextApiValue}>
         <AnimatePresence>
           {showModal && modalType === 'create' && (
             <>
@@ -78,7 +75,7 @@ function CreateWhisperContextProvider({ children }: { children: ReactNode }) {
               <CreateWhisper />
             </>
           )}
-          {showModal && modalType === 'reply' && (
+          {showModal && modalType === 'reply' && modalProps.whisper_to_reply && (
             <>
               <Modal OnClickOutsideAction={toggleModal(false, dismissState)} />
               <ReplyWhisper whisper_to_reply={modalProps.whisper_to_reply as Whisper_to_Reply} />
@@ -86,9 +83,9 @@ function CreateWhisperContextProvider({ children }: { children: ReactNode }) {
           )}
         </AnimatePresence>
         {children}
-      </CreateWhisperContextApi.Provider>
-    </CreateWhisperContextData.Provider>
+      </CreateWhisperModalContextApi.Provider>
+    </CreateWhisperModalContextData.Provider>
   );
 }
 
-export { CreateWhisperContextData, CreateWhisperContextApi, CreateWhisperContextProvider };
+export { CreateWhisperModalContextData, CreateWhisperModalContextApi, CreateWhisperModalContextProvider };

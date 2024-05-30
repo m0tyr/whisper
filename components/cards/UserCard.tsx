@@ -1,18 +1,16 @@
 "use client"
 import { useState } from "react";
 import { motion } from "framer-motion";
-import UpdateProfile from "../forms/UpdateProfil";
 import React from "react";
 import Link from "next/link";
+import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 interface Props {
     myusername: string;
     name: string;
     username: string;
     image: string;
-    id: string;
     bio: string;
-    _id: any;
     Isfollowing: boolean;
     follow_count: number;
     follow: any;
@@ -24,21 +22,15 @@ function UserCard({
     name,
     username,
     image,
-    id,
     bio,
-    _id,
     follow_count,
     Isfollowing,
     follow,
     fetchedtype
 }: Props) {
-    const [showPopup, setShowPopup] = useState(false);
-
+    const {lauchUpdateProfilContext} = useWhisperModal()
     const [isfollowing, setisfollowing] = useState(Isfollowing)
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
 
-    };
     const addFollow = async () => {
         await follow(myusername, username);
         setisfollowing(!isfollowing);
@@ -72,10 +64,10 @@ function UserCard({
                 <div>
                     <div className="mobile:mx-0 mx-3  py-3 px-5">
                         {myusername === username ? (
-                            <motion.div whileTap={{ scale: 0.95 }}>
+                            <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: 0}}>
                                 <button
-                                    className="w-full rounded-xl h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
-                                    onClick={togglePopup}
+                                    className="w-full rounded-[10px] h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
+                                    onClick={() => {lauchUpdateProfilContext()}}
                                 >
                                     Modifier le profil
                                 </button>
@@ -84,9 +76,9 @@ function UserCard({
                             <>
                                 <div className="grid grid-cols-[1fr,1fr] gap-2">
 
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0}} className="col-start-1">
+                                    <motion.div whileTap={{ scale: 0.97 }} transition={{ duration: 0}} className="col-start-1">
                                         <button
-                                            className={`w-full rounded-xl h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} duration-0 hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
+                                            className={`w-full rounded-[10px] h-[34px] ${isfollowing ? ' text-white' : 'bg-white text-black'} duration-0 hover:bg-dark border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium`}
                                             onClick={addFollow}
                                         >
                                             {!isfollowing ? "Suivre" : "Suivi(e)"}
@@ -94,7 +86,7 @@ function UserCard({
                                     </motion.div>
                                     <motion.div whileTap={{ scale: 0.95 }} className="col-start-2">
                                         <button
-                                            className="w-full rounded-xl h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
+                                            className="w-full rounded-[10px] h-[34px] hover:bg-dark transition-all duration-150 text-white border-[.15px] border-[rgba(243,245,247,.13333)] my-3 !text-[15px] font-medium"
                                         >
                                             Mentionner
                                         </button>
@@ -128,28 +120,7 @@ function UserCard({
                     </div>
                 </div>
             </div>
-            {showPopup && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={togglePopup}></motion.div>
-
-                    <UpdateProfile toclose={togglePopup} _id={_id} user={{
-                        id: id,
-                        username: username,
-                        name: name,
-                        bio: bio,
-                        image: image
-                    }} />
-
-                </>
-
-
-            )}
+       
         </>
     )
 }

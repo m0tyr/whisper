@@ -3,13 +3,7 @@ import { usePathname } from "next/navigation";
 import { useState,useRef, ChangeEvent, useEffect } from "react";
 
 interface Props {
-    user: {
-        id: string;
-        username: string;
-        name: string;
-        bio: string;
-        image: string;
-    };
+    user: any;
 }
 
 export const useUpdateProfil = ({user}: Props) => {

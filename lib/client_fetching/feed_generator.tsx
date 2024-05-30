@@ -3,7 +3,7 @@ import { fetchwhispers, likewhisper } from "../actions/whisper.actions";
 import React from "react";
 import FeedUserCard from "@/components/shared/widgets/feed_user_card";
 import { FamousUserSuggestion, follow } from "../actions/user.actions";
-import { WhisperProvider } from "@/contexts/whisper_post.provider";
+import { WhisperProvider } from "@/contexts/WhisperPostContext";
 
 interface Props {
     userID: string;
