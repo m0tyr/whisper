@@ -48,11 +48,10 @@ const TopBar = () => {
             });
             return;
         }
-/*         await requestNewFeed(user?.id as string, pathname)
- */        if (pathname !== "/") {
+        await requestNewFeed(user?.id as string, pathname)
+         if (pathname !== "/") {
             return;
         }
-        window.location.reload()
     }
     /*     const notificationCount = 0
         const data = 0 */

@@ -8,6 +8,7 @@ import ParentWhisperCard from "@/components/cards/ParentWhisperCard";
 import { Suspense } from "react";
 import Loader from "@/components/shared/loader/loader";
 import { auth } from "@/auth";
+import { WhisperProvider } from "@/contexts/WhisperPostContext";
 
 export async function generateMetadata({ params }: { params: { id: string, username: string } }) {
 
@@ -43,173 +44,180 @@ export default async function Page({ params }: { params: { id: string, username:
         return await likewhisper(myusername, whisperid, username)
     }
     return (
-        <>  <TopBar  />
+        <>  <TopBar />
 
-            <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 pb-[4.55rem] px-0">
+            <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 px-0">
 
-                <div className="w-7/12  mobile:max-w-xl max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
-                    <div>
-                        {Object.keys(allparents).map((postId) => {
-                            const post = allparents[postId];
-                            return (
-                                <ParentWhisperCard
-                                    key={post._id}
-                                    user={userData}
-                                    _id={`${currentuserInfo._id}`}
-                                    id={`${post._id}`}
-                                    currentUserId={session?.user?.id || ""}
-                                    parentId={post.parentId}
-                                    content={post.content.map((content: any) => ({
-                                        text: content.text,
-                                        type: content.type
-                                    }))}
-                                    medias={post.media.map((media: any) => ({
-                                        s3url: media.s3url,
-                                        aspectRatio: media.aspectRatio,
-                                        width: media.width,
-                                        height:media.height,
-                                        isVideo: media.isVideo
-                                    }))}
-                                    author={{
-                                        image: post.author.image,
-                                        username: post.author.username,
-                                        id: post.author.id
-                                    }}
-                                    createdAt={post.createdAt}
-                                    comments={[
-                                        {
-                                            posts: {
-                                                number: post.children.length
-                                            },
-                                            childrens: post.children.map((child: { author: { image: any; username: any; id: any; }; content: any; createdAt: any; }) => ({
-                                                author: {
-                                                    image: child.author.image,
-                                                    username: child.author.username,
-                                                    id: child.author.id
+                <div className="w-7/12 bg-good-gray basis-full grow shrink rounded-t-3xl border border-border overflow-x-hidden overflow-y-auto relative z-0   mobile:max-w-[40rem] max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
+                    <div className=" flex flex-col relative grow">
+                        <div>
+                            {Object.keys(allparents).map((postId) => {
+                                const post = allparents[postId];
+                                return (
+                                    <ParentWhisperCard
+                                        key={post._id}
+                                        user={userData}
+                                        _id={`${currentuserInfo._id}`}
+                                        id={`${post._id}`}
+                                        currentUserId={session?.user?.id || ""}
+                                        parentId={post.parentId}
+                                        content={post.content.map((content: any) => ({
+                                            text: content.text,
+                                            type: content.type
+                                        }))}
+                                        medias={post.media.map((media: any) => ({
+                                            s3url: media.s3url,
+                                            aspectRatio: media.aspectRatio,
+                                            width: media.width,
+                                            height: media.height,
+                                            isVideo: media.isVideo
+                                        }))}
+                                        author={{
+                                            image: post.author.image,
+                                            username: post.author.username,
+                                            id: post.author.id
+                                        }}
+                                        createdAt={post.createdAt}
+                                        comments={[
+                                            {
+                                                posts: {
+                                                    number: post.children.length
                                                 },
-                                                content: child.content.map((content: any) => ({
-                                                    text: content.text,
-                                                    type: content.type
-                                                })),
-                                                createdAt: child.createdAt
+                                                childrens: post.children.map((child: { author: { image: any; username: any; id: any; }; content: any; createdAt: any; }) => ({
+                                                    author: {
+                                                        image: child.author.image,
+                                                        username: child.author.username,
+                                                        id: child.author.id
+                                                    },
+                                                    content: child.content.map((content: any) => ({
+                                                        text: content.text,
+                                                        type: content.type
+                                                    })),
+                                                    createdAt: child.createdAt
+                                                }))
+                                            }
+                                        ]}
+                                        isNotComment={post.children.length === 0}
+                                        aspectRatio={post.aspectRatio}
+                                        mentions={post.mentions.map((mention: any) => ({
+                                            link: mention.link,
+                                            text: mention.text,
+                                            version: mention.version
+                                        }))} like_info={{
+                                            like_count: post.interaction_info.like_count,
+                                            liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
+                                                id: likeid.id
                                             }))
-                                        }
-                                    ]}
-                                    isNotComment={post.children.length === 0}
-                                    aspectRatio={post.aspectRatio}
-                                    mentions={post.mentions.map((mention: any) => ({
-                                        link: mention.link,
-                                        text: mention.text,
-                                        version: mention.version
-                                    }))} like_info={{
-                                        like_count: post.interaction_info.like_count,
-                                        liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
-                                            id: likeid.id
-                                        }))
-                                    }}
-                                    likewhisper={likeAction}
-                                />
-                            );
-                        })}
-                    </div>
-                    <div>
-                        <ViewWhisperCard
-                            user={userData}
-                            _id={`${currentuserInfo._id}`}
-                            id={`${whisperdatas._id}`}
-                            currentUserId={session?.user?.id || ""}
-                            parentId={whisperdatas.parentId}
-                            content={whisperdatas.content.map((content: any) => ({
-                                text: content.text,
-                                type: content.type
-                            }))}
-                            medias={whisperdatas.media.map((media: any) => ({
-                                s3url: media.s3url,
-                                aspectRatio: media.aspectRatio,
-                                width: media.width,
-                                height:media.height,
-                                isVideo: media.isVideo
-                            }))} author={{ image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }}
-                            createdAt={whisperdatas.createdAt}
-                            comments={[
-                                {
-                                    posts: {
-                                        number: whisperdatas.children.length
-                                    },
-                                    childrens: {} //No data needed here
-                                }
-                            ]}
-                            isNotComment={whisperdatas.children.length === 0}
-                            aspectRatio={whisperdatas.aspectRatio}
-                            mentions={whisperdatas.mentions.map((mention: any) => ({
-                                link: mention.link,
-                                text: mention.text,
-                                version: mention.version
-                            }))} like_info={{
-                                like_count: whisperdatas.interaction_info.like_count,
-                                liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
-                                    id: likeid.id
-                                }))
-                            }}
-                            likewhisper={likeAction}
-                             />
-                    </div>
-                    <div>
-                        <Suspense fallback={
-                            <Loader />
-                        }>
-                            {whisperdatas.children.map((post: any) => (
-                                <WhisperCard
-                                    id={`${post._id}`}
-                                    parentId={post.parentId}
-                                    content={post.content.map((content: any) => ({
-                                        text: content.text,
-                                        type: content.type
-                                    }))}
-                                    medias={post.media.map((media: any) => ({
-                                        s3url: media.s3url,
-                                        aspectRatio: media.aspectRatio,
-                                        width: media.width,
-                                        height:media.height,
-                                        isVideo: media.isVideo
-                                    }))} author={{ image: post.author.image, username: post.author.username, id: post.author.id }}
-                                    createdAt={post.createdAt}
-                                    comments={[
-                                        {
-                                            posts: {
-                                                number: post.children.length
+                                        }}
+                                        likewhisper={likeAction}
+                                    />
+                                );
+                            })}
+                        </div>
+                        <div >
+                            <ViewWhisperCard
+                                user={userData}
+                                _id={`${currentuserInfo._id}`}
+                                id={`${whisperdatas._id}`}
+                                currentUserId={session?.user?.id || ""}
+                                parentId={whisperdatas.parentId}
+                                content={whisperdatas.content.map((content: any) => ({
+                                    text: content.text,
+                                    type: content.type
+                                }))}
+                                medias={whisperdatas.media.map((media: any) => ({
+                                    s3url: media.s3url,
+                                    aspectRatio: media.aspectRatio,
+                                    width: media.width,
+                                    height: media.height,
+                                    isVideo: media.isVideo
+                                }))} author={{ image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }}
+                                createdAt={whisperdatas.createdAt}
+                                comments={[
+                                    {
+                                        posts: {
+                                            number: whisperdatas.children.length
+                                        },
+                                        childrens: {} //No data needed here
+                                    }
+                                ]}
+                                isNotComment={whisperdatas.children.length === 0}
+                                aspectRatio={whisperdatas.aspectRatio}
+                                mentions={whisperdatas.mentions.map((mention: any) => ({
+                                    link: mention.link,
+                                    text: mention.text,
+                                    version: mention.version
+                                }))} like_info={{
+                                    like_count: whisperdatas.interaction_info.like_count,
+                                    liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
+                                        id: likeid.id
+                                    }))
+                                }}
+                                likewhisper={likeAction}
+                            />
+                        </div>
+                        <div>
+                            <Suspense fallback={
+                                <Loader />
+                            }>
+                                {whisperdatas.children.map((post: any) => (
+                                    <WhisperProvider
+                                        value={{
+                                            id: post._id,
+                                            parentId: post.parentId,
+                                            content: post.content.map((content: any) => ({
+                                                text: content.text,
+                                                type: content.type
+                                            })),
+                                            medias: post.media.map((media: any) => ({
+                                                s3url: media.s3url,
+                                                aspectRatio: media.aspectRatio,
+                                                width: media.width,
+                                                height: media.height,
+                                                isVideo: media.isVideo
+                                            })),
+                                            author: {
+                                                image: post.author.image,
+                                                username: post.author.username,
+                                                id: post.author.id
                                             },
-                                            childrens: post.children.map((child: any) => ({
-                                                author: {
-                                                    image: child.author.image,
-                                                    username: child.author.username,
-                                                    id: child.author.id
+                                            createdAt: post.createdAt,
+                                            like_info: {
+                                                like_count: post.interaction_info.like_count,
+                                                liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
+                                                    id: likeid.id
+                                                }))
+                                            },
+                                            comments: [{
+                                                posts: {
+                                                    number: post.children.length
                                                 },
-                                                content: child.content.map((content: any) => ({
-                                                    text: content.text,
-                                                    type: content.type
-                                                })),
-                                                createdAt: child.createdAt
-                                            }))
-                                        }
-                                    ]}
-                                    isNotComment={post.children.length === 0}
-                                    mentions={post.mentions.map((mention: any) => ({
-                                        link: mention.link,
-                                        text: mention.text,
-                                        version: mention.version
-                                    }))}
-                                    like_info={{
-                                        like_count: post.interaction_info.like_count,
-                                        liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
-                                            id: likeid.id
-                                        }))
-                                    }}
-                                    likewhisper={likeAction}
-                                />
-                            )
-                            )}
-                        </Suspense>
+                                                childrens: post.children.map((child: any) => ({
+                                                    author: {
+                                                        image: child.author.image,
+                                                        username: child.author.username,
+                                                        id: child.author.id
+                                                    },
+                                                    content: [], // No data needed here
+                                                    createdAt: child.createdAt
+                                                }))
+                                            }],
+                                            isNotComment: post.children.length === 0,
+                                            mentions: post.mentions.map((mention: any) => ({
+                                                link: mention.link,
+                                                text: mention.text,
+                                                version: mention.version
+                                            })),
+                                            likewhisper: likeAction,
+                                            currentUserId: currentuserInfo.id as string
+                                        }}
+                                    >
+                                        <WhisperCard />
+                                    </WhisperProvider>
+                                )
+                                )}
+                            </Suspense>
+                        </div>
                     </div>
                 </div>
             </section>

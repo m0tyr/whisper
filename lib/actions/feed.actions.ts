@@ -5,6 +5,7 @@ import User from "../models/user.model";
 import Whisper from "../models/whisper.model";
 import { FeedOptions } from "../types/feed.types";
 import { redis } from "../redis";
+import { fetchwhispers } from "./whisper.actions";
 
 
 /**
@@ -264,10 +265,10 @@ function ranking_algorithm(input: any, options: FeedOptions) {
  * @returns {Promise<void>} - A promise that resolves once the request is processed.
  */
 export async function requestNewFeed(userID: string, path: string) {
-    console.log(path)
     if (path !== "/") {
         return;
     }
     await redis.del("custom_feed_v1_" + userID)
+    await fetchwhispers(userID)
     revalidatePath(path)
 }

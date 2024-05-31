@@ -123,9 +123,8 @@ const ViewWhisperCard = ({
     let sections = processElements(content)
 
     return (
-        <>
-        
-            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 pb-1.5 mobile:px-0 px-2.5   w-full cursor-pointer relative" onClick={(e) => {
+        <>            
+            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 pt-3.5 mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -191,15 +190,15 @@ const ViewWhisperCard = ({
                                         ping();
                                     }
                                 }}>
-                                    <WhisperCardMedia medias={medias} isReply={false} />
+                                    <WhisperCardMedia medias={medias} isReply={false} isMainView={true} />
                                 </div>
                             ) : (
-                                <div className={`relative w-[calc(100%_+_48px)] ml-[calc(-1_*_48px)] bottom-1 ${content && content.length !== 0 ? "" : "pt-5"}`} onClick={(e) => {
+                                <div className={`relative w-[calc(100%_+_48px_+_2_*_1px)] ml-[calc(-1_*_(48px_-_22px))] bottom-1 ${content && content.length !== 0 ? "" : "pt-5"}`} onClick={(e) => {
                                     if (e.target === e.currentTarget) {
                                         ping();
                                     }
                                 }}>
-                                    <WhisperCardMedia medias={medias} isReply={false} />
+                                    <WhisperCardMedia medias={medias} isReply={false} isMainView={true} />
                                 </div>
                             )}
 

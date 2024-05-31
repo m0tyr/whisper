@@ -10,8 +10,9 @@ import { motion } from "framer-motion";
 interface Props {
     medias: DBImageData[];
     isReply: boolean;
+    isMainView: boolean;
 }
-const WhisperCardMedia = ({ medias, isReply }: Props) => {
+const WhisperCardMedia = ({ medias, isReply, isMainView }: Props) => {
     const [showImage, setShowImage] = useState(false);
     const [targetImage, settargetImage] = useState<string | undefined>("")
     const [targetAR, settargetAR] = useState<string | undefined>("")
@@ -162,7 +163,7 @@ const WhisperCardMedia = ({ medias, isReply }: Props) => {
                 </div>
             )}
             {medias.length > 2 && (
-                <WhisperCardCarousel DataArray={medias} widthprovider={settargetWidth} srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} showImage={showImage} isReply={isReply} />
+                <WhisperCardCarousel isMainView={isMainView} DataArray={medias} widthprovider={settargetWidth} srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} showImage={showImage} isReply={isReply} />
             )}
             {showImage && (
                 <ShowImage width={targetWidth} src={targetImage} ar={targetAR} togglePopup={togglePopup} isVideo={targetType} />

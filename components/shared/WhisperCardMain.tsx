@@ -108,7 +108,7 @@ export default function WhisperCardMain({ whisper_data,id, content, medias, auth
                                 ping();
                             }
                         }}>
-                            <WhisperCardMedia medias={medias} isReply={false} />
+                            <WhisperCardMedia medias={medias} isReply={false} isMainView={false} />
                         </div>
                     ) : (
                         <div className={`relative w-[calc(100%_+_48px_+_2_*_18.5px)] ml-[calc(-1_*_(48px_+_18.5px))] bottom-1 ${content && content.length !== 0 ? "" : "pt-5"}`} onClick={(e) => {
@@ -116,7 +116,8 @@ export default function WhisperCardMain({ whisper_data,id, content, medias, auth
                                 ping();
                             }
                         }}>
-                            <WhisperCardMedia medias={medias} isReply={false} />
+                            
+                            <WhisperCardMedia medias={medias} isReply={false} isMainView={false} />
                         </div>
                     )}
 
