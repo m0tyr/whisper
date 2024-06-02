@@ -115,48 +115,56 @@ export default async function Page({ params }: { params: { id: string, username:
                             })}
                         </div>
                         <div >
-                            <ViewWhisperCard
-                                user={userData}
-                                _id={`${currentuserInfo._id}`}
-                                id={`${whisperdatas._id}`}
-                                currentUserId={session?.user?.id || ""}
-                                parentId={whisperdatas.parentId}
-                                content={whisperdatas.content.map((content: any) => ({
-                                    text: content.text,
-                                    type: content.type
-                                }))}
-                                medias={whisperdatas.media.map((media: any) => ({
-                                    s3url: media.s3url,
-                                    aspectRatio: media.aspectRatio,
-                                    width: media.width,
-                                    height: media.height,
-                                    isVideo: media.isVideo
-                                }))} author={{ image: whisperdatas.author.image, username: whisperdatas.author.username, id: whisperdatas.author.id }}
-                                createdAt={whisperdatas.createdAt}
-                                comments={[
-                                    {
-                                        posts: {
-                                            number: whisperdatas.children.length
-                                        },
-                                        childrens: {} //No data needed here
-                                    }
-                                ]}
-                                isNotComment={whisperdatas.children.length === 0}
-                                aspectRatio={whisperdatas.aspectRatio}
-                                mentions={whisperdatas.mentions.map((mention: any) => ({
-                                    link: mention.link,
-                                    text: mention.text,
-                                    version: mention.version
-                                }))} like_info={{
-                                    like_count: whisperdatas.interaction_info.like_count,
-                                    liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
-                                        id: likeid.id
-                                    }))
+                            <WhisperProvider
+                                value={{
+                                    id: `${whisperdatas._id}`,
+                                    currentUserId: session?.user?.id || "",
+                                    parentId: whisperdatas.parentId,
+                                    content: whisperdatas.content.map((content: any) => ({
+                                        text: content.text,
+                                        type: content.type
+                                    })),
+                                    medias: whisperdatas.media.map((media: any) => ({
+                                        s3url: media.s3url,
+                                        aspectRatio: media.aspectRatio,
+                                        width: media.width,
+                                        height: media.height,
+                                        isVideo: media.isVideo
+                                    })),
+                                    author: {
+                                        image: whisperdatas.author.image,
+                                        username: whisperdatas.author.username,
+                                        id: whisperdatas.author.id
+                                    },
+                                    createdAt: whisperdatas.createdAt,
+                                    comments: [
+                                        {
+                                            posts: {
+                                                number: whisperdatas.children.length
+                                            },
+                                            childrens: {} // No data needed here
+                                        }
+                                    ],
+                                    isNotComment: whisperdatas.children.length === 0,
+                                    mentions: whisperdatas.mentions.map((mention: any) => ({
+                                        link: mention.link,
+                                        text: mention.text,
+                                        version: mention.version
+                                    })),
+                                    like_info: {
+                                        like_count: whisperdatas.interaction_info.like_count,
+                                        liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
+                                            id: likeid.id
+                                        }))
+                                    },
+                                    likewhisper: likeAction
                                 }}
-                                likewhisper={likeAction}
-                            />
+                            >
+                                <ViewWhisperCard />
+                            </WhisperProvider>
+
                         </div>
-                        <div>
+                        <div className=" min-h-[70vh]">
                             <Suspense fallback={
                                 <Loader />
                             }>

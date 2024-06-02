@@ -32,6 +32,7 @@ import PopOver from "./DirectDialog";
 import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
 import { DELETE_WHPR_ACTION, DELETE_WHPR_CONTENT, DELETE_WHPR_TITLE } from "@/constants/message";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
+import WhisperPostInteractions from "../cards/components/WhisperPostInteractions";
 
 export default function WhisperCardMain({ whisper_data,id, content, medias, author, createdAt, mentions, LikeWhisper, Isliking }: Props) {
     const router = useRouter();
@@ -121,104 +122,7 @@ export default function WhisperCardMain({ whisper_data,id, content, medias, auth
                         </div>
                     )}
 
-
-                    <div className="relative right-1.5 ">
-                        <div className="grid grid-cols-[36px_36px_36px] w-full" onClick={(e) => {
-                            if (e.target === e.currentTarget) {
-                                ping();
-                            }
-                        }}>
-                            <div
-                                className=" w-[36px] h-[36px] flex justify-center items-center" >
-                                <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.85 }} transition={{ duration: 0, delay: 0.01, ease: "backIn" }} onClick={LikeWhisper}
-                                        className="justify-center outline-none flex items-center scale-100 transition-transform duration-150 select-none list-none">
-                                        <div className="w-full h-full absolute top-[-1px] left-[-0.25px]">
-                                            <motion.div
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                whileHover={{
-                                                    backgroundColor: "#6262624c",
-                                                    scale: 1,
-                                                    transition: { duration: 0.01 },
-                                                }}
-                                                transition={{ duration: 0.01, ease: "easeOut" }}
-                                                className="rounded-full w-[36px] h-[36px] absolute top-[calc(-1_*_(36px_-_100%)_/_2)] block left-[calc(-1_*_(36px_-_100%)_/_2)] select-none list-none"
-                                            />
-                                        </div>
-                                        <div className="z-10 inset-0 pointer-events-none">
-                                            <svg width="21" height="21" aria-label="J’aime" role="img" viewBox="0 0 24 22" >
-                                                <title>J’aime</title>
-                                                <path className={Isliking ? 'fill-red-600' : 'fill-transparent stroke-2 stroke-white'} d="M1 7.66c0 4.575 3.899 9.086 9.987 12.934.338.203.74.406 1.013.406.283 0 .686-.203 1.013-.406C19.1 16.746 23 12.234 23 7.66 23 3.736 20.245 1 16.672 1 14.603 1 12.98 1.94 12 3.352 11.042 1.952 9.408 1 7.328 1 3.766 1 1 3.736 1 7.66Z" >
-                                                </path>
-                                            </svg>
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            </div>
-                            <div
-                                className=" w-[36px] h-[36px] flex justify-center items-center" >
-                                <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.01, ease: "easeOut" }} onClick={() => {launchReplyContext(
-                                        whisper_data as Whisper_to_Reply
-                                    )}}
-                                        className="justify-center relative flex items-center scale-100 transition-transform duration-150 select-none list-none">
-
-
-                                        <div className="w-full h-full absolute top-[-1px] left-[-0.25px]">
-                                            <motion.div
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                whileHover={{
-                                                    backgroundColor: "#6262624c",
-                                                    scale: 1,
-                                                    transition: { duration: 0.01 },
-                                                }}
-                                                transition={{ duration: 0.01, ease: "easeOut" }}
-                                                className="rounded-full w-[36px] h-[36px] absolute top-[calc(-1_*_(36px_-_100%)_/_2)] block left-[calc(-1_*_(36px_-_100%)_/_2)] select-none list-none"
-                                            />
-                                        </div>
-                                        <div className="z-10 inset-0 pointer-events-none mr-0.5 mb-[1px]">
-
-                                            <svg aria-label="Répondre" role="img" viewBox="0 0 24 24" width={20} height={20} ><title>Répondre</title><path className=" fill-transparent stroke-2 stroke-white" d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"></path></svg>
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            </div>
-                            <div
-                                className=" w-[36px] h-[36px] flex justify-center items-center" >
-                                <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                    <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }}
-                                        className="justify-center flex items-center scale-100 transition-transform duration-150 select-none list-none">
-                                        <div className="w-full h-full absolute top-[-1px] left-[-0.25px]">
-                                            <motion.div
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                whileHover={{
-                                                    backgroundColor: "#6262624c",
-                                                    scale: 1,
-                                                    transition: { duration: 0.01 },
-                                                }}
-                                                transition={{ duration: 0.01, ease: "easeOut" }}
-                                                className="rounded-full w-[36px] h-[36px] absolute top-[calc(-1_*_(36px_-_100%)_/_2)] block left-[calc(-1_*_(36px_-_100%)_/_2)] select-none list-none"
-                                            />
-                                        </div>
-                                        <div className="z-10 inset-0 pointer-events-none">
-                                            <svg width="25" height="25" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" className="mt-1">
-                                                <g className="stroke-1" fill="none" fillRule="evenodd" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 2.5)">
-                                                    <path d="m12.5 9.5 3 3 3-3" />
-                                                    <path d="m8.5.5h3c2.209139 0 4 1.790861 4 4v8" />
-                                                    <path d="m6.5 3.5-3-3-3 3" />
-                                                    <path d="m10.5 12.5h-3c-2.209139 0-4-1.790861-4-4v-8" />
-                                                </g>
-                                            </svg>
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+<WhisperPostInteractions />
                 </div>
             </div>
 

@@ -131,7 +131,7 @@ const ParentWhisperCard = ({
 
     return (
         <>
-            <div className="opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 pt-3.5 mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative" onClick={(e) => {
+            <div className={`opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 ${parentId === undefined ? 'pt-[18px]' : 'pt-1.5'} mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`} onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -188,47 +188,51 @@ const ParentWhisperCard = ({
                                     ping();
                                 }
                             }} >
-                                <div className="float-right  text-white text-small-regular font-light opacity-50 flex h-5">
+                                <div className="float-right relative  text-white text-small-regular font-light opacity-50 flex h-5 top-1">
 
                                     <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
                                     <WhisperDropDownAction />
 
 
                                 </div>
-                                <div className="flex relative " onClick={(e) => {
+                                <div className="flex relative top-0.5 " onClick={(e) => {
                                     if (e.target === e.currentTarget) {
                                         ping();
                                     }
                                 }}>
                                     <Link href={`/${author.username}`} className="inline relative top-0">
-                                        <p className="text-white text-small-semibold hover:underline inline relative bottom-0.5 ">{author.username}</p>
+                                        <p className="text-white text-small-semibold !text-[15px] hover:underline inline relative bottom-0.5 ">{author.username}</p>
                                     </Link>
                                 </div>
-                                {content && (
-                                    <div>
-                                        <Link href={`/${author.username}/post/${id}`}>
-                                            <div className=" break-words max-w-lg">
-                                                {sections.map((section, index) => (
-                                                    <span key={index} className={`text-white leading-[calc(1.4_*_1em)] overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] text-small-regular mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words`}>
-                                                        {section.map((line, subIndex) => (
-                                                            line.type === 'mention' ? (
-                                                                <div className="inline-block text-[#1da1f2]" key={`mention_${subIndex}`}>
-                                                                    <Link href={`/${line.text.slice(1)}`} className="hover:underline">
-                                                                        {line.text}
-                                                                    </Link>
-                                                                </div>
-                                                            ) : (
-                                                                <React.Fragment key={`text_${subIndex}`}>
-                                                                    {line.text}
-                                                                </React.Fragment>
-                                                            )
-                                                        ))}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </Link>
-                                    </div>
+                                {content && content.length !== 0 && (
+                                    <div className="relative bottom-1" onClick={(e) => {
+                                        if (e.target === e.currentTarget) {
+                                            ping();
+                                        }
+                                    }} >
 
+                                        <div className="break-words max-w-lg whitespace-pre-wrap mt-1.5 inline-block" >
+                                            {sections.map((section, index) => (
+                                                <span key={index} className={`text-white leading-[calc(1.4_*_1em)] overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[14.5px] text-small-regular font-normal  mb-0 ${index === 0 ? '' : 'mt-[1rem]'} whitespace-pre-line break-words `}>
+                                                    {section.map((line, subIndex) => (
+                                                        line.type === 'mention' ? (
+                                                            <div className="inline-block text-[#1da1f2]" key={`mention_${subIndex}`}>
+                                                                <Link href={`/${line.text.slice(1)}`} className="hover:underline">
+                                                                    {line.text}
+                                                                </Link>
+
+                                                            </div>
+                                                        ) : (
+                                                            <React.Fragment key={`text_${subIndex}`}>
+                                                                {line.text}
+                                                            </React.Fragment>
+                                                        )
+                                                    ))}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                    </div>
                                 )}
                                 {medias && medias.length <= 2 ? (
                                     <div className={`relative w-full bottom-1 ${content && content.length !== 0 ? "" : "mt-5"} `} onClick={(e) => {
@@ -288,7 +292,7 @@ const ParentWhisperCard = ({
                                         <div
                                             className=" w-[36px] h-[36px] flex justify-center items-center" >
                                             <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
-                                                <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }} 
+                                                <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.02, ease: "easeOut" }}
                                                     className="justify-center flex items-center scale-100 transition-transform duration-150 select-none list-none">
 
 

@@ -1,5 +1,6 @@
 "use client"
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, MouseEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { DBImageData, ExtractedElement } from '@/lib/types/whisper.types';
 
 interface Author {
@@ -37,12 +38,25 @@ interface WhisperData {
     like_info: LikeInfo;
     likewhisper: any;
     currentUserId: string;
+    ping: (e: MouseEvent) => void;
 }
 
 const WhisperContext = createContext<WhisperData | undefined>(undefined);
 
-export const WhisperProvider = ({ children, value }: { children: ReactNode; value: WhisperData }) => {
-    return <WhisperContext.Provider value={value}>{children}</WhisperContext.Provider>;
+export const WhisperProvider = ({ children, value }: { children: ReactNode; value: Omit<WhisperData, 'ping'> }) => {
+    const router = useRouter();
+
+    const ping = (e: any) => {
+        if (e.target === e.currentTarget) {
+            router.push(`/${value.author.username}/post/${value.id}`);
+        }
+    };
+
+    return (
+        <WhisperContext.Provider value={{ ...value, ping }}>
+            {children}
+        </WhisperContext.Provider>
+    );
 };
 
 export const useWhisper = () => {

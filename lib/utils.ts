@@ -30,6 +30,9 @@ export const getPathPrefix = () => {
   const parts = path.split('/');
   return "/" + parts[1]; // Retourne le premier segment après le nom de domaine
 };
+
+
+
 //Media Calculus stuff
 //need to test
 
