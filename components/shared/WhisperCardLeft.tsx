@@ -1,48 +1,30 @@
 
 interface Props {
-    id: string;
-    author: {
-        username: string;
-        image: string;
-        id: string;
-    };
-
-    isNotComment?: boolean;
-    loadingstate?: boolean;
     isReply?: boolean;
+    isEmbedded?: boolean;
 }
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion";
+import { useWhisper } from "@/contexts/WhisperPostContext";
 
 const WhisperCardLeft = ({
-    id,
-    author,
-    isNotComment,
-    loadingstate,
-    isReply
-}: Props) => {
-    const router = useRouter();
+    isReply,
+    isEmbedded
+ }: Props) => {
+    const {
+        author,
+        comments,
+        isNotComment,
+        ping,
+    } = useWhisper();
 
-    const ping = () => {
-        router.push(`/${author.username}/post/${id}`)
-    }
-    if (loadingstate) return (
-        <div className="flex flex-col items-center space-x-4 ">
-            <Skeleton className="h-[37px] w-[37px] rounded-full" />
-
-        </div>
-    )
     return (<>
         {!isNotComment && (
-            <div className={` ${isReply ? "" : "mt-2 pb-2 relative"} flex flex-col  w-10`}>
+            <div className={` ${isReply ? "" : "mt-2 relative"} flex flex-col  w-10`}>
 
-                <div className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]   justify-center items-center" onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                        ping();
-                    }
+                <div className=" flex w-10  mt-[3px]   justify-center items-center" onClick={(e) => {
+                    ping(e)
                 }}>
                     <Link href={`${author.username}`}>
                         <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
@@ -54,14 +36,13 @@ const WhisperCardLeft = ({
                     </Link>
                 </div>
                 <div className={` ${isReply ? "" : "relative left-[18px]"} thread-card_bar `} />
+                {/* do fetch fro directreply if enabled */}
             </div>
         )}
         {isNotComment && (
             <div className="mt-2 flex flex-col w-10">
                 <div className=" flex-grow  col-start-1 row-start-1 row-span-2 w-10 justify-center mt-[1px] relative" onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                        ping();
-                    }
+                    ping(e)
                 }}>
                     <Link href={`${author.username}`} className="absolute top-0.5">
                         <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">

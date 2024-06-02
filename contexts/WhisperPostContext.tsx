@@ -3,29 +3,29 @@ import React, { createContext, useContext, ReactNode, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { DBImageData, ExtractedElement } from '@/lib/types/whisper.types';
 
-interface Author {
+export interface Author {
     username: string;
     image: string;
     id: string;
 }
 
-interface Comments {
+export interface Comments {
     posts: { number: number };
     childrens: any;
 }
 
-interface Mentions {
+export interface Mentions {
     link: string;
     text: string;
     version: number;
 }
 
-interface LikeInfo {
+export interface LikeInfo {
     like_count: number;
     liketracker: { id: string }[];
 }
 
-interface WhisperData {
+export interface WhisperData {
     id: string;
     parentId: string | null;
     content: ExtractedElement[];

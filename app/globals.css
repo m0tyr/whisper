@@ -100,7 +100,7 @@
 
   /* thread card  */
   .thread-card_bar {
-    @apply relative mt-2 w-0.5 flex-grow rounded-full bg-neutral-700;
+    @apply relative h-full my-1 w-0.5 rounded-full bg-neutral-700;
     left: 46.66666667%;
   }
 

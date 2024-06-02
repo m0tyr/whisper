@@ -16,13 +16,13 @@ import { CommentValidation } from "@/lib/validations/whisper";
 import { createComment } from "@/lib/actions/whisper.actions";
 import { computeSHA256, extractElements, extractMention, getClampedMultipleMediaAspectRatio } from "@/lib/utils";
 import { AnimatePresence } from 'framer-motion'
-import { useToast } from "../ui/use-toast";
+import { useToast } from "../../ui/use-toast";
 import { DBImageData, ExtractedElement, MentionsDatas, PrevImageData, Whisper_to_Reply } from "@/lib/types/whisper.types";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import { useCreatePost } from "@/hooks/useCreatePost";
-import PostComposer from "../shared/widgets/composer_post_card";
-import PostComposerDialog from "../shared/widgets/composer_post_dialog";
+import PostComposer from "../../shared/widgets/composer_post_card";
+import PostComposerDialog from "../../shared/widgets/composer_post_dialog";
 import { useSessionUser } from "@/hooks/useSessionUser";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 

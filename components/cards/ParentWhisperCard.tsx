@@ -5,7 +5,7 @@ import WhisperCardFooter from "../shared/WhisperCardFooter";
 import { useEffect, useRef, useState } from "react";
 
 import dynamic from "next/dynamic";
-const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper"), {
+const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper/ReplyWhisper"), {
     ssr: false,
 })
 

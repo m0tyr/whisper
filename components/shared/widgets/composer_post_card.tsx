@@ -7,7 +7,7 @@ import { PrevImageData } from "@/lib/types/whisper.types"
 import { ChangeEvent, MutableRefObject } from "react"
 import Image from "next/image";
 import WhisperCardLeft from "../WhisperCardLeft"
-import ReplyWhisperCardMain from "../ReplyWhisperCardMain"
+import ReplyLayoutCell from "@/components/forms/ReplyWhisper/ReplyLayoutCell"
 interface PostComposerProps {
     whisper_to_reply?: any;
     user: {
@@ -46,9 +46,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                 >
                     <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                         <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1  ">
-                            <WhisperCardLeft author={whisper_to_reply.author} id={user.id as string} isReply={true} />
-
-                            <ReplyWhisperCardMain id={whisper_to_reply.id} content={whisper_to_reply.content} medias={whisper_to_reply.medias} author={whisper_to_reply.author}
+                            <ReplyLayoutCell id={whisper_to_reply.id} content={whisper_to_reply.content} medias={whisper_to_reply.medias} author={whisper_to_reply.author}
                                 createdAt={whisper_to_reply.createdAt} togglePopup={undefined} mentions={whisper_to_reply.mentions.map((mention: any) => ({
                                     link: mention.link,
                                     text: mention.text,

@@ -121,7 +121,7 @@ const SearchBar = () => {
             transition={{ duration: 0.5 }}
             ref={searchResultsRef}
             className="max-w-[592px] min-w-[592px] 
-        flex flex-col items-center max-h-[484px] 
+        flex flex-col items-center max-h-[74vh] 
         overflow-x-hidden overflow-y-scroll  
          bg-[#181818]  rounded-b-2xl border-x-[1px] border-b-[1px] border-x-border border-b-border  shadow-xl"
             style={{ scrollbarWidth: 'none' }}>

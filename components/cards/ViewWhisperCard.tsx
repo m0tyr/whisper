@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import dynamic from "next/dynamic";
-const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper"), {
+const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper/ReplyWhisper"), {
     ssr: false,
 })
 
@@ -78,9 +78,9 @@ const ViewWhisperCard = () => {
                                 </div>
                             </div>
 
-                            <WhisperPostText />
+                            <WhisperPostText isInReplyContext={false} />
 
-                            <WhisperPostMediaAttachments/>
+                            <WhisperPostMediaAttachments isInReplyContext={false}/>
                           
                             <WhisperPostInteractions />
                         </div>
