@@ -85,6 +85,6 @@ export const useSearchBar = () => {
         handleFocus,
         SelectedQuery,
         handleClearInput,
-        handleInputChange,
+        handleInputChange
     }
 }

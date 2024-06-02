@@ -9,7 +9,14 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
   }
 
+.scale-enter {
+  transform: scale(0);
+  transition: transform 0.3s ease-in-out;
+}
 
+.scale-enter-active {
+  transform: scale(1);
+}
 
 
   .main-container {
