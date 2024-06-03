@@ -47,7 +47,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                     <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                         <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1  ">
                             <ReplyLayoutCell id={whisper_to_reply.id} content={whisper_to_reply.content} medias={whisper_to_reply.medias} author={whisper_to_reply.author}
-                                createdAt={whisper_to_reply.createdAt} togglePopup={undefined} mentions={whisper_to_reply.mentions.map((mention: any) => ({
+                                createdAt={whisper_to_reply.createdAt} mentions={whisper_to_reply.mentions.map((mention: any) => ({
                                     link: mention.link,
                                     text: mention.text,
                                     version: mention.version

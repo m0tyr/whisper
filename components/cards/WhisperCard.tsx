@@ -44,26 +44,10 @@ const WhisperCard = () => {
                     <div className="relative outline-none">
                         <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
                             <WhisperCardLeft />
-                            <WhisperCardMain
-                                whisper_data={{
-                                    id,
-                                    parentId,
-                                    content,
-                                    medias,
-                                    mentions,
-                                    author,
-                                    createdAt,
-                                    comments,
-                                    isNotComment,
-                                }}
+                            <WhisperCardMain       
                                 author={author}
-                                id={id}
-                                content={content}
-                                medias={medias}
+                                id={id}   
                                 createdAt={createdAt}
-                                mentions={mentions}
-                                LikeWhisper={LikeWhisper}
-                                Isliking={isliking}
                             />
                         </div>
                     </div>

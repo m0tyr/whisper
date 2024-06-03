@@ -10,7 +10,6 @@ interface Props {
         id: string;
     };
     createdAt: string;
-    togglePopup: any;
     mentions: {
         link: string,
         text: string,
@@ -56,7 +55,7 @@ export default function ReplyLayoutCell({ content, medias, author, createdAt }: 
                 </div>
                 <WhisperPostText isInReplyContext={true} reply_ref_content={content}/>
 
-                <WhisperPostMediaAttachments isInReplyContext={true} reply_ref_content={content} reply_ref_medias={medias}/>
+                <WhisperPostMediaAttachments ViewportProvider="reply_modal" isMainView={false} isInReplyContext={true} reply_ref_content={content} reply_ref_medias={medias}/>
             <div className=" mb-3">
 
             </div>

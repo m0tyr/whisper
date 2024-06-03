@@ -1,39 +1,15 @@
-"use client"
-import { useEffect, useRef, useState } from "react";
-
+"use client";
 import dynamic from "next/dynamic";
 const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper/ReplyWhisper"), {
     ssr: false,
 })
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { calculateTimeAgo, getMeta, processElements } from "@/lib/utils";
-import React from "react";
-import { likewhisper } from "@/lib/actions/whisper.actions";
-import WhisperCardMedia from "./ui/WhisperCardMedia";
-import { DBImageData, ExtractedElement, Whisper_to_Reply } from "@/lib/types/whisper.types";
+import { calculateTimeAgo } from "@/lib/utils";
 import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
-import { Modal } from "../shared/Modal";
 import { useWhisper } from "@/contexts/WhisperPostContext";
-import { useSessionUser } from "@/hooks/useSessionUser";
-import { useWhisperModal } from "@/hooks/useWhisperModal";
 import WhisperPostText from "./components/WhisperPostText";
 import WhisperPostInteractions from "./components/WhisperPostInteractions";
 import WhisperPostMediaAttachments from "./components/WhisperPostMediaAttachments";
@@ -80,7 +56,7 @@ const ViewWhisperCard = () => {
 
                             <WhisperPostText isInReplyContext={false} />
 
-                            <WhisperPostMediaAttachments isInReplyContext={false}/>
+                            <WhisperPostMediaAttachments isInReplyContext={false} ViewportProvider={"direct"} isMainView={true}/>
                           
                             <WhisperPostInteractions />
                         </div>

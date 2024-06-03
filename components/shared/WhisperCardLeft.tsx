@@ -14,7 +14,6 @@ const WhisperCardLeft = ({
  }: Props) => {
     const {
         author,
-        comments,
         isNotComment,
         ping,
     } = useWhisper();
