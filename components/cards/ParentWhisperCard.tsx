@@ -1,48 +1,25 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 
-import dynamic from "next/dynamic";
-const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper/ReplyWhisper"), {
-    ssr: false,
-})
 
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { calculateTimeAgo, processElements } from "@/lib/utils";
+import { calculateTimeAgo } from "@/lib/utils";
 import Link from "next/link";
-import React from "react";
-import WhisperCardMedia from "./ui/WhisperCardMedia";
-import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
 import WhisperPostInteractions from "./components/WhisperPostInteractions";
 import { useWhisper } from "@/contexts/WhisperPostContext";
-import { useSessionUser } from "@/hooks/useSessionUser";
 import WhisperPostText from "./components/WhisperPostText";
 import WhisperPostMediaAttachments from "./components/WhisperPostMediaAttachments";
 
 
 const ParentWhisperCard = () => {
-    const [user] = useSessionUser()
     const {
         parentId,
         author,
-        content,
-        medias,
-        id,
-        comments,
         createdAt,
         isNotComment,
         ping,
-        like_info,
-        likewhisper
     } = useWhisper();
-
-    const liketrackerIDs = like_info.liketracker.map((item: { id: string }) => item.id);
-
-    const isLiking = liketrackerIDs.includes(user?.id as string);
-
-    const [isliking, setisliking] = useState(isLiking)
 
     return (
         <>
@@ -82,11 +59,6 @@ const ParentWhisperCard = () => {
                                                 <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
 
                                             </Link>
-
-
-
-
-
                                         </div>
                                     </div>
                                 )}

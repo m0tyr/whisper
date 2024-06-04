@@ -12,9 +12,8 @@ interface Props {
 import { calculateTimeAgo } from "@/lib/utils";
 
 import Link from "next/link";
-import router, { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
-import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
 import WhisperPostInteractions from "../cards/components/WhisperPostInteractions";
 import WhisperPostMediaAttachments from "../cards/components/WhisperPostMediaAttachments";
@@ -28,7 +27,7 @@ export default function WhisperCardMain({ id, author, createdAt }: Props) {
     return (
         <>
 
-            <div className=" mt-2 w-full relative" onClick={(e) => {
+            <div className=" mt-[6.2px] w-full relative" onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     ping();
                 }
@@ -46,7 +45,7 @@ export default function WhisperCardMain({ id, author, createdAt }: Props) {
                     }
                 }}>
                     <Link href={`/${author.username}`} className="inline">
-                        <p className="text-white text-small-semibold !text-[15px] font-semibold hover:underline inline relative">{author.username}</p>
+                        <p className="text-white text-small-semibold !text-[15px] font-[620] hover:underline inline relative">{author.username}</p>
                     </Link>
                 </div>
                 <div>

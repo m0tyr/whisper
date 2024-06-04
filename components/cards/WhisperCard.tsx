@@ -1,36 +1,17 @@
 "use client"
-import React, { useState } from 'react';
 import WhisperCardMain from "../shared/WhisperCardMain";
 import WhisperCardLeft from "../shared/WhisperCardLeft";
-import WhisperCardFooter from "../shared/WhisperCardFooter";
-import { useRouter } from "next/navigation";
 import { useWhisper } from '@/contexts/WhisperPostContext';
 
 const WhisperCard = () => {
     const {
         id,
-        parentId,
-        content,
         author,
-        medias,
         createdAt,
-        comments,
         isNotComment,
-        mentions,
-        like_info,
-        likewhisper,
-        currentUserId,
         ping
     } = useWhisper();
 
-
-    const liketrackerIDs = like_info.liketracker.map((item: any) => item.id);
-    const isLiking = liketrackerIDs.includes(currentUserId);
-    const [isliking, setisliking] = useState(isLiking);
-    const LikeWhisper = async () => {
-        like_info.like_count = await likewhisper(currentUserId, id, author.id);
-        setisliking(!isliking);
-    };
 
     return (
         <>

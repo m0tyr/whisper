@@ -1,5 +1,6 @@
 "use client";
 
+import { useWhisper } from "@/contexts/WhisperPostContext";
 import usePostText from "@/hooks/usePostText";
 import { ExtractedElement } from "@/lib/types/whisper.types";
 import Link from "next/link";
@@ -12,16 +13,18 @@ interface Props {
 
 const WhisperPostText = ({ isInReplyContext, reply_ref_content }: Props) => {
     const { PostTextObject, PostTextComputedObject } = usePostText(isInReplyContext, reply_ref_content as ExtractedElement[]);
-
+    const { ping } = useWhisper()
     return (
         <>
             {PostTextObject && PostTextObject.length !== 0 && (
-                <div className="relative bottom-1">
-                    <div className="break-words max-w-lg whitespace-pre-wrap pt-[5px] cursor-auto">
+                <div className="relative bottom-[0.125rem]">
+                    <div className="break-words max-w-lg whitespace-pre-wrap cursor-pointer" onClick={(e) => {
+                        ping(e)
+                    }}>
                         {PostTextComputedObject.map((section, index) => (
                             <span
                                 key={index}
-                                className={`text-white leading-[calc(1.4_*_1em)] overflow-y-visible overflow-x-visible max-w-full text-left relative block !text-[15px] text-small-regular mb-0 ${
+                                className={`text-white leading-[calc(1.4_*_1em)] cursor-default overflow-y-visible overflow-x-visible max-w-full text-left relative inline-block !text-[15px] text-small-regular font-normal mb-0 ${
                                     index === 0 ? '' : 'mt-[1rem]'
                                 } whitespace-pre-line break-words`}
                             >

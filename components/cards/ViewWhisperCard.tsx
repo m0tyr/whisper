@@ -1,9 +1,4 @@
 "use client";
-import dynamic from "next/dynamic";
-const DynamicReplyWhisper = dynamic(() => import("../forms/ReplyWhisper/ReplyWhisper"), {
-    ssr: false,
-})
-
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,7 +20,7 @@ const ViewWhisperCard = () => {
     } = useWhisper();
     return (
         <>
-            <div className={`opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${parentId === undefined ? 'pt-3.5' : 'pt-1'}  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`} onClick={(e) => {
+            <div className={`opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${parentId === undefined ? 'pt-3.5' : ''}  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`} onClick={(e) => {
                 ping(e)
             }} >
                 <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 relative' >

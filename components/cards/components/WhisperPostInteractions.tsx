@@ -4,7 +4,6 @@ import { useSessionUser } from "@/hooks/useSessionUser";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 import { Whisper_to_Reply } from "@/lib/types/whisper.types";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const WhisperPostInteractions = () => {

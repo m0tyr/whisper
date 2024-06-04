@@ -16,9 +16,10 @@ interface Props {
     showImage: boolean;
     isReply: boolean;
     isMainView: boolean;
+    ViewportProvider: string;
 }
 
-const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovider, arprovider, setShowImage, showImage, isReply, isMainView }: Props) => {
+const WhisperCardCarousel = ({ DataArray, widthprovider, ViewportProvider, srcprovider, typeprovider, arprovider, setShowImage, showImage, isReply, isMainView }: Props) => {
     const id: string = randomBytes(10).toString('hex');
     const [width, setWidth] = useState(0)
     const [Audiostate, toggleAudio] = useState<boolean>(false)
@@ -44,11 +45,14 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
     useEffect(() => {
 
         const updateWidth = () => {
-
             if (carouselRef.current && fullcarouselRef.current) {
                 carouselRef.current.scrollTo(0, 0);
                 const newWidth = fullcarouselRef.current.scrollWidth - carouselRef.current.offsetWidth + 30;
-                setWidth(newWidth > 0 ? newWidth : 0);
+                if (isReply) {
+                    setWidth(newWidth > 0 ? newWidth + 45 : 0);
+                } else {
+                    setWidth(newWidth > 0 ? newWidth : 0);
+                }
             }
         };
         updateWidth();
@@ -67,7 +71,7 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
 
     return (
         <AnimatePresence>
-            <motion.div ref={carouselRef} className=" overflow-hidden mt-2 active:cursor-grabbing cursor-grab" whileTap={"grabbing"}>
+            <motion.div ref={carouselRef} className={`overflow-hidden ${ViewportProvider === "" ? 'mt-6' : 'mt-3'}  active:cursor-grabbing cursor-grab`} whileTap={"grabbing"}>
                 <motion.div
                     key={id}
                     ref={fullcarouselRef}
@@ -92,7 +96,7 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
                     ) : (
                         null
                     )}
-                    {DataArray.map(({ s3url, aspectRatio, width, height, isVideo }: DBImageData, index) => (
+                    {DataArray.map(({ s3url, aspectRatio, width, isVideo }: DBImageData, index) => (
                         <div key={index} className="flex mr-1.5">
                             <div /* TODO make the width directly the value of Math.floor to not have a werid deform when loading */ className="grid " style={{ aspectRatio: aspectRatio, height: currentGlobalHeight, width: `${Math.floor(currentGlobalHeight * parseFloat(aspectRatio))}px` }}>
                                 <div className="relative">

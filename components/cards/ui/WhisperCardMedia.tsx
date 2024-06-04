@@ -11,8 +11,9 @@ interface Props {
     medias: DBImageData[];
     isReply: boolean;
     isMainView: boolean;
+    ViewportProvider: string;
 }
-const WhisperCardMedia = ({ medias, isReply, isMainView }: Props) => {
+const WhisperCardMedia = ({ medias, ViewportProvider, isReply, isMainView }: Props) => {
     const [showImage, setShowImage] = useState(false);
     const [targetImage, settargetImage] = useState<string | undefined>("")
     const [targetAR, settargetAR] = useState<string | undefined>("")
@@ -163,7 +164,9 @@ const WhisperCardMedia = ({ medias, isReply, isMainView }: Props) => {
                 </div>
             )}
             {medias.length > 2 && (
-                <WhisperCardCarousel isMainView={isMainView} DataArray={medias} widthprovider={settargetWidth} srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} showImage={showImage} isReply={isReply} />
+                <WhisperCardCarousel isMainView={isMainView} ViewportProvider={ViewportProvider} DataArray={medias} widthprovider={settargetWidth} 
+                srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} 
+                showImage={showImage} isReply={isReply} />
             )}
             {showImage && (
                 <ShowImage width={targetWidth} src={targetImage} ar={targetAR} togglePopup={togglePopup} isVideo={targetType} />
