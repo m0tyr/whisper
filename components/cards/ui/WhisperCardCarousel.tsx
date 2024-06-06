@@ -5,6 +5,7 @@ import { DBImageData } from "@/lib/types/whisper.types";
 import { CAROUSEL_DIRECTION_VALUE } from "@/lib/css/motion";
 import { randomBytes } from "crypto";
 import { deriveMultipleMediaHeight } from "@/lib/utils";
+import { useWhisper } from "@/contexts/WhisperPostContext";
 
 interface Props {
     DataArray: DBImageData[];
@@ -20,6 +21,11 @@ interface Props {
 }
 
 const WhisperCardCarousel = ({ DataArray, widthprovider, ViewportProvider, srcprovider, typeprovider, arprovider, setShowImage, showImage, isReply, isMainView }: Props) => {
+    let PostContent : any;
+    if( !isReply ) {
+        const { content } = useWhisper();
+        PostContent = content;
+    }
     const id: string = randomBytes(10).toString('hex');
     const [width, setWidth] = useState(0)
     const [Audiostate, toggleAudio] = useState<boolean>(false)
@@ -71,7 +77,7 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, ViewportProvider, srcpr
 
     return (
         <AnimatePresence>
-            <motion.div ref={carouselRef} className={`overflow-hidden ${ViewportProvider === "" ? 'mt-6' : 'mt-3'}  active:cursor-grabbing cursor-grab`} whileTap={"grabbing"}>
+            <motion.div ref={carouselRef} className={`overflow-hidden ${ViewportProvider === "" && PostContent.length === 0 ? 'mt-4' : 'mt-3'}  active:cursor-grabbing cursor-grab`} whileTap={"grabbing"}>
                 <motion.div
                     key={id}
                     ref={fullcarouselRef}

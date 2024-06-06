@@ -74,7 +74,7 @@ const ParentWhisperCard = () => {
 
 
                                 </div>
-                                <div className="flex relative top-0.5 " onClick={(e) => {
+                                <div className="flex relative top-0.5 mb-0.5 " onClick={(e) => {
                                     ping(e)
                                 }}>
                                     <Link href={`/${author.username}`} className="inline relative top-0">

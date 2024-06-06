@@ -12,14 +12,13 @@ interface Props {
 }
 
 const WhisperPostText = ({ isInReplyContext, reply_ref_content }: Props) => {
-    const { PostTextObject, PostTextComputedObject } = usePostText(isInReplyContext, reply_ref_content as ExtractedElement[]);
-    const { ping } = useWhisper()
+    const { PostTextObject, PostTextComputedObject, PostTextping } = usePostText(isInReplyContext, reply_ref_content as ExtractedElement[]);
     return (
         <>
             {PostTextObject && PostTextObject.length !== 0 && (
                 <div className="relative bottom-[0.125rem]">
                     <div className="break-words max-w-lg whitespace-pre-wrap cursor-pointer" onClick={(e) => {
-                        ping(e)
+                        PostTextping(e)
                     }}>
                         {PostTextComputedObject.map((section, index) => (
                             <span

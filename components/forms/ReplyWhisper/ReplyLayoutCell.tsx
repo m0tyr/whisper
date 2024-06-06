@@ -28,37 +28,37 @@ import WhisperPostMediaAttachments from "@/components/cards/components/WhisperPo
 export default function ReplyLayoutCell({ content, medias, author, createdAt }: Props) {
     return (
         <>
-                <div className={`flex flex-col  w-10`}>
+            <div className={`flex flex-col  w-10`}>
 
-                    <div className=" flex w-10  mt-[3px]   justify-center items-center">
-                        <Link href={`${author.username}`}>
-                            <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
-                                <div className="w-[40px] h-[40px] flex">
-                                    <Image src={author.image} alt="logo" width={40} height={40} className=" cursor-pointer rounded-full border-border border" />
-                                </div>
-                            </motion.div>
+                <div className=" flex w-10  mt-[3px]   justify-center items-center">
+                    <Link href={`${author.username}`}>
+                        <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
+                            <div className="w-[40px] h-[40px] flex">
+                                <Image src={author.image} alt="logo" width={40} height={40} className=" cursor-pointer rounded-full border-border border" />
+                            </div>
+                        </motion.div>
 
-                        </Link>
-                    </div>
-                    <div className={`thread-card_bar `} />
-                </div>
-            <div className="w-full ">
-                <div className="float-right  text-white text-small-regular font-light opacity-50 flex h-5">
-
-                    <p className="opacity-50 pr-2.5">{calculateTimeAgo(createdAt.toString())}</p>
-
-                </div>
-                <div>
-                    <Link href={`/${author.username}`}>
-                        <p className="text-white !text-[15px] text-small-semibold hover:underline">{author.username}</p>
                     </Link>
                 </div>
-                <WhisperPostText isInReplyContext={true} reply_ref_content={content}/>
-
-                <WhisperPostMediaAttachments ViewportProvider="reply_modal" isMainView={false} isInReplyContext={true} reply_ref_content={content} reply_ref_medias={medias}/>
-            <div className=" mb-3">
-
+                <div className={`thread-card_bar `} />
             </div>
+            <div className="w-full ">
+                <div className="flex flex-row gap-2 mb-1">
+                    <div>
+                        <Link href={`/${author.username}`}>
+                            <p className="text-white !text-[15px] text-small-semibold hover:underline">{author.username}</p>
+                        </Link>
+                    </div>
+                    <div className=" text-white text-small-regular font-light opacity-70 flex h-5">
+                        <p className="opacity-50 pr-2.5">{calculateTimeAgo(createdAt.toString())}</p>
+                    </div>
+                </div>
+                <WhisperPostText isInReplyContext={true} reply_ref_content={content} />
+
+                <WhisperPostMediaAttachments ViewportProvider="reply_modal" isMainView={false} isInReplyContext={true} reply_ref_content={content} reply_ref_medias={medias} />
+                <div className=" mb-3">
+
+                </div>
             </div>
 
         </>
