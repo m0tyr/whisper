@@ -20,7 +20,7 @@ interface Props {
     ViewportProvider: string;
 }
 
-const WhisperCardCarousel = ({ DataArray, widthprovider, ViewportProvider, srcprovider, typeprovider, arprovider, setShowImage, showImage, isReply, isMainView }: Props) => {
+const WhisperPostCarousel = ({ DataArray, widthprovider, ViewportProvider, srcprovider, typeprovider, arprovider, setShowImage, showImage, isReply, isMainView }: Props) => {
     let PostContent : any;
     if( !isReply ) {
         const { content } = useWhisper();
@@ -165,4 +165,4 @@ const WhisperCardCarousel = ({ DataArray, widthprovider, ViewportProvider, srcpr
         </AnimatePresence>
     )
 }
-export default WhisperCardCarousel;
+export default WhisperPostCarousel;

@@ -1,7 +1,7 @@
 import { useWhisper } from "@/contexts/WhisperPostContext";
-import WhisperCardMedia from "../ui/WhisperCardMedia";
 import usePostMedia from "@/hooks/usePostMedia";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
+import WhisperPostMedia from "./WhisperPostMedia";
 
 interface Props {
     ViewportProvider: string;
@@ -29,7 +29,7 @@ const WhisperPostMediaAttachments = ({ ViewportProvider, isInReplyContext,isMain
 
     return (
         <div className={classNames} onClick={(e) => ping(e)}>
-            <WhisperCardMedia medias={medias} ViewportProvider={ViewportProvider} isReply={isReply} isMainView={isMainView} />
+            <WhisperPostMedia medias={medias} ViewportProvider={ViewportProvider} isReply={isReply} isMainView={isMainView} />
         </div>
     );
 }

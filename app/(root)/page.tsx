@@ -27,6 +27,8 @@ export default async function Page() {
 
       <TopBar />
       <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 px-0">
+{/*         <div className=" w-7/12 mobile:max-w-[40rem] max-xl:w-4/5 max-lg:w-full h-[5rem] mb-2 bg-good-gray rounded-3xl border border-border">
+        </div>  STORIES*/} 
         <div className="w-7/12 bg-good-gray basis-full grow shrink rounded-t-3xl border border-border overflow-x-hidden overflow-y-auto relative z-0   mobile:max-w-[40rem] max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
           <TopChat />
           <div className="">

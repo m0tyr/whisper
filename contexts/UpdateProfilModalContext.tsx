@@ -1,11 +1,8 @@
 'use client';
 import UpdateProfil from '@/components/forms/UpdateProfil';
-import ReplyWhisper from '@/components/forms/ReplyWhisper/ReplyWhisper';
 import { Modal } from '@/components/shared/Modal';
-import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from '@/constants/message';
-import { WhisperTypes, Whisper_to_Reply } from '@/lib/types/whisper.types';
 import { AnimatePresence } from 'framer-motion';
-import { createContext, useMemo, ReactNode, useState, MouseEventHandler, useEffect } from 'react';
+import { createContext, useMemo, ReactNode, useState } from 'react';
 
 
 interface UpdateProfilModalContextApiProps {

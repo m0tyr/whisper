@@ -22,8 +22,8 @@ import Image from "next/image";
 import React from "react";
 import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import { motion } from "framer-motion";
-import WhisperPostText from "@/components/cards/components/WhisperPostText";
-import WhisperPostMediaAttachments from "@/components/cards/components/WhisperPostMediaAttachments";
+import WhisperPostText from "@/components/cards/components/WhisperPostLayout/WhisperPostText";
+import WhisperPostMediaAttachments from "@/components/cards/components/WhisperPostLayout/WhisperPostMediaAttachments";
 
 export default function ReplyLayoutCell({ content, medias, author, createdAt }: Props) {
     return (

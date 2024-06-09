@@ -5,9 +5,9 @@ import Link from "next/link";
 import { calculateTimeAgo } from "@/lib/utils";
 import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
 import { useWhisper } from "@/contexts/WhisperPostContext";
-import WhisperPostText from "./components/WhisperPostText";
-import WhisperPostInteractions from "./components/WhisperPostInteractions";
-import WhisperPostMediaAttachments from "./components/WhisperPostMediaAttachments";
+import WhisperPostText from "./components/WhisperPostLayout/WhisperPostText";
+import WhisperPostInteractions from "./components/WhisperPostLayout/WhisperPostInteractions";
+import WhisperPostMediaAttachments from "./components/WhisperPostLayout/WhisperPostMediaAttachments";
 
 
 const ViewWhisperCard = () => {

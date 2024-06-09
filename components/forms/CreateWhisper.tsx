@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import * as z from "zod";
 import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,6 @@ import {
 import { WhisperValidation } from "@/lib/validations/whisper";
 import { createWhisper } from "@/lib/actions/whisper.actions";
 import { computeSHA256, extractElements, extractMention } from "@/lib/utils";
-import { AnimatePresence } from 'framer-motion'
 import { useToast } from "../ui/use-toast";
 import { DBImageData, ExtractedElement, MentionsDatas } from "@/lib/types/whisper.types";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
@@ -20,7 +19,6 @@ import { useCreatePost } from "@/hooks/useCreatePost";
 import PostComposer from "../shared/widgets/composer_post_card";
 import PostComposerDialog from "../shared/widgets/composer_post_dialog";
 import { useSessionUser } from "@/hooks/useSessionUser";
-import { useContext } from "react";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 
@@ -199,7 +197,7 @@ const CreateWhisper = () => {
                   onInput={handleInput}
                 >
                   <div className="flex justify-center items-center p-4">
-                    <span className=" text-white font-bold text-[16px] ">Nouveau Whisper</span>
+                    <span className=" text-white font-bold text-[16px]">Nouveau Whisper</span>
                   </div>
 
                   <div className="shadow-[0_12px_24px_0_rgba(0,0,0,0.08)] w-[620px]  space-y-[-1px] box-border relative">

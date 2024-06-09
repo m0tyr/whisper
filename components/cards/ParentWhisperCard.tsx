@@ -6,10 +6,10 @@ import Image from "next/image";
 import { calculateTimeAgo } from "@/lib/utils";
 import Link from "next/link";
 import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
-import WhisperPostInteractions from "./components/WhisperPostInteractions";
+import WhisperPostInteractions from "./components/WhisperPostLayout/WhisperPostInteractions";
 import { useWhisper } from "@/contexts/WhisperPostContext";
-import WhisperPostText from "./components/WhisperPostText";
-import WhisperPostMediaAttachments from "./components/WhisperPostMediaAttachments";
+import WhisperPostText from "./components/WhisperPostLayout/WhisperPostText";
+import WhisperPostMediaAttachments from "./components/WhisperPostLayout/WhisperPostMediaAttachments";
 
 
 const ParentWhisperCard = () => {
@@ -71,8 +71,6 @@ const ParentWhisperCard = () => {
 
                                     <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
                                     <WhisperDropDownAction />
-
-
                                 </div>
                                 <div className="flex relative top-0.5 mb-0.5 " onClick={(e) => {
                                     ping(e)

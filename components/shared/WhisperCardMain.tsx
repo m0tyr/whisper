@@ -15,9 +15,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
-import WhisperPostInteractions from "../cards/components/WhisperPostInteractions";
-import WhisperPostMediaAttachments from "../cards/components/WhisperPostMediaAttachments";
-import WhisperPostText from "../cards/components/WhisperPostText";
+import WhisperPostInteractions from "../cards/components/WhisperPostLayout/WhisperPostInteractions";
+import WhisperPostMediaAttachments from "../cards/components/WhisperPostLayout/WhisperPostMediaAttachments";
+import WhisperPostText from "../cards/components/WhisperPostLayout/WhisperPostText";
 import { useWhisper } from "@/contexts/WhisperPostContext";
 
 export default function WhisperCardMain({ id, author, createdAt }: Props) {

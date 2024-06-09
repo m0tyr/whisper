@@ -2,7 +2,7 @@
 import Carousel from "@/components/shared/ui/Carousel";
 import { DBImageData } from "@/lib/types/whisper.types";
 import Image from "next/image";
-import WhisperCardCarousel from "./WhisperCardCarousel";
+import WhisperCardCarousel from "./WhisperPostCarousel";
 import ShowImage from "@/components/shared/ShowImage";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -13,7 +13,7 @@ interface Props {
     isMainView: boolean;
     ViewportProvider: string;
 }
-const WhisperCardMedia = ({ medias, ViewportProvider, isReply, isMainView }: Props) => {
+const WhisperPostMedia = ({ medias, ViewportProvider, isReply, isMainView }: Props) => {
     const [showImage, setShowImage] = useState(false);
     const [targetImage, settargetImage] = useState<string | undefined>("")
     const [targetAR, settargetAR] = useState<string | undefined>("")
@@ -174,4 +174,4 @@ const WhisperCardMedia = ({ medias, ViewportProvider, isReply, isMainView }: Pro
         </>
     )
 }
-export default WhisperCardMedia
+export default WhisperPostMedia
