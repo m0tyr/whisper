@@ -1,7 +1,7 @@
 "use client"
 import React, { createContext, useContext, ReactNode, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { DBImageData, ExtractedElement } from '@/lib/types/whisper.types';
+import { DBImageData, ExtractedElement, WhisperViewportTypes } from '@/lib/types/whisper.types';
 
 export interface Author {
     username: string;
@@ -38,6 +38,9 @@ export interface WhisperData {
     like_info: LikeInfo;
     likewhisper: any;
     currentUserId: string;
+    isInReplyContext: boolean;
+    isInViewingView: boolean;
+    ViewportIndicator: WhisperViewportTypes;
     ping: (e: MouseEvent) => void;
 }
 

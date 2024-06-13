@@ -20,7 +20,7 @@ const WhisperPostMediaAttachments = ({ ViewportProvider, isInReplyContext,isMain
             return `relative ${medias.length > 2 ? `w-[calc(100%_+_48px_+_2_*_1px)] ${isReply ? '' : 'ml-[calc(-1_*_(48px_-_22px))]'}` : ''} bottom-1 ${content && content.length === 0 ? "pt-1" : ""}`;
         } else if (ViewportProvider == "reply_modal") {
             return `relative ${medias.length > 2 ? 'w-[calc(100%_+_48px_+_2_*_10.5px)]' : ''} bottom-1 ${content && content.length === 0 ? "pt-1" : ""}`;
-        } else {
+        } else if (ViewportProvider == "default") {
             return `relative ${medias.length > 2 ? 'w-[calc(100%_+_48px_+_2_*_18.5px)] ml-[calc(-1_*_(48px_+_18.5px))]' : ''} bottom-1 ${content && content.length === 0 ? "pt-1" : ""}`;
         }
     };

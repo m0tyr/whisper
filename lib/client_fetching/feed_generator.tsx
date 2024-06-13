@@ -80,6 +80,9 @@ export default async function FeedGenerator({ userID }: Props) {
                                     text: mention.text,
                                     version: mention.version
                                 })),
+                                isInReplyContext: false,
+                                isInViewingView: false,
+                                ViewportIndicator: "default",
                                 likewhisper: likeAction,
                                 currentUserId: userID
                             }}

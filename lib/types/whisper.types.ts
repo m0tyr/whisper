@@ -97,3 +97,5 @@ export interface Whisper_to_Reply {
 }
 
 export type WhisperTypes = 'create' | 'reply';
+
+export type WhisperViewportTypes = 'default' | "parent" | "reply_modal" | "direct"; 
