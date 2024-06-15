@@ -7,7 +7,7 @@ import { PrevImageData } from "@/lib/types/whisper.types"
 import { ChangeEvent, MutableRefObject } from "react"
 import Image from "next/image";
 import ReplyLayoutCell from "@/components/forms/ReplyWhisper/ReplyLayoutCell"
-import { WhisperProvider } from "@/contexts/WhisperPostContext"
+import { Whisper } from "@/contexts/WhisperPostContext"
 interface PostComposerProps {
     whisper_to_reply?: any;
     user: {
@@ -47,7 +47,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                     <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
                         <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1 ">
 
-                            <WhisperProvider
+                            <Whisper
                                 value={{
                                     id: '', // No data needed here
                                     parentId: '', // No data needed here
@@ -96,12 +96,10 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                     isInViewingView: false,
                                     isOnlyMediaPost: whisper_to_reply.content && whisper_to_reply.content.length === 0,
                                     ViewportIndicator: "reply_modal",
-                                    likewhisper: () => { },
-                                    currentUserId: user.id as string
                                 }}
                             >
                                 <ReplyLayoutCell />
-                            </WhisperProvider>
+                            </Whisper>
                         </div>
                     </div>
                     <div className="grid grid-cols-[auto,1fr] ">

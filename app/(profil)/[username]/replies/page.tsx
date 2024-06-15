@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import { auth } from "@/auth";
 import UserCard from "@/components/cards/UserCard";
-import WhisperCard from "@/components/cards/WhisperCard";
+import WhisperPost from "@/components/cards/WhisperPost";
 import { likewhisper } from "@/lib/actions/whisper.actions";
 
 
@@ -87,7 +87,7 @@ export default async function Page({ params }: { params: { username: string } })
                     ) : (
                         <>
                             {userposts.whispers.map((post: any) => (
-                                <WhisperCard
+                                <WhisperPost
                                     id={post._id}
                                     parentId={post.parentId}
                                     content={post.content.map((content: any) => ({

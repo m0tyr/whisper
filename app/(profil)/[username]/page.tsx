@@ -3,7 +3,7 @@ import { fetchUser, fetchUserWhisper, fetchUserbyEmail, fetchUserbyUsername, fol
 import { notFound, redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import UserCard from "@/components/cards/UserCard";
-import WhisperCard from "@/components/cards/WhisperCard";
+import WhisperPost from "@/components/cards/WhisperPost";
 import { auth } from "@/auth";
 import { likewhisper } from "@/lib/actions/whisper.actions";
 import { WhisperProvider } from "@/contexts/WhisperPostContext";
@@ -148,7 +148,7 @@ export default async function Page({ params }: { params: { username: string } })
                                                 ViewportIndicator : "default"
                                             }}
                                         >
-                                            <WhisperCard />
+                                            <WhisperPost />
                                         </WhisperProvider>
                                     ))}
                                 </>

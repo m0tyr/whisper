@@ -6,7 +6,7 @@ import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect, usePathname } from "next/navigation";
 import { fetchwhispers, searchwhispersV1 } from "@/lib/actions/whisper.actions";
-import WhisperCard from "@/components/cards/WhisperCard";
+import WhisperPost from "@/components/cards/WhisperPost";
 import LoadingSkeleton from "@/components/shared/loader/LoadingSkeleton";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { getMeta } from "@/lib/utils";
@@ -55,7 +55,7 @@ export default async function Page({
                   </div>) : (
                   <>
                     {results?.whispers.map((post: any) => (
-                      <WhisperCard
+                      <WhisperPost
                         key={post._id}
                         id={`${post._id}`}
                         parentId={post.parentId}

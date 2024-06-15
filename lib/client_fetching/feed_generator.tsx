@@ -1,40 +1,38 @@
-import WhisperCard from "@/components/cards/WhisperCard";
+'use client'
 import { fetchwhispers, likewhisper } from "../actions/whisper.actions";
 import React from "react";
 import FeedUserCard from "@/components/shared/widgets/feed_user_card";
 import { FamousUserSuggestion, follow } from "../actions/user.actions";
-import { WhisperProvider } from "@/contexts/WhisperPostContext";
+import WhisperPost from "@/components/cards/WhisperPost";
+import useQueryForYouFeed from "@/hooks/queries/useQueryForYouFeed";
+import FeedSkeleton from "@/components/shared/loader/feed_skeleton";
 
-interface Props {
-    userID: string;
-}
 
-export default async function FeedGenerator({ userID }: Props) {
-    const fetchedPosts = await fetchwhispers(userID, 1, 30);
+
+export default function FeedGenerator() {
     let suggestions: any;
-    if (!fetchedPosts) {
-        suggestions = await FamousUserSuggestion();
-    }
-    
-    const likeAction = async (myusername: string, whisperid: string, username: string) => {
-        "use server";
-        return await likewhisper(myusername, whisperid, username);
-    };
-    
+    /*   if (!fetchedPosts) {
+          suggestions = await FamousUserSuggestion();
+      } */
+
     const addtofollowing = async (myusername: string, username: string) => {
-        "use server";
-        await follow(myusername, username);
-    };
+/*         await follow(myusername, username);
+ */    };
+    const { data, isFetched } = useQueryForYouFeed();
 
     return (
         <>
-            {!fetchedPosts ? (
+        {!isFetched ? (
+            <FeedSkeleton feed_length={15} />
+              ) : ( 
+                <>
+            {!data ? (
                 <FeedUserCard suggestions={suggestions} follow={addtofollowing} />
             ) : (
                 <>
-                    {fetchedPosts.posts_exec.map((post: any) => (
-                        <WhisperProvider
-                            value={{
+                    {data.posts_exec.map((post: any) => (
+                        <WhisperPost
+                            post={{
                                 id: post._id,
                                 parentId: post.parentId,
                                 content: post.content.map((content: any) => ({
@@ -84,15 +82,16 @@ export default async function FeedGenerator({ userID }: Props) {
                                 isInViewingView: false,
                                 isOnlyMediaPost: post.content && post.content.length === 0,
                                 ViewportIndicator: "default",
-                                likewhisper: likeAction,
-                                currentUserId: userID
                             }}
                         >
-                            <WhisperCard />
-                        </WhisperProvider>
+                            <WhisperPost.defaultContainer />
+                        </WhisperPost>
                     ))}
                 </>
             )}
+            </>
+        )}
         </>
+
     );
 }

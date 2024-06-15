@@ -20,7 +20,7 @@ import WhisperPostMediaAttachments from "../cards/components/WhisperPostLayout/W
 import WhisperPostText from "../cards/components/WhisperPostLayout/WhisperPostText";
 import { useWhisper } from "@/contexts/WhisperPostContext";
 
-export default function WhisperCardMain({ id, author, createdAt }: Props) {
+export default function WhisperPostMain({ id, author, createdAt }: Props) {
     const router = useRouter();
     const ping = () => {
         router.push(`/${author.username}/post/${id}`)

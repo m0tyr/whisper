@@ -21,7 +21,7 @@ import { Skeleton } from "../ui/skeleton";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-const WhisperCardFooter = ({ id, author, comments, isNotComment, like_count }: Props) => {
+const WhisperPostFooter = ({ id, author, comments, isNotComment, like_count }: Props) => {
     const whisperData = {
         author: author,
         comments: comments,
@@ -109,4 +109,4 @@ const WhisperCardFooter = ({ id, author, comments, isNotComment, like_count }: P
     )
 }
 
-export default WhisperCardFooter;
+export default WhisperPostFooter;

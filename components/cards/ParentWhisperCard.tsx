@@ -12,7 +12,7 @@ import WhisperPostText from "./components/WhisperPostLayout/WhisperPostText";
 import WhisperPostMediaAttachments from "./components/WhisperPostLayout/WhisperPostMediaAttachments";
 
 
-const ParentWhisperCard = () => {
+const ParentWhisperPost = () => {
     const {
         parentId,
         author,
@@ -28,7 +28,6 @@ const ParentWhisperCard = () => {
             }} >
                 <div className={`flex w-full flex-1 flex-col  ${isNotComment ? '' : 'gap-2'} mb-1 relative`}>
                     <div className="relative outline-none">
-
                         <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
 
 
@@ -98,4 +97,4 @@ const ParentWhisperCard = () => {
 }
 
 
-export default ParentWhisperCard;
+export default ParentWhisperPost;

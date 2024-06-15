@@ -10,7 +10,7 @@ import WhisperPostInteractions from "./components/WhisperPostLayout/WhisperPostI
 import WhisperPostMediaAttachments from "./components/WhisperPostLayout/WhisperPostMediaAttachments";
 
 
-const ViewWhisperCard = () => {
+const ViewWhisperPost = () => {
     const {
         parentId,
         author,
@@ -20,16 +20,14 @@ const ViewWhisperCard = () => {
     } = useWhisper();
     return (
         <>
-            <div className={`opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${parentId === undefined ? 'pt-3.5' : ''}  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`} onClick={(e) => {
+            <div className={`rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${parentId === undefined ? 'pt-3.5' : ''}  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`} onClick={(e) => {
                 ping(e)
             }} >
                 <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 relative' >
-
                     <div className="flex flex-row flex-1  gap-3 ">
                         <div className="w-full relative" onClick={(e) => {
                             ping(e)
                         }} >
-
                             <div className="flex flex-row mb-2  items-center gap-3">
                                 <Link href={`/${author.username}`}>
                                     <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} className="col-start-3 ml-auto">
@@ -49,9 +47,9 @@ const ViewWhisperCard = () => {
                                 </div>
                             </div>
 
-                            <WhisperPostText isInReplyContext={false} />
+                            <WhisperPostText  />
 
-                            <WhisperPostMediaAttachments isInReplyContext={false} ViewportProvider={"direct"} isMainView={true}/>
+                            <WhisperPostMediaAttachments />
                           
                             <WhisperPostInteractions />
                         </div>
@@ -79,4 +77,4 @@ const ViewWhisperCard = () => {
 }
 
 
-export default ViewWhisperCard;
+export default ViewWhisperPost;

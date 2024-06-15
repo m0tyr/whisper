@@ -1,7 +1,8 @@
-"use client"
+"use client";
 import React, { createContext, useContext, ReactNode, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { DBImageData, ExtractedElement, WhisperViewportTypes } from '@/lib/types/whisper.types';
+import { likewhisper } from '@/lib/actions/whisper.actions';
 
 export interface Author {
     username: string;
@@ -25,6 +26,7 @@ export interface LikeInfo {
     liketracker: { id: string }[];
 }
 
+
 export interface WhisperData {
     id: string;
     parentId: string | null;
@@ -35,19 +37,22 @@ export interface WhisperData {
     comments: Comments[];
     mentions: Mentions[];
     like_info: LikeInfo;
-    likewhisper: any;
-    currentUserId: string;
     isNotComment: boolean;
     isInReplyContext: boolean;
     isOnlyMediaPost: boolean;
     isInViewingView: boolean;
     ViewportIndicator: WhisperViewportTypes;
-    ping: (e: MouseEvent) => void;
 }
 
-const WhisperContext = createContext<WhisperData | undefined>(undefined);
 
-export const WhisperProvider = ({ children, value }: { children: ReactNode; value: Omit<WhisperData, 'ping'> }) => {
+interface UtlsFuncWhisperData extends WhisperData {
+    ping: (e: MouseEvent) => void;
+    likeAction: (myusername: string, whisperid: string, username: string) => Promise<void>;
+}
+
+const WhisperContext = createContext<UtlsFuncWhisperData | undefined>(undefined);
+
+export const Whisper = ({ children, value }: { children: ReactNode; value: Omit<WhisperData, 'ping' | 'likeAction'> }) => {
     const router = useRouter();
 
     const ping = (e: any) => {
@@ -56,14 +61,18 @@ export const WhisperProvider = ({ children, value }: { children: ReactNode; valu
         }
     };
 
+    const likeAction = async (myusername: string, whisperid: string, username: string) => {
+        await likewhisper(myusername, whisperid, username);
+    };
+
     return (
-        <WhisperContext.Provider value={{ ...value, ping }}>
+        <WhisperContext.Provider value={{ ...value, ping, likeAction }}>
             {children}
         </WhisperContext.Provider>
     );
 };
 
-export const useWhisper = () => {
+export function useWhisper(){
     const context = useContext(WhisperContext);
     if (context === undefined) {
         throw new Error('useWhisper must be used within a WhisperProvider');

@@ -2,7 +2,7 @@
 import Carousel from "@/components/shared/ui/Carousel";
 import { DBImageData } from "@/lib/types/whisper.types";
 import Image from "next/image";
-import WhisperCardCarousel from "./WhisperPostCarousel";
+import WhisperPostCarousel from "./WhisperPostCarousel";
 import ShowImage from "@/components/shared/ShowImage";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -166,7 +166,7 @@ const WhisperPostMedia = () => {
                 </div>
             )}
             {medias.length > 2 && (
-                <WhisperCardCarousel DataArray={medias} widthprovider={settargetWidth} 
+                <WhisperPostCarousel DataArray={medias} widthprovider={settargetWidth} 
                 srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} 
                 showImage={showImage} />
             )}

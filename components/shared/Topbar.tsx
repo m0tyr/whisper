@@ -10,10 +10,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion"
-import { MouseEventHandler, useContext, useState } from "react";
 import { signOut } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast"
-import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useNotificationsCountQuery } from "@/hooks/queries/NotificationQuery";
 import { requestNewFeed } from "@/lib/actions/feed.actions";

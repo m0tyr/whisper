@@ -7,7 +7,7 @@ export default function FeedSkeleton({ feed_length }: { feed_length: number }) {
     ));
 
     return <>
-        <div className="flex flex-col gap-y-9 py-4">
+        <div className="flex flex-col gap-y-9 py-4 px-5">
             {skeletons}
         </div>
     </>;

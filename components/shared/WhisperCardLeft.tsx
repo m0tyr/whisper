@@ -8,7 +8,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useWhisper } from "@/contexts/WhisperPostContext";
 
-const WhisperCardLeft = ({
+const WhisperPostLeft = ({
     isReply,
     isEmbedded
 }: Props) => {
@@ -82,4 +82,4 @@ const WhisperCardLeft = ({
     );
 };
 
-export default WhisperCardLeft;
+export default WhisperPostLeft;

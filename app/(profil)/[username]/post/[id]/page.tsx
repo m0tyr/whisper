@@ -1,10 +1,10 @@
-import WhisperCard from "@/components/cards/WhisperCard";
+import WhisperPost from "@/components/cards/WhisperPost";
 import { fetchallParentsFromWhisper, fetchwhisperById, likewhisper } from "@/lib/actions/whisper.actions";
 import { fetchUser, follow } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
-import ViewWhisperCard from "@/components/cards/ViewWhisperCard";
-import ParentWhisperCard from "@/components/cards/ParentWhisperCard";
+import ViewWhisperPost from "@/components/cards/ViewWhisperCard";
+import ParentWhisperPost from "@/components/cards/ParentWhisperCard";
 import { Suspense } from "react";
 import Loader from "@/components/shared/loader/loader";
 import { auth } from "@/auth";
@@ -114,7 +114,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                             ViewportIndicator : "parent"
                                         }}
                                     >
-                                        <ParentWhisperCard />
+                                        <ParentWhisperPost />
                                     </WhisperProvider>
                                 );
                             })}
@@ -169,7 +169,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                     ViewportIndicator : "direct"
                                 }}
                             >
-                                <ViewWhisperCard />
+                                <ViewWhisperPost />
                             </WhisperProvider>
 
                         </div>
@@ -233,7 +233,7 @@ export default async function Page({ params }: { params: { id: string, username:
                                             ViewportIndicator : "default"
                                         }}
                                     >
-                                        <WhisperCard />
+                                        <WhisperPost />
                                     </WhisperProvider>
                                 )
                                 )}
