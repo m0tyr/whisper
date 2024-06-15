@@ -107,7 +107,11 @@ export default async function Page({ params }: { params: { id: string, username:
                                                     id: likeid.id
                                                 }))
                                             },
-                                            likewhisper: likeAction
+                                            likewhisper: likeAction,
+                                            isInReplyContext: false,
+                                            isInViewingView: false,
+                                            isOnlyMediaPost: post.content && post.content.length === 0,
+                                            ViewportIndicator : "parent"
                                         }}
                                     >
                                         <ParentWhisperCard />
@@ -158,7 +162,11 @@ export default async function Page({ params }: { params: { id: string, username:
                                             id: likeid.id
                                         }))
                                     },
-                                    likewhisper: likeAction
+                                    likewhisper: likeAction,
+                                    isInReplyContext: false,
+                                    isInViewingView: true,
+                                    isOnlyMediaPost: whisperdatas.content && whisperdatas.content.length === 0,
+                                    ViewportIndicator : "direct"
                                 }}
                             >
                                 <ViewWhisperCard />
@@ -218,7 +226,11 @@ export default async function Page({ params }: { params: { id: string, username:
                                                 version: mention.version
                                             })),
                                             likewhisper: likeAction,
-                                            currentUserId: currentuserInfo.id as string
+                                            currentUserId: currentuserInfo.id as string,
+                                            isInReplyContext: false,
+                                            isInViewingView: false,
+                                            isOnlyMediaPost: post.content && post.content.length === 0,
+                                            ViewportIndicator : "default"
                                         }}
                                     >
                                         <WhisperCard />

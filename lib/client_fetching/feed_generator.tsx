@@ -82,6 +82,7 @@ export default async function FeedGenerator({ userID }: Props) {
                                 })),
                                 isInReplyContext: false,
                                 isInViewingView: false,
+                                isOnlyMediaPost: post.content && post.content.length === 0,
                                 ViewportIndicator: "default",
                                 likewhisper: likeAction,
                                 currentUserId: userID

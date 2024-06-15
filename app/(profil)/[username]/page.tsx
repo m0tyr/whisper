@@ -141,7 +141,11 @@ export default async function Page({ params }: { params: { username: string } })
                                                     version: mention.version
                                                 })),
                                                 likewhisper: likeAction,
-                                                currentUserId: currentuserData.id as string
+                                                currentUserId: currentuserData.id as string,
+                                                isInReplyContext: false,
+                                                isInViewingView: false,
+                                                isOnlyMediaPost: post.content && post.content.length === 0,
+                                                ViewportIndicator : "default"
                                             }}
                                         >
                                             <WhisperCard />

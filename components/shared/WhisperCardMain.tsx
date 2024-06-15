@@ -51,8 +51,8 @@ export default function WhisperCardMain({ id, author, createdAt }: Props) {
                     </Link>
                 </div>
                 <div className="mt-0.5">
-                    <WhisperPostText isInReplyContext={false} />
-                    <WhisperPostMediaAttachments ViewportProvider={""} isInReplyContext={false} isMainView={false} />
+                    <WhisperPostText />
+                    <WhisperPostMediaAttachments />
                     <WhisperPostInteractions />
                 </div>
             </div>

@@ -1,21 +1,5 @@
 'use client'
 
-interface Props {
-    id: string;
-    content: ExtractedElement[];
-    medias: DBImageData[];
-    author: {
-        username: string;
-        image: string;
-        id: string;
-    };
-    createdAt: string;
-    mentions: {
-        link: string,
-        text: string,
-        version: number
-    }[];
-}
 import { calculateTimeAgo } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
@@ -24,8 +8,10 @@ import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
 import { motion } from "framer-motion";
 import WhisperPostText from "@/components/cards/components/WhisperPostLayout/WhisperPostText";
 import WhisperPostMediaAttachments from "@/components/cards/components/WhisperPostLayout/WhisperPostMediaAttachments";
+import { useWhisper } from "@/contexts/WhisperPostContext";
 
-export default function ReplyLayoutCell({ content, medias, author, createdAt }: Props) {
+export default function ReplyLayoutCell() {
+    const { author, createdAt } = useWhisper()
     return (
         <>
             <div className={`flex flex-col  w-10`}>
@@ -53,11 +39,10 @@ export default function ReplyLayoutCell({ content, medias, author, createdAt }: 
                         <p className="opacity-50 pr-2.5">{calculateTimeAgo(createdAt.toString())}</p>
                     </div>
                 </div>
-                <WhisperPostText isInReplyContext={true} reply_ref_content={content} />
+                <WhisperPostText />
 
-                <WhisperPostMediaAttachments ViewportProvider="reply_modal" isMainView={false} isInReplyContext={true} reply_ref_content={content} reply_ref_medias={medias} />
+                <WhisperPostMediaAttachments  />
                 <div className=" mb-3">
-
                 </div>
             </div>
 

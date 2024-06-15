@@ -17,7 +17,7 @@ const usePostText = (isInReplyContext: any, reply_ref_content: ExtractedElement[
 
   PostTextComputedObject = processElements(PostTextObject);
 
-  return { PostTextObject, PostTextComputedObject, PostTextping };
+  return { PostTextComputedObject, PostTextping };
 };
 
 export default usePostText;

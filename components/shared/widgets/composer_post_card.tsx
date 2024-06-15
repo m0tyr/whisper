@@ -6,8 +6,8 @@ import { FieldValues } from "react-hook-form"
 import { PrevImageData } from "@/lib/types/whisper.types"
 import { ChangeEvent, MutableRefObject } from "react"
 import Image from "next/image";
-import WhisperCardLeft from "../WhisperCardLeft"
 import ReplyLayoutCell from "@/components/forms/ReplyWhisper/ReplyLayoutCell"
+import { WhisperProvider } from "@/contexts/WhisperPostContext"
 interface PostComposerProps {
     whisper_to_reply?: any;
     user: {
@@ -45,13 +45,63 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                     onInput={handleInput}
                 >
                     <div className='flex w-full flex-1 flex-col mt-1.5 gap-1 mb-1 '>
-                        <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1  ">
-                            <ReplyLayoutCell id={whisper_to_reply.id} content={whisper_to_reply.content} medias={whisper_to_reply.medias} author={whisper_to_reply.author}
-                                createdAt={whisper_to_reply.createdAt} mentions={whisper_to_reply.mentions.map((mention: any) => ({
-                                    link: mention.link,
-                                    text: mention.text,
-                                    version: mention.version
-                                }))} />
+                        <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1 ">
+
+                            <WhisperProvider
+                                value={{
+                                    id: '', // No data needed here
+                                    parentId: '', // No data needed here
+                                    content: whisper_to_reply.content.map((content: any) => ({
+                                        text: content.text,
+                                        type: content.type
+                                    })),
+                                    medias: whisper_to_reply.medias.map((media: any) => ({
+                                        s3url: media.s3url,
+                                        aspectRatio: media.aspectRatio,
+                                        width: media.width,
+                                        height: media.height,
+                                        isVideo: media.isVideo
+                                    })),
+                                    author: {
+                                        image: whisper_to_reply.author.image,
+                                        username: whisper_to_reply.author.username,
+                                        id: whisper_to_reply.author.id
+                                    },
+                                    createdAt: whisper_to_reply.createdAt,
+                                    like_info: { // No data needed here
+                                        like_count: 0,
+                                        liketracker: []
+                                    },
+                                    comments: [{ // No data needed here
+                                        posts: {
+                                            number: 0
+                                        },
+                                        childrens: { // No data needed here
+                                            author: {
+                                                image: '',
+                                                username: '',
+                                                id: ''
+                                            },
+                                            content: [],
+                                            createdAt: ''
+                                        }
+                                    }],
+                                    isNotComment: false,
+                                    mentions: whisper_to_reply.mentions.map((mention: any) => ({
+                                        link: mention.link,
+                                        text: mention.text,
+                                        version: mention.version
+                                    })),
+                                    isInReplyContext: true,
+                                    isInViewingView: false,
+                                    isOnlyMediaPost: whisper_to_reply.content && whisper_to_reply.content.length === 0,
+                                    ViewportIndicator: "reply_modal",
+                                    likewhisper: () => { },
+                                    currentUserId: user.id as string
+                                }}
+                            >
+                                <ReplyLayoutCell />
+                            </WhisperProvider>
                         </div>
                     </div>
                     <div className="grid grid-cols-[auto,1fr] ">
@@ -70,7 +120,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                 <div className='col-span-2 ml-2 '>
                                     <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                     <div className="relative">
-                                        <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."}/>
+                                        <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."} />
                                     </div>
                                     <FormField
                                         control={form.control}

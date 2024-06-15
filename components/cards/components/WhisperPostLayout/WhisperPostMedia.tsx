@@ -6,6 +6,7 @@ import WhisperCardCarousel from "./WhisperPostCarousel";
 import ShowImage from "@/components/shared/ShowImage";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useWhisper } from "@/contexts/WhisperPostContext";
 
 interface Props {
     medias: DBImageData[];
@@ -13,7 +14,8 @@ interface Props {
     isMainView: boolean;
     ViewportProvider: string;
 }
-const WhisperPostMedia = ({ medias, ViewportProvider, isReply, isMainView }: Props) => {
+const WhisperPostMedia = () => {
+    const { medias, isInReplyContext } = useWhisper()
     const [showImage, setShowImage] = useState(false);
     const [targetImage, settargetImage] = useState<string | undefined>("")
     const [targetAR, settargetAR] = useState<string | undefined>("")
@@ -21,7 +23,7 @@ const WhisperPostMedia = ({ medias, ViewportProvider, isReply, isMainView }: Pro
     const [targetType, settargetType] = useState<boolean>(false)
     const [Audiostate, toggleAudio] = useState<boolean>(false)
     const togglePopup = (src: string, ar: string, isVideo: boolean, width: string) => {
-        if (!isReply) {
+        if (!isInReplyContext ) {
             setShowImage(!showImage);
             settargetImage(src)
             settargetAR(ar)
@@ -164,9 +166,9 @@ const WhisperPostMedia = ({ medias, ViewportProvider, isReply, isMainView }: Pro
                 </div>
             )}
             {medias.length > 2 && (
-                <WhisperCardCarousel isMainView={isMainView} ViewportProvider={ViewportProvider} DataArray={medias} widthprovider={settargetWidth} 
+                <WhisperCardCarousel DataArray={medias} widthprovider={settargetWidth} 
                 srcprovider={settargetImage} typeprovider={settargetType} arprovider={settargetAR} setShowImage={setShowImage} 
-                showImage={showImage} isReply={isReply} />
+                showImage={showImage} />
             )}
             {showImage && (
                 <ShowImage width={targetWidth} src={targetImage} ar={targetAR} togglePopup={togglePopup} isVideo={targetType} />

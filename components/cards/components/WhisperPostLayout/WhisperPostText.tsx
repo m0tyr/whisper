@@ -7,15 +7,19 @@ import Link from "next/link";
 import React from "react";
 
 interface Props {
-    isInReplyContext: boolean;
     reply_ref_content?: ExtractedElement[];
 }
 
-const WhisperPostText = ({ isInReplyContext, reply_ref_content }: Props) => {
-    const { PostTextObject, PostTextComputedObject, PostTextping } = usePostText(isInReplyContext, reply_ref_content as ExtractedElement[]);
+const WhisperPostText = () => {
+    const {
+        content,
+        isInReplyContext,
+        isOnlyMediaPost
+    } = useWhisper()
+    const { PostTextComputedObject, PostTextping } = usePostText(isInReplyContext, content);
     return (
         <>
-            {PostTextObject && PostTextObject.length !== 0 && (
+            {!isOnlyMediaPost && (
                 <div className="relative bottom-[0.125rem]">
                     <div className="break-words max-w-lg whitespace-pre-wrap cursor-pointer" onClick={(e) => {
                         PostTextping(e)
@@ -23,9 +27,8 @@ const WhisperPostText = ({ isInReplyContext, reply_ref_content }: Props) => {
                         {PostTextComputedObject.map((section, index) => (
                             <span
                                 key={index}
-                                className={`text-white leading-[calc(1.4_*_1em)] cursor-default overflow-y-visible overflow-x-visible max-w-full text-left relative inline-block !text-[15px] text-small-regular font-normal mb-0 ${
-                                    index === 0 ? '' : 'mt-[1rem]'
-                                } whitespace-pre-line break-words`}
+                                className={`text-white leading-[calc(1.4_*_1em)] cursor-default overflow-y-visible overflow-x-visible max-w-full text-left relative inline-block !text-[15px] text-small-regular font-normal mb-0 ${index === 0 ? '' : 'mt-[1rem]'
+                                    } whitespace-pre-line break-words`}
                             >
                                 {section.map((line, subIndex) =>
                                     line.type === 'mention' ? (

@@ -79,8 +79,8 @@ const ParentWhisperCard = () => {
                                         <p className="text-white text-small-semibold !text-[15px] hover:underline inline relative bottom-0.5 ">{author.username}</p>
                                     </Link>
                                 </div>
-                                <WhisperPostText isInReplyContext={false} />
-                                <WhisperPostMediaAttachments ViewportProvider={"parent"} isInReplyContext={false} isMainView={false} />
+                                <WhisperPostText />
+                                <WhisperPostMediaAttachments />
                                 <WhisperPostInteractions />
                             </div>
                         </div>

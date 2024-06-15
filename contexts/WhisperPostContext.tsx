@@ -33,12 +33,13 @@ export interface WhisperData {
     author: Author;
     createdAt: string;
     comments: Comments[];
-    isNotComment?: boolean;
     mentions: Mentions[];
     like_info: LikeInfo;
     likewhisper: any;
     currentUserId: string;
+    isNotComment: boolean;
     isInReplyContext: boolean;
+    isOnlyMediaPost: boolean;
     isInViewingView: boolean;
     ViewportIndicator: WhisperViewportTypes;
     ping: (e: MouseEvent) => void;

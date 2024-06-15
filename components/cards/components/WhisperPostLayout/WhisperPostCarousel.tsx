@@ -15,17 +15,11 @@ interface Props {
     arprovider: any;
     setShowImage: any;
     showImage: boolean;
-    isReply: boolean;
-    isMainView: boolean;
-    ViewportProvider: string;
+
 }
 
-const WhisperPostCarousel = ({ DataArray, widthprovider, ViewportProvider, srcprovider, typeprovider, arprovider, setShowImage, showImage, isReply, isMainView }: Props) => {
-    let PostContent : any;
-    if( !isReply ) {
-        const { content } = useWhisper();
-        PostContent = content;
-    }
+const WhisperPostCarousel = ({ DataArray, widthprovider, srcprovider, typeprovider, arprovider, setShowImage, showImage }: Props) => {
+    const { ViewportIndicator, isInReplyContext, isInViewingView, isOnlyMediaPost } = useWhisper();
     const id: string = randomBytes(10).toString('hex');
     const [width, setWidth] = useState(0)
     const [Audiostate, toggleAudio] = useState<boolean>(false)
@@ -38,7 +32,7 @@ const WhisperPostCarousel = ({ DataArray, widthprovider, ViewportProvider, srcpr
     );
 
     const togglePopup = (src: string, ar: string, isVideo: boolean, width: string) => {
-        if (!isReply) {
+        if (!isInReplyContext) {
             setShowImage(!showImage);
             srcprovider(src)
             typeprovider(isVideo)
@@ -54,7 +48,7 @@ const WhisperPostCarousel = ({ DataArray, widthprovider, ViewportProvider, srcpr
             if (carouselRef.current && fullcarouselRef.current) {
                 carouselRef.current.scrollTo(0, 0);
                 const newWidth = fullcarouselRef.current.scrollWidth - carouselRef.current.offsetWidth + 30;
-                if (isReply) {
+                if (isInReplyContext) {
                     setWidth(newWidth > 0 ? newWidth + 45 : 0);
                 } else {
                     setWidth(newWidth > 0 ? newWidth : 0);
@@ -77,7 +71,7 @@ const WhisperPostCarousel = ({ DataArray, widthprovider, ViewportProvider, srcpr
 
     return (
         <AnimatePresence>
-            <motion.div ref={carouselRef} className={`overflow-hidden ${ViewportProvider === "default" && PostContent.length === 0 ? 'mt-4' : 'mt-3'}  active:cursor-grabbing cursor-grab`} whileTap={"grabbing"}>
+            <motion.div ref={carouselRef} className={`overflow-hidden ${ViewportIndicator === "default" && isOnlyMediaPost ? 'mt-4' : 'mt-3'}  active:cursor-grabbing cursor-grab`} whileTap={"grabbing"}>
                 <motion.div
                     key={id}
                     ref={fullcarouselRef}
@@ -97,8 +91,8 @@ const WhisperPostCarousel = ({ DataArray, widthprovider, ViewportProvider, srcpr
                     }}
                     className="flex flex-row translate-x-0"
                 >
-                    {!isReply ? (
-                        <div className={`${isMainView ? 'w-[calc(48px_-_22px)]' : 'w-[calc(48px_+_18.5px)]'} flex-shrink-0 cursor-grab active:cursor-grabbing`}></div>
+                    {!isInReplyContext ? (
+                        <div className={`${isInViewingView ? 'w-[calc(48px_-_22px)]' : 'w-[calc(48px_+_18.5px)]'} flex-shrink-0 cursor-grab active:cursor-grabbing`}></div>
                     ) : (
                         null
                     )}
