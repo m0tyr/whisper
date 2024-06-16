@@ -93,8 +93,7 @@ export async function fetchUser(userId: string) {
 export async function getUser(userID: string) {
   try {
     connectToDB();
-    const user = await User.findOne({ id: userID })
-
+    const user = await User.findOne({ id: userID });
     return {
         username: user.username,
         name: user.name,

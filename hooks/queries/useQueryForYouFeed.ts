@@ -4,14 +4,14 @@ import { useSessionUser } from "../useSessionUser";
 
 
 function useQueryForYouFeed() {
-    const userData = useSessionUser();
+    const [user] = useSessionUser();
     const { data, isFetched } = useQuery({
         queryKey: ['feed_key', '124TWH'],
         queryFn: async () => {
-            if (!userData) {
+            if (!user?.id) {
                 throw new Error('User data is undefined');
             }
-            return await fetchwhispers(userData[0]?.id, 1, 30);  
+            return await fetchwhispers(user?.id as string, 1, 30);  
         },
     });
     return { data, isFetched };

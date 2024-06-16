@@ -32,10 +32,11 @@ const WhisperPostMedia = () => {
         }
 
     };
+    const { isOnlyMediaPost } = useWhisper()
     return (
         <>
             {medias.length === 1 && (
-                <div className="max-h-[430px] my-1 grid-rows-1 grid-cols-1 grid">
+                <div className={`max-h-[430px] ${isOnlyMediaPost ? 'pt-[0.425rem]' :  'pt-1.5'} my-2 grid-rows-1 grid-cols-1 grid`}>
                     <div style={{ aspectRatio: `${parseFloat(medias[0].width) / parseFloat(medias[0].height)}`, maxHeight: "430px" }}>
                         <div className="block relative h-full">
                             {medias[0].isVideo ? (
@@ -94,7 +95,7 @@ const WhisperPostMedia = () => {
                 </div>
             )}
             {medias.length === 2 && (
-                <div className="pt-1.5 ">
+                <div className={` ${isOnlyMediaPost ? 'pt-[0.975rem]' :  'pt-1.5'}`}>
                     {(() => {
                         const tempfirstAttachmentAspectRatio = parseFloat(medias[0].aspectRatio)
                         const tempsecondAttachmentAspectRatio = parseFloat(medias[1].aspectRatio)
