@@ -72,7 +72,7 @@ export const Whisper = ({ children, value }: { children: ReactNode; value: Omit<
     );
 };
 
-export function useWhisper(){
+export function useWhisper() {
     const context = useContext(WhisperContext);
     if (context === undefined) {
         throw new Error('useWhisper must be used within a WhisperProvider');

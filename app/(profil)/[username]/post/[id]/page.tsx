@@ -1,14 +1,13 @@
-import WhisperPost from "@/components/cards/WhisperPost";
 import { fetchallParentsFromWhisper, fetchwhisperById, likewhisper } from "@/lib/actions/whisper.actions";
-import { fetchUser, follow } from "@/lib/actions/user.actions";
+import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
-import ViewWhisperPost from "@/components/cards/ViewWhisperCard";
-import ParentWhisperPost from "@/components/cards/ParentWhisperCard";
-import { Suspense } from "react";
-import Loader from "@/components/shared/loader/loader";
 import { auth } from "@/auth";
-import { WhisperProvider } from "@/contexts/WhisperPostContext";
+import { Loader } from "lucide-react";
+import { Suspense } from "react";
+import RenderHomeViewWhisperPost from "@/components/cards/components/WhisperPostRenderer/renderHomeViewWhisperPost";
+import RenderMainViewWhisperPost from "@/components/cards/components/WhisperPostRenderer/renderMainViewWhisperPost";
+import RenderParentViewWhisperPost from "@/components/cards/components/WhisperPostRenderer/renderParentViewWhisperPost";
 
 export async function generateMetadata({ params }: { params: { id: string, username: string } }) {
 
@@ -32,17 +31,7 @@ export default async function Page({ params }: { params: { id: string, username:
     if (!currentuserInfo?.onboarded) redirect('/onboarding');
     const whisperdatas = await fetchwhisperById(params.id);
     const allparents = await fetchallParentsFromWhisper(whisperdatas.parentId);
-    const userData = {
-        id: session?.user?.id,
-        username: currentuserInfo?.username,
-        name: currentuserInfo?.name || session?.user?.name,
-        bio: currentuserInfo?.bio || "",
-        image: currentuserInfo?.image || session?.user?.image,
-    };
-    const likeAction = async (myusername: string, whisperid: string, username: string) => {
-        "use server";
-        return await likewhisper(myusername, whisperid, username)
-    }
+
     return (
         <>  <TopBar />
 
@@ -54,189 +43,21 @@ export default async function Page({ params }: { params: { id: string, username:
                             {Object.keys(allparents).map((postId) => {
                                 const post = allparents[postId];
                                 return (
-                                    <WhisperProvider
-                                        value={{
-                                            id: `${post._id}`,
-                                            currentUserId: currentuserInfo.id as string,
-                                            parentId: post.parentId,
-                                            content: post.content.map((content: any) => ({
-                                                text: content.text,
-                                                type: content.type
-                                            })),
-                                            medias: post.media.map((media: any) => ({
-                                                s3url: media.s3url,
-                                                aspectRatio: media.aspectRatio,
-                                                width: media.width,
-                                                height: media.height,
-                                                isVideo: media.isVideo
-                                            })),
-                                            author: {
-                                                image: post.author.image,
-                                                username: post.author.username,
-                                                id: post.author.id
-                                            },
-                                            createdAt: post.createdAt,
-                                            comments: [
-                                                {
-                                                    posts: {
-                                                        number: post.children.length
-                                                    },
-                                                    childrens: post.children.map((child: { author: { image: any; username: any; id: any; }; content: any; createdAt: any; }) => ({
-                                                        author: {
-                                                            image: child.author.image,
-                                                            username: child.author.username,
-                                                            id: child.author.id
-                                                        },
-                                                        content: child.content.map((content: any) => ({
-                                                            text: content.text,
-                                                            type: content.type
-                                                        })),
-                                                        createdAt: child.createdAt
-                                                    }))
-                                                }
-                                            ],
-                                            isNotComment: post.children.length === 0,
-                                            mentions: post.mentions.map((mention: any) => ({
-                                                link: mention.link,
-                                                text: mention.text,
-                                                version: mention.version
-                                            })),
-                                            like_info: {
-                                                like_count: post.interaction_info.like_count,
-                                                liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
-                                                    id: likeid.id
-                                                }))
-                                            },
-                                            likewhisper: likeAction,
-                                            isInReplyContext: false,
-                                            isInViewingView: false,
-                                            isOnlyMediaPost: post.content && post.content.length === 0,
-                                            ViewportIndicator : "parent"
-                                        }}
-                                    >
-                                        <ParentWhisperPost />
-                                    </WhisperProvider>
-                                );
+                                    <RenderParentViewWhisperPost post={post} />
+                                )
+
                             })}
                         </div>
                         <div >
-                            <WhisperProvider
-                                value={{
-                                    id: `${whisperdatas._id}`,
-                                    currentUserId: session?.user?.id || "",
-                                    parentId: whisperdatas.parentId,
-                                    content: whisperdatas.content.map((content: any) => ({
-                                        text: content.text,
-                                        type: content.type
-                                    })),
-                                    medias: whisperdatas.media.map((media: any) => ({
-                                        s3url: media.s3url,
-                                        aspectRatio: media.aspectRatio,
-                                        width: media.width,
-                                        height: media.height,
-                                        isVideo: media.isVideo
-                                    })),
-                                    author: {
-                                        image: whisperdatas.author.image,
-                                        username: whisperdatas.author.username,
-                                        id: whisperdatas.author.id
-                                    },
-                                    createdAt: whisperdatas.createdAt,
-                                    comments: [
-                                        {
-                                            posts: {
-                                                number: whisperdatas.children.length
-                                            },
-                                            childrens: {} // No data needed here
-                                        }
-                                    ],
-                                    isNotComment: whisperdatas.children.length === 0,
-                                    mentions: whisperdatas.mentions.map((mention: any) => ({
-                                        link: mention.link,
-                                        text: mention.text,
-                                        version: mention.version
-                                    })),
-                                    like_info: {
-                                        like_count: whisperdatas.interaction_info.like_count,
-                                        liketracker: whisperdatas.interaction_info.liketracker.map((likeid: any) => ({
-                                            id: likeid.id
-                                        }))
-                                    },
-                                    likewhisper: likeAction,
-                                    isInReplyContext: false,
-                                    isInViewingView: true,
-                                    isOnlyMediaPost: whisperdatas.content && whisperdatas.content.length === 0,
-                                    ViewportIndicator : "direct"
-                                }}
-                            >
-                                <ViewWhisperPost />
-                            </WhisperProvider>
-
+                            <RenderMainViewWhisperPost post={whisperdatas} />
                         </div>
                         <div className=" min-h-[70vh]">
                             <Suspense fallback={
                                 <Loader />
                             }>
                                 {whisperdatas.children.map((post: any) => (
-                                    <WhisperProvider
-                                        value={{
-                                            id: post._id,
-                                            parentId: post.parentId,
-                                            content: post.content.map((content: any) => ({
-                                                text: content.text,
-                                                type: content.type
-                                            })),
-                                            medias: post.media.map((media: any) => ({
-                                                s3url: media.s3url,
-                                                aspectRatio: media.aspectRatio,
-                                                width: media.width,
-                                                height: media.height,
-                                                isVideo: media.isVideo
-                                            })),
-                                            author: {
-                                                image: post.author.image,
-                                                username: post.author.username,
-                                                id: post.author.id
-                                            },
-                                            createdAt: post.createdAt,
-                                            like_info: {
-                                                like_count: post.interaction_info.like_count,
-                                                liketracker: post.interaction_info.liketracker.map((likeid: any) => ({
-                                                    id: likeid.id
-                                                }))
-                                            },
-                                            comments: [{
-                                                posts: {
-                                                    number: post.children.length
-                                                },
-                                                childrens: post.children.map((child: any) => ({
-                                                    author: {
-                                                        image: child.author.image,
-                                                        username: child.author.username,
-                                                        id: child.author.id
-                                                    },
-                                                    content: [], // No data needed here
-                                                    createdAt: child.createdAt
-                                                }))
-                                            }],
-                                            isNotComment: post.children.length === 0,
-                                            mentions: post.mentions.map((mention: any) => ({
-                                                link: mention.link,
-                                                text: mention.text,
-                                                version: mention.version
-                                            })),
-                                            likewhisper: likeAction,
-                                            currentUserId: currentuserInfo.id as string,
-                                            isInReplyContext: false,
-                                            isInViewingView: false,
-                                            isOnlyMediaPost: post.content && post.content.length === 0,
-                                            ViewportIndicator : "default"
-                                        }}
-                                    >
-                                        <WhisperPost />
-                                    </WhisperProvider>
-                                )
-                                )}
+                                    <RenderHomeViewWhisperPost post={post} key={post._id} />
+                                ))}
                             </Suspense>
                         </div>
                     </div>

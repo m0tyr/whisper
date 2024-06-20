@@ -15,6 +15,8 @@ interface WhisperPostProps {
     post: WhisperData;
 };
 
+
+//Main
 function WhisperPost({ children, post }: WhisperPostProps) {
     return (
         <Whisper value={post}>
@@ -23,6 +25,31 @@ function WhisperPost({ children, post }: WhisperPostProps) {
     );
 }
 
+export default WhisperPost;
+
+
+//Views
+WhisperPost.HomeView = function WhisperHomeView() {
+    const { isOnlyMediaPost } = useWhisper();
+    return (
+        <WhisperPost.DefaultContainer>
+            <WhisperPost.LeftCell />
+            <WhisperPost.DefaultRightContainer>
+                {isOnlyMediaPost ?
+                    <WhisperPost.HeaderCellOnlyMedia />
+                    :
+                    <WhisperPost.HeaderCell />
+                }
+                <WhisperPost.Text />
+                <WhisperPost.Medias />
+                <WhisperPost.InteractionElements />
+            </WhisperPost.DefaultRightContainer>
+        </WhisperPost.DefaultContainer>
+    )
+}
+
+
+//Components
 WhisperPost.DefaultContainer = function WhisperPostDefaultContainer({ children }: { children: ReactNode }) {
     const { isNotComment, ping } = useWhisper();
     return (
@@ -54,7 +81,7 @@ WhisperPost.DefaultRightContainer = function WhisperPostDefaultRightContainer({ 
             <div className=" mt-[6.2px] w-full relative" onClick={(e) => {
                 ping(e);
             }} >
-               {children}
+                {children}
             </div>
         </>
     );
@@ -102,19 +129,19 @@ WhisperPost.HeaderCell = function WhisperPostHeaderCell() {
 
     return (
         <>
-                       <div className="flex flex-row mb-0.5  items-center gap-3">
-                                <Link href={`/${author.username}`}>
-                                    <p className="text-white text-small-semibold !text-[15px] hover:underline inline  ">{author.username}</p>
-                                </Link>
-                                <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
+            <div className="flex flex-row mb-0.5  items-center gap-3">
+                <Link href={`/${author.username}`}>
+                    <p className="text-white text-small-semibold !text-[15px] hover:underline inline  ">{author.username}</p>
+                </Link>
+                <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
 
-                                    <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
-                                    <WhisperDropDownAction />
+                    <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
+                    <WhisperDropDownAction />
 
-                                </div>
-                            </div>
+                </div>
+            </div>
 
-        
+
         </>
     )
 }
@@ -126,18 +153,18 @@ WhisperPost.HeaderCellOnlyMedia = function WhisperPostHeaderCellOnlyMedia() {
     } = useWhisper();
     return (
         <>
-        <div className="flex flex-row mt-2.5  items-center gap-3">
-        <Link href={`/${author.username}`}>
-            <p className="text-white text-small-semibold !text-[15px] hover:underline inline  ">{author.username}</p>
-        </Link>
-        <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
+            <div className="flex flex-row mt-2.5  items-center gap-3">
+                <Link href={`/${author.username}`}>
+                    <p className="text-white text-small-semibold !text-[15px] hover:underline inline  ">{author.username}</p>
+                </Link>
+                <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
 
-            <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
-            <WhisperDropDownAction />
+                    <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>
+                    <WhisperDropDownAction />
 
-        </div>
-    </div>
-    </>
+                </div>
+            </div>
+        </>
     )
 }
 
@@ -220,8 +247,3 @@ WhisperPost.Medias = function WhisperPostMedias() {
 WhisperPost.InteractionElements = function WhisperPostInteractionElements() {
     return (<WhisperPostInteractions />)
 }
-
-
-
-
-export default WhisperPost;

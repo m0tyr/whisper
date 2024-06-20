@@ -85,19 +85,7 @@ export default function FeedGenerator() {
                                         ViewportIndicator: "default",
                                     }}
                                 >
-                                    <WhisperPost.DefaultContainer>
-                                        <WhisperPost.LeftCell />
-                                        <WhisperPost.DefaultRightContainer>
-                                            {post.content && post.content.length === 0 ?
-                                                <WhisperPost.HeaderCellOnlyMedia />
-                                                :
-                                                <WhisperPost.HeaderCell />
-                                            }
-                                            <WhisperPost.Text />
-                                            <WhisperPost.Medias />
-                                            <WhisperPost.InteractionElements />
-                                        </WhisperPost.DefaultRightContainer>
-                                    </WhisperPost.DefaultContainer>
+                                    <WhisperPost.HomeView />
                                 </WhisperPost>
                             ))}
                         </>
