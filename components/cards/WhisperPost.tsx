@@ -15,6 +15,8 @@ interface WhisperPostProps {
     post: WhisperData;
 };
 
+
+//Main
 function WhisperPost({ children, post }: WhisperPostProps) {
     return (
         <Whisper value={post}>
@@ -23,6 +25,11 @@ function WhisperPost({ children, post }: WhisperPostProps) {
     );
 }
 
+export default WhisperPost;
+
+
+
+//Views
 WhisperPost.HomeView = function WhisperHomeView() {
     const { isOnlyMediaPost } = useWhisper();
     return (
@@ -42,6 +49,8 @@ WhisperPost.HomeView = function WhisperHomeView() {
     )
 }
 
+
+//Components
 WhisperPost.DefaultContainer = function WhisperPostDefaultContainer({ children }: { children: ReactNode }) {
     const { isNotComment, ping } = useWhisper();
     return (
@@ -242,4 +251,3 @@ WhisperPost.InteractionElements = function WhisperPostInteractionElements() {
 
 
 
-export default WhisperPost;
