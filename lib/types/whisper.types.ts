@@ -98,4 +98,10 @@ export interface Whisper_to_Reply {
 
 export type WhisperTypes = 'create' | 'reply';
 
+/**
+ * {default} is for basic view without any fancy or custom behavior
+ * {reply_modal} is to use in a reply context
+ * {parent} is for parent view
+ * {direct} is for custom main view to have custom layout indicating that this is the whisper we're viewing.
+ */
 export type WhisperViewportTypes = 'default' | "parent" | "reply_modal" | "direct"; 

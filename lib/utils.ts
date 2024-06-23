@@ -241,3 +241,6 @@ export function calculateTimeAgo(createdAtString: string) {
 
 
 
+export function convertToReadableClientData(dataToConvert: any) {
+  return JSON.parse(JSON.stringify(dataToConvert))
+}
