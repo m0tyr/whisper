@@ -1,14 +1,16 @@
 'use client'
 
-import { calculateTimeAgo } from "@/lib/utils";
-import Link from "next/link";
-import Image from "next/image";
-import React from "react";
-import { DBImageData, ExtractedElement } from "@/lib/types/whisper.types";
-import { motion } from "framer-motion";
-import WhisperPostText from "@/components/cards/components/WhisperPostLayout/WhisperPostText";
-import WhisperPostMediaAttachments from "@/components/cards/components/WhisperPostLayout/WhisperPostMediaAttachments";
-import { useWhisper } from "@/contexts/WhisperPostContext";
+import React from 'react';
+
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+
+import WhisperPostMediaAttachments
+  from '@/components/WhisperPostLayout/WhisperPostMediaAttachments';
+import WhisperPostText from '@/components/WhisperPostLayout/WhisperPostText';
+import { useWhisper } from '@/contexts/WhisperPostContext';
+import { calculateTimeAgo } from '@/lib/utils';
 
 export default function ReplyLayoutCell() {
     const { author, createdAt } = useWhisper()

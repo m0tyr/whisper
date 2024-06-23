@@ -71,7 +71,7 @@ const WhisperPostCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
 
     return (
         <AnimatePresence>
-            <motion.div ref={carouselRef} className={`overflow-hidden ${ViewportIndicator === "default" && isOnlyMediaPost ? 'mt-6' : 'mt-3'}  active:cursor-grabbing cursor-grab`} whileTap={"grabbing"}>
+            <motion.div ref={carouselRef} className={`overflow-hidden ${ViewportIndicator === "default" && isOnlyMediaPost ? 'mt-[18px]' : 'mt-3'}  active:cursor-grabbing cursor-grab`} whileTap={"grabbing"}>
                 <motion.div
                     key={id}
                     ref={fullcarouselRef}

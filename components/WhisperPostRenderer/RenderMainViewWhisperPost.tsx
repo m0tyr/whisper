@@ -1,7 +1,7 @@
 "use client";
-import { WhisperViewportTypes } from "@/lib/types/whisper.types";
-import WhisperPost from "../../WhisperPost";
-import ViewWhisperPost from "../../ViewWhisperCard";
+import { WhisperViewportTypes } from '@/lib/types/whisper.types';
+
+import WhisperPost from '../WhisperPostLayout/WhisperPost';
 
 interface Props {
   post: any;
@@ -76,7 +76,7 @@ const RenderMainViewWhisperPost = ({ post }: Props) => {
         ViewportIndicator: ViewportIndicator,
       }}
     >
-        <ViewWhisperPost />
+        <WhisperPost.MainView />
     </WhisperPost>
   );
 };

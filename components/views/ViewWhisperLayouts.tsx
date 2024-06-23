@@ -1,8 +1,11 @@
 "use client";
 
-import RenderHomeViewWhisperPost from "../cards/components/WhisperPostRenderer/RenderHomeViewWhisperPost";
-import RenderMainViewWhisperPost from "../cards/components/WhisperPostRenderer/RenderMainViewWhisperPost";
-import RenderParentViewWhisperPost from "../cards/components/WhisperPostRenderer/RenderParentViewWhisperPost";
+import RenderHomeViewWhisperPost
+  from '../WhisperPostRenderer/RenderHomeViewWhisperPost';
+import RenderMainViewWhisperPost
+  from '../WhisperPostRenderer/RenderMainViewWhisperPost';
+import RenderParentViewWhisperPost
+  from '../WhisperPostRenderer/RenderParentViewWhisperPost';
 
 interface Props {
   allparents: any;

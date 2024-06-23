@@ -1,14 +1,24 @@
 'use server'
-import { fetchUser, fetchUserWhisper, fetchUserbyEmail, fetchUserbyUsername, follow, isFollowing } from "@/lib/actions/user.actions";
-import { notFound, redirect } from "next/navigation";
-import TopBar from "@/components/shared/Topbar";
-import UserCard from "@/components/cards/UserCard";
-import WhisperPost from "@/components/cards/WhisperPost";
-import { auth } from "@/auth";
-import { likewhisper } from "@/lib/actions/whisper.actions";
-import { WhisperProvider } from "@/contexts/WhisperPostContext";
-import { UpdateProfilModalContextProvider } from "@/contexts/UpdateProfilModalContext";
+import {
+  notFound,
+  redirect,
+} from 'next/navigation';
 
+import { auth } from '@/auth';
+import UserCard from '@/components/cards/UserCard';
+import TopBar from '@/components/shared/Topbar';
+import WhisperPost from '@/components/WhisperPostLayout/WhisperPost';
+import {
+  UpdateProfilModalContextProvider,
+} from '@/contexts/UpdateProfilModalContext';
+import {
+  fetchUserbyEmail,
+  fetchUserbyUsername,
+  fetchUserWhisper,
+  follow,
+  isFollowing,
+} from '@/lib/actions/user.actions';
+import { likewhisper } from '@/lib/actions/whisper.actions';
 
 export async function generateMetadata({ params }: { params: { username: string } }) {
 
@@ -93,8 +103,8 @@ export default async function Page({ params }: { params: { username: string } })
                             ) : (
                                 <>
                                     {userposts.whispers.map((post: any) => (
-                                        <WhisperProvider
-                                            value={{
+                                        <WhisperPost
+                                            post={{
                                                 id: post._id,
                                                 parentId: post.parentId,
                                                 content: post.content.map((content: any) => ({
@@ -140,16 +150,14 @@ export default async function Page({ params }: { params: { username: string } })
                                                     text: mention.text,
                                                     version: mention.version
                                                 })),
-                                                likewhisper: likeAction,
-                                                currentUserId: currentuserData.id as string,
                                                 isInReplyContext: false,
                                                 isInViewingView: false,
                                                 isOnlyMediaPost: post.content && post.content.length === 0,
                                                 ViewportIndicator : "default"
                                             }}
                                         >
-                                            <WhisperPost />
-                                        </WhisperProvider>
+                                            <WhisperPost.HomeView />
+                                        </WhisperPost>
                                     ))}
                                 </>
                             )}

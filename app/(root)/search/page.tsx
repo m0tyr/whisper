@@ -1,18 +1,12 @@
 
 
 import TopBar from "@/components/shared/Topbar";
-import TopChat from "@/components/shared/TopChat";
-import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
-import { redirect, usePathname } from "next/navigation";
-import { fetchwhispers, searchwhispersV1 } from "@/lib/actions/whisper.actions";
-import WhisperPost from "@/components/cards/WhisperPost";
-import LoadingSkeleton from "@/components/shared/loader/LoadingSkeleton";
-import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { getMeta } from "@/lib/utils";
-import Loader from "@/components/shared/loader/loader";
+import { redirect } from "next/navigation";
+import { searchwhispersV1 } from "@/lib/actions/whisper.actions";
 import SearchBar from "@/components/forms/SearchBar";
 import { auth } from "@/auth";
+import WhisperPost from "@/components/WhisperPostLayout/WhisperPost";
 
 
 

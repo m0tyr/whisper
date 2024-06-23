@@ -1,5 +1,6 @@
 'use client'
-import WhisperPost from "../../WhisperPost";
+
+import WhisperPost from '../WhisperPostLayout/WhisperPost';
 
 export default function RenderHomeViewWhisperPost(post: any) {
     const renderedPost = post.post;
