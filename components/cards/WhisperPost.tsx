@@ -47,6 +47,70 @@ WhisperPost.HomeView = function WhisperHomeView() {
 };
 
 //Components
+WhisperPost.ParentContainer = function WhisperPostParentContainer({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { isNotComment, ping, parentId } = useWhisper();
+  return (
+    <div className={`opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 ${parentId === undefined ? 'pt-[18px]' : 'pt-1.5'} mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`} onClick={(e) => {
+      ping(e)
+    }} >
+      <div className={`flex w-full flex-1 flex-col  ${isNotComment ? '' : 'gap-2'} mb-1 relative`}>
+        <div className="relative outline-none">
+          <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  )
+
+}
+
+WhisperPost.ParentLeftHeaderGrow = function WhisperPostParentLeftHeaderGrow({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { isNotComment, ping, author } = useWhisper();
+  return (
+    <>
+      {!isNotComment && (
+        <div className=" flex flex-col w-10">
+
+          <div className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]  justify-center" onClick={(e) => {
+            ping(e)
+          }}>
+            <Link href={`${author.username}`}>
+              <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
+                <div className="w-[40px] h-[40px] flex">
+                  <Image src={author.image} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
+                </div>
+              </motion.div>
+            </Link>
+          </div>
+          <div className="thread-card_bar " />
+        </div>
+      )}
+      {isNotComment && (
+        <div className="mt-2 flex flex-col w-10">
+          <div className=" flex-grow  col-start-1 row-start-1 row-span-2 w-10 justify-center mt-[1px] relative" onClick={(e) => {
+            ping(e)
+          }}>
+            <Link href={`${author.username}`} className="absolute top-0.5">
+              <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
+
+            </Link>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 WhisperPost.DefaultContainer = function WhisperPostDefaultContainer({
   children,
 }: {
@@ -62,9 +126,8 @@ WhisperPost.DefaultContainer = function WhisperPostDefaultContainer({
         }}
       >
         <div
-          className={`flex w-full flex-1 flex-col ${
-            isNotComment ? "" : "gap-2"
-          } mb-1 relative`}
+          className={`flex w-full flex-1 flex-col ${isNotComment ? "" : "gap-2"
+            } mb-1 relative`}
         >
           <div className="relative outline-none">
             <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
@@ -98,14 +161,33 @@ WhisperPost.DefaultRightContainer = function WhisperPostDefaultRightContainer({
   );
 };
 
+WhisperPost.RightContainer = function WhisperPostDefaultRightContainer({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { ping } = useWhisper();
+  return (
+    <>
+      <div
+        className=" mt-[6.2px] w-full relative"
+        onClick={(e) => {
+          ping(e);
+        }}
+      >
+        {children}
+      </div>
+    </>
+  );
+};
+
 WhisperPost.ViewingContainer = function WhisperPostViewingContainer() {
   const { isNotComment, ping, parentId } = useWhisper();
   return (
     <>
       <div
-        className={`rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${
-          parentId === undefined ? "pt-3.5" : ""
-        }  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`}
+        className={`rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${parentId === undefined ? "pt-3.5" : ""
+          }  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`}
         onClick={(e) => {
           ping(e);
         }}
@@ -182,9 +264,8 @@ WhisperPost.LeftCell = function WhisperPostLeftCell() {
     <>
       {!isNotComment && (
         <div
-          className={`${
-            isInReplyContext ? "" : "mt-2 relative"
-          } flex flex-col w-10`}
+          className={`${isInReplyContext ? "" : "mt-2 relative"
+            } flex flex-col w-10`}
         >
           <div
             className="flex w-10 mt-[3px] justify-center items-center"
@@ -209,9 +290,8 @@ WhisperPost.LeftCell = function WhisperPostLeftCell() {
             </Link>
           </div>
           <div
-            className={`${
-              isInReplyContext ? "" : "relative left-[18px]"
-            } thread-card_bar`}
+            className={`${isInReplyContext ? "" : "relative left-[18px]"
+              } thread-card_bar`}
           />
           <div className=" relative bottom-[29px] mt-8 w-12 flex">
             <div className="justify-center flex w-full relative">
@@ -311,6 +391,29 @@ WhisperPost.LeftCell = function WhisperPostLeftCell() {
     </>
   );
 };
+
+WhisperPost.Actions = function WhisperPostActions({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <div className="float-right relative  text-white text-small-regular font-light opacity-50 flex h-5 top-1">
+      {children}
+    </div>
+  )
+}
+
+WhisperPost.Date = function WhisperPostDate() {
+  const { createdAt } = useWhisper()
+  return (<p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>)
+}
+
+WhisperPost.DropDownActions = function WhisperPostDropDownActions() {
+  return (
+    <WhisperDropDownAction />
+  )
+}
 
 WhisperPost.Medias = function WhisperPostMedias() {
   return <WhisperPostMediaAttachments />;

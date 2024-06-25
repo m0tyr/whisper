@@ -29,8 +29,6 @@ const ParentWhisperPost = () => {
                 <div className={`flex w-full flex-1 flex-col  ${isNotComment ? '' : 'gap-2'} mb-1 relative`}>
                     <div className="relative outline-none">
                         <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
-
-
                             <>
                                 {!isNotComment && (
                                     <div className=" flex flex-col w-10">
