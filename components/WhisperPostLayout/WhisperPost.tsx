@@ -1,18 +1,22 @@
 "use client";
+import { ReactNode } from 'react';
+
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+
+import WhisperDropDownAction
+  from '@/components/shared/widgets/whisper_dropdown_actions';
 import {
+  useWhisper,
   Whisper,
   WhisperData,
-  useWhisper,
-} from "@/contexts/WhisperPostContext";
-import { ReactNode } from "react";
-import WhisperPostText from "./components/WhisperPostLayout/WhisperPostText";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import Image from "next/image";
-import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
-import { calculateTimeAgo } from "@/lib/utils";
-import WhisperPostMediaAttachments from "./components/WhisperPostLayout/WhisperPostMediaAttachments";
-import WhisperPostInteractions from "./components/WhisperPostLayout/WhisperPostInteractions";
+} from '@/contexts/WhisperPostContext';
+import { calculateTimeAgo } from '@/lib/utils';
+
+import WhisperPostInteractions from './WhisperPostInteractions';
+import WhisperPostMediaAttachments from './WhisperPostMediaAttachments';
+import WhisperPostText from './WhisperPostText';
 
 interface WhisperPostProps {
   children: ReactNode;
@@ -45,6 +49,23 @@ WhisperPost.HomeView = function WhisperHomeView() {
     </WhisperPost.DefaultContainer>
   );
 };
+WhisperPost.MainView = function WhisperMainView() {
+  return (
+    <WhisperPost.ViewingContainer>
+      <WhisperPost.MainHeaderCellContainer>
+        <WhisperPost.MainProfilePhoto />
+        <WhisperPost.AuthorName />
+        <WhisperPost.MainActions>
+          <WhisperPost.Date />
+          <WhisperPost.DropDownActions />
+        </WhisperPost.MainActions>
+      </WhisperPost.MainHeaderCellContainer>
+      <WhisperPost.Text />
+      <WhisperPost.Medias />
+      <WhisperPost.InteractionElements />
+    </WhisperPost.ViewingContainer>
+  );
+};
 
 //Components
 WhisperPost.ParentContainer = function WhisperPostParentContainer({
@@ -54,10 +75,19 @@ WhisperPost.ParentContainer = function WhisperPostParentContainer({
 }) {
   const { isNotComment, ping, parentId } = useWhisper();
   return (
-    <div className={`opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 ${parentId === undefined ? 'pt-[18px]' : 'pt-1.5'} mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`} onClick={(e) => {
-      ping(e)
-    }} >
-      <div className={`flex w-full flex-1 flex-col  ${isNotComment ? '' : 'gap-2'} mb-1 relative`}>
+    <div
+      className={`opacity-95 rounded-3xl hover:opacity-100 transition-all duration-300 ${
+        parentId === undefined ? "pt-[18px]" : "pt-1.5"
+      } mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`}
+      onClick={(e) => {
+        ping(e);
+      }}
+    >
+      <div
+        className={`flex w-full flex-1 flex-col  ${
+          isNotComment ? "" : "gap-2"
+        } mb-1 relative`}
+      >
         <div className="relative outline-none">
           <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
             {children}
@@ -65,10 +95,8 @@ WhisperPost.ParentContainer = function WhisperPostParentContainer({
         </div>
       </div>
     </div>
-
-  )
-
-}
+  );
+};
 
 WhisperPost.ParentLeftHeaderGrow = function WhisperPostParentLeftHeaderGrow({
   children,
@@ -80,14 +108,25 @@ WhisperPost.ParentLeftHeaderGrow = function WhisperPostParentLeftHeaderGrow({
     <>
       {!isNotComment && (
         <div className=" flex flex-col w-10">
-
-          <div className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]  justify-center" onClick={(e) => {
-            ping(e)
-          }}>
+          <div
+            className=" col-start-1 row-start-1 row-span-2 w-10  mt-[3px]  justify-center"
+            onClick={(e) => {
+              ping(e);
+            }}
+          >
             <Link href={`${author.username}`}>
-              <motion.div whileTap={{ scale: 0.9 }} transition={{ duration: 0.01 }} >
+              <motion.div
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.01 }}
+              >
                 <div className="w-[40px] h-[40px] flex">
-                  <Image src={author.image} alt="logo" width={40} height={40} className="border-border border float-left cursor-pointer rounded-full" />
+                  <Image
+                    src={author.image}
+                    alt="logo"
+                    width={40}
+                    height={40}
+                    className="border-border border float-left cursor-pointer rounded-full"
+                  />
                 </div>
               </motion.div>
             </Link>
@@ -97,19 +136,27 @@ WhisperPost.ParentLeftHeaderGrow = function WhisperPostParentLeftHeaderGrow({
       )}
       {isNotComment && (
         <div className="mt-2 flex flex-col w-10">
-          <div className=" flex-grow  col-start-1 row-start-1 row-span-2 w-10 justify-center mt-[1px] relative" onClick={(e) => {
-            ping(e)
-          }}>
+          <div
+            className=" flex-grow  col-start-1 row-start-1 row-span-2 w-10 justify-center mt-[1px] relative"
+            onClick={(e) => {
+              ping(e);
+            }}
+          >
             <Link href={`${author.username}`} className="absolute top-0.5">
-              <Image src={author.image} alt="logo" width={37} height={37} className=" cursor-pointer rounded-full" />
-
+              <Image
+                src={author.image}
+                alt="logo"
+                width={37}
+                height={37}
+                className=" cursor-pointer rounded-full"
+              />
             </Link>
           </div>
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
 WhisperPost.DefaultContainer = function WhisperPostDefaultContainer({
   children,
@@ -126,8 +173,9 @@ WhisperPost.DefaultContainer = function WhisperPostDefaultContainer({
         }}
       >
         <div
-          className={`flex w-full flex-1 flex-col ${isNotComment ? "" : "gap-2"
-            } mb-1 relative`}
+          className={`flex w-full flex-1 flex-col ${
+            isNotComment ? "" : "gap-2"
+          } mb-1 relative`}
         >
           <div className="relative outline-none">
             <div className="grid grid-cols-[48px_minmax(0,1fr)] grid-rows-[max-content] flex-1">
@@ -161,7 +209,7 @@ WhisperPost.DefaultRightContainer = function WhisperPostDefaultRightContainer({
   );
 };
 
-WhisperPost.RightContainer = function WhisperPostDefaultRightContainer({
+WhisperPost.RightContainer = function WhisperPostRightContainer({
   children,
 }: {
   children: ReactNode;
@@ -181,13 +229,29 @@ WhisperPost.RightContainer = function WhisperPostDefaultRightContainer({
   );
 };
 
-WhisperPost.ViewingContainer = function WhisperPostViewingContainer() {
+WhisperPost.MainHeaderCellContainer =
+  function WhisperPostMainHeaderCellContainer({
+    children,
+  }: {
+    children: ReactNode;
+  }) {
+    return (
+      <div className="flex flex-row mb-2  items-center gap-3">{children}</div>
+    );
+  };
+
+WhisperPost.ViewingContainer = function WhisperPostViewingContainer({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const { isNotComment, ping, parentId } = useWhisper();
   return (
     <>
       <div
-        className={`rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${parentId === undefined ? "pt-3.5" : ""
-          }  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`}
+        className={`rounded-3xl hover:opacity-100 transition-all duration-300  pb-3 ${
+          parentId === undefined ? "pt-3.5" : ""
+        }  mobile:px-[1.6rem] px-2.5   w-full cursor-pointer relative`}
         onClick={(e) => {
           ping(e);
         }}
@@ -200,7 +264,7 @@ WhisperPost.ViewingContainer = function WhisperPostViewingContainer() {
                 ping(e);
               }}
             >
-              {/* Add content here */}
+              {children}
             </div>
           </div>
         </div>
@@ -211,6 +275,29 @@ WhisperPost.ViewingContainer = function WhisperPostViewingContainer() {
         </>
       ) : null}
     </>
+  );
+};
+
+WhisperPost.MainProfilePhoto = function WhisperPostMainProfilePhoto() {
+  const { author } = useWhisper();
+  return (
+    <Link href={`/${author.username}`}>
+      <motion.div
+        whileTap={{ scale: 0.9 }}
+        transition={{ duration: 0.01 }}
+        className="col-start-3 ml-auto"
+      >
+        <div className="w-[40px] h-[40px] flex">
+          <Image
+            src={author.image}
+            alt="logo"
+            width={40}
+            height={40}
+            className=" border-border border cursor-pointer rounded-full"
+          />
+        </div>
+      </motion.div>
+    </Link>
   );
 };
 
@@ -264,8 +351,9 @@ WhisperPost.LeftCell = function WhisperPostLeftCell() {
     <>
       {!isNotComment && (
         <div
-          className={`${isInReplyContext ? "" : "mt-2 relative"
-            } flex flex-col w-10`}
+          className={`${
+            isInReplyContext ? "" : "mt-2 relative"
+          } flex flex-col w-10`}
         >
           <div
             className="flex w-10 mt-[3px] justify-center items-center"
@@ -290,8 +378,9 @@ WhisperPost.LeftCell = function WhisperPostLeftCell() {
             </Link>
           </div>
           <div
-            className={`${isInReplyContext ? "" : "relative left-[18px]"
-              } thread-card_bar`}
+            className={`${
+              isInReplyContext ? "" : "relative left-[18px]"
+            } thread-card_bar`}
           />
           <div className=" relative bottom-[29px] mt-8 w-12 flex">
             <div className="justify-center flex w-full relative">
@@ -401,19 +490,40 @@ WhisperPost.Actions = function WhisperPostActions({
     <div className="float-right relative  text-white text-small-regular font-light opacity-50 flex h-5 top-1">
       {children}
     </div>
-  )
-}
+  );
+};
+
+WhisperPost.AuthorName = function WhisperPostAuthorName() {
+  const { author } = useWhisper();
+  return (
+    <Link href={`/${author.username}`}>
+      <p className="text-white text-small-semibold !text-[15px] hover:underline inline  ">
+        {author.username}
+      </p>
+    </Link>
+  );
+};
+
+WhisperPost.MainActions = function WhisperPostMainActions({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <div className="absolute right-0  text-white text-small-regular font-light opacity-50 flex h-5">
+      {children}
+    </div>
+  );
+};
 
 WhisperPost.Date = function WhisperPostDate() {
-  const { createdAt } = useWhisper()
-  return (<p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>)
-}
+  const { createdAt } = useWhisper();
+  return <p className="opacity-50">{calculateTimeAgo(createdAt.toString())}</p>;
+};
 
 WhisperPost.DropDownActions = function WhisperPostDropDownActions() {
-  return (
-    <WhisperDropDownAction />
-  )
-}
+  return <WhisperDropDownAction />;
+};
 
 WhisperPost.Medias = function WhisperPostMedias() {
   return <WhisperPostMediaAttachments />;

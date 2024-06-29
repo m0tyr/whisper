@@ -1,12 +1,12 @@
-'use client'
-import { calculateTimeAgo, limitNewlines, processElements } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import Link from "next/link";
-import { ExtractedElement } from "@/lib/types/whisper.types";
-import { motion } from "framer-motion";
+'use client';
+import { useState } from 'react';
+
+import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ActivityType } from "@/lib/types/notification.types";
+import { useRouter } from 'next/navigation';
+
+import { ActivityType } from '@/lib/types/notification.types';
+import { calculateTimeAgo } from '@/lib/utils';
 
 interface Props {
     my_username:string;

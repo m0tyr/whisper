@@ -1,10 +1,10 @@
 'use client'
-import WhisperPost from "../../WhisperPost";
+import ParentWhisperPost from '../cards/ParentWhisperCard';
+import WhisperPost from '../WhisperPostLayout/WhisperPost';
 
-export default function RenderHomeViewWhisperPost(post: any) {
+const RenderParentViewWhisperPost = (post: any) => {
     const renderedPost = post.post;
     return (
-        <>
         <WhisperPost
             key={`${post._id}`}
             post={{
@@ -64,8 +64,9 @@ export default function RenderHomeViewWhisperPost(post: any) {
                 ViewportIndicator: "default"
             }}
         >
-            <WhisperPost.HomeView />
+            <ParentWhisperPost />
         </WhisperPost>
-        </>
     )
 }
+
+export default RenderParentViewWhisperPost;

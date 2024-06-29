@@ -1,16 +1,18 @@
 "use client";
 
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { calculateTimeAgo } from "@/lib/utils";
-import Link from "next/link";
-import WhisperDropDownAction from "../shared/widgets/whisper_dropdown_actions";
-import WhisperPostInteractions from "./components/WhisperPostLayout/WhisperPostInteractions";
-import { useWhisper } from "@/contexts/WhisperPostContext";
-import WhisperPostText from "./components/WhisperPostLayout/WhisperPostText";
-import WhisperPostMediaAttachments from "./components/WhisperPostLayout/WhisperPostMediaAttachments";
+import { useWhisper } from '@/contexts/WhisperPostContext';
+import { calculateTimeAgo } from '@/lib/utils';
 
+import WhisperDropDownAction from '../shared/widgets/whisper_dropdown_actions';
+import WhisperPostInteractions
+  from '../WhisperPostLayout/WhisperPostInteractions';
+import WhisperPostMediaAttachments
+  from '../WhisperPostLayout/WhisperPostMediaAttachments';
+import WhisperPostText from '../WhisperPostLayout/WhisperPostText';
 
 const ParentWhisperPost = () => {
     const {

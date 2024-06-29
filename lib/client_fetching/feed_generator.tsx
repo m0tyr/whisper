@@ -1,13 +1,10 @@
 'use client'
-import { fetchwhispers, likewhisper } from "../actions/whisper.actions";
-import React from "react";
-import FeedUserCard from "@/components/shared/widgets/feed_user_card";
-import { FamousUserSuggestion, follow } from "../actions/user.actions";
-import WhisperPost from "@/components/cards/WhisperPost";
-import useQueryForYouFeed from "@/hooks/queries/useQueryForYouFeed";
-import FeedSkeleton from "@/components/shared/loader/feed_skeleton";
+import React from 'react';
 
-
+import FeedSkeleton from '@/components/shared/loader/feed_skeleton';
+import FeedUserCard from '@/components/shared/widgets/feed_user_card';
+import WhisperPost from '@/components/WhisperPostLayout/WhisperPost';
+import useQueryForYouFeed from '@/hooks/queries/useQueryForYouFeed';
 
 export default function FeedGenerator() {
     let suggestions: any;

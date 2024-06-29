@@ -1,5 +1,20 @@
 'use client'
 
+import React from 'react';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import { useWhisper } from '@/contexts/WhisperPostContext';
+import { calculateTimeAgo } from '@/lib/utils';
+
+import WhisperPostInteractions
+  from '../WhisperPostLayout/WhisperPostInteractions';
+import WhisperPostMediaAttachments
+  from '../WhisperPostLayout/WhisperPostMediaAttachments';
+import WhisperPostText from '../WhisperPostLayout/WhisperPostText';
+import WhisperDropDownAction from './widgets/whisper_dropdown_actions';
+
 interface Props {
     id: string;
     author: {
@@ -9,16 +24,6 @@ interface Props {
     };
     createdAt: string;
 }
-import { calculateTimeAgo } from "@/lib/utils";
-
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React from "react";
-import WhisperDropDownAction from "./widgets/whisper_dropdown_actions";
-import WhisperPostInteractions from "../cards/components/WhisperPostLayout/WhisperPostInteractions";
-import WhisperPostMediaAttachments from "../cards/components/WhisperPostLayout/WhisperPostMediaAttachments";
-import WhisperPostText from "../cards/components/WhisperPostLayout/WhisperPostText";
-import { useWhisper } from "@/contexts/WhisperPostContext";
 
 export default function WhisperPostMain({ id, author, createdAt }: Props) {
     const router = useRouter();
