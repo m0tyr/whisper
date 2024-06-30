@@ -1,5 +1,4 @@
 'use client'
-import ParentWhisperPost from '../cards/ParentWhisperCard';
 import WhisperPost from '../WhisperPostLayout/WhisperPost';
 
 const RenderParentViewWhisperPost = (post: any) => {
@@ -64,7 +63,7 @@ const RenderParentViewWhisperPost = (post: any) => {
                 ViewportIndicator: "default"
             }}
         >
-            <ParentWhisperPost />
+            <WhisperPost.ParentView />
         </WhisperPost>
     )
 }
