@@ -20,11 +20,9 @@ const WhisperPostInteractions = () => {
         isNotComment,
         mentions,
         like_info,
-        likewhisper,
-        currentUserId,
         ping
     } = useWhisper();
-
+    const currentUserId = user?.id as string;
     const whisper_data = {
         id,
         parentId,
@@ -36,7 +34,6 @@ const WhisperPostInteractions = () => {
         isNotComment,
         mentions,
         like_info,
-        likewhisper,
         currentUserId,
     };
 
@@ -48,8 +45,8 @@ const WhisperPostInteractions = () => {
 
     const [isliking, setisliking] = useState(isLiking)
     const LikeWhisper = async () => {
-        like_info.like_count = await likewhisper(user?.username as string, id, author.id)
-        setisliking(!isliking)
+/*         like_info.like_count = await likewhisper(user?.username as string, id, author.id)
+ */        setisliking(!isliking)
     }
 
     return (
@@ -62,7 +59,7 @@ const WhisperPostInteractions = () => {
                         className="  w-max flex justify-center items-center" >
                         <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
                             <motion.div whileTap={{ scale: 0.95 }} whileHover={{
-                                backgroundColor: "#6262624c",
+                                backgroundColor: "rgb(34, 34, 34)",
                                 scale: 1,
                                 transition: { duration: 0 },
                             }} transition={{ duration: 0 }} onClick={LikeWhisper}
@@ -89,7 +86,7 @@ const WhisperPostInteractions = () => {
                         className=" w-max flex justify-center items-center" >
                         <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
                             <motion.div whileTap={{ scale: 0.95 }} whileHover={{
-                                backgroundColor: "#6262624c",
+                                backgroundColor: "rgb(34, 34, 34)",
                                 scale: 1,
                                 transition: { duration: 0 },
                             }} transition={{ duration: 0 }}
@@ -118,7 +115,7 @@ const WhisperPostInteractions = () => {
                         className=" w-max flex justify-center items-center" >
                         <div className="relative w-full h-full no-underline flex justify-center items-center select-none mx-0 my-0 min-h-0 min-w-0 px-0 flex-row z-0 touch-manipulation box-border flex-shrink-0" tabIndex={0}>
                             <motion.div  whileTap={{ scale: 0.95 }} whileHover={{
-                                backgroundColor: "#6262624c",
+                                backgroundColor: "rgb(34, 34, 34)",
                                 scale: 1,
                                 transition: { duration: 0 },
                             }} transition={{ duration: 0 }}
