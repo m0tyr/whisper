@@ -6,7 +6,7 @@ import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import TopBar from "@/components/shared/Topbar";
 import { auth } from "@/auth";
-import ViewWhisperLayout from "@/components/views/ViewWhisperLayouts";
+import ViewWhisperLayout from "@/components/ViewWhisperLayouts/ViewWhisperLayouts";
 import { convertToReadableClientData } from "@/lib/utils";
 
 export async function generateMetadata({

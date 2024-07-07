@@ -6,7 +6,7 @@ import { FieldValues } from "react-hook-form"
 import { PrevImageData } from "@/lib/types/whisper.types"
 import { ChangeEvent, MutableRefObject } from "react"
 import Image from "next/image";
-import ReplyLayoutCell from "@/components/forms/ReplyWhisper/ReplyLayoutCell"
+import ReplyLayoutCell from "@/components/ReplyWhisper/ReplyLayoutCell"
 import { Whisper } from "@/contexts/WhisperPostContext"
 interface PostComposerProps {
     whisper_to_reply?: any;
