@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
-import OnboardingCard from "@/components/cards/OnboardingCard";
-import AccountProfile from "@/components/forms/AccountProfile";
+import OnboardingCard from "@/components/Onboarding/OnboardingCard";
 import { fetchUser, fetchUserbyEmail } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 

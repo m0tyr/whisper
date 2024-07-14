@@ -1,5 +1,5 @@
 'use client';
-import CreateWhisper from '@/components/forms/CreateWhisper';
+import CreateWhisper from '@/components/CreateWhisper/CreateWhisper';
 import ReplyWhisper from '@/components/ReplyWhisper/ReplyWhisper';
 import { Modal } from '@/components/shared/Modal';
 import { DISMISS_ABANDON_WHPR_ACTION, DISMISS_ABANDON_WHPR_CONTENT, DISMISS_ABANDON_WHPR_TITLE } from '@/constants/message';

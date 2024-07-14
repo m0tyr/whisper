@@ -1,5 +1,5 @@
 'use client'
-import AccountProfile from "../forms/AccountProfile";
+import OnboardingAccountProfile from "./OnboardingAccountProfile";
 import { AnimatePresence, delay, motion } from 'framer-motion'
 
 interface Props {
@@ -39,7 +39,7 @@ function OnboardingCard({
                     exit={{ opacity: 0 }}
                     transition={{ delay:0.15, duration: 0.6, type: 'spring', stiffness: 50 }}
                      className="pb-4 pt-2 my-2 rounded-xl">
-                        <AccountProfile user={user} />
+                        <OnboardingAccountProfile user={user} />
                     </motion.section>
                 </main>
             <motion.div
