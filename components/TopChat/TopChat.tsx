@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useSessionUser } from '@/hooks/useSessionUser';
 import { useWhisperModal } from '@/hooks/useWhisperModal';
-import PostComposerButton from '../shared/widgets/composer_post_button';
+import PostComposerButton from '../PostComposer/PostComposerButton';
 
 const TopChat = () => {
     const [user] = useSessionUser();

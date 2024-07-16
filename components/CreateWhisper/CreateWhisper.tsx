@@ -16,10 +16,10 @@ import { DBImageData, ExtractedElement, MentionsDatas } from "@/lib/types/whispe
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import { MAX_FILE_NUMBER, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import { useCreatePost } from "@/hooks/useCreatePost";
-import PostComposer from "../shared/widgets/composer_post_card";
-import PostComposerDialog from "../shared/widgets/composer_post_dialog";
 import { useSessionUser } from "@/hooks/useSessionUser";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
+import PostComposer from "../PostComposer/PostComposer";
+import PostComposerDialog from "../PostComposer/PostComposerDialog";
 
 
 

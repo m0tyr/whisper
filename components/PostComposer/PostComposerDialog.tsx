@@ -1,5 +1,6 @@
 
-import PostComposerButton from "./composer_post_button";
+import React from "react";
+import PostComposerButton from "./PostComposerButton";
 
 const PostComposerDialog = () => {
     return (
