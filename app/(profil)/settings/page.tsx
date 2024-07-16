@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
-import TopBar from "@/components/shared/Topbar";
-import NavMenu from "@/components/shared/widgets/nav_menu";
-import SettingsAccountMenu from "@/components/shared/widgets/settings_account_menu";
+import TopBar from "@/components/Topbar/Topbar";
+import SettingsAccountMenu from "@/components/Settings/SettingsAccountMenu";
 
 import { fetchUser, fetchUserbyEmail, getActivityFromUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
+import NavSettings from "@/components/NavigationMenu/Settings/NavSettings";
 
 export function generateMetadata() {
 
@@ -36,7 +36,7 @@ async function Page() {
             </span>
 
           </div>
-          <NavMenu navigation={""} />
+          <NavSettings navigation={""} />
           <SettingsAccountMenu />
         </div>
 

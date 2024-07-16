@@ -1,4 +1,4 @@
-import LoginForm from "@/components/forms/LoginForm";
+import LoginForm from "@/components/Login/LoginForm";
 import Loader from "@/components/shared/loader/loader";
 import { Suspense } from "react";
 

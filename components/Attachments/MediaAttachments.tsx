@@ -1,4 +1,4 @@
-import Carousel from "@/components/shared/ui/Carousel";
+import Carousel from "@/components/Carousel/Carousel";
 import { PrevImageData } from "@/lib/types/whisper.types";
 import { deriveMultipleMediaHeight, getClampedMultipleMediaAspectRatio } from "@/lib/utils";
 import Image from "next/image";
@@ -7,7 +7,7 @@ interface Props {
     medias: PrevImageData[];
     abortimage: (url: string) => void;
 }
-const DisplayMedia = ({ medias, abortimage }: Props) => {
+const MediaAttachments = ({ medias, abortimage }: Props) => {
 
     return (
         <>
@@ -117,4 +117,4 @@ const DisplayMedia = ({ medias, abortimage }: Props) => {
         </>
     )
 }
-export default DisplayMedia
+export default MediaAttachments

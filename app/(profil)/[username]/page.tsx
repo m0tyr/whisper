@@ -5,8 +5,8 @@ import {
 } from 'next/navigation';
 
 import { auth } from '@/auth';
-import UserCard from '@/components/cards/UserCard';
-import TopBar from '@/components/shared/Topbar';
+import UserCard from '@/components/UserCard/UserCard';
+import TopBar from '@/components/Topbar/Topbar';
 import WhisperPost from '@/components/WhisperPostLayout/WhisperPost';
 import {
   UpdateProfilModalContextProvider,

@@ -4,7 +4,7 @@ import {
 } from "@/lib/actions/whisper.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
-import TopBar from "@/components/shared/Topbar";
+import TopBar from "@/components/Topbar/Topbar";
 import { auth } from "@/auth";
 import ViewWhisperLayout from "@/components/ViewWhisperLayouts/ViewWhisperLayouts";
 import { convertToReadableClientData } from "@/lib/utils";

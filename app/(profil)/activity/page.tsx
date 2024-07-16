@@ -1,10 +1,9 @@
 import { auth } from "@/auth";
-import ActivityCard from "@/components/cards/ActivityCard";
-import NavActivity from "@/components/shared/NavActivity";
-import TopBar from "@/components/shared/Topbar";
+import ActivityCard from "@/components/ActivityCard/ActivityCard";
+import NavActivity from "@/components/NavigationMenu/Activity/NavActivity";
+import TopBar from "@/components/Topbar/Topbar";
 import { getNotifications } from "@/lib/actions/notifications.actions";
-import { fetchUser, getActivityFromUser, fetchUserbyEmail, follow } from "@/lib/actions/user.actions";
-import { calculateTimeAgo } from "@/lib/utils";
+import { fetchUserbyEmail, follow } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 export function generateMetadata() {
 

@@ -1,10 +1,10 @@
 
 
-import TopBar from "@/components/shared/Topbar";
+import TopBar from "@/components/Topbar/Topbar";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import { searchwhispersV1 } from "@/lib/actions/whisper.actions";
-import SearchBar from "@/components/forms/SearchBar";
+import SearchBar from "@/components/SearchBar/SearchBar";
 import { auth } from "@/auth";
 import WhisperPost from "@/components/WhisperPostLayout/WhisperPost";
 
@@ -51,8 +51,6 @@ export default async function Page({
                     {results?.whispers.map((post: any) => (
                       <WhisperPost
                         key={post._id}
-                        id={`${post._id}`}
-                        parentId={post.parentId}
                         content={post.content.map((content: any) => ({
                           text: content.text,
                           type: content.type

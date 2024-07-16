@@ -1,5 +1,5 @@
-import TopChat from "@/components/shared/TopChat"
-import TopBar from "@/components/shared/Topbar"
+import TopChat from "@/components/TopChat/TopChat"
+import TopBar from "@/components/Topbar/Topbar"
 import { fetchUserbyEmail, getSession } from "@/lib/actions/user.actions"
 import FeedGenerator from "@/lib/client_fetching/feed_generator"
 import { redirect } from "next/navigation"

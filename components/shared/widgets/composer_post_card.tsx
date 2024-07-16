@@ -1,6 +1,4 @@
-import ContentPlayer from "@/components/plugins/ContentPlayer"
 import { FormControl, FormField, FormItem } from "@/components/ui/form"
-import DisplayMedia from "../ui/DisplayMedia"
 import { motion } from "framer-motion"
 import { FieldValues } from "react-hook-form"
 import { PrevImageData } from "@/lib/types/whisper.types"
@@ -8,6 +6,8 @@ import { ChangeEvent, MutableRefObject } from "react"
 import Image from "next/image";
 import ReplyLayoutCell from "@/components/ReplyWhisper/ReplyLayoutCell"
 import { Whisper } from "@/contexts/WhisperPostContext"
+import MediaAttachments from "@/components/Attachments/MediaAttachments"
+import LexicalContentEditable from "@/components/LexicalContentEditable/LexicalContentEditable"
 interface PostComposerProps {
     whisper_to_reply?: any;
     user: {
@@ -118,7 +118,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                 <div className='col-span-2 ml-2 '>
                                     <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                     <div className="relative">
-                                        <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."} />
+                                        <LexicalContentEditable ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."} />
                                     </div>
                                     <FormField
                                         control={form.control}
@@ -126,7 +126,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                         render={({ field }: { field: FieldValues }) => (
                                             <FormItem className=" space-y-[10px]  ">
                                                 {imageDataArray && (
-                                                    <DisplayMedia medias={imageDataArray} abortimage={abortimage} />
+                                                    <MediaAttachments medias={imageDataArray} abortimage={abortimage} />
                                                 )}
                                                 <FormControl className="outline-none">
                                                     <div className="relative right-1.5">
@@ -199,7 +199,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                 <div className='col-span-2 ml-2 '>
                                     <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                     <div className="relative">
-                                        <ContentPlayer ref={editorRef} watchtext={WatchText} placeholder={"Commencer un whisper..."} />
+                                        <LexicalContentEditable ref={editorRef} watchtext={WatchText} placeholder={"Commencer un whisper..."} />
                                     </div>
                                     <FormField
                                         control={form.control}
@@ -207,7 +207,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                         render={({ field }: { field: FieldValues }) => (
                                             <FormItem className=" space-y-[10px]  ">
                                                 {imageDataArray && (
-                                                    <DisplayMedia medias={imageDataArray} abortimage={abortimage} />
+                                                    <MediaAttachments medias={imageDataArray} abortimage={abortimage} />
                                                 )}
                                                 <FormControl className="outline-none">
                                                     <div className="relative right-1.5">

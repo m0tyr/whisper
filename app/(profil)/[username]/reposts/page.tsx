@@ -1,8 +1,8 @@
 import { fetchUser, fetchUserWhisper, fetchUserbyEmail, fetchUserbyUsername, follow, isFollowing } from "@/lib/actions/user.actions";
 import { notFound, redirect } from "next/navigation";
-import TopBar from "@/components/shared/Topbar";
+import TopBar from "@/components/Topbar/Topbar";
 import { auth } from "@/auth";
-import UserCard from "@/components/cards/UserCard";
+import UserCard from "@/components/UserCard/UserCard";
 import WhisperPost from "@/components/cards/WhisperPost";
 import { likewhisper } from "@/lib/actions/whisper.actions";
 

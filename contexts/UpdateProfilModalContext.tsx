@@ -1,6 +1,6 @@
 'use client';
-import UpdateProfil from '@/components/forms/UpdateProfil';
-import { Modal } from '@/components/shared/Modal';
+import UpdateProfil from '@/components/UpdateProfil/UpdateProfil';
+import { Modal } from '@/components/Modal/Modal';
 import { AnimatePresence } from 'framer-motion';
 import { createContext, useMemo, ReactNode, useState } from 'react';
 

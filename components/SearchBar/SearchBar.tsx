@@ -3,8 +3,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z, ZodType } from "zod";
 import { SearchModel } from "@/lib/actions/user.actions";
-import SearchResult from "../shared/SearchResult";
-import SearchValue from "../shared/SearchValue";
+import SearchResult from "./SearchResult";
+import SearchValue from "./SearchValue";
 import {
   Form,
   FormControl,

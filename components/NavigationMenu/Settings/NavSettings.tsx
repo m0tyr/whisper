@@ -4,7 +4,7 @@ import Link from "next/link";
 interface Props {
     navigation: string;
 }
-export default function NavMenu({ navigation }: Props) {
+export default function NavSettings({ navigation }: Props) {
     return (
         <div className="text-center text-gray-2 h-full grid grid-cols-[1fr_1fr_1fr] w-full justify-center items-center text-base-regular ">
             <motion.div className={`w-full h-12 border-b border-solid  ${navigation === '' ? "" : "border-b-border"}  block`}>

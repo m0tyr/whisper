@@ -1,7 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";
 import { useEffect } from "react";
-import { MentionNode } from "@/components/plugins/MentionsPlugin/MentionNode";
+import { MentionNode } from "@/components/LexicalContentEditable/MentionsPlugin/MentionNode";
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
@@ -12,7 +12,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin'
 import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import { MentionsPlugin } from "@/components/plugins/MentionsPlugin";
+import { MentionsPlugin } from "@/components/LexicalContentEditable/MentionsPlugin";
 
 
 
@@ -53,7 +53,7 @@ const initialConfig = {
   ]
 };
 
- const ContentPlayer = React.forwardRef((props: any, ref: any) => {
+ const LexicalContentEditable = React.forwardRef((props: any, ref: any) => {
   const { watchtext, placeholder } = props;
 
   const onChange = () => {
@@ -78,6 +78,6 @@ const initialConfig = {
   );
 });
  
-export default ContentPlayer
+export default LexicalContentEditable
 
 

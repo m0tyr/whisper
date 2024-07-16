@@ -1,11 +1,11 @@
 import { auth } from "@/auth";
-import ActivityCard from "@/components/cards/ActivityCard";
+import ActivityCard from "@/components/ActivityCard/ActivityCard";
 import NavActivity from "@/components/shared/NavActivity";
-import TopBar from "@/components/shared/Topbar";
+import TopBar from "@/components/Topbar/Topbar";
 import NavMenu from "@/components/shared/widgets/nav_menu";
-import SettingsAccountMenu from "@/components/shared/widgets/settings_account_menu";
-import SettingsOthersMenu from "@/components/shared/widgets/settings_others_menu";
-import SettingsPrivacyMenu from "@/components/shared/widgets/settings_privacy_menu";
+import SettingsAccountMenu from "@/components/Settings/SettingsAccountMenu";
+import SettingsOthersMenu from "@/components/Settings/settings_others_menu";
+import SettingsPrivacyMenu from "@/components/Settings/settings_privacy_menu";
 import { fetchUser, fetchUserbyEmail, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
 import { calculateTimeAgo } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs";

@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import ActivityCard from "@/components/cards/ActivityCard";
-import NavActivity from "@/components/shared/NavActivity";
-import TopBar from "@/components/shared/Topbar";
+import ActivityCard from "@/components/ActivityCard/ActivityCard";
+import NavActivity from "@/components/NavigationMenu/Activity/NavActivity";
+import TopBar from "@/components/Topbar/Topbar";
 import { getNotifications } from "@/lib/actions/notifications.actions";
 import { fetchUser, fetchUserbyEmail, follow, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
 import { ActivityType, UserNotification } from "@/lib/types/notification.types";
