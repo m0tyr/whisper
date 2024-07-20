@@ -1,6 +1,5 @@
 'use client'
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -9,7 +8,7 @@ interface Props {
     suggestion: any;
     follow: any;
 }
-export default function UserCardItem({ myusername, suggestion, follow }: Props) {
+export default function EmbeddedUserProfile({ myusername, suggestion, follow }: Props) {
     const [followtracker, setfollowtracker] = useState(false);
     const router = useRouter()
     const redirectToProfil = () => {

@@ -1,17 +1,17 @@
 'use client'
 
 import { useEffect, useRef, useState } from "react";
-import UserCardItem from "./user_card_item"
+import EmbeddedUserProfile from "../EmbeddedUserProfile/EmbeddedUserProfile"
 import { motion } from "framer-motion";
 import { CAROUSEL_DIRECTION_VALUE } from "@/lib/css/motion";
 
 interface Props {
-    grid_display: number;
+    embedded_profile_amount: number;
     suggestions: any;
     follow: any;
     my_username: any;
 }
-export default function UserCardColumn({ grid_display, suggestions, follow, my_username }: Props) {
+export default function SuggestedUserCarousel({ embedded_profile_amount, suggestions, follow, my_username }: Props) {
     const carouselRef = useRef<HTMLDivElement>(null);
     const fullcarouselRef = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(1000)
@@ -83,24 +83,21 @@ export default function UserCardColumn({ grid_display, suggestions, follow, my_u
     const onDragEnd = () => {
         setIsDragged(false);
     };
-    const renderRows = () => {
-        const rows = [];
-        for (let i = 0; i < grid_display; i++) {
-            const startIndex = i * 3;
-            rows.push(
+    const renderEmbeddedProfiles = () => {
+        const embeddedProfiles = [];
+        for (let i = 0; i < embedded_profile_amount; i++) {
+            embeddedProfiles.push(
                 <motion.div
                     onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
                     }}
                     key={i} className="flex flex-row justify-center items-center mt-5">
-                    <UserCardItem suggestion={suggestions[startIndex]} myusername={my_username} follow={follow} />
-                    <UserCardItem suggestion={suggestions[startIndex + 1]} myusername={my_username} follow={follow} />
-                    <UserCardItem suggestion={suggestions[startIndex + 2]} myusername={my_username} follow={follow} />
+                    <EmbeddedUserProfile suggestion={suggestions[i]} myusername={my_username} follow={follow} />
                 </motion.div>
             );
         }
-        return rows;
+        return embeddedProfiles;
     };
 
     return (
@@ -136,7 +133,7 @@ export default function UserCardColumn({ grid_display, suggestions, follow, my_u
                         fullcarouselRef.current.style.pointerEvents = "auto";
                 }}
             >
-                {renderRows()}
+                {renderEmbeddedProfiles()}
             </motion.div>
             <div className={`mobile:flex hidden justify-center items-center absolute top-0 right-[-72px] h-full w-[72px] gap-2 cursor-pointer`} onClick={handleRightArrowClick}>
                 <div className={` px-3   bg-border opacity-80 rounded-full py-3 `} >

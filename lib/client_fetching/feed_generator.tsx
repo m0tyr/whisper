@@ -2,9 +2,9 @@
 import React from "react";
 
 import FeedSkeleton from "@/components/shared/loader/feed_skeleton";
-import FeedUserCard from "@/components/shared/widgets/feed_user_card";
 import WhisperPost from "@/components/WhisperPostLayout/WhisperPost";
 import useQueryForYouFeed from "@/hooks/queries/useQueryForYouFeed";
+import SuggestedUsers from "@/components/SuggestedUsers/SuggestedUsers";
 
 export default function FeedGenerator() {
   const addtofollowing = async (myusername: string, username: string) => {
@@ -20,7 +20,7 @@ export default function FeedGenerator() {
       ) : (
         <>
           {!data ? (
-            <FeedUserCard  follow={addtofollowing} />
+            <SuggestedUsers  follow={addtofollowing} />
           ) : (
             <>
               {data.posts_exec.map((post: any) => (

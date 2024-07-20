@@ -1,14 +1,13 @@
 "use client";
 import { useSessionUser } from "@/hooks/useSessionUser";
-import UserCardColumn from "./user_card_col";
+import SuggestedUserCarousel from "./SuggestedUserCarousel";
 import useQueryUserSuggestion from "@/hooks/queries/useQueryUserSuggestion";
-import { convertToReadableClientData } from "@/lib/utils";
 
 interface Props {
   follow: any;
 }
 
-export default function FeedUserCard({ follow }: Props) {
+export default function SuggestedUsers({ follow }: Props) {
   const [user] = useSessionUser();
   const { data, isFetched } = useQueryUserSuggestion();
   return (
@@ -17,8 +16,8 @@ export default function FeedUserCard({ follow }: Props) {
         Suggestion pour vous
       </p>
       {isFetched ? (
-        <UserCardColumn
-          grid_display={4}
+        <SuggestedUserCarousel
+          embedded_profile_amount={10}
           suggestions={data}
           follow={follow}
           my_username={user?.username as string}
