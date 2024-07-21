@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 
-import FeedSkeleton from "@/components/shared/loader/feed_skeleton";
 import WhisperPost from "@/components/WhisperPostLayout/WhisperPost";
 import useQueryForYouFeed from "@/hooks/queries/useQueryForYouFeed";
 import SuggestedUsers from "@/components/SuggestedUsers/SuggestedUsers";
+import FeedSkeleton from "@/components/shared/loader/FeedSkeleton";
 
 export default function FeedGenerator() {
   const addtofollowing = async (myusername: string, username: string) => {

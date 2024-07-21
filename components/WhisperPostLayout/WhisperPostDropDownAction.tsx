@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 
 
 
-const WhisperDropDownAction = () => {
+const WhisperPostDropDownAction = () => {
     const { CreateGenericDialog } = useDialog()
     const DeleteWhisper = () => {
         window.alert("deleted whisper")
@@ -68,4 +68,4 @@ const WhisperDropDownAction = () => {
     )
 }
 
-export default WhisperDropDownAction;
+export default WhisperPostDropDownAction;

@@ -31,9 +31,9 @@ import { toast } from "../ui/use-toast";
 import { MAX_FILE_SIZE } from "@/lib/errors/post.errors";
 import { s3GenerateSignedURL } from "@/lib/s3/actions";
 import useUpdateProfil from "@/hooks/useUpdateProfil";
-import BasicLoader from "../shared/loader/basicloader";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 import { useSessionUser } from "@/hooks/useSessionUser";
+import Spinner from "../Spinner/Spinner";
 
 
 
@@ -357,7 +357,7 @@ const UpdateProfile = () => {
                                                 className="w-full h-full bg-white rounded-xl py-1 px-4 hover:bg-slate-100
                  transition-all duration-150 !text-small-semibold text-black ">
                                                 {Processing ? (
-                                                 <BasicLoader width={20} height={20} color="black" />
+                                                 <Spinner width={20} height={20} color="black" Centered={true} />
                                                 ) : ("Terminé")}
                                             </Button>
                                         </motion.div>

@@ -1,9 +1,9 @@
-import WhisperSkeleton from "./ui/whisper_skeleton";
+import WhisperPostSkeleton from "../../WhisperPostLayout/WhisperPostSkeleton";
 
 
 export default function FeedSkeleton({ feed_length }: { feed_length: number }) {
     const skeletons = Array.from({ length: feed_length }, (_, index) => (
-        <WhisperSkeleton key={index} />
+        <WhisperPostSkeleton key={index} />
     ));
 
     return <>

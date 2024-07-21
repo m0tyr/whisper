@@ -9,8 +9,7 @@ import {
 } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { FILE_TYPE_NOT_ALLOWED, MAX_FILE_SIZE } from "@/lib/errors/post.errors";
-import { motion } from "framer-motion";
-import BasicLoader from "../shared/loader/basicloader";
+import Spinner from "../Spinner/Spinner";
 
 export function Toaster() {
   const { toasts } = useToast()
@@ -33,7 +32,7 @@ export function Toaster() {
                 </div>
               ) : title === 'Publication...' ? (
                 <div className="flex flex-row gap-4 w-full h-full justify-center items-center">
-                  <BasicLoader width={27} height={27} color="black" />
+                  <Spinner width={27} height={27} color="black" Centered={false} />
                   <ToastTitle className="flex gap-3 items-center justify-center">
 
                     <div className="mt-0.5">
@@ -43,7 +42,7 @@ export function Toaster() {
                 </div>
               ) : title === "Inscription..." ? (
                 <div className="flex flex-row gap-4 w-full h-full justify-center items-center">
-                  <BasicLoader width={27} height={27} color="black" />
+                  <Spinner width={27} height={27} color="black" Centered={false} />
                   <ToastTitle className="flex gap-3 items-center justify-center">
                     <div className="mt-0.5">
                       {title}

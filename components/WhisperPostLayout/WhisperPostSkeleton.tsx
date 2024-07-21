@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import React from 'react';
 
-export default function WhisperSkeleton() {
+export default function WhisperPostSkeleton() {
     const usernamewidth_generator = () => {
         const maxWidth = 36.66666; 
         const minWidth = 12.333; 

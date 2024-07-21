@@ -1,5 +1,5 @@
 import LoginForm from "@/components/Login/LoginForm";
-import Loader from "@/components/shared/loader/loader";
+import Spinner from "@/components/Spinner/Spinner";
 import { Suspense } from "react";
 
 export async function generateMetadata() {
@@ -14,7 +14,7 @@ export default async function Page() {
 
   return (
     <Suspense fallback={
-      <Loader />
+      <Spinner width={24} height={24} color={"white"} Centered={true} />
     }>
       <LoginForm />
     </Suspense>

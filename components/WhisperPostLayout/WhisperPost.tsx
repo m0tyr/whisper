@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import WhisperDropDownAction
-  from '@/components/shared/widgets/whisper_dropdown_actions';
+import WhisperPostDropDownAction
+  from '@/components/WhisperPostLayout/WhisperPostDropDownAction';
 import {
   useWhisper,
   Whisper,
@@ -547,7 +547,7 @@ WhisperPost.Date = function WhisperPostDate() {
 };
 
 WhisperPost.DropDownActions = function WhisperPostDropDownActions() {
-  return <WhisperDropDownAction />;
+  return <WhisperPostDropDownAction />;
 };
 
 WhisperPost.Medias = function WhisperPostMedias() {

@@ -25,7 +25,7 @@ import * as ReactDOM from 'react-dom';
 
 import { $createMentionNode } from './MentionNode';
 import { MentionSearchModel } from '@/lib/actions/user.actions';
-import BasicLoader from '@/components/shared/loader/basicloader';
+import Spinner from '@/components/Spinner/Spinner';
 
 const PUNCTUATION =
   '\\.,\\+\\*\\?\\$\\@\\|#{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
@@ -348,7 +348,7 @@ export function MentionsPlugin(): JSX.Element | null {
                       <div className='flex flex-col flex-shrink w-full px-1 py-0.5'>
                         <div className='flex flex-row flex-wrap p-2'>
                           <div className='flex h-[36px] justify-center items-center mx-auto'>
-                           <BasicLoader width={22} height={22} color='white' />
+                           <Spinner width={22} height={22} color='white' Centered={false} />
                           </div>
                         </div>
                       </div>

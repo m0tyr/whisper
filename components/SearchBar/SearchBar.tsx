@@ -14,7 +14,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SearchValidation } from "@/lib/validations/whisper";
 import { Suspense } from "react";
-import Loader from "../shared/loader/loader";
+import Spinner from "../Spinner/Spinner";
 import { motion } from "framer-motion"
 import { useSearchBar } from "@/hooks/useSearchBar";
 
