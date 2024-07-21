@@ -1,7 +1,7 @@
 'use server'
 import {
-  notFound,
-  redirect,
+    notFound,
+    redirect,
 } from 'next/navigation';
 
 import { auth } from '@/auth';
@@ -9,14 +9,14 @@ import UserCard from '@/components/UserCard/UserCard';
 import TopBar from '@/components/Topbar/Topbar';
 import WhisperPost from '@/components/WhisperPostLayout/WhisperPost';
 import {
-  UpdateProfilModalContextProvider,
+    UpdateProfilModalContextProvider,
 } from '@/contexts/UpdateProfilModalContext';
 import {
-  fetchUserbyEmail,
-  fetchUserbyUsername,
-  fetchUserWhisper,
-  follow,
-  isFollowing,
+    fetchUserbyEmail,
+    fetchUserbyUsername,
+    fetchUserWhisper,
+    follow,
+    isFollowing,
 } from '@/lib/actions/user.actions';
 import { likewhisper } from '@/lib/actions/whisper.actions';
 import UserWhispers from '@/components/UserWhispers/UserWhispers';
@@ -81,11 +81,10 @@ export default async function Page({ params }: { params: { username: string } })
     }
     return (
         <>
-            <TopBar />
-
-            <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 px-0">
-        <div className="w-7/12 bg-good-gray basis-full grow shrink rounded-t-3xl border border-border overflow-x-hidden overflow-y-auto relative z-0   mobile:max-w-[40rem] max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
-                    <UpdateProfilModalContextProvider>
+            <UpdateProfilModalContextProvider>
+                <TopBar />
+                <section className="mobile:main-container flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark pt-20 px-0">
+                    <div className="w-7/12 bg-good-gray basis-full grow shrink rounded-t-3xl border border-border overflow-x-hidden overflow-y-auto relative z-0   mobile:max-w-[40rem] max-xl:w-4/5 max-lg:w-full" aria-hidden="true">
                         <UserCard
                             myusername={currentuserData.username}
                             name={userData.name}
@@ -97,12 +96,12 @@ export default async function Page({ params }: { params: { username: string } })
                             Isfollowing={isfollowing}
                             follow={addtofollowing}
                         />
-                    </UpdateProfilModalContextProvider>
-                    <div className="">
-                        <UserWhispers UserPosts={userposts} />
+                        <div className="">
+                            <UserWhispers UserPosts={userposts} />
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </UpdateProfilModalContextProvider>
         </>
     )
 }

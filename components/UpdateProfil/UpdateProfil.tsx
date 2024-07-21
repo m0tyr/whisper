@@ -34,6 +34,8 @@ import useUpdateProfil from "@/hooks/useUpdateProfil";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 import { useSessionUser } from "@/hooks/useSessionUser";
 import Spinner from "../Spinner/Spinner";
+import { Modal } from "../Modal/Modal";
+import { useDialog } from "@/hooks/useDialog";
 
 
 
@@ -49,20 +51,16 @@ const UpdateProfile = () => {
         isProcessing,
         editableDivHeight,
         handleInput,
-        openPopup,
-        currentModification,
-        currentLimit,
-        cachedData,
-        DoopenPopup,
-        closepopup,
+        closeDialog,
         namecachedata,
         biocachedata,
         biostatus,
         handleDataReacher,
         EnableImage,
-        onInputClick
+        onInputClick,
+        syncProfileData
     } = useUpdateProfil({user})
-
+    const { CreateComposerEditProfileDialog } = useDialog()
     async function onSubmit(values: z.infer<typeof ModificationValidation>) {
         isProcessing(true)
 
@@ -127,9 +125,11 @@ const UpdateProfile = () => {
             values.profile_photo, //profil picture
             pathname // pathname
         )
+        syncProfileData(values.bio as string, values.name as string)
         exitMainContext()
         console.log(values)
     }
+
     const form = useForm<z.infer<typeof ModificationValidation>>({
         resolver: zodResolver(ModificationValidation),
         defaultValues: {
@@ -139,6 +139,7 @@ const UpdateProfile = () => {
             accoundId: user?.id,
         },
     });
+
     return (
         <>
             <Form {...form} >
@@ -274,7 +275,7 @@ const UpdateProfile = () => {
                                                                     <span
                                                                         className="text-white text-wrap whitespace-pre-line break-words overflow-x-visible overflow-y-visible"
                                                                         style={{ wordWrap: 'break-word', wordBreak: 'break-word' }}
-                                                                        onClick={() => DoopenPopup("Nom", 30, namecachedata)}>
+                                                                        onClick={() => CreateComposerEditProfileDialog(editableDivHeight, "nom", namecachedata, 30, handleDataReacher, closeDialog )}>
                                                                         {namecachedata === "" ? user?.name : namecachedata}
                                                                     </span>
 
@@ -313,7 +314,7 @@ const UpdateProfile = () => {
                                                                         data-placeholder="+ Ajouter une bio"
                                                                         className="text-white text-wrap whitespace-pre-line break-words overflow-x-visible overflow-y-visibl placeholder:text-[12px]"
                                                                         style={{ wordWrap: 'break-word', wordBreak: 'break-word' }}
-                                                                        onClick={() => DoopenPopup("Bio", 200, biocachedata)}>
+                                                                        onClick={() => CreateComposerEditProfileDialog(editableDivHeight, "bio", biocachedata, 30, handleDataReacher, closeDialog )}>
                                                                         {biostatus ? biocachedata : user?.bio}
                                                                     </span>
 
@@ -357,7 +358,7 @@ const UpdateProfile = () => {
                                                 className="w-full h-full bg-white rounded-xl py-1 px-4 hover:bg-slate-100
                  transition-all duration-150 !text-small-semibold text-black ">
                                                 {Processing ? (
-                                                 <Spinner width={20} height={20} color="black" Centered={true} />
+                                                 <Spinner width={20} height={20} color="black" Centered={false} />
                                                 ) : ("Terminé")}
                                             </Button>
                                         </motion.div>
@@ -367,24 +368,8 @@ const UpdateProfile = () => {
                             </form>
                         </div>
                     </motion.div>
-
                 </AnimatePresence >
             </Form >
-            {openPopup && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0, zIndex: 0 }}
-                        animate={{ opacity: 1, zIndex: 51 }}
-                        exit={{ opacity: 0 }}
-                        transition={{}}
-                        id='top'
-                        className="fixed top-0 left-0 inset-0 bg-black bg-opacity-75 w-full " onClick={() => DoopenPopup("", 0, "")}></motion.div>
-                    <DataReacher editableDivHeight={editableDivHeight} data={currentModification} data_limit={currentLimit} onUpdateData={handleDataReacher} toclose={closepopup} cache={cachedData} />
-                </>
-
-            )}
-
-
         </>
     )
 

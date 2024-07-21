@@ -1,24 +1,45 @@
-import { DialogContext } from "@/contexts/DialogContext"
+import { ComposerDialogEditProfileType, DialogContext } from "@/contexts/DialogContext"
 import { useContext } from "react"
 
 export const useDialog = () => {
-    const { setShowDialog, setDialog } = useContext(DialogContext)
+    const { handleActionDialog, setActionDialog, setEditProfileComposerDialog, handleComposerEditProfileDialog } = useContext(DialogContext)
 
-    const CreateGenericDialog = (
+    const CreateComposerEditProfileDialog = (
+        editableDivHeight: number,
+        composerEditProfileFieldType: string,
+        composerProfileCachedData: string,
+        composerFieldInputLimit: number,
+        onUpdateData: (value: string, type: string) => void,
+        triggerCloseDialog: () => void,
+    ) => {
+        setEditProfileComposerDialog({
+            editableDivHeight,
+            composerEditProfileFieldType,
+            composerProfileCachedData,
+            composerFieldInputLimit,
+            onUpdateData,
+            triggerCloseDialog
+        });
+        handleComposerEditProfileDialog(true);
+    }
+
+
+    const CreateActionDialog = (
         title: string, 
         content: string, 
         action: string, 
         onAction: () => void
     ) => {
-        setDialog({
+        setActionDialog({
             title,
             content,
             action,
             onAction,
         });
-        setShowDialog(true);
+        handleActionDialog(true);
     };
     return {
-        CreateGenericDialog
+        CreateComposerEditProfileDialog,
+        CreateActionDialog
     }
 }

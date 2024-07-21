@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 
 
 const WhisperPostDropDownAction = () => {
-    const { CreateGenericDialog } = useDialog()
+    const { CreateActionDialog } = useDialog()
     const DeleteWhisper = () => {
         window.alert("deleted whisper")
     }
@@ -52,7 +52,7 @@ const WhisperPostDropDownAction = () => {
 
                         <DropdownMenuItem onClick={
                             () => {
-                                CreateGenericDialog(
+                                CreateActionDialog(
                                     DELETE_WHPR_TITLE,
                                     DELETE_WHPR_CONTENT,
                                     DELETE_WHPR_ACTION,

@@ -33,7 +33,7 @@ const CreateWhisperModalContextApi = createContext<CreateWhisperModalContextApiP
 });
 
 function CreateWhisperModalContextProvider({ children }: { children: ReactNode }) {
-  const { CreateGenericDialog } = useDialog()
+  const { CreateActionDialog } = useDialog()
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
   const [modalProps, setModalProps] = useState<Record<string, any>>({});
@@ -42,7 +42,7 @@ function CreateWhisperModalContextProvider({ children }: { children: ReactNode }
   const toggleModal = (CreatePostStateSetter: boolean, dismiss_state: boolean): any => {
     return () => {
       if (dismiss_state && showModal) {
-        CreateGenericDialog(
+        CreateActionDialog(
           DISMISS_ABANDON_WHPR_TITLE,
           DISMISS_ABANDON_WHPR_CONTENT,
           DISMISS_ABANDON_WHPR_ACTION,

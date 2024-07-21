@@ -1,16 +1,10 @@
 import { auth } from "@/auth";
-import ActivityCard from "@/components/ActivityCard/ActivityCard";
-import NavActivity from "@/components/shared/NavActivity";
 import TopBar from "@/components/Topbar/Topbar";
-import NavMenu from "@/components/shared/widgets/nav_menu";
-import SettingsAccountMenu from "@/components/Settings/SettingsAccountMenu";
-import SettingsOthersMenu from "@/components/Settings/settings_others_menu";
-import SettingsPrivacyMenu from "@/components/Settings/settings_privacy_menu";
-import { fetchUser, fetchUserbyEmail, getActivityFromUser, getMentionActivityFromUser } from "@/lib/actions/user.actions";
-import { calculateTimeAgo } from "@/lib/utils";
-import { currentUser } from "@clerk/nextjs";
-import { motion } from "framer-motion";
+import { fetchUserbyEmail } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
+import NavSettings from "@/components/NavigationMenu/Settings/NavSettings";
+import SettingsPrivacyMenu from "@/components/Settings/SettingsPrivacyMenu";
+import SettingsOthersMenu from "@/components/Settings/SettingsOthersMenu";
 
 export function generateMetadata() {
 
@@ -25,13 +19,6 @@ export default async function Page({ params }: { params: { type: string } }) {
   const email = session?.user.email
   const currentUser = await fetchUserbyEmail(email as string)
   if (!currentUser.onboarded) redirect('/onboarding');
-  const userData = {
-    id: session?.user?.id,
-    username: currentUser?.username,
-    name: currentUser?.name || session?.user?.name,
-    bio: currentUser?.bio || "",
-    image: currentUser?.image || session?.user?.image,
-  };
   if (params.type === null) {
     params.type = '';
   }
@@ -47,7 +34,7 @@ export default async function Page({ params }: { params: { type: string } }) {
             </span>
 
           </div>
-          <NavMenu navigation={params.type} />
+          <NavSettings navigation={params.type} />
           {
             params.type === 'privacy' && <SettingsPrivacyMenu/>
           }
