@@ -13,6 +13,9 @@ export const useUpdateProfil = ({ user }: Props) => {
     const [Processing, isProcessing] = useState(false);
     const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
     const [editableDivHeight, setEditableDivHeight] = useState(viewportHeight);
+    const [namecachedata, setNamecachedata] = useState(user?.name);
+    const [biocachedata, setBiocachedata] = useState(user?.bio);
+    const [biostatus, setbiostatus] = useState(false);
     const editableDiv = document.getElementById('editableDiv');
     const pathname = usePathname();
     const { handleComposerEditProfileDialog } = useContext(DialogContext);
@@ -66,9 +69,7 @@ export const useUpdateProfil = ({ user }: Props) => {
     const closeDialog = () => {
         handleComposerEditProfileDialog(false)
     };
-    const [namecachedata, setNamecachedata] = useState("");
-    const [biocachedata, setBiocachedata] = useState(user?.bio);
-    const [biostatus, setbiostatus] = useState(false);
+
     const handleDataReacher = (value: string, type: string) => {
         if (type === "nom") {
             setNamecachedata(value);
@@ -87,15 +88,9 @@ export const useUpdateProfil = ({ user }: Props) => {
         const element = event.target as HTMLInputElement
         element.value = ''
     }
-
-    const syncProfileData = (bio: string, name: string) => {
-        setBiocachedata(bio);
-        setNamecachedata(name);
-    }
-
+    
     
     return {
-        syncProfileData,
         inputRef,
         imageData,
         pathname,

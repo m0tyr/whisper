@@ -4,7 +4,7 @@ import { useSessionUser } from "../useSessionUser";
 
 
 function useQueryForYouFeed() {
-    const [user] = useSessionUser();
+    const { user } = useSessionUser();
     const { data, isFetched } = useQuery({
         queryKey: ['feed_key', '124TWH'],
         queryFn: async () => {

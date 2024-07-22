@@ -1,8 +1,8 @@
 "use client";
 import { Modal } from "@/components/Modal/Modal";
-import DataReacher from "@/components/shared/DataReacher";
-import DirectDialog from "@/components/shared/DirectDialog";
+import EditProfileComposer from "@/components/shared/EditProfileComposer";
 import { AnimatePresence } from "framer-motion";
+import ActionPopOver from "@/components/shared/ActionPopOver";
 import {
   createContext,
   useMemo,
@@ -103,7 +103,7 @@ function DialogContextProvider({ children }: { children: ReactNode }) {
                 handleComposerEditProfileDialog(false);
               }}
             />
-            <DataReacher
+            <EditProfileComposer
               editableDivHeight={EditProfileComposerDialog.editableDivHeight}
               composerEditProfileFieldType={
                 EditProfileComposerDialog.composerEditProfileFieldType
@@ -126,7 +126,7 @@ function DialogContextProvider({ children }: { children: ReactNode }) {
                 handleActionDialog(false);
               }}
             />
-            <DirectDialog
+            <ActionPopOver
               title={ActionDialog.title}
               content={ActionDialog.content}
               onDismiss={() => {

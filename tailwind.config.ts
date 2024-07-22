@@ -207,7 +207,7 @@ module.exports = {
         "dark-2": "#121417",
         "dark-3": "#101012",
         "dark-4": "#1F1F22",
-        "insanedark": "rgba(12, 12, 12, 1)",
+        "insanedark": "rgba(10, 10, 10, 1)",
         "navcolor": "rgba(12, 12, 12, 0.85)",
         "light-1": "#FFFFFF",
         "light-2": "#EFEFEF",

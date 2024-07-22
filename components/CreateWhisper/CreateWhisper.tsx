@@ -27,7 +27,7 @@ import PostComposerDialog from "../PostComposer/PostComposerDialog";
 
 const CreateWhisper = () => {
   const { toast } = useToast()
-  const [user] = useSessionUser()
+  const { user } = useSessionUser();
   const { ModifyDismissState, exitMainContext } = useWhisperModal();
   const {
     inputRef,

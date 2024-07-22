@@ -19,7 +19,7 @@ import { useSessionUser } from "@/hooks/useSessionUser";
 import { useWhisperModal } from "@/hooks/useWhisperModal";
 
 const TopBar = () => {
-  const [user] = useSessionUser();
+  const { user } = useSessionUser();
   const { launchCreateContext } = useWhisperModal();
   const pathname = usePathname();
   function handleConfirm() {

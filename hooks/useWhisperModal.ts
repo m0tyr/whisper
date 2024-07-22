@@ -6,7 +6,7 @@ import { UpdateProfilModalContextApi } from "@/contexts/UpdateProfilModalContext
 export const useWhisperModal = () => {
     const { setdismisstate, setModalProps, setModalType, toggleModal } = useContext(CreateWhisperModalContextApi);
     const { toggleModalV2 } = useContext(UpdateProfilModalContextApi) 
-    const [user] = useSessionUser()
+    const { user } = useSessionUser();
 
     const ModifyDismissState = (state: boolean) => {
         setdismisstate(state)

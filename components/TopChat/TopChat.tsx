@@ -8,7 +8,7 @@ import { useWhisperModal } from '@/hooks/useWhisperModal';
 import PostComposerButton from '../PostComposer/PostComposerButton';
 
 const TopChat = () => {
-    const [user] = useSessionUser();
+    const { user } = useSessionUser();
     const { launchCreateContext } = useWhisperModal();
     return (
         <>

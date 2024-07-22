@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function SuggestedUsers({ follow }: Props) {
-  const [user] = useSessionUser();
+  const { user } = useSessionUser();
   const { data, isFetched } = useQueryUserSuggestion();
   return (
     <div>

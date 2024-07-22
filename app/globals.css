@@ -20,7 +20,7 @@
 
 
   .main-container {
-    @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark px-6 pt-20;
+    @apply flex min-h-screen min-w-full flex-1 flex-col items-center bg-insanedark px-6;
   }
 
   .activity-container {

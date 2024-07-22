@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 const WhisperPostInteractions = () => {
-    const [user] = useSessionUser()
+    const { user } = useSessionUser();
 
     const {
         id,

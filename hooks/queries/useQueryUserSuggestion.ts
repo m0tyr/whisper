@@ -3,7 +3,7 @@ import { useSessionUser } from "../useSessionUser";
 import { FamousUserSuggestion } from "@/lib/actions/user.actions";
 
 function useQueryUserSuggestion() {
-  const [user] = useSessionUser();
+  const { user } = useSessionUser();
   const { data, isFetched } = useQuery({
     queryKey: ["suggestion_key", "124SWH"],
     queryFn: async () => {

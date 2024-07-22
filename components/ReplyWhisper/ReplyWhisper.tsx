@@ -31,7 +31,7 @@ interface Props {
 }
 
 const ReplyWhisper = ({ whisper_to_reply }: Props) => {
-  const [user] = useSessionUser()
+  const { user } = useSessionUser();
   const { ModifyDismissState, exitMainContext } = useWhisperModal();
   const { toast } = useToast()
   const {
