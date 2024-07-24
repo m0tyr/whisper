@@ -224,7 +224,7 @@ WhisperPost.DefaultContainer = function WhisperPostDefaultContainer({
           </div>
         </div>
       </div>
-      <hr className="border-x-2 opacity-20 rounded-full" />
+      <hr className="border-x h-[1px] border-border rounded-full" />
     </>
   );
 };
@@ -309,7 +309,7 @@ WhisperPost.ViewingContainer = function WhisperPostViewingContainer({
       </div>
       {!isNotComment ? (
         <>
-          <hr className="border-x-2 opacity-20 rounded-full " />
+          <hr className="border-x-2 border-border rounded-full " />
         </>
       ) : null}
     </>

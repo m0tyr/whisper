@@ -217,7 +217,7 @@ module.exports = {
         "gray-2": "#777777",
         "good-gray": "#181818",
         "test": "#181818",
-        "border": "rgba(243, 245, 247, .13333)",
+        "border": "rgb(45, 45, 45)",
         glassmorphism: "rgba(16, 16, 18, 0.60)",
         "logo-color": "#344FFF",
       },
