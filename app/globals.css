@@ -77,6 +77,11 @@
   .tiptap[content-editable] {
     border-radius: 50%;
   }
+  canvas {
+    overflow: visible;
+    overflow-clip-margin: content-box;
+    aspect-ratio: auto 66 / 66;
+  }
 
 
   /* Activity */
