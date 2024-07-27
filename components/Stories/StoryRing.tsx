@@ -8,30 +8,28 @@ const StoryRing = () => {
       if (canvas) {
         const context = canvas.getContext('2d');
         if (context) {
-          const radius = canvas.width / 2; // Radius of the circle
-          const lineWidth = 3.25; // Line width for the border
+          const radius = canvas.width / 2; 
+          const lineWidth = 3.25; 
   
           context.clearRect(0, 0, canvas.width, canvas.height);
   
           const borderGradient = context.createRadialGradient(
-            radius, radius, radius - lineWidth / 2, // Start circle
-            radius, radius, radius // End circle
+            radius, radius, radius - lineWidth / 2, 
+            radius, radius, radius 
         );
-        borderGradient.addColorStop(0, '#314BFF'); // Start with blue
-        borderGradient.addColorStop(1, '#9faaf1'); // Transition to white-blue
+        borderGradient.addColorStop(0, '#314BFF'); 
+        borderGradient.addColorStop(1, '#9faaf1');
   
-          // Clip the area inside the circle
           context.save();
           context.beginPath();
           context.arc(radius, radius, radius - lineWidth / 2, 0, Math.PI * 2);
           context.clip();
   
-          // Draw the border with the radial gradient
           context.globalCompositeOperation = 'destination-over';
           context.beginPath();
           context.arc(radius, radius, radius - lineWidth / 2, 0, Math.PI * 2);
           context.lineWidth = lineWidth;
-          context.strokeStyle = borderGradient; // Border gradient
+          context.strokeStyle = borderGradient; 
           context.stroke();
           context.restore();
         }

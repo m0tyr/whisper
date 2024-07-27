@@ -46,7 +46,6 @@ const WhisperPostCarousel = ({ DataArray, widthprovider, srcprovider, typeprovid
 
         const updateWidth = () => {
             if (carouselRef.current && fullcarouselRef.current) {
-                carouselRef.current.scrollTo(0, 0);
                 const newWidth = fullcarouselRef.current.scrollWidth - carouselRef.current.offsetWidth + 30;
                 if (isInReplyContext) {
                     setWidth(newWidth > 0 ? newWidth + 45 : 0);

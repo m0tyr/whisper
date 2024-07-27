@@ -131,6 +131,15 @@
     width: 280px !important;
   }
 
+  .hide-scrollbar {
+    overflow: -moz-scrollbars-none; /* For Firefox */
+    scrollbar-width: none; /* For modern browsers */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+  }
+
   li {
     width: 100%;
     cursor: pointer;
