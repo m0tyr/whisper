@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import StoryRing from "./StoryRing";
 import { motion } from "framer-motion";
+import { useDialog } from "@/hooks/useDialog";
+import { DELETE_WHPR_TITLE, DELETE_WHPR_CONTENT, DELETE_WHPR_ACTION } from "@/constants/message";
 
 const Stories = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -9,78 +11,59 @@ const Stories = () => {
   const [showRightButton, setShowRightButton] = useState(true);
   const [animationContainerValue, setAnimationContainerValue] = useState(0);
   const scrollStep = 180;
-
-  // Check if hitting the left limit
-  const isHittingLeftLimit = () => {
-    if (containerRef.current) {
-      return containerRef.current.scrollLeft <= 0;
-    }
-    return true;
-  };
-
-  // Check if hitting the right limit
-  const isHittingRightLimit = () => {
-    if (containerRef.current) {
-      const { scrollLeft, clientWidth, scrollWidth } = containerRef.current;
-      return scrollLeft + clientWidth >= scrollWidth;
-    }
-    return true;
-  };
-
-
-  const updateButtonVisibility = () => {
-    setShowLeftButton(!isHittingLeftLimit());
-    setShowRightButton(!isHittingRightLimit());
-  };
-
-  useEffect(() => {
-    // Initial update of button visibility
-    updateButtonVisibility();
-
-    // Update button visibility on resize
-    window.addEventListener("resize", updateButtonVisibility);
-    return () => {
-      window.removeEventListener("resize", updateButtonVisibility);
-    };
-  }, []);
-
-  useEffect(() => {
-    // Update button visibility when content is loaded
-    updateButtonVisibility();
-  }, [containerRef.current?.scrollWidth, containerRef.current?.clientWidth]);
+  const { CreateActionDialog } = useDialog()
+  const DeleteWhisper = () => {
+    window.alert("deleted whisper")
+}
 
   const scrollLeft = () => {
     if (containerRef.current) {
-      setShowLeftButton(true)
-      const newScrollLeft = containerRef.current.scrollLeft - scrollStep;
-      const maxScrollLeft = 0;
-      containerRef.current.scrollTo({
-        left: Math.max(newScrollLeft, maxScrollLeft),
-        behavior: "smooth",
-      });
-      if(containerRef.current?.clientWidth <= animationContainerValue + scrollStep){
-        updateButtonVisibility();
+      const diff =
+        containerRef.current?.clientWidth -
+        (animationContainerValue + scrollStep);
+      setShowRightButton(true);
+      console.log(diff);
+      if (diff <= containerRef.current.clientWidth) {
+        setAnimationContainerValue(0);
+        console.log(animationContainerValue)
+        console.log("test");
+        setShowLeftButton(false);
+        return;
+      }
+
+      if (
+        -containerRef.current?.clientWidth >=
+        animationContainerValue + scrollStep
+      ) {
+        setShowLeftButton(true);
         return;
       }
       setAnimationContainerValue(animationContainerValue + scrollStep);
-      updateButtonVisibility();
     }
   };
 
   const scrollRight = () => {
     if (containerRef.current) {
-      const newScrollLeft = containerRef.current.scrollLeft + scrollStep;
-      const maxScrollLeft = containerRef.current.scrollWidth - containerRef.current.clientWidth;
-      containerRef.current.scrollTo({
-        left: Math.min(newScrollLeft, maxScrollLeft),
-        behavior: "smooth",
-      });
-      if(-containerRef.current?.clientWidth >= animationContainerValue - scrollStep){
-        updateButtonVisibility();
+      const diff =
+        -containerRef.current?.clientWidth -
+        (animationContainerValue - scrollStep);
+      setShowLeftButton(true);
+      console.log(diff);
+      if (diff >= -100) {
+        setAnimationContainerValue(-containerRef.current.clientWidth + 190);
+        console.log("test");
+        setShowRightButton(false);
+        return;
+      }
+
+      if (
+        -containerRef.current?.clientWidth >=
+        animationContainerValue - scrollStep
+      ) {
+        setShowRightButton(true);
         return;
       }
       setAnimationContainerValue(animationContainerValue - scrollStep);
-      updateButtonVisibility();
     }
   };
 
@@ -143,8 +126,17 @@ const Stories = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <div className="w-1.5"></div>
-          {Array.from({ length: 12 }).map((_, index) => (
+          {Array.from({ length: 10 }).map((_, index) => (
             <div
+            onClick={
+              () => {
+                  CreateActionDialog(
+                      DELETE_WHPR_TITLE,
+                      DELETE_WHPR_CONTENT,
+                      DELETE_WHPR_ACTION,
+                      DeleteWhisper
+                  )
+              }}
               key={index}
               className="flex flex-col gap-2 select-none cursor-pointer h-24 justify-center items-center"
             >
