@@ -50,7 +50,7 @@ const Stories = () => {
       setShowLeftButton(true);
       console.log(diff);
       if (diff >= -100) {
-        setAnimationContainerValue(-containerRef.current.clientWidth + 190);
+        setAnimationContainerValue(containerRef.current.clientWidth);
         console.log("test");
         setShowRightButton(false);
         return;
@@ -126,7 +126,7 @@ const Stories = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <div className="w-1.5"></div>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <div
             onClick={
               () => {
