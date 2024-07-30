@@ -8,16 +8,18 @@ import {
   DELETE_WHPR_CONTENT,
   DELETE_WHPR_ACTION,
 } from "@/constants/message";
+import { useRouter } from "next/navigation";
 
 const Stories = () => {
   const LayoutContainerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const StoriesContainerWidthRef = useRef<HTMLDivElement>(null);
   const [OverflowStories, setOverflowStories] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(false);
   const [animationContainerValue, setAnimationContainerValue] = useState(0);
   const scrollStep = 180;
-  const offset = 20; // Offseting of 20 pixels accordingly to margins
+  const offset = 20; // offseting of 20 pixels accordingly to margins
   const { CreateActionDialog } = useDialog();
 
   const DeleteWhisper = () => {
@@ -62,6 +64,7 @@ const Stories = () => {
       setShowRightButton(newAnimationValue < maxScroll);
     }
   };
+
 
   useEffect(() => {
     if (LayoutContainerRef.current) {
@@ -133,15 +136,12 @@ const Stories = () => {
         >
           <div ref={StoriesContainerWidthRef} className="flex flex-row gap-[25px]">
             <div className="w-1.5"></div>
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div
+            {Array.from({ length: 13 }).map((_, index) => (
+              <motion.div
+                whileTap={{scale: .97}}
                 onClick={() => {
-                  CreateActionDialog(
-                    DELETE_WHPR_TITLE,
-                    DELETE_WHPR_CONTENT,
-                    DELETE_WHPR_ACTION,
-                    DeleteWhisper
-                  );
+                    router.prefetch("/stories")
+                    router.push("/stories")
                 }}
                 key={index}
                 className="flex flex-col gap-2 select-none cursor-pointer h-24 justify-center items-center"
@@ -159,7 +159,7 @@ const Stories = () => {
                 <div className="text-[13px] max-w-[64px] text-ellipsis whitespace-nowrap overflow-hidden">
                   {index % 2 === 0 ? "tesaefaefaefaft" : "configured"}
                 </div>
-              </div>
+              </motion.div>
             ))}
             <div className="w-1.5"></div>
           </div>
