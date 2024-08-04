@@ -16,9 +16,17 @@ async function Page() {
   const currentUser = await fetchUserbyEmail(email as string);
   if (!currentUser.onboarded) redirect("/onboarding");
 
+  const config = {
+    gallery: { width: 1200 },
+    player: { height: 600, width: 800 },
+    preview: { height: 300, width: 200 },
+    previewCount: 5,
+    previewScale: 1.2,
+  };
+  
   return (
     <>
-    <StoriesGalleryViewer/>
+    <StoriesGalleryViewer config={config} currentIndex={0}/>
     </>
   );
 }
