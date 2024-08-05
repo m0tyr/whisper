@@ -23,10 +23,24 @@ async function Page() {
     previewCount: 5,
     previewScale: 1.2,
   };
-  
+  const stories = [
+    <div key="1" className="story-item bg-red-500">
+      Histoire 1
+    </div>,
+    <div key="2" className="story-item bg-blue-500">
+      Histoire 2
+    </div>,
+    <div key="3" className="story-item bg-green-500">
+      Histoire 3
+    </div>,
+    <div key="4" className="story-item bg-yellow-500">
+      Histoire 4
+    </div>,
+  ];
+
   return (
     <>
-    <StoriesGalleryViewer config={config} currentIndex={0}/>
+      <StoriesGalleryViewer config={config} stories={stories} />
     </>
   );
 }

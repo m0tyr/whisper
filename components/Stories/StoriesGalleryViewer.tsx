@@ -20,13 +20,14 @@ interface Config {
 
 interface StoriesGalleryViewerProps {
   config: Config;
-  currentIndex: number;
+  stories: Array<JSX.Element>; // Dynamic content
 }
 
 const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
   config,
-  currentIndex,
+  stories,
 }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -35,7 +36,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
   const [computedDimensions, setComputedDimensions] = useState({
     width: Math.min(Math.max(dimensions.width, 768), 1065),
     height: window.innerHeight,
-  })
+  });
 
   const updateDimensions = () => {
     setDimensions({
@@ -43,20 +44,19 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
       height: window.innerHeight,
     });
     const aspectRatio = 800 / 600;
-    const maxHeight = dimensions.height; 
+    const maxHeight = dimensions.height;
     const calculatedWidth = Math.min(Math.max(dimensions.width, 768), 1065);
     const calculatedHeight = Math.min(calculatedWidth / aspectRatio, maxHeight);
     setComputedDimensions({
       width: calculatedWidth,
       height: calculatedHeight
-    })
+    });
   };
 
   useEffect(() => {
     window.addEventListener("resize", updateDimensions);
     return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
-
+  }, [dimensions]);
 
   const calculatePosition = (config: Config, index: number) => {
     const direction = 1;
@@ -89,6 +89,13 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
   const nextfinalTransform = `translateX(calc(${position + 260}px - 50%))`;
   const nextnextfinalTransform = `translateX(calc(${position + 260 + 180}px - 50%))`;
 
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : stories.length - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex < stories.length - 1 ? prevIndex + 1 : 0));
+  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center">
@@ -99,35 +106,58 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         }}
         className="flex items-center relative border-border border"
       >
+        {/* Previous item */}
         <div
           style={{
             height: `${230}px`, // Adjusted height for inner div
             transform: prevfinalTransform,
           }}
           className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
-        />
-          <div
+        >
+          {stories[(currentIndex - 1 + stories.length) % stories.length]}
+        </div>
+
+        {/* Current item */}
+        <div
           style={{
             height: `${computedDimensions.height - 20}px`, // Adjusted height for inner div
             transform: finalTransform,
           }}
           className="absolute left-0 w-[323px] bg-slate-600 rounded-lg"
-        />
-          <div
+        >
+          {stories[currentIndex]}
+        </div>
+
+        {/* Next item */}
+        <div
           style={{
             height: `${230}px`, // Adjusted height for inner div
             transform: nextfinalTransform,
           }}
           className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
-        />
-          <div
+        >
+          {stories[(currentIndex + 1) % stories.length]}
+        </div>
+
+        {/* Next-next item */}
+        <div
           style={{
             height: `${230}px`, // Adjusted height for inner div
             transform: nextnextfinalTransform,
           }}
           className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
-        />
+        >
+          {stories[(currentIndex + 2) % stories.length]}
+        </div>
       </div>
+
+      {/* Navigation buttons */}
+      <button onClick={handlePrev} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded">
+        Prev
+      </button>
+      <button onClick={handleNext} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded">
+        Next
+      </button>
     </div>
   );
 };
