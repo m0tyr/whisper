@@ -33,61 +33,58 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
     height: window.innerHeight,
   });
 
-  const [computedDimensions, setComputedDimensions] = useState({
-    width: Math.min(Math.max(dimensions.width, 768), 1065),
-    height: window.innerHeight,
-  });
-
   const updateDimensions = () => {
     setDimensions({
       width: window.innerWidth,
       height: window.innerHeight,
-    });
-    const aspectRatio = 800 / 600;
-    const maxHeight = dimensions.height;
-    const calculatedWidth = Math.min(Math.max(dimensions.width, 768), 1065);
-    const calculatedHeight = Math.min(calculatedWidth / aspectRatio, maxHeight);
-    setComputedDimensions({
-      width: calculatedWidth,
-      height: calculatedHeight
     });
   };
 
   useEffect(() => {
     window.addEventListener("resize", updateDimensions);
     return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
+
+  // Calculate computed dimensions
+  const computedDimensions = useMemo(() => {
+    const aspectRatio = 800 / 600;
+    const maxHeight = dimensions.height;
+    const calculatedWidth = Math.min(Math.max(dimensions.width, 768), 1065);
+    const calculatedHeight = Math.min(calculatedWidth / aspectRatio, maxHeight);
+    return {
+      width: calculatedWidth,
+      height: calculatedHeight,
+    };
   }, [dimensions]);
 
-  const calculatePosition = (config: Config, index: number) => {
-    const direction = 1;
-    const centerX = config.gallery.width / 2;
-    const previewOffset =
-      (centerX -
-        config.player.width / 2 -
-        config.previewCount * config.preview.width) /
-      Math.ceil(config.previewCount + 0.5);
+  // Calculate the position of each story
+  const calculatePosition = (index: number) => {
+    const centerX = computedDimensions.width / 2;
+    const previewWidth = config.preview.width;
+    const previewCount = config.previewCount;
 
-    if (index === 0) {
+    // Offsets for immediate adjacent stories
+    const immediateOffset = 280;
+    // Offsets for stories further away
+    const distantOffset = 180;
+
+    if (index === currentIndex) {
       return centerX;
+    } else if (Math.abs(index - currentIndex) === 1) {
+      // Adjacent stories (left or right)
+      return centerX + (index > currentIndex ? immediateOffset : -immediateOffset);
     } else {
-      const offsetX =
-        config.player.width / 2 +
-        Math.abs(direction * index) * previewOffset +
-        (Math.abs(direction * index) - 0.5) * config.preview.width;
-      return centerX + (direction < 0 ? -1 : 1) * offsetX;
+      // More distant stories (left or right)
+      const offset = (Math.abs(index - currentIndex) - 1) * distantOffset;
+      return centerX + (index > currentIndex ? immediateOffset + offset : -immediateOffset - offset);
     }
   };
 
-  const getSize = (config: Config, index: number) =>
-    index === 0 ? config.player : config.preview;
-
-  const size = useMemo(() => getSize(config, currentIndex), [config, currentIndex]);
-  const position = Math.round(calculatePosition(config, currentIndex)) - 60;
-
-  const finalTransform = `translateX(calc(${position}px - 50%))`;
-  const prevfinalTransform = `translateX(calc(${position - 260}px - 50%))`;
-  const nextfinalTransform = `translateX(calc(${position + 260}px - 50%))`;
-  const nextnextfinalTransform = `translateX(calc(${position + 260 + 180}px - 50%))`;
+  // Position transformations
+  const getTransform = (index: number) => {
+    const position = calculatePosition(index);
+    return `translateX(calc(${position}px - 50%))`;
+  };
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : stories.length - 1));
@@ -98,19 +95,19 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center">
+    <div className="min-h-screen w-full flex items-center justify-center relative">
       <div
         style={{
           width: `${computedDimensions.width}px`,
           height: `${computedDimensions.height}px`,
         }}
-        className="flex items-center relative border-border border"
+        className="flex items-center relative border border-gray-300"
       >
         {/* Previous item */}
         <div
           style={{
-            height: `${230}px`, // Adjusted height for inner div
-            transform: prevfinalTransform,
+            height: `${config.preview.height}px`,
+            transform: getTransform((currentIndex - 1 + stories.length) % stories.length),
           }}
           className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
         >
@@ -120,8 +117,8 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         {/* Current item */}
         <div
           style={{
-            height: `${computedDimensions.height - 20}px`, // Adjusted height for inner div
-            transform: finalTransform,
+            height: `${computedDimensions.height - 20}px`,
+            transform: getTransform(currentIndex),
           }}
           className="absolute left-0 w-[323px] bg-slate-600 rounded-lg"
         >
@@ -131,8 +128,8 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         {/* Next item */}
         <div
           style={{
-            height: `${230}px`, // Adjusted height for inner div
-            transform: nextfinalTransform,
+            height: `${config.preview.height}px`,
+            transform: getTransform((currentIndex + 1) % stories.length),
           }}
           className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
         >
@@ -142,8 +139,8 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         {/* Next-next item */}
         <div
           style={{
-            height: `${230}px`, // Adjusted height for inner div
-            transform: nextnextfinalTransform,
+            height: `${config.preview.height}px`,
+            transform: getTransform((currentIndex + 2) % stories.length),
           }}
           className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
         >
