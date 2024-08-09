@@ -64,9 +64,9 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
     const previewCount = config.previewCount;
 
     // Offsets for immediate adjacent stories
-    const immediateOffset = 280;
+    const immediateOffset = 260;
     // Offsets for stories further away
-    const distantOffset = 180;
+    const distantOffset = 160;
 
     if (index === currentIndex) {
       return centerX;

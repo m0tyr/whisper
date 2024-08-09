@@ -19,22 +19,19 @@ async function Page() {
   const config = {
     gallery: { width: 1200 },
     player: { height: 600, width: 800 },
-    preview: { height: 300, width: 200 },
+    preview: { height: 230, width: 130 },
     previewCount: 5,
     previewScale: 1.2,
   };
   const stories = [
-    <div key="1" className="story-item bg-red-500">
+    <div key="1" className="story-item ">
       Histoire 1
     </div>,
-    <div key="2" className="story-item bg-blue-500">
+    <div key="2" className="story-item ">
       Histoire 2
     </div>,
-    <div key="3" className="story-item bg-green-500">
+    <div key="3" className="story-item ">
       Histoire 3
-    </div>,
-    <div key="4" className="story-item bg-yellow-500">
-      Histoire 4
     </div>,
   ];
 
