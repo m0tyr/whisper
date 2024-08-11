@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo } from "react";
 interface Config {
   gallery: {
     width: number;
+    height: number;
   };
   player: {
     height: number;
@@ -45,15 +46,15 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Calculate computed dimensions
+  // Calculate computed dimensions 
   const computedDimensions = useMemo(() => {
     const aspectRatio = 800 / 600;
     const maxHeight = dimensions.height;
-    const calculatedWidth = Math.min(Math.max(dimensions.width, 768), 1065);
+    const calculatedWidth = Math.min(Math.max(dimensions.width, 768), 1400);
     const calculatedHeight = Math.min(calculatedWidth / aspectRatio, maxHeight);
     return {
       width: calculatedWidth,
-      height: calculatedHeight,
+      height: maxHeight,
     };
   }, [dimensions]);
 
@@ -98,8 +99,8 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
     <div className="min-h-screen w-full flex items-center justify-center relative">
       <div
         style={{
-          width: `${computedDimensions.width}px`,
-          height: `${computedDimensions.height}px`,
+          width: `${config.gallery.width}px`,
+          height: `${config.gallery.height}px`,
         }}
         className="flex items-center relative border border-gray-300"
       >
@@ -107,9 +108,10 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         <div
           style={{
             height: `${config.preview.height}px`,
+            width: `${config.preview.width}px`,
             transform: getTransform((currentIndex - 1 + stories.length) % stories.length),
           }}
-          className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
+          className="absolute left-0  bg-slate-600 rounded-lg"
         >
           {stories[(currentIndex - 1 + stories.length) % stories.length]}
         </div>
@@ -117,10 +119,11 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         {/* Current item */}
         <div
           style={{
-            height: `${computedDimensions.height - 20}px`,
+            height: `${config.player.height}px`,
+            width: `${config.player.width}px`,
             transform: getTransform(currentIndex),
           }}
-          className="absolute left-0 w-[323px] bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-slate-600 rounded-lg"
         >
           {stories[currentIndex]}
         </div>
@@ -129,9 +132,10 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         <div
           style={{
             height: `${config.preview.height}px`,
+            width: `${config.preview.width}px`,
             transform: getTransform((currentIndex + 1) % stories.length),
           }}
-          className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
+          className="absolute left-0  bg-slate-600 rounded-lg"
         >
           {stories[(currentIndex + 1) % stories.length]}
         </div>
@@ -140,9 +144,10 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         <div
           style={{
             height: `${config.preview.height}px`,
+            width: `${config.preview.width}px`,
             transform: getTransform((currentIndex + 2) % stories.length),
           }}
-          className="absolute left-0 w-[130px] bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-slate-600 rounded-lg"
         >
           {stories[(currentIndex + 2) % stories.length]}
         </div>
