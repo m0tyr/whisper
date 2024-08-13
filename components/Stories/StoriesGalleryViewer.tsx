@@ -48,19 +48,19 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
 
   // Calculate computed dimensions 
   const computedDimensions = useMemo(() => {
-    const aspectRatio = 800 / 600;
+    const aspectRatio = 800 / 600; // Maintain aspect ratio
     const maxHeight = dimensions.height;
     const calculatedWidth = Math.min(Math.max(dimensions.width, 768), 1400);
     const calculatedHeight = Math.min(calculatedWidth / aspectRatio, maxHeight);
     return {
       width: calculatedWidth,
-      height: maxHeight,
+      height: calculatedHeight,
     };
   }, [dimensions]);
 
   // Calculate the position of each story
   const calculatePosition = (index: number) => {
-    const centerX = computedDimensions.width / 2;
+    const centerX = config.gallery.width / 2;
     const previewWidth = config.preview.width;
     const previewCount = config.previewCount;
 
@@ -102,7 +102,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
           width: `${config.gallery.width}px`,
           height: `${config.gallery.height}px`,
         }}
-        className="flex items-center relative border border-gray-300"
+        className="flex items-center relative overflow-hidden"
       >
         {/* Previous item */}
         <div
@@ -111,7 +111,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
             width: `${config.preview.width}px`,
             transform: getTransform((currentIndex - 1 + stories.length) % stories.length),
           }}
-          className="absolute left-0  bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-slate-600 rounded-lg"
         >
           {stories[(currentIndex - 1 + stories.length) % stories.length]}
         </div>
@@ -135,7 +135,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
             width: `${config.preview.width}px`,
             transform: getTransform((currentIndex + 1) % stories.length),
           }}
-          className="absolute left-0  bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-slate-600 rounded-lg"
         >
           {stories[(currentIndex + 1) % stories.length]}
         </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import StoriesGalleryViewer from '@/components/Stories/StoriesGalleryViewer';
+import StoriesGalleryPlayer from './StoriesGalleryPlayer';
 
 // Constants for the aspect ratios and scaling factors
 const ASPECT_RATIOS = [
@@ -71,9 +72,9 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
   }
 
   const stories = [
-    <div key="1" className="story-item">Story 1</div>,
-    <div key="2" className="story-item">Story 2</div>,
-    <div key="3" className="story-item">Story 3</div>,
+    <StoriesGalleryPlayer key={1} />,
+    <StoriesGalleryPlayer key={2} />,
+    <StoriesGalleryPlayer key={2} />,
   ];
 
   return (
