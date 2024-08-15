@@ -124,7 +124,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
               (currentIndex - 2 + stories.length) % stories.length
             ),
           }}
-          className="absolute left-0 bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-border rounded-lg"
         >
           {stories[(currentIndex - 1 + stories.length) % stories.length]}
         </div>
@@ -137,7 +137,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
               (currentIndex - 1 + stories.length) % stories.length
             ),
           }}
-          className="absolute left-0 bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-border rounded-lg"
         >
           {stories[(currentIndex - 1 + stories.length) % stories.length]}
         </div>
@@ -149,7 +149,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
             width: `${config.player.width}px`,
             transform: getTransform(currentIndex),
           }}
-          className="absolute left-0 bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-border rounded-lg"
         >
           <div className="w-full h-full absolute top-0 right-0 left-0 bottom-0">
             <div className="flex justify-center flex-col absolute top-0 right-[-48px] bottom-0 ">
@@ -203,7 +203,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
             width: `${config.preview.width}px`,
             transform: getTransform((currentIndex + 1) % stories.length),
           }}
-          className="absolute left-0 bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-border rounded-lg"
         >
           {stories[(currentIndex + 1) % stories.length]}
         </div>
@@ -215,7 +215,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
             width: `${config.preview.width}px`,
             transform: getTransform((currentIndex + 2) % stories.length),
           }}
-          className="absolute left-0 bg-slate-600 rounded-lg"
+          className="absolute left-0 bg-border rounded-lg"
         >
           {stories[(currentIndex + 2) % stories.length]}
         </div>
