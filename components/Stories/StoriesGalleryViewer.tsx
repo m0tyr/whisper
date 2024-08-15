@@ -46,7 +46,7 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Calculate computed dimensions 
+  // Calculate computed dimensions
   const computedDimensions = useMemo(() => {
     const aspectRatio = 800 / 600; // Maintain aspect ratio
     const maxHeight = dimensions.height;
@@ -73,11 +73,18 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
       return centerX;
     } else if (Math.abs(index - currentIndex) === 1) {
       // Adjacent stories (left or right)
-      return centerX + (index > currentIndex ? immediateOffset : -immediateOffset);
+      return (
+        centerX + (index > currentIndex ? immediateOffset : -immediateOffset)
+      );
     } else {
       // More distant stories (left or right)
       const offset = (Math.abs(index - currentIndex) - 1) * distantOffset;
-      return centerX + (index > currentIndex ? immediateOffset + offset : -immediateOffset - offset);
+      return (
+        centerX +
+        (index > currentIndex
+          ? immediateOffset + offset
+          : -immediateOffset - offset)
+      );
     }
   };
 
@@ -88,11 +95,15 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : stories.length - 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex > 0 ? prevIndex - 1 : stories.length - 1
+    );
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex < stories.length - 1 ? prevIndex + 1 : 0));
+    setCurrentIndex((prevIndex) =>
+      prevIndex < stories.length - 1 ? prevIndex + 1 : 0
+    );
   };
 
   return (
@@ -104,12 +115,27 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
         }}
         className="flex items-center relative overflow-hidden"
       >
+        {/* Previous-previous item */}
+        <div
+          style={{
+            height: `${config.preview.height}px`,
+            width: `${config.preview.width}px`,
+            transform: getTransform(
+              (currentIndex - 2 + stories.length) % stories.length
+            ),
+          }}
+          className="absolute left-0 bg-slate-600 rounded-lg"
+        >
+          {stories[(currentIndex - 1 + stories.length) % stories.length]}
+        </div>
         {/* Previous item */}
         <div
           style={{
             height: `${config.preview.height}px`,
             width: `${config.preview.width}px`,
-            transform: getTransform((currentIndex - 1 + stories.length) % stories.length),
+            transform: getTransform(
+              (currentIndex - 1 + stories.length) % stories.length
+            ),
           }}
           className="absolute left-0 bg-slate-600 rounded-lg"
         >
@@ -125,6 +151,48 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
           }}
           className="absolute left-0 bg-slate-600 rounded-lg"
         >
+          <div className="w-full h-full absolute top-0 right-0 left-0 bottom-0">
+            <div className="flex justify-center flex-col absolute top-0 right-[-48px] bottom-0 ">
+              <button
+                onClick={handleNext}
+                className=" bg-white shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-border m-2.5 px-0.5 py-0.5 rounded-full z-50"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 15 15"
+                >
+                  <path
+                    fill="none"
+                    stroke="black"
+                    stroke-linecap="square"
+                    d="m6.5 10.5l3-3l-3-3"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex justify-center flex-col absolute top-0 left-[-48px] bottom-0 ">
+              <button
+                onClick={handlePrev}
+                className=" bg-white shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-border m-2.5 px-0.5 py-0.5 rounded-full z-50"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 15 15"
+                >
+                  <path
+                    fill="none"
+                    stroke="black"
+                    stroke-linecap="square"
+                    d="m8.5 4.5l-3 3l3 3"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
           {stories[currentIndex]}
         </div>
 
@@ -152,14 +220,6 @@ const StoriesGalleryViewer: React.FC<StoriesGalleryViewerProps> = ({
           {stories[(currentIndex + 2) % stories.length]}
         </div>
       </div>
-
-      {/* Navigation buttons */}
-      <button onClick={handlePrev} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded">
-        Prev
-      </button>
-      <button onClick={handleNext} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded">
-        Next
-      </button>
     </div>
   );
 };
