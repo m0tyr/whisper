@@ -112,7 +112,6 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
     <StoriesGalleryPlayer key={11} />,
     <StoriesGalleryPlayer key={12} />,
     <StoriesGalleryPlayer key={13} />,
-
   ];
 
   return (
