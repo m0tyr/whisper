@@ -22,6 +22,7 @@ interface StoriesGalleryLayoutProps {}
 
 const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
   const router = useRouter();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const closeAndGoBackInHistoryRoute = () => {
     router.back();
@@ -36,7 +37,6 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
   } | null>(null);
 
   function calculateConfig(windowWidth: number, windowHeight: number) {
-    // Find the appropriate aspect ratio
     const aspectRatio =
       ASPECT_RATIOS.find(
         (ratio) => windowWidth / windowHeight <= ratio.width / ratio.height
@@ -77,7 +77,7 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
       const newConfig = calculateConfig(width, height);
-        setConfig(newConfig);
+      setConfig(newConfig);
     };
 
     // Initialize the configuration
@@ -102,7 +102,7 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
     <StoriesGalleryPlayer key={1} />,
     <StoriesGalleryPlayer key={2} />,
     <StoriesGalleryPlayer key={3} />,
-    <StoriesGalleryPlayer key={4} />,
+    /*     <StoriesGalleryPlayer key={4} />,
     <StoriesGalleryPlayer key={5} />,
     <StoriesGalleryPlayer key={6} />,
     <StoriesGalleryPlayer key={7} />,
@@ -111,8 +111,33 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
     <StoriesGalleryPlayer key={10} />,
     <StoriesGalleryPlayer key={11} />,
     <StoriesGalleryPlayer key={12} />,
-    <StoriesGalleryPlayer key={13} />,
+    <StoriesGalleryPlayer key={13} />, */
   ];
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex > 0 ? prevIndex - 1 : stories.length - 1
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex < stories.length - 1 ? prevIndex + 1 : 0
+    );
+  };
+  
+  const storyViewers = stories.map((story, index) => {
+    console.log(index, currentIndex);
+    return (
+      <StoriesGalleryViewer
+        key={index}
+        isPlayedStoryContext={index === currentIndex}
+        index={index}
+        config={config}
+        story={story}
+      />
+    );
+  });
 
   return (
     <>
@@ -130,14 +155,66 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
           <path
             fill="none"
             stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
             d="M6 18L18 6M6 6l12 12"
           />
         </svg>
       </motion.div>
-      <StoriesGalleryViewer config={config} stories={stories} />
+      <div className="min-h-screen w-full flex items-center justify-center relative">
+        <div
+          style={{
+            width: `${config.gallery.width}px`,
+            height: `${config.gallery.height}px`,
+          }}
+          className="flex items-center relative overflow-hidden"
+        >
+          <div className="w-full h-full absolute top-0 right-0 left-0 bottom-0">
+            <div className="flex justify-center flex-col absolute top-0 right-[-48px] bottom-0 ">
+              <button
+                onClick={handleNext}
+                className=" bg-white shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-border m-2.5 px-0.5 py-0.5 rounded-full z-50"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 15 15"
+                >
+                  <path
+                    fill="none"
+                    stroke="black"
+                    strokeLinecap="square"
+                    d="m6.5 10.5l3-3l-3-3"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex justify-center flex-col absolute top-0 left-[-48px] bottom-0 ">
+              <button
+                onClick={handlePrev}
+                className=" bg-white shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-border m-2.5 px-0.5 py-0.5 rounded-full z-50"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 15 15"
+                >
+                  <path
+                    fill="none"
+                    stroke="black"
+                    strokeLinecap="square"
+                    d="m8.5 4.5l-3 3l3 3"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          {storyViewers}
+        </div>
+      </div>
     </>
   );
 };

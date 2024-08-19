@@ -97,7 +97,7 @@ const Stories = () => {
                 <path
                   fill="none"
                   stroke="white"
-                  stroke-linecap="square"
+                  strokeLinecap="square"
                   d="m8.5 4.5l-3 3l3 3"
                 />
               </svg>
@@ -119,7 +119,7 @@ const Stories = () => {
                 <path
                   fill="none"
                   stroke="white"
-                  stroke-linecap="square"
+                  strokeLinecap="square"
                   d="m6.5 10.5l3-3l-3-3"
                 />
               </svg>
