@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import AutoResizeTextarea from "../AutoResizeTextArea/AutoResizeTextArea";
 
-const StoriesGalleryPlayer = () => {
+const StoriesGalleryPlayer = ({ name }: any) => {
   const [isPlayerTextAreaExtended, setPlayerTextAreaExtended] = useState(false);
   const extendPlayerTextAreaView = () => {
     setPlayerTextAreaExtended(!isPlayerTextAreaExtended);
@@ -16,7 +16,7 @@ const StoriesGalleryPlayer = () => {
           <div className="flex flex-row gap-0.5">
             <div className=" h-[32px] w-[32px] rounded-full bg-slate-100"></div>
             <div className="flex justify-center items-center tracking-tight font-normal text-[14.25px] pl-2">
-              test
+              {name}
             </div>
           </div>
           <div className="flex flex-row gap-6 mr-2.5 ml-auto justify-center items-center">

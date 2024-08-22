@@ -67,7 +67,7 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
       gallery: { width: galleryWidth, height: galleryHeight },
       player: { height: playerHeight, width: playerWidth },
       preview: { height: previewHeight, width: previewWidth },
-      previewCount: 5, // Default value
+      previewCount: windowWidth > 1429 ? 2 : 1.5,
       previewScale,
     };
   }
@@ -99,9 +99,9 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
   }
 
   const stories = [
-    <StoriesGalleryPlayer key={1} />,
-    <StoriesGalleryPlayer key={2} />,
-    <StoriesGalleryPlayer key={3} />,
+    <StoriesGalleryPlayer name={"testfv"} key={1} />,
+    <StoriesGalleryPlayer name={"1jspn"} key={2} />,
+    <StoriesGalleryPlayer name={"shoyoo"} key={3} />,
     /*     <StoriesGalleryPlayer key={4} />,
     <StoriesGalleryPlayer key={5} />,
     <StoriesGalleryPlayer key={6} />,
@@ -116,25 +116,28 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex > 0 ? prevIndex - 1 : stories.length - 1
+       prevIndex - 1 
     );
   };
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex < stories.length - 1 ? prevIndex + 1 : 0
+       prevIndex + 1
     );
   };
   
   const storyViewers = stories.map((story, index) => {
-    console.log(index, currentIndex);
+    console.log(index, currentIndex)
     return (
       <StoriesGalleryViewer
         key={index}
         isPlayedStoryContext={index === currentIndex}
-        index={index}
+        isInRight={index < currentIndex}
+        index={index} // KEY TO HAVE A GOOD BEHAVIOR
         config={config}
         story={story}
+        handleNext={handleNext}
+        handlePrev={handlePrev}
       />
     );
   });
@@ -170,48 +173,7 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
           }}
           className="flex items-center relative overflow-hidden"
         >
-          <div className="w-full h-full absolute top-0 right-0 left-0 bottom-0">
-            <div className="flex justify-center flex-col absolute top-0 right-[-48px] bottom-0 ">
-              <button
-                onClick={handleNext}
-                className=" bg-white shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-border m-2.5 px-0.5 py-0.5 rounded-full z-50"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 15 15"
-                >
-                  <path
-                    fill="none"
-                    stroke="black"
-                    strokeLinecap="square"
-                    d="m6.5 10.5l3-3l-3-3"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="flex justify-center flex-col absolute top-0 left-[-48px] bottom-0 ">
-              <button
-                onClick={handlePrev}
-                className=" bg-white shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-border m-2.5 px-0.5 py-0.5 rounded-full z-50"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 15 15"
-                >
-                  <path
-                    fill="none"
-                    stroke="black"
-                    strokeLinecap="square"
-                    d="m8.5 4.5l-3 3l3 3"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
+        
           {storyViewers}
         </div>
       </div>
