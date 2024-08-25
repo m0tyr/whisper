@@ -20,19 +20,15 @@ const Stories = () => {
   const [animationContainerValue, setAnimationContainerValue] = useState(0);
   const scrollStep = 180;
   const offset = 20; // offseting of 20 pixels accordingly to margins
-  const { CreateActionDialog } = useDialog();
-
-  const DeleteWhisper = () => {
-    window.alert("deleted whisper");
-  };
 
   useEffect(() => {
     if (StoriesContainerWidthRef.current && LayoutContainerRef.current) {
-      const isEnoughToDisplayButtons = StoriesContainerWidthRef.current.clientWidth < LayoutContainerRef.current.clientWidth;
+      const isEnoughToDisplayButtons =
+        StoriesContainerWidthRef.current.clientWidth <
+        LayoutContainerRef.current.clientWidth;
       setOverflowStories(isEnoughToDisplayButtons);
     }
   }, [animationContainerValue]);
-
 
   const scrollLeft = () => {
     if (LayoutContainerRef.current) {
@@ -64,7 +60,6 @@ const Stories = () => {
       setShowRightButton(newAnimationValue < maxScroll);
     }
   };
-
 
   useEffect(() => {
     if (LayoutContainerRef.current) {
@@ -134,20 +129,57 @@ const Stories = () => {
           style={{ scrollBehavior: "smooth" }}
           transition={{ type: "spring", stiffness: 300, damping: 40 }}
         >
-          <div ref={StoriesContainerWidthRef} className="flex flex-row gap-[25px]">
+          <div
+            ref={StoriesContainerWidthRef}
+            className="flex flex-row gap-[25px]"
+          >
             <div className="w-1.5"></div>
+            <motion.div
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                router.prefetch("/stories/create");
+                router.push("/stories/create");
+              }}
+              className="flex flex-col gap-2 select-none cursor-pointer h-24 justify-center items-center"
+            >
+              <div className="flex relative">
+                <div className=" w-[56px] h-[56px] bg-white rounded-full flex justify-center items-center">
+                <div className=" absolute bottom-0 right-0 p-1 rounded-full bg-blue border-good-gray border-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="10"
+                  height="10"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    d="M8 1.75a.75.75 0 0 1 .75.75v4.75h4.75a.75.75 0 0 1 0 1.5H8.75v4.75a.75.75 0 0 1-1.5 0V8.75H2.5a.75.75 0 0 1 0-1.5h4.75V2.5A.75.75 0 0 1 8 1.75"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                </div>
+               
+                </div>
+              </div>
+              <div className="text-[13px] max-w-[64px] min-w-[64px] ">
+              <div className=" text-center text-ellipsis whitespace-nowrap overflow-hidden">
+              Votre story
+                </div>
+              </div>
+            </motion.div>
             {Array.from({ length: 13 }).map((_, index) => (
               <motion.div
-                whileTap={{scale: .97}}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => {
-                    router.prefetch("/stories")
-                    router.push("/stories")
+                  router.prefetch("/stories");
+                  router.push("/stories");
                 }}
                 key={index}
                 className="flex flex-col gap-2 select-none cursor-pointer h-24 justify-center items-center"
               >
                 <div className="flex relative">
-                  <StoryRing />
+                  <StoryRing color={'blue'} />
                   <img
                     src="/profil.png"
                     alt="profile_icon"
@@ -156,8 +188,10 @@ const Stories = () => {
                     className="rounded-full"
                   />
                 </div>
-                <div className="text-[13px] max-w-[64px] text-ellipsis whitespace-nowrap overflow-hidden">
-                  {index % 2 === 0 ? "tesaefaefaefaft" : "configured"}
+                <div className="text-[13px] max-w-[64px] min-w-[64px] ">
+                  <div className=" text-center text-ellipsis whitespace-nowrap overflow-hidden">
+                    {index % 2 === 0 ? "tfaft" : "configured"}
+                  </div>
                 </div>
               </motion.div>
             ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import StoriesGalleryViewer from "@/components/Stories/StoriesGalleryViewer";
 import StoriesGalleryPlayer from "./StoriesGalleryPlayer";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,7 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
   const closeAndGoBackInHistoryRoute = () => {
     router.back();
   };
-
+  const [hasPreviousViewedStory, setHasPreviousViewedStory] = useState([]);
   const [config, setConfig] = useState<{
     gallery: { width: number; height: number };
     player: { height: number; width: number };
@@ -99,45 +99,45 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
   }
 
   const stories = [
-    <StoriesGalleryPlayer name={"testfv"} key={1} />,
-    <StoriesGalleryPlayer name={"1jspn"} key={2} />,
-    <StoriesGalleryPlayer name={"shoyoo"} key={3} />,
-    /*     <StoriesGalleryPlayer key={4} />,
-    <StoriesGalleryPlayer key={5} />,
-    <StoriesGalleryPlayer key={6} />,
-    <StoriesGalleryPlayer key={7} />,
-    <StoriesGalleryPlayer key={8} />,
-    <StoriesGalleryPlayer key={9} />,
-    <StoriesGalleryPlayer key={10} />,
-    <StoriesGalleryPlayer key={11} />,
-    <StoriesGalleryPlayer key={12} />,
-    <StoriesGalleryPlayer key={13} />, */
+    <StoriesGalleryPlayer name={"zy la pute"} key={1} />,
+    <StoriesGalleryPlayer name={"gros connard de zy"} key={2} />,
+    <StoriesGalleryPlayer name={"va faire foutre zy"} key={3} />,
+    <StoriesGalleryPlayer name={"le gros nulos de atsuu"} key={4} />,
+    <StoriesGalleryPlayer name={"shtjryjoyoo"} key={5} />,
+    <StoriesGalleryPlayer name={"configured"} key={6} />,
+    <StoriesGalleryPlayer name={"polito le gros gay de merde"} key={7} />,
   ];
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) =>
-       prevIndex - 1 
-    );
+    setCurrentIndex((prevIndex) => prevIndex - 1);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
-       prevIndex + 1
-    );
+    setCurrentIndex((prevIndex) => prevIndex + 1);
   };
-  
+
+  const goToStory = (forceGoToStory: number) => {
+    setCurrentIndex(forceGoToStory);
+  };
+
+  const hasPreviousStories = currentIndex !== 0;
+  const hasNextStories = currentIndex < stories.length - 1;
+
   const storyViewers = stories.map((story, index) => {
-    console.log(index, currentIndex)
     return (
       <StoriesGalleryViewer
+        isForegroundStory={index !== currentIndex}
+        hasPreviousStories={hasPreviousStories}
+        hasNextStories={hasNextStories}
+        onClick={() => goToStory(index)}
         key={index}
         isPlayedStoryContext={index === currentIndex}
-        isInRight={index < currentIndex}
-        index={index} // KEY TO HAVE A GOOD BEHAVIOR
+        isInRight={index < 0}
+        index={index - currentIndex}
         config={config}
         story={story}
-        handleNext={handleNext}
-        handlePrev={handlePrev}
+        handleNext={() => handleNext()}
+        handlePrev={() => handlePrev()}
       />
     );
   });
@@ -173,7 +173,6 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
           }}
           className="flex items-center relative overflow-hidden"
         >
-        
           {storyViewers}
         </div>
       </div>

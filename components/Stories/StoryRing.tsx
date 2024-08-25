@@ -1,6 +1,8 @@
 import { useRef, useEffect } from "react";
 
-const StoryRing = () => {
+const StoryRing: React.FC<{
+  color: string;
+}> = ({ color }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
   
     useEffect(() => {
@@ -17,9 +19,16 @@ const StoryRing = () => {
             radius, radius, radius - lineWidth / 2, 
             radius, radius, radius 
         );
-        borderGradient.addColorStop(0, '#314BFF'); 
-        borderGradient.addColorStop(1, '#9faaf1');
-  
+        if(color === 'red') {
+          borderGradient.addColorStop(0, '#df1b1b'); 
+          borderGradient.addColorStop(1, '#ba3030');
+        } else if (color === 'blue') {
+          borderGradient.addColorStop(0, '#314BFF'); 
+          borderGradient.addColorStop(1, '#9faaf1');
+        } else {
+
+        }
+     
           context.save();
           context.beginPath();
           context.arc(radius, radius, radius - lineWidth / 2, 0, Math.PI * 2);

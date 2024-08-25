@@ -1,64 +1,107 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect } from "react";
 
-interface AutoResizeTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface AutoResizeTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  setLetterCount: any;
   maxRows?: number;
+  minRows?: number;
   onHeightChange?: (height: number) => void;
 }
 
 const AutoResizeTextarea: React.FC<AutoResizeTextareaProps> = ({
-  maxRows = 5, 
+  setLetterCount,
+  maxRows = 5,
+  minRows = 1,
   onFocus,
+  onChange,
+  onInput,
+  onHeightChange,
   style,
   ...props
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [height, setHeight] = useState<number>(36);
 
+  // Function to calculate height and row heights based on content
   const adjustHeight = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
+    if (textarea.textLength === 0) {
+      setHeight(36);
+      return;
+    }
 
-    const charCount = textarea.value.length;
-    const baseHeight = 36;
-    const extraHeight = Math.floor(charCount / 25) * 18;
-    const newHeight = Math.min(baseHeight + extraHeight, maxRows * 18);
+    // Get the scroll height and client height
+    const scrollHeight = textarea.scrollHeight;
+    const clientHeight = textarea.clientHeight;
+    const lineHeight = parseFloat(
+      getComputedStyle(textarea).lineHeight || "18px"
+    ); // Use computed line height
 
+    // Calculate rows needed
+    const rows = Math.ceil(scrollHeight / lineHeight);
+    const maxHeight = maxRows * lineHeight;
+    const minHeight = minRows * lineHeight;
+
+    // Determine the new height
+    const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+
+    // Update height if changed
     if (newHeight !== height) {
       setHeight(newHeight);
-      textarea.style.setProperty('height', `${newHeight}px`);
+      textarea.style.setProperty("height", `${newHeight}px`, "important");
+      if (onHeightChange) onHeightChange(newHeight);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (textareaRef.current) {
+      setLetterCount(textareaRef.current.textLength);
+    }
     adjustHeight();
-    if (props.onKeyDown) props.onKeyDown(e);
+    if (onInput) onInput(e);
   };
 
-  useEffect(() => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    adjustHeight();
+    if (onChange) onChange(e);
+  };
+
+  useLayoutEffect(() => {
     adjustHeight();
   }, [props.value]);
+
+  useEffect(() => {
+    const handleResize = () => adjustHeight();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <textarea
       {...props}
       onFocus={onFocus}
-      onKeyDown={handleKeyDown}
+      onChange={handleChange}
+      onInput={handleInput}
       ref={textareaRef}
-      dir=''
-      placeholder='Répondre a test...'
+      placeholder="Répondre a test..."
       style={{
         borderWidth: 0,
-        marginRight: '4px',
-        maxWidth: '100%',
-        outline: 'none',
-        overflowY: 'auto',
-        padding: '0.5rem', 
-        overflowX: 'auto',
-        backgroundColor: 'transparent',
-        width: '100%',
-        resize: 'none',
-        fontSize: '13px', 
+        marginRight: "4px",
+        maxWidth: "100%",
+        outline: "none",
+        overflowY: "auto",
+        padding: "0.5rem",
+        overflowX: "auto",
+        backgroundColor: "transparent",
+        width: "100%",
+        resize: "none",
+        fontSize: "13px",
         height: `${height}px`,
+        ...style,
       }}
     />
   );
