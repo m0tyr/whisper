@@ -7,16 +7,10 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Lottie from "lottie-react";
 import WhisperSignatureAnimation from "@/lib/css/lotties/whisper_signature_anim.json";
+import { ASPECT_RATIOS, STORY_VIEWER_LARGE_HEIGHT_PCT, STORY_VIEWER_ASPECT_RATIO_W_H, STORY_GALLERY_ITEM_SCALES } from "@/constants/constants";
 
 // Constants for the aspect ratios and scaling factors
-const ASPECT_RATIOS = [
-  { height: 1, width: 1 }, // 1:1
-  { height: 9, width: 14 }, // 14:9
-  { height: 9, width: 16 }, // 16:9
-];
-const STORY_VIEWER_LARGE_HEIGHT_PCT = 0.96;
-const STORY_VIEWER_ASPECT_RATIO_W_H = 9 / 16;
-const STORY_GALLERY_ITEM_SCALES = { preview: 0.4, viewer: 1 };
+
 
 interface StoriesGalleryLayoutProps {}
 
@@ -27,7 +21,6 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
   const closeAndGoBackInHistoryRoute = () => {
     router.back();
   };
-  const [hasPreviousViewedStory, setHasPreviousViewedStory] = useState([]);
   const [config, setConfig] = useState<{
     gallery: { width: number; height: number };
     player: { height: number; width: number };
@@ -63,6 +56,7 @@ const StoriesGalleryLayout: React.FC<StoriesGalleryLayoutProps> = () => {
     const previewWidth = Math.round(playerWidth * previewScale);
     const previewHeight = Math.round(playerHeight * previewScale);
 
+    console.log(galleryHeight, galleryWidth)
     return {
       gallery: { width: galleryWidth, height: galleryHeight },
       player: { height: playerHeight, width: playerWidth },

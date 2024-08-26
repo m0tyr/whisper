@@ -122,6 +122,77 @@
     /* For Firefox */
   }
 
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    place-items: center;
+    width: 100%;
+  }
+  
+  .wrapper {
+    position: relative;
+    height: 17.5rem;
+    width: 1.64rem;
+  }
+  
+  .wrapper::before,
+  .wrapper::after {
+    display: block;
+    position: absolute;
+    z-index: 99;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0.75rem 0;
+    pointer-events: none;
+  }
+  
+  input[type="range"] {
+    -webkit-appearance: none;
+    position: absolute;
+    background-color: transparent;
+    top: 43.5%;
+    margin: 0;
+    left: 50%;
+    padding: 0;
+    width: 17rem;
+    height: 1rem;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    border-radius: 100rem;
+    overflow: visible;
+    cursor: pointer;
+  }
+  
+  input[type="range"][step] {
+    background-color: transparent;
+    background-image: repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.2) calc(12.5% - 1px),
+      #05051a 12.5%
+    );
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid #888;
+    background-color: #181818;
+    border-radius: 100rem;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background-color: #242424;
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    border: none;
+    width: 0;
+    box-shadow: -20rem 0 0 20rem rgba(255, 255, 255, 0.2);
+  }
+
   #typeahead-menu {
     z-index: 51;
     background-color: #181818;
