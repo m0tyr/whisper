@@ -8,199 +8,134 @@ interface TextPluginProps {
 }
 
 const TextPlugin: React.FC<TextPluginProps> = ({ width, height }) => {
-  const stageRef = useRef<Konva.Stage>(null);
-  const layerRef = useRef<Konva.Layer>(null);
-  const [selectedTextId, setSelectedTextId] = useState<string | null>(null);
+  const stageRef = useRef<Konva.Stage | null>(null);
+  const layerRef = useRef<Konva.Layer | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isEditing, setIsEditing] = useState(true);
+  const [textValue, setTextValue] = useState("");
+  const [textNode, setTextNode] = useState<Konva.Text | null>(null);
+  const [selectedTextNode, setSelectedTextNode] = useState<Konva.Text | null>(
+    null
+  );
 
-  const handleStageDblClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
+  const handleTextNodeClick = (node: Konva.Text) => {
+    setSelectedTextNode(node);
+  };
 
-    if (!stage || !layer) return;
+  const handleTextNodeDblClick = (node: Konva.Text) => {
+    setTextValue(node.text());
+    setTextNode(node);
+    setIsEditing(true);
+  };
 
-    // Check if the double-click was on an existing text node
-    const clickedOnEmptySpace = e.target === stage;
-
-    if (clickedOnEmptySpace) {
-      // Get click position relative to the stage
-      const pointerPosition = stage.getPointerPosition();
-      if (!pointerPosition) return;
-
-      // Create a new text node at the click position
-      const newText = new Konva.Text({
-        text: "New text here",
-        x: pointerPosition.x,
-        y: pointerPosition.y,
-        fontSize: 20,
-        draggable: true,
-        width: 200,
-        id: `${new Date().getTime()}`, // unique ID
-      });
-
-      layer.add(newText);
-      layer.draw();
-
-      // Set the newly created text node as selected
-      setSelectedTextId(newText.id());
+  const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    // Deselect text if clicked outside
+    if (e.target === stageRef.current) {
+      setSelectedTextNode(null);
     }
   };
 
-  const handleTextDblClick = (textNode: Konva.Text) => {
-    const layer = layerRef.current;
-    if (!layer) return;
-
-    const textPosition = textNode.getAbsolutePosition();
-    const stageBox = stageRef.current!.container().getBoundingClientRect();
-    const areaPosition = {
-      x: stageBox.left + textPosition.x,
-      y: stageBox.top + textPosition.y,
-    };
-
-    // Hide the text node and transformer
-    textNode.hide();
-    const transformer = layer.findOne(`Transformer`) as Konva.Transformer;
-    if (transformer) {
-      transformer.hide();
-    }
-
-    // Create and style the textarea
-    const textarea = document.createElement("textarea");
-    document.body.appendChild(textarea);
-
-    textarea.value = textNode.text();
-    textarea.style.position = "absolute";
-    textarea.style.top = `${areaPosition.y}px`;
-    textarea.style.left = `${areaPosition.x}px`;
-    textarea.style.width = `${textNode.width() - textNode.padding() * 2}px`;
-    textarea.style.height = `${
-      textNode.height() - textNode.padding() * 2 + 5
-    }px`;
-    textarea.style.fontSize = `${textNode.fontSize()}px`;
-    textarea.style.border = "none";
-    textarea.style.padding = "0px";
-    textarea.style.margin = "0px";
-    textarea.style.overflow = "hidden";
-    textarea.style.background = "none";
-    textarea.style.outline = "none";
-    textarea.style.resize = "none";
-    textarea.style.lineHeight = `${textNode.lineHeight()}`;
-    textarea.style.fontFamily = textNode.fontFamily();
-    textarea.style.transformOrigin = "left top";
-    textarea.style.textAlign = textNode.align();
-    textarea.style.color = textNode.fill() as string;
-
-    // Rotation handling
-    let rotation = textNode.rotation();
-    let transform = "";
-    if (rotation) {
-      transform += `rotateZ(${rotation}deg)`;
-    }
-
-    let px = 0;
-    const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-    if (isFirefox) {
-      px += 2 + Math.round(textNode.fontSize() / 20);
-    }
-    transform += `translateY(-${px}px)`;
-
-    textarea.style.transform = transform;
-
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight + 3}px`;
-
-    textarea.focus();
-
-    function removeTextarea() {
-      textarea.parentNode?.removeChild(textarea);
-      textNode.show();
-      transformer?.show();
-      transformer?.forceUpdate();
-      if (layer) layer.draw();
-    }
-
-    textarea.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        textNode.text(textarea.value);
-        removeTextarea();
-      }
-      if (e.key === "Escape") {
-        removeTextarea();
-      }
-    });
-
-    textarea.addEventListener("keydown", function () {
-      const scale = textNode.getAbsoluteScale().x;
-      textarea.style.width = `${textNode.width() * scale}px`;
-      textarea.style.height = "auto";
-      textarea.style.height = `${
-        textarea.scrollHeight + textNode.fontSize()
-      }px`;
-    });
-
-    function handleOutsideClick(e: MouseEvent) {
-      if (e.target !== textarea) {
-        textNode.text(textarea.value);
-        removeTextarea();
-      }
-    }
-
-    setTimeout(() => {
-      window.addEventListener("click", handleOutsideClick);
-    });
-
-    textarea.addEventListener("blur", () => {
-      removeTextarea();
-    });
+  const calculateTextWidth = (text: string, fontFamily = "Arial") => {
+    const context = document.createElement("canvas").getContext("2d");
+    if (!context) return 200;
+    context.font = `${16}px ${fontFamily}`;
+    return context.measureText(text).width;
   };
 
   useEffect(() => {
     const stage = stageRef.current;
     const layer = layerRef.current;
 
-    if (!stage || !layer) return;
+    if (stage && layer && textNode) {
+      textNode.on("click", () => handleTextNodeClick(textNode));
+      textNode.on("dblclick", () => handleTextNodeDblClick(textNode));
+      textNode.on("dragmove", () => {
+        if (textNode) {
+          const nodePos = textNode.getPosition();
+          const nodeWidth = textNode.width();
+          const nodeHeight = textNode.height();
 
-    stage.on("dblclick", handleStageDblClick);
+          const centerX = width / 2;
+          const centerY = height / 2;
 
-    layer.on("dblclick", (e) => {
-      const clickedTextNode = e.target as Konva.Text;
-      if (clickedTextNode && clickedTextNode.className === "Text") {
-        handleTextDblClick(clickedTextNode);
-      }
-    });
+          if (Math.abs(nodePos.x + nodeWidth / 2 - centerX) < 10) {
+            textNode.x(centerX - nodeWidth / 2);
+          }
+
+          if (Math.abs(nodePos.y + nodeHeight / 2 - centerY) < 10) {
+            textNode.y(centerY - nodeHeight / 2);
+          }
+        }
+      });
+    }
 
     return () => {
-      stage.off("dblclick", handleStageDblClick);
-      layer.off("dblclick");
+      if (textNode) {
+        textNode.off("click dragmove transformend");
+      }
+    };
+  }, [textNode, width, height]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+
+    if (stage) {
+      stage.on("click", handleStageClick);
+    }
+
+    return () => {
+      if (stage) {
+        stage.off("click", handleStageClick);
+      }
     };
   }, []);
 
   useEffect(() => {
-    const layer = layerRef.current;
-    const transformer = new Konva.Transformer();
-
-    if (!layer) return;
-
-    if (selectedTextId) {
-      const selectedTextNode = layer.findOne(`#${selectedTextId}`);
-      if (selectedTextNode) {
-        layer.add(transformer);
-        transformer.nodes([selectedTextNode]);
-
-        selectedTextNode.on("transform", () => {
-          selectedTextNode.setAttrs({
-            width: selectedTextNode.width() * selectedTextNode.scaleX(),
-            scaleX: 1,
-          });
-        });
-
-        layer.draw();
-      }
-    } else {
-      transformer.detach();
-      transformer.destroy();
-      layer.draw();
+    if (textareaRef.current) {
+      textareaRef.current.focus(); // Automatically focus the textarea on mount
     }
-  }, [selectedTextId]);
+  }, []);
+
+  const handleFinishEditing = () => {
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+
+    if (stage && layer) {
+      const pointerPosition = stage.getPointerPosition() || {
+        x: width / 2,
+        y: height / 2,
+      };
+      const textWidth = calculateTextWidth(textValue, "Arial");
+      console.log(textValue, textWidth, textNode);
+      if (textNode === null) {
+        const newText = new Konva.Text({
+          text: textValue,
+          x: pointerPosition.x,
+          y: pointerPosition.y,
+          fontSize: 16,
+          draggable: true,
+          width: textWidth,
+          id: `${new Date().getTime()}`, // unique ID
+          fill: "white",
+        });
+        layer.clear();
+        layer.add(newText);
+        layer.draw();
+        setTextNode(newText);
+        setIsEditing(false);
+      } else {
+        layer.clear();
+        textNode.width(textWidth)
+        textNode.text(textValue)
+        layer.draw();
+        setIsEditing(false);
+      }
+    }
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextValue(e.target.value);
+  };
 
   return (
     <div
@@ -208,11 +143,34 @@ const TextPlugin: React.FC<TextPluginProps> = ({ width, height }) => {
         width: width,
         height: height,
       }}
-      className="flex flex-col h-10 relative bg-border rounded-lg cursor-cell"
+      className="flex flex-col h-10 relative bg-border rounded-lg cursor-default"
     >
-      <Stage ref={stageRef} width={width} height={height}>
-        <Layer ref={layerRef}></Layer>
-      </Stage>
+      {isEditing && (
+        <>
+          <div className="flex justify-center items-center w-full h-full z-50 bg-[rgb(0,0,0,0.4)]">
+            <textarea
+              value={textValue}
+              onChange={handleTextChange}
+              ref={textareaRef}
+              className="absolute top-20"
+              style={{
+                fontFamily: "Arial",
+                width: "50%",
+                height: "100%",
+                fontSize: "16px",
+                border: "none",
+                resize: "none",
+                background: "transparent",
+                outline: "none",
+                boxShadow: "none",
+              }}
+            />
+          </div>
+          <div className="absolute top-0 pt-4 px-5 right-0 text-[13px] z-[51]">
+            <button onClick={handleFinishEditing}>Terminer</button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
