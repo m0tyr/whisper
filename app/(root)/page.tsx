@@ -32,8 +32,8 @@ export default async function Page() {
             aria-hidden="true"
           >
             <Stories />
-{/*             <FeedGenerator />
- */}          </div>
+         <FeedGenerator />
+          </div>
         </div>
       </section>
     </>

@@ -125,7 +125,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({ width, height }) => {
         setIsEditing(false);
       } else {
         layer.clear();
-        textNode.width(textWidth)
+        textNode.width()
         textNode.text(textValue)
         layer.draw();
         setIsEditing(false);
@@ -171,6 +171,44 @@ const TextPlugin: React.FC<TextPluginProps> = ({ width, height }) => {
           </div>
         </>
       )}
+
+      <Stage
+        className={`${isEditing ? "hidden" : ""}`}
+        ref={stageRef}
+        width={width}
+        height={height}
+      >
+        <Layer ref={layerRef}>
+          {selectedTextNode && (
+            <Transformer
+              ref={(tr) => {
+                if (tr) {
+                  tr.nodes([selectedTextNode]);
+                  tr.getLayer()?.batchDraw();
+                }
+              }}
+              flipEnabled={false}
+              boundBoxFunc={(oldBox, newBox) => {
+                if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
+                  return oldBox;
+                }
+                return newBox;
+              }}
+              keepRatio={true}
+              enabledAnchors={[
+                "top-left",
+                "top-right",
+                "bottom-left",
+                "bottom-right",
+              ]}
+              rotateEnabled={true}
+              resizeEnabled={true}
+              rotationSnaps={[0, 90, -90, 180, -180]}
+              rotationSnapTolerance={10}
+            />
+          )}
+        </Layer>
+      </Stage>
     </div>
   );
 };
