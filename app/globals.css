@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,6 +9,33 @@
   * {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
   }
+
+  @font-face {
+    font-family: 'code2001';  
+    src: local("Code2001"),
+    url('/public/fonts/Code2001-Mdge.ttf') format('truetype');   
+    font-weight: normal;  
+    font-style: normal;  
+}
+
+@font-face {
+  font-family: 'peristiwa';  
+  src: local("peristiwa"),
+  url('/public/fonts/Peristiwa.otf') format('opentype');   
+  font-weight: normal;  
+  font-style: normal;  
+}
+
+@font-face {
+  font-family: 'andalosRegular';  
+  src: local("AndalosRegular"),
+  url('/public/fonts/AndalosRegular-rv8V7.otf') format('opentype');   
+  font-weight: normal;  
+  font-style: normal;  
+}
+.test {
+  font-family: 'andalosRegular';
+}
 
 .scale-enter {
   transform: scale(0);
@@ -148,6 +176,7 @@
     padding: 0.75rem 0;
     pointer-events: none;
   }
+  
   
   input[type="range"] {
     -webkit-appearance: none;
