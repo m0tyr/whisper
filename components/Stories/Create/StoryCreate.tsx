@@ -615,11 +615,12 @@ const StoryCreate = () => {
                             </svg>
                           </motion.div>
                         </DropdownMenuTrigger>
+                  
                           <DropdownMenuContent
-                            alignOffset={-17}
-                            className="w-[180px] drop-shadow-xl rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]"
+                          align="center"
+                            className="w-[180px] drop-shadow-xl p-2 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]"
                           >
-                            <DropdownMenuGroup className="text-white text-[14px] m-1">
+                            <DropdownMenuGroup className="text-white text-[14px] flex flex-col gap-3 m-1">
                               <DropdownMenuItem>Enregistrer</DropdownMenuItem>
 
                               <DropdownMenuItem>Bloquer</DropdownMenuItem>
