@@ -45,6 +45,7 @@
     "@tiptap/starter-kit": "^2.2.4",
     "@tiptap/suggestion": "^2.2.4",
     "@uploadthing/react": "^6.2.2",
+    "@use-gesture/react": "^10.3.1",
     "bcryptjs": "^2.4.3",
     "child_process": "^1.0.2",
     "class-variance-authority": "^0.7.0",
