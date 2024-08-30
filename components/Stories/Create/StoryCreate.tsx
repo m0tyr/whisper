@@ -452,15 +452,17 @@ const StoryCreate = () => {
               >
                 <motion.div
                   ref={drawerRef}
-                  initial={{ y: 1000}} 
-                  animate={{ y: isExtendedDrawer ? 0 : storyProperties.height / 2.5  }} 
-                  exit={{ y: 1200 }} 
-                  drag="y" 
+                  initial={{ y: 1000 }}
+                  animate={{
+                    y: isExtendedDrawer ? 0 : storyProperties.height / 2.5,
+                  }}
+                  exit={{ y: 1200 }}
+                  drag="y"
                   dragConstraints={{
                     top: isExtendedDrawer ? 0 : storyProperties.height / 2.5,
                     bottom: isExtendedDrawer ? 0 : storyProperties.height / 2.5,
                   }}
-                  onDragStart={() => setIsDragging(true)} 
+                  onDragStart={() => setIsDragging(true)}
                   onDragEnd={(event, info) => {
                     setIsDragging(false);
                     if (drawerRef.current) {
@@ -472,19 +474,26 @@ const StoryCreate = () => {
                         setIsExtendedDrawer(false);
                         return;
                       }
-                      if(translateY <= storyProperties.height / 4 && !isExtendedDrawer){
-                        setIsExtendedDrawer(true)
+                      if (
+                        translateY <= storyProperties.height / 4 &&
+                        !isExtendedDrawer
+                      ) {
+                        setIsExtendedDrawer(true);
                         return;
                       }
-                      if(translateY <= storyProperties.height / 2.6667 && translateY >= storyProperties.height / 7.33337 && isExtendedDrawer){
-                        setIsExtendedDrawer(false)
+                      if (
+                        translateY <= storyProperties.height / 2.6667 &&
+                        translateY >= storyProperties.height / 7.33337 &&
+                        isExtendedDrawer
+                      ) {
+                        setIsExtendedDrawer(false);
                         return;
                       }
                     }
                   }}
                   transition={{
                     duration: 0.475,
-                    ease: [.55,.79,.16,.99],
+                    ease: [0.55, 0.79, 0.16, 0.99],
                   }}
                   style={{
                     width: storyProperties.width,
@@ -493,29 +502,37 @@ const StoryCreate = () => {
                 >
                   <div className="p-4 bg-good-gray/90 rounded-t-lg z-[101] flex-1 overflow-hidden ">
                     <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
-                    <div className="max-w-md grid grid-cols-3 gap-4 mx-auto">
-                      <div className="w-full h-12 rounded-lg bg-black">
-                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black">Localisation</div>
+                    <div
+                      className="max-w-md mx-auto grid gap-4"
+                      style={{
+                        gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
+                      }}
+                    >
+                      <div className="col-span-full w-full h-12 rounded-lg bg-black">
+                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
+                          LOCALISATION
+                        </div>
                       </div>
                       <div className="w-full h-12 rounded-lg bg-black">
-                      <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black">Mention</div>
+                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
+                          MENTION
+                        </div>
                       </div>
                       <div className="w-full h-12 rounded-lg bg-black">
-                      <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black">Lien</div>
+                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
+                          LIEN
+                        </div>
                       </div>
                       <div className="w-full h-12 rounded-lg bg-black">
-                      <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black">Hashtag</div>
+                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
+                          HASHTAG
+                        </div>
                       </div>
                       <div className="w-full h-12 rounded-lg bg-black">
-                      <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black">Gif</div>
+                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
+                          GIF
+                        </div>
                       </div>
-                      <div className="w-full h-12 rounded-lg bg-black"></div>
-                      <div className="w-full h-12 rounded-lg bg-black"></div>
-                      <div className="w-full h-12 rounded-lg bg-black"></div>
-                      <div className="w-full h-12 rounded-lg bg-black"></div>
-                      <div className="w-full h-12 rounded-lg bg-black"></div>
-                      <div className="w-full h-12 rounded-lg bg-black"></div>
-                      <div className="w-full h-12 rounded-lg bg-black"></div>
                     </div>
                   </div>
                 </motion.div>
