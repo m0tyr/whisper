@@ -257,6 +257,24 @@
     width: 280px !important;
   }
 
+  #style-4::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  background-color: transparent;
+}
+
+#style-4::-webkit-scrollbar
+{
+  width: 5px;
+  background-color: #353535;
+}
+
+#style-4::-webkit-scrollbar-thumb
+{
+  background-color: #404040;
+  border: none;
+}
+
   .hide-scrollbar {
     overflow: -moz-scrollbars-none; /* For Firefox */
     scrollbar-width: none; /* For modern browsers */

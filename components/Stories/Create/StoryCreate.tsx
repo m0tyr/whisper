@@ -40,6 +40,9 @@ const StoryCreate = () => {
   });
   const textFonts = useRef<TextFonts[]>([
     { variable: "Arial", renderedFont: "Arial" },
+    { variable: "Arial", renderedFont: "Arial" },
+    { variable: "Arial", renderedFont: "Arial" },
+    { variable: "Arial", renderedFont: "Arial" },
     { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6" },
     { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95" },
   ]);
@@ -428,8 +431,17 @@ const StoryCreate = () => {
     const transformValue = getTranslateYValue(
       drawerRef.current?.style.transform || ""
     );
-    setVisibleAreaBeforeScroll(storyProperties.height - transformValue);
-  }, [storyProperties.height, drawerRef.current?.style.transform]);
+    if (isDragging) {
+      setVisibleAreaBeforeScroll(storyProperties.height - transformValue);
+      return;
+    }
+    if (isExtendedDrawer) {
+      setVisibleAreaBeforeScroll(storyProperties.height - 46);
+      return;
+    } else if (!isExtendedDrawer) {
+      setVisibleAreaBeforeScroll(storyProperties.height / 1.66667 - 46);
+    }
+  }, [isDragging, storyProperties.height, drawerRef.current?.style.transform]);
   return (
     <>
       <AnimatePresence>
@@ -508,17 +520,20 @@ const StoryCreate = () => {
                   style={{
                     width: storyProperties.width,
                   }}
-                  className="backdrop-blur-[12px] drawer-shadow flex flex-col flex-grow rounded-t-2xl z-[61] h-full mt-auto"
+                  className="backdrop-blur-[12px] bg-[#2d2d2d]/60 drawer-shadow flex flex-col flex-grow rounded-t-2xl z-[61] overflow-hidden h-[150%]"
                 >
-                  <motion.div className="p-4 flex flex-col rounded-t-lg z-[101] flex-1 overflow-auto ">
-                    <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
-                    <div>
-                      <div
-                        className="overflow-hidden"
-                        /*  style={{
+                  <div className="flex p-4 items-stretch">
+                    <div className=" mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-2" />
+                  </div>
+                  <div className=" items-stretch flex flex-col flex-shrink-0 overflow-visible relative align-baseline">
+                    <div
+                      className="overflow-y-auto "  id="style-4"
+                      style={{
                         height: visibleAreaBeforeScroll,
-                      }} */
-                      >
+                      }}
+                    >
+                      <div className="w-full h-2 bg-transparent"></div>
+                      <div className="flex translate-x-0 touch-pan-y">
                         <motion.div className="max-w-md mx-auto gap-4 grid-cols-auto">
                           <div className="flex flex-row justify-center items-center gap-3">
                             <motion.div
@@ -699,19 +714,84 @@ const StoryCreate = () => {
                             </motion.div>
                           </div>
                         </motion.div>
-                        <div className=" mt-3 w-full h-fit bg-black">
-                          <img src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 p-5 translate-x-0 touch-pan-y">
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
+                        </div>
+                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
+                          <img
+                            className="rounded-lg"
+                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
+                          />
                         </div>
                       </div>
+                      <div className="w-full h-2 bg-transparent"></div>
                     </div>
-                  </motion.div>
+                  </div>
                 </motion.div>
               </div>
             </div>
           </div>
         )}
       </AnimatePresence>
-
       <div
         className={` min-h-screen w-full flex items-center justify-center relative`}
       >
@@ -829,7 +909,7 @@ const StoryCreate = () => {
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger className=" select-none cursor-pointer ">
                       <motion.div
-                        whileTap={{ opacity: 0.75 }}
+                        whileTap={{ scale: 0.97, opacity: 0.75 }}
                         whileHover={{ opacity: 0.9 }}
                         className=" cursor-pointer flex flex-row justify-center items-center gap-2"
                       >
