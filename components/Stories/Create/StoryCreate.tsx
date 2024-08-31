@@ -21,6 +21,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@radix-ui/react-dropdown-menu";
+import Image from "next/image";
 
 type TextFonts = {
   variable: string;
@@ -420,6 +421,15 @@ const StoryCreate = () => {
     const match = transform.match(/translateY\((-?\d+(\.\d+)?)px\)/); // Regex to find translateY value
     return match ? parseFloat(match[1]) : 0; // Return the numeric value, or 0 if not found
   }
+
+  const [visibleAreaBeforeScroll, setVisibleAreaBeforeScroll] = useState(0);
+
+  useEffect(() => {
+    const transformValue = getTranslateYValue(
+      drawerRef.current?.style.transform || ""
+    );
+    setVisibleAreaBeforeScroll(storyProperties.height - transformValue);
+  }, [storyProperties.height, drawerRef.current?.style.transform]);
   return (
     <>
       <AnimatePresence>
@@ -498,43 +508,203 @@ const StoryCreate = () => {
                   style={{
                     width: storyProperties.width,
                   }}
-                  className="overflow-hidden backdrop-blur-[2px] flex flex-col flex-grow rounded-t-lg z-[61] h-[1500px] mt-auto"
+                  className="backdrop-blur-[12px] drawer-shadow flex flex-col flex-grow rounded-t-2xl z-[61] h-full mt-auto"
                 >
-                  <div className="p-4 bg-good-gray/90 rounded-t-lg z-[101] flex-1 overflow-hidden ">
+                  <motion.div className="p-4 flex flex-col rounded-t-lg z-[101] flex-1 overflow-auto ">
                     <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
-                    <div
-                      className="max-w-md mx-auto grid gap-4"
-                      style={{
-                        gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
-                      }}
-                    >
-                      <div className="col-span-full w-full h-12 rounded-lg bg-black">
-                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
-                          LOCALISATION
-                        </div>
-                      </div>
-                      <div className="w-full h-12 rounded-lg bg-black">
-                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
-                          MENTION
-                        </div>
-                      </div>
-                      <div className="w-full h-12 rounded-lg bg-black">
-                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
-                          LIEN
-                        </div>
-                      </div>
-                      <div className="w-full h-12 rounded-lg bg-black">
-                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
-                          HASHTAG
-                        </div>
-                      </div>
-                      <div className="w-full h-12 rounded-lg bg-black">
-                        <div className="w-fit h-fit rounded-lg bg-white rotate-6 px-1.5 py-0.5 text-black tracking-tight font-normal">
-                          GIF
+                    <div>
+                      <div
+                        className="overflow-hidden"
+                        /*  style={{
+                        height: visibleAreaBeforeScroll,
+                      }} */
+                      >
+                        <motion.div className="max-w-md mx-auto gap-4 grid-cols-auto">
+                          <div className="flex flex-row justify-center items-center gap-3">
+                            <motion.div
+                              whileTap={{ scale: 0.97, rotate: "2deg" }}
+                              style={{ rotate: "-2deg" }}
+                              className="text-[20px] cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-xl bg-white rotate-[3deg] px-1.5 py-0.5 text-black"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                              >
+                                <g
+                                  fill="none"
+                                  stroke="#52489C"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                >
+                                  <circle cx="12" cy="10" r="3" />
+                                  <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8Z" />
+                                </g>
+                              </svg>
+                              <span className="text-[20px]  tracking-tight font-[450] ">
+                                LOCALISATION
+                              </span>
+                            </motion.div>
+                            <motion.div
+                              whileTap={{ scale: 0.98, rotate: "-3deg" }}
+                              style={{ rotate: "3deg" }}
+                              className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                              >
+                                <g
+                                  fill="none"
+                                  stroke="#22C55E"
+                                  stroke-width="2"
+                                >
+                                  <circle cx="12" cy="12" r="4" />
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10c2.252 0 4.33-.744 6.001-2"
+                                  />
+                                  <path
+                                    stroke-linecap="round"
+                                    d="M16 8v4c0 1 .6 3 3 3s3-2 3-3"
+                                  />
+                                </g>
+                              </svg>
+                              <span className="text-[20px]  tracking-tight font-[450] ">
+                                MENTION
+                              </span>
+                            </motion.div>
+                          </div>
+
+                          <div className="flex flex-row justify-center items-center gap-3">
+                            <motion.div
+                              whileTap={{ scale: 0.98, rotate: "-3deg" }}
+                              style={{ rotate: "3deg" }}
+                              className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                              >
+                                <g
+                                  fill="none"
+                                  stroke="#465C69"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                >
+                                  <path d="m6.233 5.834l.445-2.226A2 2 0 0 1 8.64 2h6.72a2 2 0 0 1 1.962 1.608l.445 2.226a1.879 1.879 0 0 0 1.387 1.454A3.758 3.758 0 0 1 22 10.934V18a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-7.066a3.758 3.758 0 0 1 2.846-3.646a1.879 1.879 0 0 0 1.387-1.454Z" />
+                                  <circle cx="12" cy="14" r="4" />
+                                  <path d="M11 6h2" />
+                                </g>
+                              </svg>
+                              <span className="text-[20px]  tracking-tight font-[450] ">
+                                PHOTO
+                              </span>
+                            </motion.div>
+                            <motion.div
+                              whileTap={{ scale: 0.98, rotate: "3deg" }}
+                              style={{ rotate: "-3deg" }}
+                              className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                className=" rotate-45"
+                              >
+                                <path
+                                  fill="none"
+                                  stroke="#A8201A"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M9 12h6m0-6h1a6 6 0 0 1 0 12h-1m-6 0H8A6 6 0 0 1 8 6h1"
+                                />
+                              </svg>
+                              <span className="text-[20px]  tracking-tight font-[450] ">
+                                LIEN
+                              </span>
+                            </motion.div>
+                          </div>
+                          <div className="flex flex-row justify-center items-center gap-3">
+                            <motion.div
+                              whileTap={{ scale: 0.98, rotate: "3deg" }}
+                              style={{ rotate: "-4deg" }}
+                              className="text-[18px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  fill="none"
+                                  stroke="#ED254E"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M10 3L6 21M18 3l-4 18M4 8h17M3 16h17"
+                                />
+                              </svg>
+                              <span className="text-[18px]  tracking-tight font-[450] ">
+                                HASHTAG
+                              </span>
+                            </motion.div>
+                            <motion.div
+                              whileTap={{
+                                scale: 0.98,
+                                rotate: "-1deg",
+                                background:
+                                  "linear-gradient(95deg, rgb(153,51,255), rgb(97,87,255))",
+                              }}
+                              style={{
+                                rotate: "1deg",
+                                background:
+                                  "linear-gradient(45deg, rgb(153,51,255), rgb(97,87,255))",
+                                animation: "gradientAnimation 5s ease infinite",
+                              }}
+                              className="text-[18px] cursor-pointer w-fit rounded-[10px] px-1.5 py-0.5 text-white tracking-tight font-[450] drop-shadow-glow"
+                            >
+                              GIF
+                            </motion.div>
+                            <motion.div
+                              whileTap={{ scale: 0.98, rotate: "-3deg" }}
+                              style={{ rotate: "3deg" }}
+                              className="text-[18px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 56 56"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M28 51.906c13.055 0 23.906-10.828 23.906-23.906c0-13.055-10.828-23.906-23.883-23.906c-1.242 0-1.851.75-1.851 1.968v9.094c0 1.008.68 1.828 1.71 1.828c1.032 0 1.735-.82 1.735-1.828V8.148C39.93 8.968 47.898 17.5 47.898 28A19.84 19.84 0 0 1 28 47.922c-11.063 0-19.945-8.86-19.922-19.922c.023-4.922 1.781-9.398 4.711-12.844c.726-.914.773-2.015 0-2.836c-.774-.843-2.086-.773-2.93.282C6.273 16.773 4.094 22.164 4.094 28c0 13.078 10.828 23.906 23.906 23.906m3.75-20.297c1.851-1.922 1.477-4.547-.75-6.093l-12.4-8.649c-1.171-.82-2.39.399-1.57 1.57l8.649 12.399c1.547 2.227 4.171 2.625 6.07.773"
+                                />
+                              </svg>
+                              <span className="text-[18px]  tracking-tight font-[450] ">
+                                COMPTE A REBOURS
+                              </span>
+                            </motion.div>
+                          </div>
+                        </motion.div>
+                        <div className=" mt-3 w-full h-fit bg-black">
+                          <img src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg" />
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </motion.div>
               </div>
             </div>

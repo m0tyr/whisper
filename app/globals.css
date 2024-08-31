@@ -33,8 +33,34 @@
   font-weight: normal;  
   font-style: normal;  
 }
-.test {
-  font-family: 'andalosRegular';
+
+.grid-cols-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min-content, 1fr));
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.drawer-shadow  {
+  box-shadow: 0 0 13px rgba(0, 0, 0, .3);
+  background-color: color(rgb(168,168,168) alpha(80%));
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.motion-div {
+  background-size: 200% 200%;
 }
 
 .scale-enter {
