@@ -1,6 +1,12 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ExtractedElement, Input, MediaSize, MentionsDatas, Root } from "./types/whisper.types";
+import {
+  ExtractedElement,
+  Input,
+  MediaSize,
+  MentionsDatas,
+  Root,
+} from "./types/whisper.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -12,10 +18,10 @@ export function extractMention(json: Root): MentionsDatas[] {
   const { children } = json.root;
   children.forEach((paragraph: any) => {
     paragraph.children.forEach((child: any) => {
-      if (child.type === 'mention') {
+      if (child.type === "mention") {
         extractedData.push({
-          id: child.id || 'N/A',
-          mention: child.text || 'N/A'
+          id: child.id || "N/A",
+          mention: child.text || "N/A",
         });
       }
     });
@@ -24,26 +30,26 @@ export function extractMention(json: Root): MentionsDatas[] {
   return extractedData;
 }
 
-
 export const getPathPrefix = () => {
   const path = window.location.pathname;
-  const parts = path.split('/');
+  const parts = path.split("/");
   return "/" + parts[1]; // Retourne le premier segment après le nom de domaine
 };
-
-
 
 //Media Calculus stuff
 //need to test
 
 export function shuffleArray<T>(array: T[]): void {
   for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
-export function getClampedMultipleMediaAspectRatio({ mediaWidth, mediaHeight }: MediaSize): number {
+export function getClampedMultipleMediaAspectRatio({
+  mediaWidth,
+  mediaHeight,
+}: MediaSize): number {
   const aspectRatio = mediaWidth / mediaHeight;
   return clamp(aspectRatio, 3 / 4, 4 / 3);
 }
@@ -57,9 +63,15 @@ export function deriveMultipleMediaHeight(a: number, b: number): number {
     return Math.abs(a - 4 / 3) < 0.01;
   }
 
-  if ((isFourThirds(a) && isFourThirds(b)) || (isThreeFourths(a) && isThreeFourths(b))) {
+  if (
+    (isFourThirds(a) && isFourThirds(b)) ||
+    (isThreeFourths(a) && isThreeFourths(b))
+  ) {
     return 272;
-  } else if ((isFourThirds(a) && isThreeFourths(b)) || (isThreeFourths(a) && isFourThirds(b))) {
+  } else if (
+    (isFourThirds(a) && isThreeFourths(b)) ||
+    (isThreeFourths(a) && isFourThirds(b))
+  ) {
     return 235;
   } else if (a === 1 && b === 1) {
     return 245;
@@ -69,24 +81,20 @@ export function deriveMultipleMediaHeight(a: number, b: number): number {
 }
 
 function clamp(value: number, min: number, max: number): number {
-  if (value < min)
-    return min;
+  if (value < min) return min;
   return value > max ? max : value;
 }
-// 
-
-
-
+//
 
 export function extractElements(input: Input): ExtractedElement[] {
   const extractedElements: ExtractedElement[] = [];
 
   // Iterate over each paragraph
-  input.root.children.forEach(paragraph => {
+  input.root.children.forEach((paragraph) => {
     // Iterate over each element in the paragraph
-    paragraph.children.forEach(element => {
+    paragraph.children.forEach((element) => {
       // If it's a linebreak, set text to '\n'
-      const text = element.type === 'linebreak' ? '\n' : element.text;
+      const text = element.type === "linebreak" ? "\n" : element.text;
 
       if (text && element.type) {
         // Extract text and type
@@ -108,7 +116,7 @@ export function getMeta(url: string, cb: any) {
   img.onload = () => cb(null, img);
   img.onerror = (err) => cb(err);
   img.src = url;
-};
+}
 export const computeSHA256 = async (file: File) => {
   const buffer = await file.arrayBuffer();
   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
@@ -122,11 +130,12 @@ export const isValidEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
-export function processElements(elements: ExtractedElement[]): ExtractedElement[][] {
+export function processElements(
+  elements: ExtractedElement[]
+): ExtractedElement[][] {
   let consecutiveLineBreaksCount = 0;
   const sections: ExtractedElement[][] = [];
   let currentSection: ExtractedElement[] = [];
-
 
   /* Constraint the final whisper content to contain no more than two linebreak in a row 
      its still a front-end operation done every time we load a whisper this implementation needs to be done
@@ -134,7 +143,7 @@ export function processElements(elements: ExtractedElement[]): ExtractedElement[
   */
 
   for (const element of elements) {
-    if (element.type === 'linebreak') {
+    if (element.type === "linebreak") {
       consecutiveLineBreaksCount++;
       if (consecutiveLineBreaksCount === 2) {
         sections.push(currentSection);
@@ -142,7 +151,7 @@ export function processElements(elements: ExtractedElement[]): ExtractedElement[
       }
     } else {
       if (consecutiveLineBreaksCount === 1) {
-        currentSection.push({ text: ' \n', type: 'linebreak' }); // Include a single line break
+        currentSection.push({ text: " \n", type: "linebreak" }); // Include a single line break
       }
       currentSection.push(element);
       consecutiveLineBreaksCount = 0; // Reset count when non-line break encountered
@@ -157,12 +166,12 @@ export function processElements(elements: ExtractedElement[]): ExtractedElement[
   return sections;
 }
 export function limitNewlines(text: string): string {
-  const parts = text.split('\n');
+  const parts = text.split("\n");
   const limitedParts = parts.slice(0, 2); // Take the first two parts
 
   // Check if there are more than two parts or if the second part is empty
-  if (parts.length > 2 || (parts.length === 2 && parts[1] === '')) {
-    return limitedParts.join('\n');
+  if (parts.length > 2 || (parts.length === 2 && parts[1] === "")) {
+    return limitedParts.join("\n");
   } else {
     // No \n characters found or only one \n character found
     return text;
@@ -174,8 +183,6 @@ export function formatDateString(dateString: string) {
     month: "short",
     day: "numeric",
   };
-
-
 
   const date = new Date(dateString);
   const formattedDate = date.toLocaleDateString(undefined, options);
@@ -197,7 +204,6 @@ export function formatThreadCount(count: number): string {
     return `${threadCount} ${threadWord}`;
   }
 }
-
 
 export function calculateTimeAgo(createdAtString: string) {
   const createdAt = new Date(createdAtString);
@@ -221,26 +227,24 @@ export function calculateTimeAgo(createdAtString: string) {
 
   let timeAgo;
   if (yearsDiff > 0) {
-    timeAgo = `${yearsDiff} an${yearsDiff > 1 ? '' : ''}`;
+    timeAgo = `${yearsDiff} an${yearsDiff > 1 ? "" : ""}`;
   } else if (monthsDiff > 0) {
-    timeAgo = `${monthsDiff} mois${monthsDiff > 1 ? '' : ''}`;
+    timeAgo = `${monthsDiff} mois${monthsDiff > 1 ? "" : ""}`;
   } else if (weeksDiff > 0) {
-    timeAgo = `${weeksDiff} sem${weeksDiff > 1 ? '' : ''}`;
+    timeAgo = `${weeksDiff} sem${weeksDiff > 1 ? "" : ""}`;
   } else if (daysDiff > 0) {
-    timeAgo = `${daysDiff} j${daysDiff > 1 ? '' : ''}`;
+    timeAgo = `${daysDiff} j${daysDiff > 1 ? "" : ""}`;
   } else if (hoursDiff > 0) {
-    timeAgo = `${hoursDiff} h${hoursDiff > 1 ? '' : ''}`;
+    timeAgo = `${hoursDiff} h${hoursDiff > 1 ? "" : ""}`;
   } else if (minutesDiff > 0) {
-    timeAgo = `${minutesDiff} min${minutesDiff > 1 ? '' : ''}`;
+    timeAgo = `${minutesDiff} min${minutesDiff > 1 ? "" : ""}`;
   } else {
-    timeAgo = 'maintenant';
+    timeAgo = "maintenant";
   }
 
   return timeAgo;
 }
 
-
-
 export function convertToReadableClientData(dataToConvert: any) {
-  return JSON.parse(JSON.stringify(dataToConvert))
+  return JSON.parse(JSON.stringify(dataToConvert));
 }

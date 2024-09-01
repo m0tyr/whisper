@@ -13,7 +13,6 @@ import DrawPlugin from "./DrawPlugin/DrawPlugin";
 import { Layer, Stage, Transformer } from "react-konva";
 import Konva from "konva";
 import "../../../app/globals.css";
-import { Drawer } from "vaul";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -21,8 +20,13 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@radix-ui/react-dropdown-menu";
-import Image from "next/image";
+import getFeaturedStickers from "@/lib/actions/stories.actions";
+import { useQueryFeaturedStickers } from "@/hooks/queries/useQueryFeaturedStickers";
 
+import { Grid } from "@giphy/react-components";
+import { GiphyFetch } from "@giphy/js-fetch-api";
+import GifPlugin from "./GifPlugin/GifPlugin";
+import TextPlugin from "./TextPlugin/TextPlugin";
 type TextFonts = {
   variable: string;
   renderedFont: string;
@@ -38,23 +42,16 @@ const StoryCreate = () => {
     width: 0,
     height: 0,
   });
-  const textFonts = useRef<TextFonts[]>([
-    { variable: "Arial", renderedFont: "Arial" },
-    { variable: "Arial", renderedFont: "Arial" },
-    { variable: "Arial", renderedFont: "Arial" },
-    { variable: "Arial", renderedFont: "Arial" },
-    { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6" },
-    { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95" },
-  ]);
+
   const [hasPassedTemplateStep, setHasPassedTemplateStep] = useState(false);
   const [isInDrawingContext, setIsInDrawingContext] = useState(false);
   const [isInTextContext, setIsInTextContext] = useState(false);
   const [isAddingNewText, setisAddingNewText] = useState(false);
   const [isInBaseContext, setIsInBaseContext] = useState(true);
   const [isInWidgetContext, setIsInWidgetContext] = useState(false);
-  const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
-  const textInstancesRef = useRef<Konva.Text[]>([]);
-  const [toRenderTextFont, setToRenderTextFont] = useState("Arial");
+  const [isInWidgetBaseContext, setIsInWidgetBaseContext] = useState(false);
+  const [isInWidgetGifContext, setIsInWidgetGifContext] = useState(false);
+  
 
   const getStoryProperties = (windowWidth: number, windowHeight: number) => {
     const aspectRatio =
@@ -105,18 +102,26 @@ const StoryCreate = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
+  
   const stageRef = useRef<Konva.Stage | null>(null);
   const layerRef = useRef<Konva.Layer | null>(null);
+  const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
+  const textInstancesRef = useRef<Konva.Text[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [toRenderTextFont, setToRenderTextFont] = useState("Arial");
   const [textValue, setTextValue] = useState("");
   const [textNode, setTextNode] = useState<Konva.Text | null>(null);
-  const [selectedTextNode, setSelectedTextNode] = useState<Konva.Text | null>(
-    null
-  );
-  const transformerRef = useRef<Konva.Transformer>(null);
   const [selectedTextFont, setSelectedTextFont] = useState("Arial");
   const [isFontLoaded, setIsFontLoaded] = useState(false);
-
+  const textFonts = useRef<TextFonts[]>([
+    { variable: "Arial", renderedFont: "Arial" },
+    { variable: "Arial", renderedFont: "Arial" },
+    { variable: "Arial", renderedFont: "Arial" },
+    { variable: "Arial", renderedFont: "Arial" },
+    { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6" },
+    { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95" },
+  ]);
   function whenFontIsLoaded(
     callback: () => void,
     attemptCount: number | undefined,
@@ -151,11 +156,15 @@ const StoryCreate = () => {
   }
 
   const handleTextNodeClick = (node: Konva.Text) => {
-    setSelectedTextNode(node);
-    const transformer = transformerRef.current;
-    if (transformer) {
-      transformer.nodes([node]);
-      transformer.getLayer()?.batchDraw();
+    if (transformerInstancesRef.current) {
+      const id = node.id();
+      console.log(
+        transformerInstancesRef.current[parseInt(id)],
+        transformerInstancesRef.current.length,
+        parseInt(id)
+      );
+      transformerInstancesRef.current[parseInt(id)].nodes([node]);
+      transformerInstancesRef.current[parseInt(id)].getLayer()?.batchDraw();
     }
   };
 
@@ -172,15 +181,11 @@ const StoryCreate = () => {
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
     const stage = stageRef.current;
     if (e.target === stage) {
-      setSelectedTextNode(null);
-      const transformer = transformerRef.current;
-      if (transformer) {
+      if (transformerInstancesRef.current) {
         transformerInstancesRef.current.forEach((element) => {
           element.nodes([]);
           element.getLayer()?.batchDraw();
         });
-        transformer.nodes([]);
-        transformer.getLayer()?.batchDraw();
       }
     }
   };
@@ -215,6 +220,7 @@ const StoryCreate = () => {
   const handleFinishEditing = () => {
     const stage = stageRef.current;
     const layer = layerRef.current;
+    const padding = 5;
     if (stage && layer && textareaRef.current) {
       const textWidth = calculateTextWidth(textValue, "Arial");
 
@@ -228,12 +234,70 @@ const StoryCreate = () => {
           draggable: true,
           width:
             textWidth > textareaRef.current?.clientWidth
-              ? textareaRef.current?.clientWidth
-              : textWidth,
+              ? textareaRef.current?.clientWidth + padding * 2
+              : textWidth + padding * 2,
           align: "center",
-          id: `${new Date().getTime()}`, // unique ID
+          id: `${transformerInstancesRef.current.length}`, // unique ID
           fill: "white",
         });
+        const transformerDependency = [] as any[];
+
+        // Initialize the largest width with a small value
+        let largestWidth = 0;
+
+        newText.textArr.forEach((element) => {
+          if (element.width > largestWidth) {
+            largestWidth = element.width; // Update the largest width
+          }
+        });
+        newText.textArr.forEach((element, index) => {
+          const xPosition = storyProperties.width / 2 - largestWidth / 2;
+          const yPosition = storyProperties.height / 2 - largestWidth / 2;
+          var simpleLabel = new Konva.Label({
+            x: xPosition + (largestWidth - element.width) / 2,
+            y: yPosition + index * 15.75 + padding * 2,
+            width: element.width + padding * 2,
+            draggable: true,
+            opacity: 1,
+          });
+          console.log(index, newText.textArr.length - 1);
+          simpleLabel.add(
+            new Konva.Rect({
+              x: 0,
+              y: 0,
+              width: element.width + padding * 2,
+              height: 16,
+              cornerRadius:
+                index === newText.textArr.length - 1 ? [0, 0, 20, 20] : 6,
+              fill: "white",
+            })
+            /*      new Konva.Tag({
+                cornerRadius: element.lastInParagraph ?  [0, 0, 20, 20] : 6,
+                fill: "white",
+              }) */
+          );
+
+          const konvaText = new Konva.Text({
+            text: element.text,
+            x: 0,
+            y: 0,
+            draggable: false,
+            fontFamily: toRenderTextFont,
+            fontSize: 16,
+            fill: "black",
+            width: element.width + padding * 2,
+            align: "center",
+          });
+
+          simpleLabel.add(konvaText);
+
+          transformerDependency.push(simpleLabel);
+          layer.add(simpleLabel);
+        });
+
+        // Now, mostLargeText holds the Konva.Text element with the largest width
+
+        console.log(newText.textArr);
         whenFontIsLoaded(
           function () {
             newText.fontFamily(toRenderTextFont);
@@ -241,9 +305,52 @@ const StoryCreate = () => {
           20,
           textValue
         );
+        const transformer = new Konva.Transformer({
+          nodes: transformerDependency,
+          anchorStroke: "#212121",
+          anchorFill: "#434343",
+          borderStroke: "#f1f1f1",
+          anchorStyleFunc: (anchor) => {
+            anchor.cornerRadius(10);
+            anchor.fill("#2d2d2d");
+            anchor.stroke("#212121");
+            if (
+              anchor.hasName("top-center") ||
+              anchor.hasName("bottom-center")
+            ) {
+              anchor.height(6);
+              anchor.offsetY(3);
+              anchor.width(30);
+              anchor.offsetX(15);
+            }
+            if (
+              anchor.hasName("middle-left") ||
+              anchor.hasName("middle-right")
+            ) {
+              anchor.height(30);
+              anchor.offsetY(15);
+              anchor.width(6);
+              anchor.offsetX(3);
+            }
+          },
+          keepRatio: true,
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+          ],
+          rotateEnabled: true,
+          resizeEnabled: true,
+          rotationSnaps: [0, 90, -90, 180, -180],
+          rotationSnapTolerance: 10,
+        });
+        console.log(transformer.width());
         textInstancesRef.current.push(newText);
+        transformerInstancesRef.current.push(transformer as Konva.Transformer);
         layer.clear();
-        layer.add(newText);
+        /*         layer.add(newText);
+         */ layer.add(transformer);
         layer.draw();
         setTextNode(newText);
         setIsInTextContext(false);
@@ -257,12 +364,37 @@ const StoryCreate = () => {
             fontSize: 16,
             fontFamily: toRenderTextFont,
             draggable: true,
+            sceneFunc: function (context, shape) {
+              const width = shape.width() + padding * 2;
+              const height = shape.height() + padding * 2;
+
+              // Set the position to accommodate padding
+              context.beginPath();
+              const radius = 12; // Radius for rounded corners
+              const x = -padding; // Offset by padding to align text
+              const y = -padding;
+
+              // Draw rounded rectangle background
+              context.moveTo(x + radius, y);
+              context.arcTo(x + width, y, x + width, y + height, radius);
+              context.arcTo(x + width, y + height, x, y + height, radius);
+              context.arcTo(x, y + height, x, y, radius);
+              context.arcTo(x, y, x + width, y, radius);
+              context.closePath();
+
+              // Fill the background
+              context.fillStyle = "rgb(100,100,0)";
+              context.fill();
+
+              // Draw the text
+              (shape as Konva.Text)._sceneFunc(context);
+            },
             width:
               textWidth > textareaRef.current?.clientWidth
-                ? textareaRef.current?.clientWidth
-                : textWidth,
+                ? textareaRef.current?.clientWidth + padding * 2
+                : textWidth + padding * 2,
             align: "center",
-            id: `${new Date().getTime()}`, // unique ID
+            id: `${transformerInstancesRef.current.length}`, // unique ID
             fill: "white",
           });
           whenFontIsLoaded(
@@ -275,6 +407,32 @@ const StoryCreate = () => {
           const transformer = new Konva.Transformer({
             nodes: [newText],
             keepRatio: true,
+            anchorStroke: "#2d2d2d",
+            anchorFill: "#434343",
+            borderStroke: "#f1f1f1",
+            anchorStyleFunc: (anchor) => {
+              anchor.cornerRadius(10);
+              anchor.fill("#434343");
+              anchor.stroke("#2d2d2d");
+              if (
+                anchor.hasName("top-center") ||
+                anchor.hasName("bottom-center")
+              ) {
+                anchor.height(6);
+                anchor.offsetY(3);
+                anchor.width(30);
+                anchor.offsetX(15);
+              }
+              if (
+                anchor.hasName("middle-left") ||
+                anchor.hasName("middle-right")
+              ) {
+                anchor.height(30);
+                anchor.offsetY(15);
+                anchor.width(6);
+                anchor.offsetX(3);
+              }
+            },
             enabledAnchors: [
               "top-left",
               "top-right",
@@ -442,6 +600,15 @@ const StoryCreate = () => {
       setVisibleAreaBeforeScroll(storyProperties.height / 1.66667 - 46);
     }
   }, [isDragging, storyProperties.height, drawerRef.current?.style.transform]);
+
+  const { data, refetch } = useQueryFeaturedStickers();
+
+  const [searchValue, setSearchValue] = useState("");
+
+  const makeGIFSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchValue(value);
+  };
   return (
     <>
       <AnimatePresence>
@@ -455,6 +622,7 @@ const StoryCreate = () => {
               className="absolute inset-0 bg-transparent z-[59]"
               onClick={() => {
                 setIsInWidgetContext(false);
+                setIsInWidgetGifContext(false);
                 setIsExtendedDrawer(false);
               }}
             />
@@ -494,6 +662,7 @@ const StoryCreate = () => {
                       if (translateY >= storyProperties.height / 1.66667) {
                         setIsInWidgetContext(false);
                         setIsExtendedDrawer(false);
+                        setIsInWidgetGifContext(false);
                         return;
                       }
                       if (
@@ -522,268 +691,259 @@ const StoryCreate = () => {
                   }}
                   className="backdrop-blur-[12px] bg-[#2d2d2d]/60 drawer-shadow flex flex-col flex-grow rounded-t-2xl z-[61] overflow-hidden h-[150%]"
                 >
-                  <div className="flex p-4 items-stretch">
-                    <div className=" mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-2" />
+                  <div className="flex p-3 items-stretch ">
+                    <div className=" mx-auto w-12 h-1 cursor-grab active:cursor-grabbing flex-shrink-0 rounded-full bg-zinc-300 " />
                   </div>
+                  {isInWidgetGifContext && (
+                    <div
+                      style={{
+                        width: storyProperties.width,
+                        height: "40px",
+                      }}
+                      className="flex flex-row shadow-xl pr-[6px] bg-[#2d2d2d]"
+                    >
+                      <motion.div
+                        whileTap={{ scale: 0.98, opacity: 0.6 }}
+                        onClick={() => {
+                          setIsInWidgetGifContext(false);
+                          setIsInWidgetBaseContext(true);
+                        }}
+                        className="flex justify-center items-center ml-2 mr-1 py-1 rounded-full hover:opacity-80 cursor-pointer h-[35px]"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fill="currentColor"
+                            fill-rule="evenodd"
+                            d="M7.222 9.897c2.3-2.307 4.548-4.559 6.744-6.754a.65.65 0 0 0 0-.896c-.311-.346-.803-.316-1.027-.08c-2.276 2.282-4.657 4.667-7.143 7.156c-.197.162-.296.354-.296.574c0 .221.099.418.296.592l7.483 7.306a.749.749 0 0 0 1.044-.029c.358-.359.22-.713.058-.881a3407.721 3407.721 0 0 1-7.16-6.988Z"
+                          />
+                        </svg>
+                      </motion.div>
+                      <label
+                        className={`bg-[#181818] z-[51] px-3 py-1.5 flex w-full h-[35px]  rounded-xl
+                        border-x-[1px] border-y-[1px] border-x-border border-y-border`}
+                      >
+                        <input
+                          id="search"
+                          autoComplete="off"
+                          placeholder="Rechercher"
+                          type="search"
+                          onChange={(e) => makeGIFSearch(e)}
+                          className="search-cancel:bg-[url(https://picsum.photos/16/16)] placeholder:text-[13px] placeholder:font-[150] placeholder:text-white placeholder:opacity-50 w-full h-full outline-none bg-[#181818] font-light text-[13px] "
+                        />
+                      </label>
+                    </div>
+                  )}
                   <div className=" items-stretch flex flex-col flex-shrink-0 overflow-visible relative align-baseline">
                     <div
-                      className="overflow-y-auto "  id="style-4"
+                      className={`overflow-y-auto ${
+                        isInWidgetGifContext ? "flex justify-end" : ""
+                      } `}
+                      id="style-4"
                       style={{
-                        height: visibleAreaBeforeScroll,
+                        height: isInWidgetGifContext
+                          ? visibleAreaBeforeScroll - 23.333337
+                          : visibleAreaBeforeScroll,
                       }}
                     >
-                      <div className="w-full h-2 bg-transparent"></div>
-                      <div className="flex translate-x-0 touch-pan-y">
-                        <motion.div className="max-w-md mx-auto gap-4 grid-cols-auto">
-                          <div className="flex flex-row justify-center items-center gap-3">
-                            <motion.div
-                              whileTap={{ scale: 0.97, rotate: "2deg" }}
-                              style={{ rotate: "-2deg" }}
-                              className="text-[20px] cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-xl bg-white rotate-[3deg] px-1.5 py-0.5 text-black"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                              >
-                                <g
-                                  fill="none"
-                                  stroke="#52489C"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
+                      {isInWidgetBaseContext && (
+                        <>
+                          <div className="w-full h-2 bg-transparent"></div>
+                          <div className="flex translate-x-0 touch-pan-y">
+                            <motion.div className="max-w-md mx-auto gap-4 grid-cols-auto">
+                              <div className="flex flex-row justify-center items-center gap-3">
+                                <motion.div
+                                  whileTap={{ scale: 0.97, rotate: "2deg" }}
+                                  style={{ rotate: "-2deg" }}
+                                  className="text-[20px] cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-xl bg-white rotate-[3deg] px-1.5 py-0.5 text-black"
                                 >
-                                  <circle cx="12" cy="10" r="3" />
-                                  <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8Z" />
-                                </g>
-                              </svg>
-                              <span className="text-[20px]  tracking-tight font-[450] ">
-                                LOCALISATION
-                              </span>
-                            </motion.div>
-                            <motion.div
-                              whileTap={{ scale: 0.98, rotate: "-3deg" }}
-                              style={{ rotate: "3deg" }}
-                              className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                              >
-                                <g
-                                  fill="none"
-                                  stroke="#22C55E"
-                                  stroke-width="2"
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <g
+                                      fill="none"
+                                      stroke="#52489C"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                    >
+                                      <circle cx="12" cy="10" r="3" />
+                                      <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8Z" />
+                                    </g>
+                                  </svg>
+                                  <span className="text-[20px]  tracking-tight font-[450] ">
+                                    LOCALISATION
+                                  </span>
+                                </motion.div>
+                                <motion.div
+                                  whileTap={{ scale: 0.98, rotate: "-3deg" }}
+                                  style={{ rotate: "3deg" }}
+                                  className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
                                 >
-                                  <circle cx="12" cy="12" r="4" />
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10c2.252 0 4.33-.744 6.001-2"
-                                  />
-                                  <path
-                                    stroke-linecap="round"
-                                    d="M16 8v4c0 1 .6 3 3 3s3-2 3-3"
-                                  />
-                                </g>
-                              </svg>
-                              <span className="text-[20px]  tracking-tight font-[450] ">
-                                MENTION
-                              </span>
-                            </motion.div>
-                          </div>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <g
+                                      fill="none"
+                                      stroke="#22C55E"
+                                      stroke-width="2"
+                                    >
+                                      <circle cx="12" cy="12" r="4" />
+                                      <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10c2.252 0 4.33-.744 6.001-2"
+                                      />
+                                      <path
+                                        stroke-linecap="round"
+                                        d="M16 8v4c0 1 .6 3 3 3s3-2 3-3"
+                                      />
+                                    </g>
+                                  </svg>
+                                  <span className="text-[20px]  tracking-tight font-[450] ">
+                                    MENTION
+                                  </span>
+                                </motion.div>
+                              </div>
 
-                          <div className="flex flex-row justify-center items-center gap-3">
-                            <motion.div
-                              whileTap={{ scale: 0.98, rotate: "-3deg" }}
-                              style={{ rotate: "3deg" }}
-                              className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                              >
-                                <g
-                                  fill="none"
-                                  stroke="#465C69"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
+                              <div className="flex flex-row justify-center items-center gap-3">
+                                <motion.div
+                                  whileTap={{ scale: 0.98, rotate: "-3deg" }}
+                                  style={{ rotate: "3deg" }}
+                                  className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
                                 >
-                                  <path d="m6.233 5.834l.445-2.226A2 2 0 0 1 8.64 2h6.72a2 2 0 0 1 1.962 1.608l.445 2.226a1.879 1.879 0 0 0 1.387 1.454A3.758 3.758 0 0 1 22 10.934V18a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-7.066a3.758 3.758 0 0 1 2.846-3.646a1.879 1.879 0 0 0 1.387-1.454Z" />
-                                  <circle cx="12" cy="14" r="4" />
-                                  <path d="M11 6h2" />
-                                </g>
-                              </svg>
-                              <span className="text-[20px]  tracking-tight font-[450] ">
-                                PHOTO
-                              </span>
-                            </motion.div>
-                            <motion.div
-                              whileTap={{ scale: 0.98, rotate: "3deg" }}
-                              style={{ rotate: "-3deg" }}
-                              className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                className=" rotate-45"
-                              >
-                                <path
-                                  fill="none"
-                                  stroke="#A8201A"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M9 12h6m0-6h1a6 6 0 0 1 0 12h-1m-6 0H8A6 6 0 0 1 8 6h1"
-                                />
-                              </svg>
-                              <span className="text-[20px]  tracking-tight font-[450] ">
-                                LIEN
-                              </span>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <g
+                                      fill="none"
+                                      stroke="#465C69"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                    >
+                                      <path d="m6.233 5.834l.445-2.226A2 2 0 0 1 8.64 2h6.72a2 2 0 0 1 1.962 1.608l.445 2.226a1.879 1.879 0 0 0 1.387 1.454A3.758 3.758 0 0 1 22 10.934V18a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-7.066a3.758 3.758 0 0 1 2.846-3.646a1.879 1.879 0 0 0 1.387-1.454Z" />
+                                      <circle cx="12" cy="14" r="4" />
+                                      <path d="M11 6h2" />
+                                    </g>
+                                  </svg>
+                                  <span className="text-[20px]  tracking-tight font-[450] ">
+                                    PHOTO
+                                  </span>
+                                </motion.div>
+                                <motion.div
+                                  whileTap={{ scale: 0.98, rotate: "3deg" }}
+                                  style={{ rotate: "-3deg" }}
+                                  className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    className=" rotate-45"
+                                  >
+                                    <path
+                                      fill="none"
+                                      stroke="#A8201A"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M9 12h6m0-6h1a6 6 0 0 1 0 12h-1m-6 0H8A6 6 0 0 1 8 6h1"
+                                    />
+                                  </svg>
+                                  <span className="text-[20px]  tracking-tight font-[450] ">
+                                    LIEN
+                                  </span>
+                                </motion.div>
+                              </div>
+                              <div className="flex flex-row justify-center items-center gap-3">
+                                <motion.div
+                                  whileTap={{ scale: 0.98, rotate: "3deg" }}
+                                  style={{ rotate: "-4deg" }}
+                                  className="text-[18px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      fill="none"
+                                      stroke="#ED254E"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M10 3L6 21M18 3l-4 18M4 8h17M3 16h17"
+                                    />
+                                  </svg>
+                                  <span className="text-[18px]  tracking-tight font-[450] ">
+                                    HASHTAG
+                                  </span>
+                                </motion.div>
+                                <motion.div
+                                  whileTap={{
+                                    scale: 0.93,
+                                    rotate: "-2deg",
+                                    opacity: 0.76667,
+                                    background:
+                                      "linear-gradient(95deg, rgb(153,51,255), rgb(97,87,255))",
+                                  }}
+                                  style={{
+                                    rotate: "1deg",
+                                    background:
+                                      "linear-gradient(45deg, rgb(153,51,255), rgb(97,87,255))",
+                                    animation:
+                                      "gradientAnimation 5s ease infinite",
+                                  }}
+                                  onClick={() => {
+                                    setIsInWidgetGifContext(true);
+                                    setIsInWidgetBaseContext(false);
+                                  }}
+                                  className="text-[18px] cursor-pointer w-fit rounded-[10px] px-1.5 py-0.5 text-white tracking-tight font-[450] drop-shadow-glow"
+                                >
+                                  GIF
+                                </motion.div>
+                              </div>
                             </motion.div>
                           </div>
-                          <div className="flex flex-row justify-center items-center gap-3">
-                            <motion.div
-                              whileTap={{ scale: 0.98, rotate: "3deg" }}
-                              style={{ rotate: "-4deg" }}
-                              className="text-[18px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
+                          <div className="grid grid-cols-3 gap-2 p-5 translate-x-0 touch-pan-y">
+                            {data?.map((src, index) => (
+                              <div
+                                key={index}
+                                className="mt-1.5 w-full h-fit rounded-lg bg-black"
                               >
-                                <path
-                                  fill="none"
-                                  stroke="#ED254E"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M10 3L6 21M18 3l-4 18M4 8h17M3 16h17"
+                                <img
+                                  className="rounded-lg"
+                                  src={src}
+                                  alt={`Image ${index + 1}`}
                                 />
-                              </svg>
-                              <span className="text-[18px]  tracking-tight font-[450] ">
-                                HASHTAG
-                              </span>
-                            </motion.div>
-                            <motion.div
-                              whileTap={{
-                                scale: 0.98,
-                                rotate: "-1deg",
-                                background:
-                                  "linear-gradient(95deg, rgb(153,51,255), rgb(97,87,255))",
-                              }}
-                              style={{
-                                rotate: "1deg",
-                                background:
-                                  "linear-gradient(45deg, rgb(153,51,255), rgb(97,87,255))",
-                                animation: "gradientAnimation 5s ease infinite",
-                              }}
-                              className="text-[18px] cursor-pointer w-fit rounded-[10px] px-1.5 py-0.5 text-white tracking-tight font-[450] drop-shadow-glow"
-                            >
-                              GIF
-                            </motion.div>
-                            <motion.div
-                              whileTap={{ scale: 0.98, rotate: "-3deg" }}
-                              style={{ rotate: "3deg" }}
-                              className="text-[18px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                viewBox="0 0 56 56"
-                              >
-                                <path
-                                  fill="currentColor"
-                                  d="M28 51.906c13.055 0 23.906-10.828 23.906-23.906c0-13.055-10.828-23.906-23.883-23.906c-1.242 0-1.851.75-1.851 1.968v9.094c0 1.008.68 1.828 1.71 1.828c1.032 0 1.735-.82 1.735-1.828V8.148C39.93 8.968 47.898 17.5 47.898 28A19.84 19.84 0 0 1 28 47.922c-11.063 0-19.945-8.86-19.922-19.922c.023-4.922 1.781-9.398 4.711-12.844c.726-.914.773-2.015 0-2.836c-.774-.843-2.086-.773-2.93.282C6.273 16.773 4.094 22.164 4.094 28c0 13.078 10.828 23.906 23.906 23.906m3.75-20.297c1.851-1.922 1.477-4.547-.75-6.093l-12.4-8.649c-1.171-.82-2.39.399-1.57 1.57l8.649 12.399c1.547 2.227 4.171 2.625 6.07.773"
-                                />
-                              </svg>
-                              <span className="text-[18px]  tracking-tight font-[450] ">
-                                COMPTE A REBOURS
-                              </span>
-                            </motion.div>
+                              </div>
+                            ))}
                           </div>
-                        </motion.div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 p-5 translate-x-0 touch-pan-y">
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                        <div className=" mt-3 w-full h-fit rounded-lg bg-black">
-                          <img
-                            className="rounded-lg"
-                            src="https://i.pinimg.com/1200x/90/60/3c/90603c4aa9f45d41e384e0ec7b353061.jpg"
-                          />
-                        </div>
-                      </div>
-                      <div className="w-full h-2 bg-transparent"></div>
+                          <div className="w-full h-2 bg-transparent"></div>
+                        </>
+                      )}
+                      {isInWidgetGifContext && (
+                        <GifPlugin
+                          width={storyProperties.width}
+                          searchValue={searchValue}
+                        />
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -809,68 +969,11 @@ const StoryCreate = () => {
             />
           )}
           {isInTextContext && (
-            <div
-              style={{
-                width: storyProperties.width,
-                height: storyProperties.height,
-              }}
-              className=" flex relative bg-border rounded-lg "
-            >
-              <div className="flex justify-center items-center w-full h-full z-50 bg-[rgb(0,0,0,0.4)]">
-                <textarea
-                  value={textValue}
-                  onChange={handleTextChange}
-                  ref={textareaRef}
-                  className="text-center absolute top-20"
-                  style={{
-                    fontFamily: selectedTextFont,
-                    width: "50%",
-                    height: "100%",
-                    fontSize: "16px",
-                    border: "none",
-                    resize: "none",
-                    background: "transparent",
-                    outline: "none",
-                    boxShadow: "none",
-                  }}
-                />
-              </div>
-              <div className="absolute top-0 pt-4 px-5 right-0 text-[13px] z-[51]">
-                <button onClick={handleFinishEditing}>Terminer</button>
-                <div className="relative mt-6">
-                  <motion.div
-                    ref={LayoutContainerRef}
-                    animate={controls}
-                    className="flex flex-col gap-[10px] hide-scrollbar relative overflow-y-auto max-h-[250px]"
-                    style={{ scrollBehavior: "smooth" }}
-                  >
-                    <div className="flex flex-col gap-[8px] justify-center items-center p-1">
-                      {textFonts.current.map((font, index) => (
-                        <motion.div
-                          key={index}
-                          style={{
-                            fontFamily: font.variable,
-                          }}
-                          onClick={() => {
-                            setSelectedTextFont(font.variable);
-                            setToRenderTextFont(font.renderedFont);
-                          }}
-                          className="w-9 h-9 rounded-lg bg-[rgb(168,168,168,.3)] border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[20px] text-center justify-center items-center"
-                          whileTap={{ scale: 0.97 }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 700,
-                            damping: 20,
-                          }}
-                        >
-                          Aa
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </div>
+          <TextPlugin storyProperties={storyProperties} isAddingNewText={isAddingNewText} setIsInTextContext={setIsInTextContext} setisAddingNewText={function (state: boolean): void {
+              throw new Error("Function not implemented.");
+            } } setIsInBaseContext={function (state: boolean): void {
+              throw new Error("Function not implemented.");
+            } } />
           )}
 
           <>
@@ -955,6 +1058,7 @@ const StoryCreate = () => {
                     whileHover={{ opacity: 0.8 }}
                     onClick={() => {
                       setIsInWidgetContext(true);
+                      setIsInWidgetBaseContext(true);
                     }}
                     className=" cursor-pointer flex flex-row justify-center items-center gap-2"
                   >
@@ -1020,30 +1124,6 @@ const StoryCreate = () => {
                 height={storyProperties.height}
               >
                 <Layer ref={layerRef}>
-                  <Transformer
-                    ref={transformerRef}
-                    flipEnabled={false}
-                    boundBoxFunc={(oldBox, newBox) => {
-                      if (
-                        Math.abs(newBox.width) < 5 ||
-                        Math.abs(newBox.height) < 5
-                      ) {
-                        return oldBox;
-                      }
-                      return newBox;
-                    }}
-                    keepRatio={true}
-                    enabledAnchors={[
-                      "top-left",
-                      "top-right",
-                      "bottom-left",
-                      "bottom-right",
-                    ]}
-                    rotateEnabled={true}
-                    resizeEnabled={true}
-                    rotationSnaps={[0, 90, -90, 180, -180]}
-                    rotationSnapTolerance={10}
-                  />
                 </Layer>
               </Stage>
               {!hasPassedTemplateStep && (
