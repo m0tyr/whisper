@@ -1,36 +1,62 @@
+import { TextInstance } from "@/lib/types/stories.types";
 import { motion, useAnimation } from "framer-motion";
 import Konva from "konva";
-import React, { useEffect, useRef, useState } from "react";
-
-interface TextPluginProps {
-  storyProperties: {
-    width: number,
-    height: number,
-  }
-  isAddingNewText: boolean;
-  setIsInTextContext: (state: boolean) => void;
-  setisAddingNewText: (state: boolean) => void;
-  setIsInBaseContext:  (state: boolean) => void;
-}
+import React, { RefObject, useEffect, useRef, useState } from "react";
 
 type TextFonts = {
   variable: string;
   renderedFont: string;
 };
 
-const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyProperties, setIsInTextContext, setIsInBaseContext, setisAddingNewText }) => {
-  
+interface TextPluginProps {
+  stageRef: RefObject<Konva.Stage | null>;
+  layerRef: RefObject<Konva.Layer | null>;
+  storyProperties: {
+    width: number;
+    height: number;
+  };
+  isAddingNewText: boolean;
+  setIsInTextContext: (state: boolean) => void;
+  setisAddingNewText: (state: boolean) => void;
+  setIsInBaseContext: (state: boolean) => void;
+
+  // Transferred states and refs
+  toRenderTextFont: string;
+  setToRenderTextFont: (font: string) => void;
+  textValue: string;
+  setTextValue: (value: string) => void;
+  textNode: Konva.Text | null;
+  setTextNode: (node: Konva.Text | null) => void;
+  selectedTextFont: string;
+  setSelectedTextFont: (font: string) => void;
+  transformerInstancesRef: RefObject<Konva.Transformer[]>;
+  textInstancesRef: RefObject<Konva.Text[]>;
+  textCustomInstancesRef: RefObject<TextInstance[]>;
+}
+
+const TextPlugin: React.FC<TextPluginProps> = ({
+  isAddingNewText,
+  storyProperties,
+  setIsInTextContext,
+  setIsInBaseContext,
+  setisAddingNewText,
+  stageRef,
+  layerRef,
+  toRenderTextFont,
+  setToRenderTextFont,
+  textValue,
+  setTextValue,
+  textNode,
+  setTextNode,
+  selectedTextFont,
+  setSelectedTextFont,
+  transformerInstancesRef,
+  textInstancesRef,
+  textCustomInstancesRef,
+}) => {
   const LayoutContainerRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
-  const stageRef = useRef<Konva.Stage | null>(null);
-  const layerRef = useRef<Konva.Layer | null>(null);
-  const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
-  const textInstancesRef = useRef<Konva.Text[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [toRenderTextFont, setToRenderTextFont] = useState("Arial");
-  const [textValue, setTextValue] = useState("");
-  const [textNode, setTextNode] = useState<Konva.Text | null>(null);
-  const [selectedTextFont, setSelectedTextFont] = useState("Arial");
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const textFonts = useRef<TextFonts[]>([
     { variable: "Arial", renderedFont: "Arial" },
@@ -73,29 +99,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
     }
   }
 
-  const handleTextNodeClick = (node: Konva.Text) => {
-    if (transformerInstancesRef.current) {
-      const id = node.id();
-      console.log(
-        transformerInstancesRef.current[parseInt(id)],
-        transformerInstancesRef.current.length,
-        parseInt(id)
-      );
-      transformerInstancesRef.current[parseInt(id)].nodes([node]);
-      transformerInstancesRef.current[parseInt(id)].getLayer()?.batchDraw();
-    }
-  };
-
-  const handleTextNodeDblClick = (node: Konva.Text) => {
-    setTextValue(node.text());
-    setToRenderTextFont(node.fontFamily());
-    setSelectedTextFont(node.fontFamily());
-    setTextNode(node);
-    setisAddingNewText(false);
-    setIsInTextContext(true);
-    setIsInBaseContext(false);
-  };
-
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
     const stage = stageRef.current;
     if (e.target === stage) {
@@ -115,26 +118,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
     return context.measureText(text).width;
   };
 
-  useEffect(() => {
-    const stage = stageRef.current;
-
-    if (stage) {
-      stage.on("click", handleStageClick);
-    }
-
-    return () => {
-      if (stage) {
-        stage.off("click", handleStageClick);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.focus();
-    }
-  }, []);
-
   const handleFinishEditing = () => {
     const stage = stageRef.current;
     const layer = layerRef.current;
@@ -149,23 +132,26 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
           y: storyProperties.height / 2,
           fontSize: 16,
           fontFamily: toRenderTextFont,
-          draggable: true,
+          draggable: false,
           width:
             textWidth > textareaRef.current?.clientWidth
               ? textareaRef.current?.clientWidth + padding * 2
               : textWidth + padding * 2,
           align: "center",
-          id: `${transformerInstancesRef.current.length}`, // unique ID
+          id: `${transformerInstancesRef?.current?.length}`,
           fill: "white",
         });
         const transformerDependency = [] as any[];
 
-        // Initialize the largest width with a small value
         let largestWidth = 0;
+
+        const registeredLabelFromInitialText: TextInstance = {
+          textInstances: [], // Correct initialization
+        };
 
         newText.textArr.forEach((element) => {
           if (element.width > largestWidth) {
-            largestWidth = element.width; // Update the largest width
+            largestWidth = element.width;
           }
         });
         newText.textArr.forEach((element, index) => {
@@ -175,7 +161,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
             x: xPosition + (largestWidth - element.width) / 2,
             y: yPosition + index * 15.75 + padding * 2,
             width: element.width + padding * 2,
-            draggable: true,
+            draggable: false,
+            id: `${transformerInstancesRef?.current?.length}`,
             opacity: 1,
           });
           console.log(index, newText.textArr.length - 1);
@@ -210,12 +197,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
           simpleLabel.add(konvaText);
 
           transformerDependency.push(simpleLabel);
+          registeredLabelFromInitialText.textInstances.push(simpleLabel);
           layer.add(simpleLabel);
         });
+        textCustomInstancesRef?.current?.push(registeredLabelFromInitialText);
 
-        // Now, mostLargeText holds the Konva.Text element with the largest width
-
-        console.log(newText.textArr);
         whenFontIsLoaded(
           function () {
             newText.fontFamily(toRenderTextFont);
@@ -228,6 +214,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
           anchorStroke: "#212121",
           anchorFill: "#434343",
           borderStroke: "#f1f1f1",
+          draggable: true,
           anchorStyleFunc: (anchor) => {
             anchor.cornerRadius(10);
             anchor.fill("#2d2d2d");
@@ -263,12 +250,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
           rotationSnaps: [0, 90, -90, 180, -180],
           rotationSnapTolerance: 10,
         });
-        console.log(transformer.width());
-        textInstancesRef.current.push(newText);
-        transformerInstancesRef.current.push(transformer as Konva.Transformer);
+        transformerInstancesRef?.current?.push(
+          transformer as Konva.Transformer
+        );
         layer.clear();
-        /*         layer.add(newText);
-         */ layer.add(transformer);
+        layer.add(transformer);
         layer.draw();
         setTextNode(newText);
         setIsInTextContext(false);
@@ -286,13 +272,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
               const width = shape.width() + padding * 2;
               const height = shape.height() + padding * 2;
 
-              // Set the position to accommodate padding
               context.beginPath();
-              const radius = 12; // Radius for rounded corners
-              const x = -padding; // Offset by padding to align text
+              const radius = 12;
+              const x = -padding;
               const y = -padding;
 
-              // Draw rounded rectangle background
               context.moveTo(x + radius, y);
               context.arcTo(x + width, y, x + width, y + height, radius);
               context.arcTo(x + width, y + height, x, y + height, radius);
@@ -300,11 +284,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
               context.arcTo(x, y, x + width, y, radius);
               context.closePath();
 
-              // Fill the background
               context.fillStyle = "rgb(100,100,0)";
               context.fill();
 
-              // Draw the text
               (shape as Konva.Text)._sceneFunc(context);
             },
             width:
@@ -312,7 +294,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
                 ? textareaRef.current?.clientWidth + padding * 2
                 : textWidth + padding * 2,
             align: "center",
-            id: `${transformerInstancesRef.current.length}`, // unique ID
+            id: `${transformerInstancesRef?.current?.length}`,
             fill: "white",
           });
           whenFontIsLoaded(
@@ -362,8 +344,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
             rotationSnaps: [0, 90, -90, 180, -180],
             rotationSnapTolerance: 10,
           });
-          textInstancesRef.current.push(newText);
-          transformerInstancesRef.current.push(
+          textInstancesRef?.current?.push(newText);
+          transformerInstancesRef?.current?.push(
             transformer as Konva.Transformer
           );
           layer.add(newText);
@@ -396,78 +378,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({ isAddingNewText, storyPropertie
     }
   };
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.target.value);
   };
-
-  useEffect(() => {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
-
-    if (stage && layer && textNode && textInstancesRef) {
-      textInstancesRef.current.forEach((text) => {
-        text.on("click", () => handleTextNodeClick(text));
-        text.on("dblclick", () => handleTextNodeDblClick(text));
-        text.on("dragmove", () => {
-          if (text) {
-            const nodePos = text.getPosition();
-            const nodeWidth = text.width();
-            const nodeHeight = text.height();
-
-            const centerX = storyProperties.width / 2;
-            const centerY = storyProperties.height / 2;
-
-            if (Math.abs(nodePos.x + nodeWidth / 2 - centerX) < 10) {
-              text.x(centerX - nodeWidth / 2);
-            }
-
-            if (Math.abs(nodePos.y + nodeHeight / 2 - centerY) < 10) {
-              text.y(centerY - nodeHeight / 2);
-            }
-          }
-        });
-      });
-
-      // Add listeners for textNode
-      textNode.on("click", () => handleTextNodeClick(textNode));
-      textNode.on("dblclick", () => handleTextNodeDblClick(textNode));
-      textNode.on("dragmove", () => {
-        if (textNode) {
-          const nodePos = textNode.getPosition();
-          const nodeWidth = textNode.width();
-          const nodeHeight = textNode.height();
-
-          const centerX = storyProperties.width / 2;
-          const centerY = storyProperties.height / 2;
-
-          if (Math.abs(nodePos.x + nodeWidth / 2 - centerX) < 10) {
-            textNode.x(centerX - nodeWidth / 2);
-          }
-
-          if (Math.abs(nodePos.y + nodeHeight / 2 - centerY) < 10) {
-            textNode.y(centerY - nodeHeight / 2);
-          }
-        }
-      });
-    }
-
-    return () => {
-      if (textInstancesRef.current) {
-        textInstancesRef.current.forEach((text) => {
-          text.off("click dblclick dragmove");
-        });
-      }
-
-      if (textNode) {
-        textNode.off("click dblclick dragmove");
-      }
-    };
-  }, [
-    textNode,
-    textInstancesRef,
-    storyProperties.width,
-    storyProperties.height,
-  ]);
 
   useEffect(() => {
     const stage = stageRef.current;
