@@ -1,6 +1,8 @@
 import { TextInstance } from "@/lib/types/stories.types";
 import { motion, useAnimation } from "framer-motion";
 import Konva from "konva";
+import { Rect } from "konva/lib/shapes/Rect";
+import { Text } from "konva/lib/shapes/Text";
 import React, { RefObject, useEffect, useRef, useState } from "react";
 
 type TextFonts = {
@@ -66,6 +68,158 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6" },
     { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95" },
   ]);
+
+  function buildCustomText(pos: {
+    text: any;
+    padding: { left: number; top: number; right: any; bottom: any };
+    margin: { left: number; top: number; right: any; bottom: any };
+    x: number;
+    y: number;
+    angle: any;
+  }) {
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    if (stage && layer) {
+      layer.destroyChildren();
+
+      // Create a temporary text node for measuring text lines (not added to the canvas)
+      var textMeasure = new Konva.Text({
+        text: pos.text,
+        fontFamily: "Arial",
+        fill: "#ffffff",
+        visible: false, // Do not show this node, it's just for measurement
+      });
+
+      // Add textMeasure to the layer temporarily to measure text lines
+      layer.add(textMeasure);
+
+      var top = 0;
+      var shapes: (Text | Rect)[] = [];
+
+      // Loop through each line in the text and create padding and margin rectangles
+      textMeasure
+        .text()
+        .split("\n")
+        .forEach((line) => {
+          // Create the text node for each line
+          var text = new Konva.Text({
+            text: line,
+            fontFamily: "Arial",
+            fill: "#ffffff",
+            x: 0,
+            y: top,
+          });
+
+          // Measure text dimensions
+          var textWidth = text.width();
+          var textHeight = text.height();
+
+          // Create the outer 'margin' rectangle
+          var rectMargin = new Konva.Rect({
+            x: -1 * (pos.padding.left + pos.margin.left),
+            y: top - (pos.padding.top + pos.margin.top),
+            width:
+              textWidth +
+              (pos.padding.left + pos.padding.right) +
+              (pos.margin.left + pos.margin.right),
+            height:
+              textHeight +
+              (pos.padding.top + pos.padding.bottom) +
+              (pos.margin.top + pos.margin.bottom),
+            fill: "transparent",
+          });
+          shapes.push(rectMargin);
+
+          // Create the inner 'padding' rectangle
+          var rectPadding = new Konva.Rect({
+            x: -1 * pos.padding.left,
+            y: top - pos.padding.top,
+            width: textWidth + pos.padding.left + pos.padding.right,
+            height: textHeight + pos.padding.top + pos.padding.bottom,
+            fill: "#000000ff",
+          });
+          shapes.push(rectPadding);
+          shapes.push(text);
+
+          // Update the top position for the next line
+          top +=
+            textHeight +
+            pos.padding.top +
+            pos.margin.top +
+            pos.padding.bottom +
+            pos.margin.bottom;
+        });
+
+      // Group all shapes into a single group
+      var group = new Konva.Group({
+        x: pos.x - (pos.padding.left - pos.margin.left),
+        y: pos.y - (pos.padding.top - pos.margin.top),
+        rotation: pos.angle,
+        draggable:true,
+      });
+
+      const transformer = new Konva.Transformer({
+        nodes: [group],
+        anchorStroke: "#212121",
+        anchorFill: "#434343",
+        borderStroke: "#f1f1f1",
+        draggable: true,
+        anchorStyleFunc: (anchor) => {
+          anchor.cornerRadius(10);
+          anchor.fill("#2d2d2d");
+          anchor.stroke("#212121");
+          if (
+            anchor.hasName("top-center") ||
+            anchor.hasName("bottom-center")
+          ) {
+            anchor.height(6);
+            anchor.offsetY(3);
+            anchor.width(30);
+            anchor.offsetX(15);
+          }
+          if (
+            anchor.hasName("middle-left") ||
+            anchor.hasName("middle-right")
+          ) {
+            anchor.height(30);
+            anchor.offsetY(15);
+            anchor.width(6);
+            anchor.offsetX(3);
+          }
+        },
+        keepRatio: true,
+        enabledAnchors: [
+          "top-left",
+          "top-right",
+          "bottom-left",
+          "bottom-right",
+        ],
+        rotateEnabled: true,
+        resizeEnabled: true,
+        rotationSnaps: [0, 90, -90, 180, -180],
+        rotationSnapTolerance: 10,
+      });
+
+      transformer
+
+
+      // Add each shape to the group
+      shapes.forEach((shape) => group.add(shape));
+
+      // Add the group to the layer
+      layer.add(group);
+      
+      layer.add(transformer)
+
+      transformerInstancesRef?.current?.push(
+        transformer as Konva.Transformer
+      );
+
+      // Draw the layer
+      layer.draw();
+    }
+  }
+
   function whenFontIsLoaded(
     callback: () => void,
     attemptCount: number | undefined,
@@ -157,30 +311,17 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         newText.textArr.forEach((element, index) => {
           const xPosition = storyProperties.width / 2 - largestWidth / 2;
           const yPosition = storyProperties.height / 2 - largestWidth / 2;
-          var simpleLabel = new Konva.Label({
-            x: xPosition + (largestWidth - element.width) / 2,
-            y: yPosition + index * 15.75 + padding * 2,
-            width: element.width + padding * 2,
-            draggable: false,
-            id: `${transformerInstancesRef?.current?.length}`,
-            opacity: 1,
-          });
+          
           console.log(index, newText.textArr.length - 1);
-          simpleLabel.add(
-            new Konva.Rect({
-              x: 0,
-              y: 0,
+            const bgtext = new Konva.Rect({
+               x: xPosition + (largestWidth - element.width) / 2,
+            y: yPosition + index * 15.75 + padding * 2,
               width: element.width + padding * 2,
               height: 16,
               cornerRadius:
                 index === newText.textArr.length - 1 ? [0, 0, 20, 20] : 6,
               fill: "white",
             })
-            /*      new Konva.Tag({
-                cornerRadius: element.lastInParagraph ?  [0, 0, 20, 20] : 6,
-                fill: "white",
-              }) */
-          );
 
           const konvaText = new Konva.Text({
             text: element.text,
@@ -194,12 +335,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             align: "center",
           });
 
-          simpleLabel.add(konvaText);
 
-          transformerDependency.push(simpleLabel);
-          registeredLabelFromInitialText.textInstances.push(simpleLabel);
-          layer.add(simpleLabel);
-        });
+          transformerDependency.push([konvaText,bgtext]);
+/*           registeredLabelFromInitialText.textInstances.push(simpleLabel);
+*/        });
         textCustomInstancesRef?.current?.push(registeredLabelFromInitialText);
 
         whenFontIsLoaded(
@@ -256,6 +395,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         layer.clear();
         layer.add(transformer);
         layer.draw();
+        buildCustomText({
+          text: 'Bonjour les gars\nje vais vous annoncer quelque chose de insane\nbientôt',
+          x: storyProperties.width / 2,
+          y: storyProperties.height / 2,
+          angle: 0,
+          padding: { left: 10, top: 10, right: 10, bottom: 10 },
+          margin: { left: 5, top: 0, right: 5, bottom: 0 },
+        })
         setTextNode(newText);
         setIsInTextContext(false);
         setIsInBaseContext(true);
