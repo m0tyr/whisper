@@ -1,4 +1,6 @@
+import LexicalContentEditable from "@/components/LexicalContentEditable/LexicalContentEditable";
 import { TextInstance } from "@/lib/types/stories.types";
+import { extractElements } from "@/lib/utils";
 import { motion, useAnimation } from "framer-motion";
 import Konva from "konva";
 import { Rect } from "konva/lib/shapes/Rect";
@@ -58,7 +60,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 }) => {
   const LayoutContainerRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const editorRef: any = useRef();
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const textFonts = useRef<TextFonts[]>([
     { variable: "Arial", renderedFont: "Arial" },
@@ -155,7 +157,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         x: pos.x - (pos.padding.left - pos.margin.left),
         y: pos.y - (pos.padding.top - pos.margin.top),
         rotation: pos.angle,
-        draggable:true,
+        draggable: true,
       });
 
       const transformer = new Konva.Transformer({
@@ -168,19 +170,13 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           anchor.cornerRadius(10);
           anchor.fill("#2d2d2d");
           anchor.stroke("#212121");
-          if (
-            anchor.hasName("top-center") ||
-            anchor.hasName("bottom-center")
-          ) {
+          if (anchor.hasName("top-center") || anchor.hasName("bottom-center")) {
             anchor.height(6);
             anchor.offsetY(3);
             anchor.width(30);
             anchor.offsetX(15);
           }
-          if (
-            anchor.hasName("middle-left") ||
-            anchor.hasName("middle-right")
-          ) {
+          if (anchor.hasName("middle-left") || anchor.hasName("middle-right")) {
             anchor.height(30);
             anchor.offsetY(15);
             anchor.width(6);
@@ -200,20 +196,17 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         rotationSnapTolerance: 10,
       });
 
-      transformer
-
+      transformer;
 
       // Add each shape to the group
       shapes.forEach((shape) => group.add(shape));
 
       // Add the group to the layer
       layer.add(group);
-      
-      layer.add(transformer)
 
-      transformerInstancesRef?.current?.push(
-        transformer as Konva.Transformer
-      );
+      layer.add(transformer);
+
+      transformerInstancesRef?.current?.push(transformer as Konva.Transformer);
 
       // Draw the layer
       layer.draw();
@@ -273,10 +266,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   };
 
   const handleFinishEditing = () => {
+    const temp = JSON.stringify(editorRef.current.getEditorState());
+    const datas = JSON.parse(temp);
+    const finalTextBeforeCanvaInit = extractElements(datas)
+    console.log(finalTextBeforeCanvaInit,datas)
     const stage = stageRef.current;
     const layer = layerRef.current;
     const padding = 5;
-    if (stage && layer && textareaRef.current) {
+    if (stage && layer && editorRef.current) {
       const textWidth = calculateTextWidth(textValue, "Arial");
 
       if (textNode === null) {
@@ -288,8 +285,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           fontFamily: toRenderTextFont,
           draggable: false,
           width:
-            textWidth > textareaRef.current?.clientWidth
-              ? textareaRef.current?.clientWidth + padding * 2
+            textWidth > editorRef.current?.clientWidth
+              ? editorRef.current?.clientWidth + padding * 2
               : textWidth + padding * 2,
           align: "center",
           id: `${transformerInstancesRef?.current?.length}`,
@@ -311,17 +308,17 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         newText.textArr.forEach((element, index) => {
           const xPosition = storyProperties.width / 2 - largestWidth / 2;
           const yPosition = storyProperties.height / 2 - largestWidth / 2;
-          
+
           console.log(index, newText.textArr.length - 1);
-            const bgtext = new Konva.Rect({
-               x: xPosition + (largestWidth - element.width) / 2,
+          const bgtext = new Konva.Rect({
+            x: xPosition + (largestWidth - element.width) / 2,
             y: yPosition + index * 15.75 + padding * 2,
-              width: element.width + padding * 2,
-              height: 16,
-              cornerRadius:
-                index === newText.textArr.length - 1 ? [0, 0, 20, 20] : 6,
-              fill: "white",
-            })
+            width: element.width + padding * 2,
+            height: 16,
+            cornerRadius:
+              index === newText.textArr.length - 1 ? [0, 0, 20, 20] : 6,
+            fill: "white",
+          });
 
           const konvaText = new Konva.Text({
             text: element.text,
@@ -335,10 +332,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             align: "center",
           });
 
-
-          transformerDependency.push([konvaText,bgtext]);
-/*           registeredLabelFromInitialText.textInstances.push(simpleLabel);
-*/        });
+          transformerDependency.push(bgtext);
+          transformerDependency.push(konvaText);
+          /*           registeredLabelFromInitialText.textInstances.push(simpleLabel);
+           */
+        });
         textCustomInstancesRef?.current?.push(registeredLabelFromInitialText);
 
         whenFontIsLoaded(
@@ -396,13 +394,13 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         layer.add(transformer);
         layer.draw();
         buildCustomText({
-          text: 'Bonjour les gars\nje vais vous annoncer quelque chose de insane\nbientôt',
+          text: "Bonjour les gars\nje vais vous annoncer quelque chose de insane\nbientôt",
           x: storyProperties.width / 2,
           y: storyProperties.height / 2,
           angle: 0,
           padding: { left: 10, top: 10, right: 10, bottom: 10 },
           margin: { left: 5, top: 0, right: 5, bottom: 0 },
-        })
+        });
         setTextNode(newText);
         setIsInTextContext(false);
         setIsInBaseContext(true);
@@ -437,8 +435,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               (shape as Konva.Text)._sceneFunc(context);
             },
             width:
-              textWidth > textareaRef.current?.clientWidth
-                ? textareaRef.current?.clientWidth + padding * 2
+              textWidth > editorRef.current?.clientWidth
+                ? editorRef.current?.clientWidth + padding * 2
                 : textWidth + padding * 2,
             align: "center",
             id: `${transformerInstancesRef?.current?.length}`,
@@ -506,8 +504,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         }
         layer.clear();
         textNode.width(
-          textWidth > textareaRef.current?.clientWidth
-            ? textareaRef.current?.clientWidth
+          textWidth > editorRef.current?.clientWidth
+            ? editorRef.current?.clientWidth
             : textWidth
         );
         textNode.text(textValue);
@@ -526,8 +524,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   };
 
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.focus();
+    if (editorRef.current) {
+      editorRef.current.focus();
     }
   }, []);
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -556,15 +554,16 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       className=" flex relative bg-border rounded-lg "
     >
       <div className="flex justify-center items-center w-full h-full z-50 bg-[rgb(0,0,0,0.4)]">
-        <textarea
+        <LexicalContentEditable
           value={textValue}
           onChange={handleTextChange}
-          ref={textareaRef}
-          className="text-center absolute top-20"
+          ref={editorRef}
+          className="absolute top-20"
           style={{
             fontFamily: selectedTextFont,
-            width: "50%",
-            height: "100%",
+            textAlign: "center",
+            width: "70%",
+            height: "75%",
             fontSize: "16px",
             border: "none",
             resize: "none",
@@ -574,16 +573,18 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           }}
         />
       </div>
-      <div className="absolute top-0 pt-4 px-5 right-0 text-[13px] z-[51]">
-        <button onClick={handleFinishEditing}>Terminer</button>
-        <div className="relative mt-6">
+      <div className="absolute top-0 pt-4 right-0 text-[13px] z-[51]">
+        <button className="mr-4" onClick={handleFinishEditing}>
+          Terminer
+        </button>
+     {/*    <div className="relative mt-5 mr-3">
           <motion.div
             ref={LayoutContainerRef}
             animate={controls}
-            className="flex flex-col gap-[10px] hide-scrollbar relative overflow-y-auto max-h-[250px]"
+            className="flex flex-col items-end gap-[10px] hide-scrollbar relative overflow-y-auto max-h-[250px]"
             style={{ scrollBehavior: "smooth" }}
           >
-            <div className="flex flex-col gap-[8px] justify-center items-center p-1">
+            <div className="flex flex-col gap-[8px] justify-center items-center p-1 w-9">
               {textFonts.current.map((font, index) => (
                 <motion.div
                   key={index}
@@ -607,7 +608,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               ))}
             </div>
           </motion.div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -132,7 +132,7 @@ const CreateWhisper = () => {
     });
 
     values.media = mongo_db_media_object;
-
+    console.log(values.content)
     await createWhisper({
       content: values.content,
       author: values.accoundId,

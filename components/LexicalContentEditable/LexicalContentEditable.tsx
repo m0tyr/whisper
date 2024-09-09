@@ -54,7 +54,7 @@ const initialConfig = {
 };
 
  const LexicalContentEditable = React.forwardRef((props: any, ref: any) => {
-  const { watchtext, placeholder } = props;
+  const { watchtext, placeholder, style } = props;
 
   const onChange = () => {
   }
@@ -70,7 +70,7 @@ const initialConfig = {
       <HashtagPlugin />
   <OnChangePlugin onChange={onChange} />
       <PlainTextPlugin
-        contentEditable={<ContentEditable id="editable_content" spellCheck className=" outline-none text-[15px]" onKeyDown={watchtext} autoFocus/>}
+        contentEditable={<ContentEditable id="editable_content" spellCheck style={style} className=" outline-none text-[15px]" onKeyDown={watchtext} autoFocus/>}
         placeholder={<div className="absolute top-0 pointer-events-none text-[15px] !font-light opacity-50">{placeholder}</div>}
         ErrorBoundary={LexicalErrorBoundary}
       />
