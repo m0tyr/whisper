@@ -24,6 +24,7 @@
     "@giphy/react-components": "^9.6.0",
     "@hookform/resolvers": "^3.3.4",
     "@lexical/hashtag": "^0.14.2",
+    "@lexical/plain-text": "^0.17.1",
     "@lexical/react": "^0.14.2",
     "@nextui-org/react": "^2.2.9",
     "@radix-ui/primitive": "^1.0.1",

@@ -7,6 +7,7 @@ import {
   MentionsDatas,
   Root,
 } from "./types/whisper.types";
+import { $getRoot, $getSelection, $isLineBreakNode } from "lexical";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -126,6 +127,7 @@ export const computeSHA256 = async (file: File) => {
     .join("");
   return hashHex;
 };
+
 export const isValidEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);

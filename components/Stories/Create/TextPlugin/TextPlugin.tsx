@@ -5,7 +5,14 @@ import { motion, useAnimation } from "framer-motion";
 import Konva from "konva";
 import { Rect } from "konva/lib/shapes/Rect";
 import { Text } from "konva/lib/shapes/Text";
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import { LexicalEditor } from "lexical";
+import React, {
+  RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 type TextFonts = {
   variable: string;
@@ -60,7 +67,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 }) => {
   const LayoutContainerRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
-  const editorRef: any = useRef();
+  const editorRef: any = useRef<LexicalEditor | null>();
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const textFonts = useRef<TextFonts[]>([
     { variable: "Arial", renderedFont: "Arial" },
@@ -98,59 +105,54 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       var top = 0;
       var shapes: (Text | Rect)[] = [];
 
-      // Loop through each line in the text and create padding and margin rectangles
-      textMeasure
-        .text()
-        .split("\n")
-        .forEach((line) => {
-          // Create the text node for each line
-          var text = new Konva.Text({
-            text: line,
-            fontFamily: "Arial",
-            fill: "#ffffff",
-            x: 0,
-            y: top,
-          });
-
-          // Measure text dimensions
-          var textWidth = text.width();
-          var textHeight = text.height();
-
-          // Create the outer 'margin' rectangle
-          var rectMargin = new Konva.Rect({
-            x: -1 * (pos.padding.left + pos.margin.left),
-            y: top - (pos.padding.top + pos.margin.top),
-            width:
-              textWidth +
-              (pos.padding.left + pos.padding.right) +
-              (pos.margin.left + pos.margin.right),
-            height:
-              textHeight +
-              (pos.padding.top + pos.padding.bottom) +
-              (pos.margin.top + pos.margin.bottom),
-            fill: "transparent",
-          });
-          shapes.push(rectMargin);
-
-          // Create the inner 'padding' rectangle
-          var rectPadding = new Konva.Rect({
-            x: -1 * pos.padding.left,
-            y: top - pos.padding.top,
-            width: textWidth + pos.padding.left + pos.padding.right,
-            height: textHeight + pos.padding.top + pos.padding.bottom,
-            fill: "#000000ff",
-          });
-          shapes.push(rectPadding);
-          shapes.push(text);
-
-          // Update the top position for the next line
-          top +=
-            textHeight +
-            pos.padding.top +
-            pos.margin.top +
-            pos.padding.bottom +
-            pos.margin.bottom;
+      textMeasure.textArr.forEach((line) => {
+        var text = new Konva.Text({
+          text: line.text,
+          fontFamily: "Arial",
+          fill: "#ffffff",
+          x: 0,
+          y: top,
         });
+
+        // Measure text dimensions
+        var textWidth = text.width();
+        var textHeight = text.height();
+
+        // Create the outer 'margin' rectangle
+        var rectMargin = new Konva.Rect({
+          x: -1 * (pos.padding.left + pos.margin.left),
+          y: top - (pos.padding.top + pos.margin.top),
+          width:
+            textWidth +
+            (pos.padding.left + pos.padding.right) +
+            (pos.margin.left + pos.margin.right),
+          height:
+            textHeight +
+            (pos.padding.top + pos.padding.bottom) +
+            (pos.margin.top + pos.margin.bottom),
+          fill: "transparent",
+        });
+        shapes.push(rectMargin);
+
+        // Create the inner 'padding' rectangle
+        var rectPadding = new Konva.Rect({
+          x: -1 * pos.padding.left,
+          y: top - pos.padding.top,
+          width: textWidth + pos.padding.left + pos.padding.right,
+          height: textHeight + pos.padding.top + pos.padding.bottom,
+          fill: "#000000ff",
+        });
+        shapes.push(rectPadding);
+        shapes.push(text);
+
+        // Update the top position for the next line
+        top +=
+          textHeight +
+          pos.padding.top +
+          pos.margin.top +
+          pos.padding.bottom +
+          pos.margin.bottom;
+      });
 
       // Group all shapes into a single group
       var group = new Konva.Group({
@@ -268,8 +270,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const handleFinishEditing = () => {
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
-    const finalTextBeforeCanvaInit = extractElements(datas)
-    console.log(finalTextBeforeCanvaInit,datas)
+    console.log(datas);
     const stage = stageRef.current;
     const layer = layerRef.current;
     const padding = 5;
@@ -387,6 +388,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           rotationSnaps: [0, 90, -90, 180, -180],
           rotationSnapTolerance: 10,
         });
+        console.log(transformerDependency);
         transformerInstancesRef?.current?.push(
           transformer as Konva.Transformer
         );
@@ -394,7 +396,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         layer.add(transformer);
         layer.draw();
         buildCustomText({
-          text: "Bonjour les gars\nje vais vous annoncer quelque chose de insane\nbientôt",
+          text: makeLineBreakerMeasurer()?.join("\n"),
           x: storyProperties.width / 2,
           y: storyProperties.height / 2,
           angle: 0,
@@ -529,6 +531,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     }
   }, []);
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log(e.target.value);
     setTextValue(e.target.value);
   };
 
@@ -545,39 +548,219 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       }
     };
   }, []);
+
+  const [lineBreaks, setLineBreaks] = useState(0);
+
+  function generateTextNodes(
+    element: Node,
+    clone?: HTMLElement
+  ): HTMLElement[] {
+    const nodes: HTMLElement[] = [];
+
+    function processNode(
+      node: Node,
+      parent: HTMLElement | undefined | null
+    ): HTMLElement[] {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const textNodes: HTMLElement[] = [];
+        const text = Array.from(node.textContent ?? "");
+        text.forEach((char) => {
+          const span = document.createElement("span");
+          span.textContent = char;
+          textNodes.push(span);
+          nodes.push(span);
+        });
+        return textNodes;
+      }
+
+      let newElement: HTMLElement | null;
+
+      if (parent) {
+        newElement = clone ?? (node as HTMLElement).cloneNode(false) as HTMLElement;
+      } else {
+        newElement = null;
+      }
+  
+      // Process child nodes
+      const childNodes = node.childNodes;
+      const childNodesArray = Array.isArray(childNodes) ? childNodes : Array.from(childNodes);
+  
+      for (let i = 0; i < childNodesArray.length; i++) {
+        const childNode = childNodesArray[i];
+        const processedChildNodes = processNode(childNode, newElement);
+  
+        processedChildNodes.forEach(child => {
+          if (newElement) {
+            newElement.appendChild(child);
+          }
+        });
+      }
+  
+      if (parent) {
+        return [newElement as HTMLDivElement];
+      } else {
+        return [];
+      }
+    }
+
+    processNode(element, clone);
+    return nodes;
+  }
+
+  // Utility function to split text into lines
+  function splitLines(elements: HTMLElement[]): string[] {
+    const lines: string[] = [];
+    if (elements.length === 0) return lines;
+
+    let currentLine = "";
+    let previousTop = elements[0].getBoundingClientRect().top;
+    elements.forEach((element) => {
+      const rect = element.getBoundingClientRect();
+      console.log(element);
+      if (rect.top > previousTop) {
+        lines.push(currentLine);
+        const lineHeight =
+          Math.ceil((rect.top - previousTop) / rect.height) - 1;
+        lines.push(...Array(lineHeight).fill(""));
+        previousTop = rect.top;
+        currentLine = element.innerText || "";
+      } else {
+        currentLine += element.innerText || "";
+      }
+    });
+
+    if (currentLine.length > 0) {
+      lines.push(currentLine);
+    }
+
+    return lines;
+  }
+
+  const onContentChange = () => {
+    if (!editorRef.current) return;
+    const lineHeight = 20; // Approximate line height in pixels; adjust as needed
+    const newLineCount = Math.floor(
+      editorRef.current.scrollHeight / lineHeight
+    );
+    const boundingRect = editorRef.current
+      .getRootElement()
+      .getBoundingClientRect();
+    const width = boundingRect.right - boundingRect.left;
+    const height = boundingRect.bottom - boundingRect.top;
+    console.log(
+      boundingRect,
+      width,
+      height,
+      editorRef.current.getRootElement().textContent
+    );
+    // Set line breaks if they have increased
+
+    // Split those spans into lines of text
+    if (newLineCount > lineBreaks) {
+      setLineBreaks(newLineCount);
+      console.log("Line break detected!");
+    }
+  };
+
+  const makeLineBreakerMeasurer = () => {
+    const PlaygroundText = document.getElementById("text-playground");
+    const pElementToConvert = document.querySelector('p');
+
+    if (pElementToConvert) {
+      // Create a new <span> element to hold the combined content
+      const tempSpanContent = document.createElement("span");
+
+      // Iterate over each child node of the <p> element
+      pElementToConvert.childNodes.forEach((node: any) => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
+          // If the node is a <span>, clone its text content and append it to the new <span>
+          const textNode = document.createTextNode(node.textContent || "");
+          tempSpanContent.appendChild(textNode);
+        } else if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.tagName === "BR"
+        ) {
+          // If the node is a <br>, append a <br> element to the new <span>
+          const br = document.createElement("br");
+          tempSpanContent.appendChild(br);
+        }
+      });
+      tempSpanContent.style.textAlign = "center";
+      tempSpanContent.style.position = "absolute";
+      tempSpanContent.id = "temp-content";
+      PlaygroundText?.appendChild(tempSpanContent);
+      const content = document.getElementById("temp-content");
+      const torender = document.getElementById("to-render");
+      // Check if the element exists
+      if (content && torender && tempSpanContent && tempSpanContent.parentNode) {
+        // Call the function only if content is not null
+        const spans = generateTextNodes(content, torender);
+        const lines = splitLines(spans);
+/*           tempSpanContent.parentNode.removeChild(tempSpanContent);
+ */        return lines;
+      } else {
+        console.error("Element with ID 'content' not found.");
+      }
+    } else {
+      console.error("Element not found");
+    }
+  };
   return (
-    <div
-      style={{
-        width: storyProperties.width,
-        height: storyProperties.height,
-      }}
-      className=" flex relative bg-border rounded-lg "
-    >
-      <div className="flex justify-center items-center w-full h-full z-50 bg-[rgb(0,0,0,0.4)]">
-        <LexicalContentEditable
-          value={textValue}
-          onChange={handleTextChange}
-          ref={editorRef}
-          className="absolute top-20"
-          style={{
-            fontFamily: selectedTextFont,
-            textAlign: "center",
-            width: "70%",
-            height: "75%",
-            fontSize: "16px",
-            border: "none",
-            resize: "none",
-            background: "transparent",
-            outline: "none",
-            boxShadow: "none",
-          }}
-        />
-      </div>
-      <div className="absolute top-0 pt-4 right-0 text-[13px] z-[51]">
-        <button className="mr-4" onClick={handleFinishEditing}>
-          Terminer
-        </button>
-     {/*    <div className="relative mt-5 mr-3">
+    <>
+      <div
+        style={{
+          width: storyProperties.width,
+          height: storyProperties.height,
+        }}
+        className=" flex relative bg-border rounded-lg w-full "
+      >
+        <div className="flex flex-col justify-center items-center w-full  h-full z-50 bg-[rgb(0,0,0,0.4)]">
+          <div id="text-playground" className="max-w-[calc(100%_-_128px)]">
+            <LexicalContentEditable
+              value={textValue}
+              onChange={handleTextChange}
+              watchtext={onContentChange}
+              ref={editorRef}
+              className="absolute top-20"
+              style={{
+                fontFamily: selectedTextFont,
+                textAlign: "center",
+                width: "100%",
+                height: "auto",
+                fontSize: "20px",
+                fontWeight: "600",
+                textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
+                border: "none",
+                resize: "none",
+                background: "transparent",
+                outline: "none",
+                boxShadow: "none",
+                lineHeight: "22px",
+              }}
+            />
+            <span
+              id="to-render"
+              style={{
+                display: "inline-block",
+                textAlign: "center",
+                verticalAlign: "baseline",
+                marginTop: "72px",
+                overflowWrap: "break-word",
+                zIndex: -999,
+                color: "white",
+                fontSize: "20px",
+                fontWeight: 600,
+                lineHeight: "22px",
+              }}
+            ></span>
+          </div>
+        </div>
+        <div className="absolute top-0 pt-4 right-0 text-[13px] z-[51]">
+          <button className="mr-4" onClick={handleFinishEditing}>
+            Terminer
+          </button>
+
+          {/*    <div className="relative mt-5 mr-3">
           <motion.div
             ref={LayoutContainerRef}
             animate={controls}
@@ -609,8 +792,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             </div>
           </motion.div>
         </div> */}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

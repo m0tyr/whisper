@@ -61,6 +61,7 @@ const initialConfig = {
   window.onload = function() {
       document?.getElementById("editable_content")?.focus();
 };
+
   return (
     <LexicalComposer initialConfig={initialConfig} >
       <MentionsPlugin/>
