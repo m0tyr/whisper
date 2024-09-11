@@ -85,6 +85,7 @@
     "slate-react": "^0.102.0",
     "styled-components": "^6.1.8",
     "styled-system": "^5.1.5",
+    "svg-round-corners": "^0.4.3",
     "svix": "^1.17.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
