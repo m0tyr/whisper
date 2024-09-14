@@ -260,7 +260,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         width: textMeasure.width(),
         align: "center",
         padding: pos.padding.top,
-        cornerRadius: 5,
+        cornerRadius: 10,
       });
 
       const konvaPath = new Konva.Path({
@@ -396,7 +396,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           x: storyProperties.width / 2,
           y: storyProperties.height / 2,
           angle: 0,
-          padding: { left: 10, top: 10, right: 10, bottom: 10 },
+          padding: { left: 8, top: 8, right: 8, bottom: 8 },
           margin: { left: 5, top: 0, right: 5, bottom: 0 },
         });
         setIsInTextContext(false);
