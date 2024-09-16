@@ -1,7 +1,5 @@
 import LexicalContentEditable from "@/components/LexicalContentEditable/LexicalContentEditable";
-import { TextInstance } from "@/lib/types/stories.types";
-import { extractElements } from "@/lib/utils";
-import { motion, useAnimation } from "framer-motion";
+import { TextFonts, TextInstance } from "@/lib/types/stories.types";
 import { parsePath, roundCommands, roundCorners } from "svg-round-corners";
 import Konva from "konva";
 import { Rect } from "konva/lib/shapes/Rect";
@@ -9,16 +7,13 @@ import { Text } from "konva/lib/shapes/Text";
 import { LexicalEditor } from "lexical";
 import React, {
   RefObject,
-  useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
+import FontChooser from "./FontChooser/FontChooser";
 
-type TextFonts = {
-  variable: string;
-  renderedFont: string;
-};
+
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -81,7 +76,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   textInstancesRef,
   textCustomInstancesRef,
 }) => {
-  const LayoutContainerRef = useRef<HTMLDivElement>(null);
   const editorRef: any = useRef<LexicalEditor | null>();
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const textFonts = useRef<TextFonts[]>([
@@ -676,42 +670,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     }
   };
 
-  const [isScrolling, setIsScrolling] = useState(false); // State to manage scroll
-  const [scrollingValue, setScrollingValue] = useState(storyProperties.width / 2.13337); // State to manage scroll
-
-  // Function to handle the wheel event and scroll by +60 or -60
-  const handleWheel = (event: { deltaY: number }) => {
-    if (isScrolling) return; // Prevent scrolling while already scrolling
-
-    setIsScrolling(true); // Set scrolling to true
-    const direction = event.deltaY > 0 ? 60 : -60; // Determine scroll direction (+ or - 60)
-    const container = LayoutContainerRef.current;
-
-    if (container) {
-      // Calculate new scroll position
-      const newScrollPosition = container.scrollLeft + direction;
-      console.log(scrollingValue - newScrollPosition);
-      setScrollingValue(scrollingValue - newScrollPosition)
-    }
-
-    // Re-enable the scroll listener after the scroll ends
-    setTimeout(() => {
-      setIsScrolling(false);
-    }, 300); // Adjust timeout to match the scroll duration
-  };
-
-  useEffect(() => {
-    const container = LayoutContainerRef.current;
-    if (container) {
-      container.scrollLeft = -300;
-      // Add wheel event listener
-      container.addEventListener("wheel", handleWheel);
-      // Clean up the event listener on unmount
-      return () => {
-        container.removeEventListener("wheel", handleWheel);
-      };
-    }
-  }, [isScrolling]);
+  
   return (
     <>
       <div
@@ -768,38 +727,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             Terminer
           </button>
         </div>
-        <div className="absolute bottom-4 pt-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
-          <motion.div
-            ref={LayoutContainerRef}
-            animate={{ x: scrollingValue }}
-            style={{ x: storyProperties.width / 2.13337, scrollBehavior: "smooth" }}
-            className="flex flex-row items-end gap-[10px] hide-scrollbar overflow-x-auto h-14 w-full"
-          >
-            <div className="flex flex-row gap-[12px] justify-center items-center p-1">
-              {textFonts.current.map((font, index) => (
-                <motion.div
-                  key={index}
-                  style={{
-                    fontFamily: font.variable,
-                  }}
-                  onClick={() => {
-                    setSelectedTextFont(font.variable);
-                    setToRenderTextFont(font.renderedFont);
-                  }}
-                  className="min-w-12 w-12 h-12 rounded-lg bg-[rgb(168,168,168,.3)] border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[22px] text-center justify-center items-center"
-                  whileTap={{ scale: 0.97 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 700,
-                    damping: 20,
-                  }}
-                >
-                  Aa
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+        <FontChooser setSelectedTextFont={setSelectedTextFont} setToRenderTextFont={setToRenderTextFont} textFonts={textFonts} storyProperties={storyProperties} />
       </div>
     </>
   );
