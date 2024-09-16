@@ -61,13 +61,6 @@ interface BackgroundShapeParams {
   cornerRadius?: number; // Corner radius for rounded edges, default is 0
 }
 
-interface GetLineHeightParams {
-  fontLoaded: boolean; // This parameter is included but not used in the function; consider removing if unnecessary
-  fontFamily: string;
-  fontSize: number;
-  lineHeight: string | number;
-}
-
 const TextPlugin: React.FC<TextPluginProps> = ({
   isAddingNewText,
   storyProperties,
@@ -89,14 +82,13 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   textCustomInstancesRef,
 }) => {
   const LayoutContainerRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimation();
   const editorRef: any = useRef<LexicalEditor | null>();
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const textFonts = useRef<TextFonts[]>([
     { variable: "Arial", renderedFont: "Arial" },
-    { variable: "Arial", renderedFont: "Arial" },
-    { variable: "Arial", renderedFont: "Arial" },
-    { variable: "Arial", renderedFont: "Arial" },
+    { variable: "Sofadi One", renderedFont: "Sofadi One" },
+    { variable: "Sofadi One", renderedFont: "Sofadi One" },
+    { variable: "Chakra Petch", renderedFont: "Chakra Petch" },
     { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6" },
     { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95" },
   ]);
@@ -544,8 +536,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     };
   }, []);
 
-  const [lineBreaks, setLineBreaks] = useState(0);
-
   function generateTextNodes(
     element: Node,
     clone?: HTMLElement
@@ -637,31 +627,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     return lines;
   }
 
-  const onContentChange = () => {
-    if (!editorRef.current) return;
-    const lineHeight = 20; // Approximate line height in pixels; adjust as needed
-    const newLineCount = Math.floor(
-      editorRef.current.scrollHeight / lineHeight
-    );
-    const boundingRect = editorRef.current
-      .getRootElement()
-      .getBoundingClientRect();
-    const width = boundingRect.right - boundingRect.left;
-    const height = boundingRect.bottom - boundingRect.top;
-    console.log(
-      boundingRect,
-      width,
-      height,
-      editorRef.current.getRootElement().textContent
-    );
-    // Set line breaks if they have increased
-
-    // Split those spans into lines of text
-    if (newLineCount > lineBreaks) {
-      setLineBreaks(newLineCount);
-      console.log("Line break detected!");
-    }
-  };
+  const onContentChange = () => {};
 
   const makeLineBreakerMeasurer = () => {
     const PlaygroundText = document.getElementById("text-playground");
@@ -709,6 +675,43 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       console.error("Element not found");
     }
   };
+
+  const [isScrolling, setIsScrolling] = useState(false); // State to manage scroll
+  const [scrollingValue, setScrollingValue] = useState(storyProperties.width / 2.13337); // State to manage scroll
+
+  // Function to handle the wheel event and scroll by +60 or -60
+  const handleWheel = (event: { deltaY: number }) => {
+    if (isScrolling) return; // Prevent scrolling while already scrolling
+
+    setIsScrolling(true); // Set scrolling to true
+    const direction = event.deltaY > 0 ? 60 : -60; // Determine scroll direction (+ or - 60)
+    const container = LayoutContainerRef.current;
+
+    if (container) {
+      // Calculate new scroll position
+      const newScrollPosition = container.scrollLeft + direction;
+      console.log(scrollingValue - newScrollPosition);
+      setScrollingValue(scrollingValue - newScrollPosition)
+    }
+
+    // Re-enable the scroll listener after the scroll ends
+    setTimeout(() => {
+      setIsScrolling(false);
+    }, 300); // Adjust timeout to match the scroll duration
+  };
+
+  useEffect(() => {
+    const container = LayoutContainerRef.current;
+    if (container) {
+      container.scrollLeft = -300;
+      // Add wheel event listener
+      container.addEventListener("wheel", handleWheel);
+      // Clean up the event listener on unmount
+      return () => {
+        container.removeEventListener("wheel", handleWheel);
+      };
+    }
+  }, [isScrolling]);
   return (
     <>
       <div
@@ -764,15 +767,15 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           <button className="mr-4" onClick={handleFinishEditing}>
             Terminer
           </button>
-
-          {/*    <div className="relative mt-5 mr-3">
+        </div>
+        <div className="absolute bottom-4 pt-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
           <motion.div
             ref={LayoutContainerRef}
-            animate={controls}
-            className="flex flex-col items-end gap-[10px] hide-scrollbar relative overflow-y-auto max-h-[250px]"
-            style={{ scrollBehavior: "smooth" }}
+            animate={{ x: scrollingValue }}
+            style={{ x: storyProperties.width / 2.13337, scrollBehavior: "smooth" }}
+            className="flex flex-row items-end gap-[10px] hide-scrollbar overflow-x-auto h-14 w-full"
           >
-            <div className="flex flex-col gap-[8px] justify-center items-center p-1 w-9">
+            <div className="flex flex-row gap-[12px] justify-center items-center p-1">
               {textFonts.current.map((font, index) => (
                 <motion.div
                   key={index}
@@ -783,7 +786,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                     setSelectedTextFont(font.variable);
                     setToRenderTextFont(font.renderedFont);
                   }}
-                  className="w-9 h-9 rounded-lg bg-[rgb(168,168,168,.3)] border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[20px] text-center justify-center items-center"
+                  className="min-w-12 w-12 h-12 rounded-lg bg-[rgb(168,168,168,.3)] border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[22px] text-center justify-center items-center"
                   whileTap={{ scale: 0.97 }}
                   transition={{
                     type: "spring",
@@ -796,7 +799,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               ))}
             </div>
           </motion.div>
-        </div> */}
         </div>
       </div>
     </>
