@@ -1,19 +1,23 @@
 import LexicalContentEditable from "@/components/LexicalContentEditable/LexicalContentEditable";
-import { TextFonts, TextInstance } from "@/lib/types/stories.types";
+import { TextColors, TextFonts, TextInstance } from "@/lib/types/stories.types";
 import { parsePath, roundCommands, roundCorners } from "svg-round-corners";
 import Konva from "konva";
 import { Rect } from "konva/lib/shapes/Rect";
 import { Text } from "konva/lib/shapes/Text";
-import { LexicalEditor } from "lexical";
-import React, {
-  RefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import {
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  COMMAND_PRIORITY_EDITOR,
+  createCommand,
+  ElementNode,
+  FORMAT_TEXT_COMMAND,
+  LexicalEditor,
+  TextNode,
+} from "lexical";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import FontChooser from "./FontChooser/FontChooser";
-
-
+import ColorChooser from "./ColorChooser/ColorChooser";
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -56,6 +60,8 @@ interface BackgroundShapeParams {
   cornerRadius?: number; // Corner radius for rounded edges, default is 0
 }
 
+const CHANGE_TEXT_COLOR_COMMAND = createCommand<string>();
+
 const TextPlugin: React.FC<TextPluginProps> = ({
   isAddingNewText,
   storyProperties,
@@ -78,6 +84,17 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 }) => {
   const editorRef: any = useRef<LexicalEditor | null>();
   const [isFontLoaded, setIsFontLoaded] = useState(false);
+  const [color, setColor] = useState<string>("");
+
+  const textColors = useRef<TextColors[]>([
+    { renderedColor: "rgb(220 38 38)", name: "red" },
+    { renderedColor: "rgb(0 0 0)", name: "black" },
+    { renderedColor: "rgb(0 149 246)", name: "blue" },
+    { renderedColor: "rgb(250 204 21)", name: "yellow" },
+    { renderedColor: "rgb(22 163 74)", name: "green" },
+    { renderedColor: "rgb(255 255 255)", name: "white" },
+  ]);
+
   const textFonts = useRef<TextFonts[]>([
     { variable: "Arial", renderedFont: "Arial" },
     { variable: "Sofadi One", renderedFont: "Sofadi One" },
@@ -621,7 +638,19 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     return lines;
   }
 
-  const onContentChange = () => {};
+  const onContentChange = () => {
+    const stringifiedEditorState = JSON.stringify(
+      editorRef.current.getEditorState().toJSON()
+    );
+    const parsedEditorState = editorRef.current.parseEditorState(
+      stringifiedEditorState
+    );
+
+    const editorStateTextString = parsedEditorState.read(() =>
+      $getRoot().getTextContent()
+    );
+    setTextValue(editorStateTextString);
+  };
 
   const makeLineBreakerMeasurer = () => {
     const PlaygroundText = document.getElementById("text-playground");
@@ -670,7 +699,33 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     }
   };
 
-  
+  useEffect(() => {
+    if (color) {
+      editorRef.current.registerCommand(
+        CHANGE_TEXT_COLOR_COMMAND,
+        (payload: any) => {
+          let restoredSelection: { anchor: any; focus: any } | null = null;
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            const anchorOffset = selection.anchor.offset;
+            const focusOffset = selection.focus.offset;
+            const anchorKey = selection.anchor.key;
+            const focusKey = selection.focus.key;
+            const nodes = selection.getNodes();
+            nodes.forEach((node) => {
+              if (node instanceof TextNode) {
+                node.setStyle(`color: ${payload}`);
+              }
+            });
+          }
+          return true;
+        },
+        COMMAND_PRIORITY_EDITOR
+      );
+      editorRef.current.dispatchCommand(CHANGE_TEXT_COLOR_COMMAND, color);
+    }
+  }, [color, editorRef.current]);
+
   return (
     <>
       <div
@@ -681,7 +736,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         className=" flex relative bg-border rounded-lg w-full "
       >
         <div className="flex flex-col justify-center items-center w-full  h-full z-50 bg-[rgb(0,0,0,0.4)]">
-          <div id="text-playground" className="max-w-[calc(100%_-_128px)]">
+          <div
+            id="text-playground"
+            className="min-w-[22px] max-w-[calc(100%_-_128px)]"
+          >
             <LexicalContentEditable
               value={textValue}
               onChange={handleTextChange}
@@ -692,7 +750,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 fontFamily: selectedTextFont,
                 textAlign: "center",
                 width: "100%",
-                height: "auto",
+                height: textValue.trim() === "" ? "22px" : "auto",
                 fontSize: "20px",
                 fontWeight: "600",
                 textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
@@ -727,7 +785,17 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             Terminer
           </button>
         </div>
-        <FontChooser setSelectedTextFont={setSelectedTextFont} setToRenderTextFont={setToRenderTextFont} textFonts={textFonts} storyProperties={storyProperties} />
+        <ColorChooser
+          setColor={setColor}
+          textColors={textColors}
+          storyProperties={storyProperties}
+        />
+       {/*  <FontChooser
+          setSelectedTextFont={setSelectedTextFont}
+          setToRenderTextFont={setToRenderTextFont}
+          textFonts={textFonts}
+          storyProperties={storyProperties}
+        /> */}
       </div>
     </>
   );

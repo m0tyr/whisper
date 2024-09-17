@@ -8,3 +8,8 @@ export type TextFonts = {
   variable: string;
   renderedFont: string;
 };
+
+export type TextColors = {
+  renderedColor: string;
+  name: string;
+};

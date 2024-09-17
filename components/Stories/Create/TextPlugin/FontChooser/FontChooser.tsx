@@ -23,70 +23,58 @@ const FontChooser: React.FC<FontChooserProps> = ({
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(false);
   const [animationContainerValue, setAnimationContainerValue] = useState(
-    storyProperties.width / 2
+    storyProperties.width / 2 - 30
   );
-  const scrollStep = storyProperties.width / 2 + 60;
+  const [fontIndex, setFontIndex] = useState(0);
+  const [scrollValue, setScrollValue] = useState(0);
+  const step = 60;
+
   useEffect(() => {
-    if (LayoutContainerRef.current) {
+    if (LayoutContainerRef.current && textFonts.current) {
       const isEnoughToDisplayButtons =
         storyProperties.width / 2.13337 >
         LayoutContainerRef.current.clientWidth;
       setOverflowStories(isEnoughToDisplayButtons);
+      console.log(fontIndex);
+      setShowLeftButton(fontIndex > 0);
+      setShowRightButton(fontIndex < textFonts?.current?.length - 1);
     }
   }, [animationContainerValue]);
 
   const scrollLeft = () => {
-    if (LayoutContainerRef.current) {
-      const scrollWidth = LayoutContainerRef.current.scrollWidth;
-      const clientWidth = LayoutContainerRef.current.clientWidth;
-      const newAnimationValue = Math.min(
-        animationContainerValue + scrollStep,
-        0
-      );
-      console.log(animationContainerValue, newAnimationValue, animationContainerValue + newAnimationValue)
-      setAnimationContainerValue(animationContainerValue + newAnimationValue);
-      setShowLeftButton(newAnimationValue < 0);
-      setShowRightButton(
-        newAnimationValue > -(scrollWidth - clientWidth)
-      );
+    if (LayoutContainerRef.current && textFonts.current) {
+      setFontIndex(fontIndex - 1);
+      setScrollValue(scrollValue + step);
+      setAnimationContainerValue(animationContainerValue + step);
+      setShowLeftButton(fontIndex > 0);
+      setShowRightButton(fontIndex <= textFonts?.current?.length);
     }
   };
 
   const scrollRight = () => {
-    if (LayoutContainerRef.current) {
-      const scrollWidth = LayoutContainerRef.current.scrollWidth;
-      const clientWidth = LayoutContainerRef.current.clientWidth;
-      const maxScroll = -(scrollWidth - clientWidth);
-      const newAnimationValue = Math.max(
-        animationContainerValue - scrollStep,
-        maxScroll
-      );
-      console.log(animationContainerValue, newAnimationValue, animationContainerValue + newAnimationValue)
-      setAnimationContainerValue(animationContainerValue + newAnimationValue);
-      setShowLeftButton(newAnimationValue < 0);
-      setShowRightButton(newAnimationValue < maxScroll);
+    if (LayoutContainerRef.current && textFonts.current) {
+      setFontIndex(fontIndex + 1);
+      setScrollValue(scrollValue - step);
+      setAnimationContainerValue(animationContainerValue - step);
+      setShowLeftButton(fontIndex > 0);
+      setShowRightButton(fontIndex <= textFonts?.current?.length);
     }
   };
-
   useEffect(() => {
-    if (LayoutContainerRef.current) {
-      const scrollWidth = LayoutContainerRef.current.scrollWidth;
-      const clientWidth = LayoutContainerRef.current.clientWidth;
-      const maxScroll = -(scrollWidth - clientWidth);
-      const isAtStart = animationContainerValue === storyProperties.width / 2;
-      const isAtEnd = animationContainerValue <= maxScroll;
-      console.log(isAtStart)
-      setShowLeftButton(!isAtStart);
-      setShowRightButton(!isAtEnd);
+    if (LayoutContainerRef.current && textFonts.current) {
+      setAnimationContainerValue(storyProperties.width / 2 - 30 + scrollValue);
+      setShowLeftButton(fontIndex > 0);
+      setShowRightButton(fontIndex <= textFonts?.current?.length);
     }
-  }, [animationContainerValue]);
+  }, [storyProperties]);
+
   return (
     <div className="absolute bottom-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
       {showLeftButton && !OverflowStories && (
         <div className="absolute z-50 left-0 h-14 w-9 cursor-pointer">
           <button
             onClick={scrollLeft}
-            className="absolute   top-1/2 transform -translate-y-1/2 bg-border shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-white ml-1.5 px-1 py-1 rounded-full"
+            className="absolute   top-1/2 transform -translate-y-1/2 bg-border shadow-[0_7px_12px_0_rgba(0,0,0,0.3)] text-white ml-1.5 px-1 py-1 rounded-full"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +96,7 @@ const FontChooser: React.FC<FontChooserProps> = ({
         <div className="absolute z-50 right-0 h-14 w-9 cursor-pointer">
           <button
             onClick={scrollRight}
-            className="absolute z-50  top-1/2 transform -translate-y-1/2 bg-border shadow-[0_7px_12px_0_rgba(0,0,0,0.8)] text-white mr-1.5 px-1 py-1 rounded-full"
+            className="absolute z-50  top-1/2 transform -translate-y-1/2 bg-border shadow-[0_7px_12px_0_rgba(0,0,0,0.3)] text-white mr-1.5 px-1 py-1 rounded-full"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -126,13 +114,17 @@ const FontChooser: React.FC<FontChooserProps> = ({
           </button>
         </div>
       )}
-      <div className="z-[49] absolute w-full h-14 bg-[linear-gradient(90deg,_rgba(27,27,27,1)_0%,_rgba(255,255,255,0)_50%,_rgba(27,27,27,1)_100%);]">
-      </div>
+      <div className="z-[49] absolute w-full h-14 bg-[linear-gradient(90deg,_rgba(27,27,27,1)_0%,_rgba(255,255,255,0)_50%,_rgba(27,27,27,1)_100%);]"></div>
       <motion.div
         ref={LayoutContainerRef}
         animate={{ x: animationContainerValue }}
         style={{ x: storyProperties.width / 2, scrollBehavior: "smooth" }}
-        className="flex flex-row items-end gap-[10px] hide-scrollbar overflow-hidden h-14 w-full "
+        transition={{
+            type: "tween",  
+            duration: 0.2,  
+            ease: [0.4, 0, 0.2, 1] 
+          }}
+        className="flex flex-row items-end gap-[10px] hide-scrollbar overflow-visible h-14 w-full "
       >
         <div className="flex flex-row gap-[12px] justify-center items-center p-1 ">
           {textFonts?.current?.map((font, index) => (
