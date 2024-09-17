@@ -18,6 +18,7 @@ import {
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import FontChooser from "./FontChooser/FontChooser";
 import ColorChooser from "./ColorChooser/ColorChooser";
+import { motion } from "framer-motion";
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -96,13 +97,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   ]);
 
   const textFonts = useRef<TextFonts[]>([
-    { variable: "Arial", renderedFont: "Arial" },
-    { variable: "Sofadi One", renderedFont: "Sofadi One" },
-    { variable: "Sofadi One", renderedFont: "Sofadi One" },
-    { variable: "Chakra Petch", renderedFont: "Chakra Petch" },
-    { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6" },
-    { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95" },
+    { variable: "Arial", renderedFont: "Arial", name: "Simple" },
+    { variable: "Chakra Petch", renderedFont: "Chakra Petch", name: "Dirty" },
+    { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6", name: "Freaky" },
+    { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95", name: "Graphic" },
   ]);
+
+  const [isChoosingFont, setIsChoosingFont] = useState(false);
+  const [isChoosingColor, setIsChoosingColor] = useState(false);
 
   function generateBackgroundShape({
     lines,
@@ -785,17 +787,89 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             Terminer
           </button>
         </div>
-        <ColorChooser
-          setColor={setColor}
-          textColors={textColors}
-          storyProperties={storyProperties}
-        />
-       {/*  <FontChooser
-          setSelectedTextFont={setSelectedTextFont}
-          setToRenderTextFont={setToRenderTextFont}
-          textFonts={textFonts}
-          storyProperties={storyProperties}
-        /> */}
+        <div className="absolute bottom-[60px] right-0 text-[13px] z-[51] w-full overflow-x-hidden">
+          <div className="flex flex-row w-full justify-center items-center gap-2 mb-5">
+            <motion.div
+              whileTap={{ opacity: 0.7, scale: 0.9 }}
+              whileHover={{ opacity: 0.9 }}
+              onClick={() => {
+                setIsChoosingColor(false);
+                setIsChoosingFont(true);
+              }}
+              className="bg-insanedark/70  flex justify-center items-center cursor-pointer p-1 rounded-lg select-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill="white"
+                  fill-rule="evenodd"
+                  d="M10 2.25a.75.75 0 0 1 .75-.75c.576 0 1.102.217 1.5.573a2.242 2.242 0 0 1 1.5-.573a.75.75 0 0 1 0 1.5a.75.75 0 0 0-.75.75v8.75c0 .414.336.75.75.75a.75.75 0 0 1 0 1.5a2.242 2.242 0 0 1-1.5-.573a2.242 2.242 0 0 1-1.5.573a.75.75 0 0 1 0-1.5a.75.75 0 0 0 .75-.75V3.75a.75.75 0 0 0-.75-.75a.75.75 0 0 1-.75-.75M5.75 3c-.618 0-1.168.39-1.374.972L1.543 12a.75.75 0 1 0 1.414.5L3.84 10h3.82l.883 2.5a.75.75 0 1 0 1.414-.5L7.124 3.972A1.457 1.457 0 0 0 5.75 3m1.381 5.5L5.75 4.587L4.369 8.5H7.13Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </motion.div>
+            <motion.div
+              whileTap={{ opacity: 0.7, scale: 0.9 }}
+              whileHover={{ opacity: 0.9 }}
+              onClick={() => {
+                setIsChoosingColor(true);
+                setIsChoosingFont(false);
+              }}
+              className="bg-insanedark/70  flex justify-center items-center cursor-pointer p-1 rounded-lg select-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 100 100"
+              >
+                <g
+                  id="gisColor0"
+                  transform="translate(-27.789 -4888.35) scale(4.7619)"
+                >
+                  <g
+                    id="gisColor1"
+                    display="inline"
+                    transform="translate(-318 -262)"
+                  >
+                    <g id="gisColor2">
+                      <path
+                        id="gisColor3"
+                        fill="white"
+                        fill-opacity="1"
+                        stroke="none"
+                        stroke-width="1.105"
+                        d="M333.191 1290.764c-5.526 0-9.355 4.421-9.355 6.632c0 2.21 1.105 3.868 3.315 3.868s3.316.553 3.316 2.21c0 2.211 1.658 3.869 3.869 3.869c7.184 0 10.5-3.869 10.5-7.737c0-6.632-5.013-8.842-11.645-8.842zm-1.475 2.21a1.382 1.382 0 1 1 0 2.764a1.382 1.382 0 0 1 0-2.764zm4.421 0a1.382 1.382 0 1 1 0 2.764a1.382 1.382 0 0 1 0-2.764zm4.001 2.211a1.382 1.382 0 1 1 0 2.763a1.382 1.382 0 0 1 0-2.763zm-12.29.265a1.382 1.382 0 1 1 0 2.764a1.382 1.382 0 0 1 0-2.764zm7.328 6.367c.915 0 1.658.742 1.658 1.657c0 .916-1.163 1.658-2.078 1.658a1.658 1.658 0 0 1-1.658-1.658c0-.915 1.162-1.657 2.078-1.657z"
+                        color="currentColor"
+                        display="inline"
+                        visibility="visible"
+                      />
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </motion.div>
+          </div>
+        </div>
+        {isChoosingColor && (
+          <ColorChooser
+            setColor={setColor}
+            textColors={textColors}
+            storyProperties={storyProperties}
+          />
+        )}
+        {isChoosingFont && (
+          <FontChooser
+            setSelectedTextFont={setSelectedTextFont}
+            setToRenderTextFont={setToRenderTextFont}
+            textFonts={textFonts}
+            storyProperties={storyProperties}
+          />
+        )}
       </div>
     </>
   );

@@ -7,6 +7,7 @@ export type TextInstance = {
 export type TextFonts = {
   variable: string;
   renderedFont: string;
+  name: string;
 };
 
 export type TextColors = {
