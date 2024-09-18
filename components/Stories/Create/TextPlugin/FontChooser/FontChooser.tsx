@@ -33,7 +33,6 @@ const FontChooser: React.FC<FontChooserProps> = ({
           containerRef={storyProperties}
           itemsCarousel={textFonts}
         >
-          <div className="flex flex-row gap-[12px] justify-center items-center p-1 ">
             {textFonts?.current?.map((font, index) => (
               <div className="flex flex-col gap-1">
                 <motion.div
@@ -45,7 +44,7 @@ const FontChooser: React.FC<FontChooserProps> = ({
                     setSelectedTextFont(font.variable);
                     setToRenderTextFont(font.renderedFont);
                   }}
-                  className="min-w-12 w-fit px-2 h-12 rounded-lg bg-[rgb(168,168,168,.3)] border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[22px] text-center justify-center items-center"
+                  className="min-w-12 w-fit px-2 h-12  rounded-lg bg-[rgb(168,168,168,.3)] whitespace-nowrap border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[22px] text-center justify-center items-center"
                   whileTap={{ scale: 0.97 }}
                   transition={{
                     type: "spring",
@@ -57,7 +56,6 @@ const FontChooser: React.FC<FontChooserProps> = ({
                 </motion.div>
               </div>
             ))}
-          </div>
         </ItemChooserCarousel>
       </div>
    {/*    <span className=" font-semibold tracking-tighter text-[12px] absolute bottom-[-5px] z-[100] right-[calc(50%_+_2px)] transform translate-x-1/2 flex flex-row gap-[12px] justify-center items-center pb-2">
