@@ -7,14 +7,12 @@ function ItemChooserCarousel({
     itemsCarousel,
     setindex,
     index,
-    itemRef
   }: {
     children: ReactNode;
     containerRef: {width: number, height: number},
     setindex: Dispatch<SetStateAction<number>>,
     itemsCarousel: any,
     index: number,
-    itemRef: RefObject<any>
   }) {
   const LayoutContainerRef = useRef<HTMLDivElement>(null);
   const [OverflowStories, setOverflowStories] = useState(false);
@@ -24,7 +22,7 @@ function ItemChooserCarousel({
     containerRef.width / 2 - 30
   );
   const [scrollValue, setScrollValue] = useState(0);
-  const step = itemRef.current.clientWidth + 12;
+  const step = 60;
 
   useEffect(() => {
     if (LayoutContainerRef.current && itemsCarousel.current) {

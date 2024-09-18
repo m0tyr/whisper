@@ -24,7 +24,6 @@ const FontChooser: React.FC<FontChooserProps> = ({
     setToRenderTextFont(textFonts.current?.[fontIndex].renderedFont as string)
     setSelectedTextFont(textFonts.current?.[fontIndex].renderedFont as string)
   }, [fontIndex])
-  const itemRef = useRef<any>()
   return (
     <>
       <div className="absolute bottom-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
@@ -33,7 +32,6 @@ const FontChooser: React.FC<FontChooserProps> = ({
           setindex={setFontIndex}
           containerRef={storyProperties}
           itemsCarousel={textFonts}
-          itemRef={itemRef}
         >
           <div className="flex flex-row gap-[12px] justify-center items-center p-1 ">
             {textFonts?.current?.map((font, index) => (
@@ -43,7 +41,6 @@ const FontChooser: React.FC<FontChooserProps> = ({
                   style={{
                     fontFamily: font.variable,
                   }}
-                  ref={itemRef}
                   onClick={() => {
                     setSelectedTextFont(font.variable);
                     setToRenderTextFont(font.renderedFont);
