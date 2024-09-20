@@ -31,7 +31,7 @@ function ItemChooserCarousel({
     containerRef.width / 2
   );
   const [scrollValue, setScrollValue] = useState(0);
-  const gap = 12; // 12px gap between items
+  const gap = 4;
 
   useEffect(() => {
     if (LayoutContainerRef.current && itemsCarousel.current) {
@@ -43,21 +43,17 @@ function ItemChooserCarousel({
     }
   }, [animationContainerValue, index]);
 
-// Adjusted function to calculate the dynamic step size
 const getCurrentStep = (isScrollingLeft = false) => {
   const currentItem = itemRefs.current[index];
   let adjacentItem;
 
   if (isScrollingLeft) {
-    // Get the previous item when scrolling left
     adjacentItem = itemRefs.current[index - 1];
   } else {
-    // Get the next item when scrolling right
     adjacentItem = itemRefs.current[index + 1];
   }
 
   if (currentItem && adjacentItem) {
-    // Calculate the step based on the current and adjacent item's width
     return currentItem.offsetWidth / 2 + adjacentItem.offsetWidth / 2 + gap;
   }
 
@@ -66,39 +62,25 @@ const getCurrentStep = (isScrollingLeft = false) => {
 
 const scrollLeft = () => {
   if (index > 0 && LayoutContainerRef.current && itemsCarousel.current) {
-    const step = getCurrentStep(true); // Calculate the step for left scroll
+    const step = getCurrentStep(true); 
 
-    // Log for debugging
-    console.log("scrollLeft step:", step, "index:", index);
-
-    // Update scroll index
     setindex(index - 1);
 
-    // Adjust scrollValue and animationContainerValue
     const newScrollValue = scrollValue + step;
-    setScrollValue(newScrollValue); // Increment scrollValue to move left
-    setAnimationContainerValue(containerRef.width / 2 - newScrollValue); // Update the position
-
-    console.log("scrollLeft newScrollValue:", newScrollValue, "animationContainerValue:", containerRef.width / 2 - newScrollValue);
+    setScrollValue(newScrollValue);
+    setAnimationContainerValue(containerRef.width / 2 - newScrollValue); 
   }
 };
 
 const scrollRight = () => {
   if (index < itemsCarousel.current.length - 1 && LayoutContainerRef.current && itemsCarousel.current) {
-    const step = getCurrentStep(); // Calculate the step for right scroll
+    const step = getCurrentStep(); 
 
-    // Log for debugging
-    console.log("scrollRight step:", step, "index:", index);
-
-    // Update scroll index
     setindex(index + 1);
 
-    // Adjust scrollValue and animationContainerValue
     const newScrollValue = scrollValue - step;
-    setScrollValue(newScrollValue); // Decrement scrollValue to move right
-    setAnimationContainerValue(containerRef.width / 2 - newScrollValue); // Update the position
-
-    console.log("scrollRight newScrollValue:", newScrollValue, "animationContainerValue:", containerRef.width / 2 - newScrollValue);
+    setScrollValue(newScrollValue);
+    setAnimationContainerValue(containerRef.width / 2 - newScrollValue); 
   }
 };
 
@@ -171,11 +153,11 @@ const scrollRight = () => {
           duration: 0.2,
           ease: [0.4, 0, 0.2, 1],
         }}
-        className="flex flex-row items-end gap-[10px] hide-scrollbar overflow-visible h-14 w-full"
+        className="flex flex-row items-end gap-[4px] hide-scrollbar overflow-visible h-14 w-full"
       >
         {Children.map(children, (child, i) => (
           <div
-            className="flex flex-row gap-[12px] justify-center items-center p-1 "
+            className="flex flex-row justify-center items-center p-1 "
             key={i}
             ref={(el) => {
               itemRefs.current[i] = el;

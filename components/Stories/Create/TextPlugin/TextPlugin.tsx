@@ -706,13 +706,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       editorRef.current.registerCommand(
         CHANGE_TEXT_COLOR_COMMAND,
         (payload: any) => {
-          let restoredSelection: { anchor: any; focus: any } | null = null;
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
-            const anchorOffset = selection.anchor.offset;
-            const focusOffset = selection.focus.offset;
-            const anchorKey = selection.anchor.key;
-            const focusKey = selection.focus.key;
             const nodes = selection.getNodes();
             nodes.forEach((node) => {
               if (node instanceof TextNode) {

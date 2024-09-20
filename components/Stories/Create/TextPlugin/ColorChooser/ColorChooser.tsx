@@ -28,9 +28,11 @@ const ColorChooser: React.FC<ColorChooserProps> = ({
         {textColors?.current?.map((colorItem, index) => (
           <div
             key={index}
+            
             onClick={() => setColor(colorItem.renderedColor)}
-            className={`cursor-pointer border border-white rounded-lg h-12 w-12 justify-center items-center`}
-            style={{ backgroundColor: colorItem.renderedColor }}
+            className={`cursor-pointer border transition-all duration-300 border-white rounded-lg h-12 w-12 justify-center items-center`}
+                    
+            style={{ backgroundColor: colorItem.renderedColor, scale: index === colorIndex ? '110%' : '100%' }}
             title={colorItem.name}
           ></div>
         ))}
