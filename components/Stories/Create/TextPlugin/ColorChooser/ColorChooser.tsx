@@ -1,6 +1,6 @@
 import ItemChooserCarousel from "@/components/ItemChooserCarousel/ItemChooserCarousel";
 import { TextColors } from "@/lib/types/stories.types";
-import { RefObject, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 
 interface ColorChooserProps {
   setColor: (color: string) => void;
@@ -17,6 +17,11 @@ const ColorChooser: React.FC<ColorChooserProps> = ({
   storyProperties,
 }) => {
   const [colorIndex, setColorIndex] = useState(0);
+  
+  useEffect(() => {
+    setColor(textColors?.current?.[colorIndex].renderedColor as string)
+  }, [colorIndex])
+
   return (
     <div className="absolute bottom-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
       <ItemChooserCarousel
@@ -28,10 +33,7 @@ const ColorChooser: React.FC<ColorChooserProps> = ({
         {textColors?.current?.map((colorItem, index) => (
           <div
             key={index}
-            
-            onClick={() => setColor(colorItem.renderedColor)}
             className={`cursor-pointer border transition-all duration-300 border-white rounded-lg h-12 w-12 justify-center items-center`}
-                    
             style={{ backgroundColor: colorItem.renderedColor, scale: index === colorIndex ? '115%' : '100%' }}
             title={colorItem.name}
           ></div>
