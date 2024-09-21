@@ -32,7 +32,7 @@ const ColorChooser: React.FC<ColorChooserProps> = ({
             onClick={() => setColor(colorItem.renderedColor)}
             className={`cursor-pointer border transition-all duration-300 border-white rounded-lg h-12 w-12 justify-center items-center`}
                     
-            style={{ backgroundColor: colorItem.renderedColor, scale: index === colorIndex ? '110%' : '100%' }}
+            style={{ backgroundColor: colorItem.renderedColor, scale: index === colorIndex ? '115%' : '100%' }}
             title={colorItem.name}
           ></div>
         ))}

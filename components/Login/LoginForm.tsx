@@ -149,8 +149,6 @@ export default function LoginForm() {
                         </span>
                         <img
                             src="/taiyo_logo.png" aria-label="taiyo engine" alt="Taiyo_team" width={60} height={60} />
-                        <img   
-                            src="/qtm_logo_w_moon.png" aria-label="quantum" alt="Quantum_team" width={40} height={40} />
                 </motion.div>
 
             </div>

@@ -39,7 +39,7 @@ const FontChooser: React.FC<FontChooserProps> = ({
                   key={index}
                   style={{
                     fontFamily: font.variable,
-                    scale: index === fontIndex ? '110%' : '100%'
+                    scale: index === fontIndex ? '115%' : '100%'
                   }}
                   onClick={() => {
                     setSelectedTextFont(font.variable);
