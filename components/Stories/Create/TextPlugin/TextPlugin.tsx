@@ -123,7 +123,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     padding = 0,
     cornerRadius = 0,
   }: BackgroundShapeParams): string {
-    console.log("number of element",lines.length, "and are : ", lines)
+    console.log("number of element", lines.length, "and are : ", lines);
     // Set initial positions for each line based on alignment
     lines.forEach((line, index) => {
       // Center the line horizontally by default
@@ -664,7 +664,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
     var textMeasure = new Konva.Text({
       text: makeLineBreakerMeasurer()?.join("\n"),
-      width: playgroundRef.current.offsetWidth,
+      width: storyProperties.width - 128,
+      align: "center",
       fontFamily: toRenderTextFont,
       fontSize: 22,
       fontStyle: "500",
@@ -730,7 +731,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         while (torender.firstChild) {
           torender.removeChild(torender.firstChild);
         }
-        console.log(lines)
+        console.log(lines);
         return lines;
       } else {
         console.error("Element with ID 'content' not found.");
@@ -825,7 +826,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           >
             <div className="relative h-0 w-full">
               <div className=" absolute inset-0 z-0 h-full w-full">
-                <svg className="h-fit w-full z-0 overflow-visible">
+                <svg
+                  className="h-fit w-full z-0 overflow-visible"
+                  viewBox="80 -15 40 50"
+                  preserveAspectRatio="xMidYMid meet"
+                >
                   <path fill="black" fillOpacity={1} d={previewBgPath}></path>
                 </svg>
               </div>
@@ -837,7 +842,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               ref={editorRef}
               className="absolute top-20"
               style={{
-                position: 'relative',
+                position: "relative",
                 zIndex: 10,
                 fontFamily: toRenderTextFont,
                 textAlign: "center",
