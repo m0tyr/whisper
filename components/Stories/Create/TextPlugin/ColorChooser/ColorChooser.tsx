@@ -3,6 +3,7 @@ import { TextColors } from "@/lib/types/stories.types";
 import { RefObject, useEffect, useRef, useState } from "react";
 
 interface ColorChooserProps {
+  colorSavedIndex: number | null;
   setColor: (color: string) => void;
   textColors: RefObject<TextColors[]>;
   storyProperties: {
@@ -12,11 +13,12 @@ interface ColorChooserProps {
 }
 
 const ColorChooser: React.FC<ColorChooserProps> = ({
+  colorSavedIndex,
   setColor,
   textColors,
   storyProperties,
 }) => {
-  const [colorIndex, setColorIndex] = useState(0);
+  const [colorIndex, setColorIndex] = useState(colorSavedIndex as number);
   
   useEffect(() => {
     setColor(textColors?.current?.[colorIndex].renderedColor as string)

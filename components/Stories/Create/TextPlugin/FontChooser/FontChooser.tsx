@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { RefObject, useEffect, useRef, useState } from "react";
 
 interface FontChooserProps {
-  setSelectedTextFont: (font: string) => void;
+  fontSavedIndex: number | null;
   setToRenderTextFont: (font: string) => void;
   textFonts: RefObject<TextFonts[]>;
   storyProperties: {
@@ -14,15 +14,14 @@ interface FontChooserProps {
 }
 
 const FontChooser: React.FC<FontChooserProps> = ({
-  setSelectedTextFont,
+  fontSavedIndex,
   setToRenderTextFont,
   textFonts,
   storyProperties,
 }) => {
-  const [fontIndex, setFontIndex] = useState(0);
+  const [fontIndex, setFontIndex] = useState(fontSavedIndex as number);
   useEffect(() => {
     setToRenderTextFont(textFonts.current?.[fontIndex].renderedFont as string)
-    setSelectedTextFont(textFonts.current?.[fontIndex].renderedFont as string)
   }, [fontIndex])
   return (
     <>
@@ -42,7 +41,6 @@ const FontChooser: React.FC<FontChooserProps> = ({
                     scale: index === fontIndex ? '115%' : '100%'
                   }}
                   onClick={() => {
-                    setSelectedTextFont(font.variable);
                     setToRenderTextFont(font.renderedFont);
                   }}
                   className="min-w-12 w-fit px-2 h-12 transition-all duration-300 rounded-lg bg-[rgb(168,168,168,.3)] whitespace-nowrap border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[22px] text-center justify-center items-center"

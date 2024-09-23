@@ -86,7 +86,7 @@ const LexicalContentEditable = React.forwardRef((props: any, ref: any) => {
 /*             ref={editableRef} // Attach the ref here
  */            style={style}
             className="outline-none text-[15px]"
-            onKeyDown={watchtext}
+            onKeyUp={watchtext}
             autoFocus
           />
         }

@@ -103,11 +103,9 @@ const StoryCreate = () => {
   const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
   const textInstancesRef = useRef<Konva.Text[]>([]);
   const textCustomInstancesRef = useRef<TextInstance[]>([]);
-  const labelCustomInstancesRef = useRef<Konva.Label[]>([]);
   const [toRenderTextFont, setToRenderTextFont] = useState("Arial");
   const [textValue, setTextValue] = useState("");
   const [textNode, setTextNode] = useState<Konva.Text | null>(null);
-  const [selectedTextFont, setSelectedTextFont] = useState("Arial");
 
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
     const stage = stageRef.current;
@@ -137,7 +135,6 @@ const StoryCreate = () => {
   const handleTextNodeDblClick = (node: Konva.Text) => {
     setTextValue(node.text());
     setToRenderTextFont(node.fontFamily());
-    setSelectedTextFont(node.fontFamily());
     setTextNode(node);
     setisAddingNewText(false);
     setIsInTextContext(true);
@@ -679,8 +676,6 @@ const StoryCreate = () => {
               setTextValue={setTextValue}
               textNode={textNode}
               setTextNode={setTextNode}
-              selectedTextFont={selectedTextFont}
-              setSelectedTextFont={setSelectedTextFont}
               transformerInstancesRef={transformerInstancesRef}
               textInstancesRef={textInstancesRef}
               textCustomInstancesRef={textCustomInstancesRef}

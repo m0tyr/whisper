@@ -27,11 +27,25 @@ function ItemChooserCarousel({
   const [OverflowStories, setOverflowStories] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(false);
-  const [animationContainerValue, setAnimationContainerValue] = useState(
-    containerRef.width / 2
-  );
-  const [scrollValue, setScrollValue] = useState(0);
+  const [isSavedIndexMounted, setIsSavedIndexMounted] = useState(false);
   const gap = 4;
+  const calculateInitialScrollValue = () => {
+    let totalScrollValue = 0;
+
+    for (let i = 0; i < index; i++) {
+      const item = itemRefs.current[i];
+      if (item) {
+        totalScrollValue += item.offsetWidth + gap;
+      }
+    }
+
+    return totalScrollValue;
+  };
+
+  const [scrollValue, setScrollValue] = useState(calculateInitialScrollValue());
+  const [animationContainerValue, setAnimationContainerValue] = useState(
+    containerRef.width / 2 
+  );
 
   useEffect(() => {
     if (LayoutContainerRef.current && itemsCarousel.current) {
@@ -43,59 +57,75 @@ function ItemChooserCarousel({
     }
   }, [animationContainerValue, index]);
 
-const getCurrentStep = (isScrollingLeft = false) => {
-  const currentItem = itemRefs.current[index];
-  let adjacentItem;
-
-  if (isScrollingLeft) {
-    adjacentItem = itemRefs.current[index - 1];
-  } else {
-    adjacentItem = itemRefs.current[index + 1];
-  }
-
-  if (currentItem && adjacentItem) {
-    return currentItem.offsetWidth / 2 + adjacentItem.offsetWidth / 2 + gap;
-  }
-
-  return 0;
-};
-
-const scrollLeft = () => {
-  if (index > 0 && LayoutContainerRef.current && itemsCarousel.current) {
-    const step = getCurrentStep(true); 
-
-    setindex(index - 1);
-
-    const newScrollValue = scrollValue + step;
-    setScrollValue(newScrollValue);
-    setAnimationContainerValue(containerRef.width / 2 - newScrollValue); 
-  }
-};
-
-const scrollRight = () => {
-  if (index < itemsCarousel.current.length - 1 && LayoutContainerRef.current && itemsCarousel.current) {
-    const step = getCurrentStep(); 
-
-    setindex(index + 1);
-
-    const newScrollValue = scrollValue - step;
-    setScrollValue(newScrollValue);
-    setAnimationContainerValue(containerRef.width / 2 - newScrollValue); 
-  }
-};
-
-
   useEffect(() => {
     if (LayoutContainerRef.current && itemsCarousel.current) {
+      setAnimationContainerValue(
+        containerRef.width / 2 -
+          (itemRefs.current?.[0]?.offsetWidth || 0) / 2 -
+          calculateInitialScrollValue()
+      );
+      setScrollValue(-calculateInitialScrollValue());
+      setIsSavedIndexMounted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      LayoutContainerRef.current &&
+      itemsCarousel.current &&
+      isSavedIndexMounted
+    ) {
       setAnimationContainerValue(
         containerRef.width / 2 -
           (itemRefs.current?.[0]?.offsetWidth || 0) / 2 +
           scrollValue
       );
-      setShowLeftButton(index > 0);
-      setShowRightButton(index < itemsCarousel?.current?.length - 1);
     }
   }, [containerRef, scrollValue, index]);
+
+  const getCurrentStep = (isScrollingLeft = false) => {
+    const currentItem = itemRefs.current[index];
+    let adjacentItem;
+
+    if (isScrollingLeft) {
+      adjacentItem = itemRefs.current[index - 1];
+    } else {
+      adjacentItem = itemRefs.current[index + 1];
+    }
+
+    if (currentItem && adjacentItem) {
+      return currentItem.offsetWidth / 2 + adjacentItem.offsetWidth / 2 + gap;
+    }
+
+    return 0;
+  };
+
+  const scrollLeft = () => {
+    if (index > 0 && LayoutContainerRef.current && itemsCarousel.current) {
+      const step = getCurrentStep(true);
+
+      setindex(index - 1);
+      const newScrollValue = scrollValue + step;
+      setScrollValue(newScrollValue);
+      setAnimationContainerValue(containerRef.width / 2 - newScrollValue);
+    }
+  };
+
+  const scrollRight = () => {
+    if (
+      index < itemsCarousel.current.length - 1 &&
+      LayoutContainerRef.current &&
+      itemsCarousel.current
+    ) {
+      const step = getCurrentStep();
+
+      setindex(index + 1);
+
+      const newScrollValue = scrollValue - step;
+      setScrollValue(newScrollValue);
+      setAnimationContainerValue(containerRef.width / 2 - newScrollValue);
+    }
+  };
 
   return (
     <>
@@ -147,7 +177,10 @@ const scrollRight = () => {
       <motion.div
         ref={LayoutContainerRef}
         animate={{ x: animationContainerValue }}
-        style={{ x: containerRef.width / 2, scrollBehavior: "smooth" }}
+        style={{
+          x: animationContainerValue,
+          scrollBehavior: "smooth",
+        }}
         transition={{
           type: "tween",
           duration: 0.2,

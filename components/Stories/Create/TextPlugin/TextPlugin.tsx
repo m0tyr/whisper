@@ -15,10 +15,11 @@ import {
   LexicalEditor,
   TextNode,
 } from "lexical";
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import React, { RefObject, use, useEffect, useRef, useState } from "react";
 import FontChooser from "./FontChooser/FontChooser";
 import ColorChooser from "./ColorChooser/ColorChooser";
 import { motion } from "framer-motion";
+import { $patchStyleText } from "@lexical/selection";
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -39,29 +40,28 @@ interface TextPluginProps {
   setTextValue: (value: string) => void;
   textNode: Konva.Text | null;
   setTextNode: (node: Konva.Text | null) => void;
-  selectedTextFont: string;
-  setSelectedTextFont: (font: string) => void;
   transformerInstancesRef: RefObject<Konva.Transformer[]>;
   textInstancesRef: RefObject<Konva.Text[]>;
   textCustomInstancesRef: RefObject<TextInstance[]>;
 }
 
 interface Line {
-  cx: number; // Center x-coordinate of the line
-  width: number; // Width of the line
-  lastInParagraph?: boolean; // Optional flag indicating if it's the last line in a paragraph
+  cx: number;
+  width: number;
+  lastInParagraph?: boolean;
 }
 
 interface BackgroundShapeParams {
-  lines: Line[]; // Array of line objects
-  lineHeight: number; // Height between lines
-  width: number; // Width of the shape
-  align?: "left" | "right" | "justify" | "center"; // Alignment of lines, default is "left"
-  padding?: number; // Padding around the shape, default is 0
-  cornerRadius?: number; // Corner radius for rounded edges, default is 0
+  lines: Line[];
+  lineHeight: number;
+  width: number;
+  align?: "left" | "right" | "justify" | "center";
+  padding?: number;
+  cornerRadius?: number;
 }
 
 const CHANGE_TEXT_COLOR_COMMAND = createCommand<string>();
+const CHANGE_TEXT_FONT_COMMAND = createCommand<string>();
 
 const TextPlugin: React.FC<TextPluginProps> = ({
   isAddingNewText,
@@ -77,30 +77,39 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   setTextValue,
   textNode,
   setTextNode,
-  selectedTextFont,
-  setSelectedTextFont,
   transformerInstancesRef,
   textInstancesRef,
-  textCustomInstancesRef,
 }) => {
   const editorRef: any = useRef<LexicalEditor | null>();
+  const playgroundRef: any = useRef<HTMLDivElement | null>();
   const [isFontLoaded, setIsFontLoaded] = useState(false);
+  const [previewBgPath, setPreviewBgPath] = useState("");
   const [color, setColor] = useState<string>("");
+  const [fontSavedIndex, setFontSavedIndex] = useState<number | null>(0);
+  const [colorSavedIndex, setColorSavedIndex] = useState<number | null>(0);
 
   const textColors = useRef<TextColors[]>([
+    { renderedColor: "rgb(255 255 255)", name: "white" },
     { renderedColor: "rgb(220 38 38)", name: "red" },
     { renderedColor: "rgb(0 0 0)", name: "black" },
     { renderedColor: "rgb(0 149 246)", name: "blue" },
     { renderedColor: "rgb(250 204 21)", name: "yellow" },
     { renderedColor: "rgb(22 163 74)", name: "green" },
-    { renderedColor: "rgb(255 255 255)", name: "white" },
   ]);
 
   const textFonts = useRef<TextFonts[]>([
     { variable: "Arial", renderedFont: "Arial", name: "Simple" },
     { variable: "Chakra Petch", renderedFont: "Chakra Petch", name: "Dirty" },
-    { variable: "var(--font-code2001)", renderedFont: "__code2001_b724b6", name: "Freaky" },
-    { variable: "var(--font-andalos)", renderedFont: "__peristiwa_df0a95", name: "Graphic" },
+    {
+      variable: "var(--font-code2001)",
+      renderedFont: "__code2001_b724b6",
+      name: "Freaky",
+    },
+    {
+      variable: "var(--font-andalos)",
+      renderedFont: "__peristiwa_df0a95",
+      name: "Graphic",
+    },
   ]);
 
   const [isChoosingFont, setIsChoosingFont] = useState(false);
@@ -114,6 +123,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     padding = 0,
     cornerRadius = 0,
   }: BackgroundShapeParams): string {
+    console.log("number of element",lines.length, "and are : ", lines)
     // Set initial positions for each line based on alignment
     lines.forEach((line, index) => {
       // Center the line horizontally by default
@@ -221,9 +231,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
       var textMeasure = new Konva.Text({
         text: pos.text,
-        fontFamily: selectedTextFont,
-        fontSize: 20,
-        fontWeight: "600",
+        fontFamily: toRenderTextFont,
+        fontSize: 22,
+        fontStyle: "500",
         textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
         fill: "#ffffff",
         visible: false,
@@ -238,9 +248,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       textMeasure.textArr.forEach((line) => {
         var text = new Konva.Text({
           text: line.text,
-          fontFamily: selectedTextFont,
-          fontSize: 20,
-          fontWeight: "600",
+          fontFamily: toRenderTextFont,
+          fontSize: 22,
+          fontStyle: "500",
           textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
           fill: "#ffffff",
           x: 0,
@@ -585,7 +595,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       const childNodesArray = Array.isArray(childNodes)
         ? childNodes
         : Array.from(childNodes);
-      console.log(childNodesArray);
       for (let i = 0; i < childNodesArray.length; i++) {
         const childNode = childNodesArray[i];
         if (childNode.nodeType !== Node.TEXT_NODE) {
@@ -651,6 +660,32 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     const editorStateTextString = parsedEditorState.read(() =>
       $getRoot().getTextContent()
     );
+    const layer = layerRef.current;
+
+    var textMeasure = new Konva.Text({
+      text: makeLineBreakerMeasurer()?.join("\n"),
+      width: playgroundRef.current.offsetWidth,
+      fontFamily: toRenderTextFont,
+      fontSize: 22,
+      fontStyle: "500",
+      textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
+      fill: "#ffffff",
+      visible: false,
+    });
+    layer?.add(textMeasure);
+
+    setPreviewBgPath(
+      generateBackgroundShape({
+        lines: JSON.parse(
+          JSON.stringify(textMeasure.textArr as unknown as Line[])
+        ),
+        lineHeight: textMeasure.fontSize(),
+        width: textMeasure.width(),
+        align: "center",
+        padding: 10,
+        cornerRadius: 10,
+      })
+    );
     setTextValue(editorStateTextString);
   };
 
@@ -691,8 +726,12 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         // Call the function only if content is not null
         const spans = generateTextNodes(content, torender);
         const lines = splitLines(spans);
-        /*           tempSpanContent.parentNode.removeChild(tempSpanContent);
-         */ return lines;
+        tempSpanContent.parentNode.removeChild(tempSpanContent);
+        while (torender.firstChild) {
+          torender.removeChild(torender.firstChild);
+        }
+        console.log(lines)
+        return lines;
       } else {
         console.error("Element with ID 'content' not found.");
       }
@@ -706,15 +745,28 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       editorRef.current.registerCommand(
         CHANGE_TEXT_COLOR_COMMAND,
         (payload: any) => {
+          setColorSavedIndex(() => {
+            const index = textColors.current.findIndex(
+              (color) => color.renderedColor === payload
+            );
+            return index >= 0 ? index : null; // If found, return index; otherwise, return null
+          });
+          // Getting the all the text and changing color.
+          const rootNode = $getRoot();
+          const allTextNodes = rootNode.getAllTextNodes();
+          allTextNodes.forEach((node) => {
+            node.setStyle(`
+              font-family: ${toRenderTextFont};
+              color: ${payload}
+              `);
+          });
+          // Getting the current text and changing color.
           const selection = $getSelection();
-          if ($isRangeSelection(selection)) {
-            const nodes = selection.getNodes();
-            nodes.forEach((node) => {
-              if (node instanceof TextNode) {
-                node.setStyle(`color: ${payload}`);
-              }
+          if (selection)
+            $patchStyleText(selection, {
+              "font-family": toRenderTextFont,
+              color: payload,
             });
-          }
           return true;
         },
         COMMAND_PRIORITY_EDITOR
@@ -722,6 +774,39 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       editorRef.current.dispatchCommand(CHANGE_TEXT_COLOR_COMMAND, color);
     }
   }, [color, editorRef.current]);
+
+  useEffect(() => {
+    if (editorRef.current && toRenderTextFont) {
+      editorRef.current.update(() => {
+        setFontSavedIndex(() => {
+          const index = textFonts.current.findIndex(
+            (font) => font.renderedFont === toRenderTextFont
+          );
+          return index >= 0 ? index : null;
+        });
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const rootNode = $getRoot();
+          const allTextNodes = rootNode.getAllTextNodes();
+          allTextNodes.forEach((node) => {
+            node.setStyle(`
+              font-family: ${toRenderTextFont};
+              color: ${color}
+              `);
+          });
+          $patchStyleText(selection, {
+            "font-family": toRenderTextFont,
+            color: color,
+          });
+        }
+        editorRef.current.dispatchCommand(CHANGE_TEXT_FONT_COMMAND, {
+          styleKey: "fontFamily",
+          styleValue: toRenderTextFont,
+        });
+        editorRef.current.focus();
+      });
+    }
+  }, [toRenderTextFont, editorRef.current]);
 
   return (
     <>
@@ -734,9 +819,17 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       >
         <div className="flex flex-col justify-center items-center w-full  h-full z-50 bg-[rgb(0,0,0,0.4)]">
           <div
+            ref={playgroundRef}
             id="text-playground"
             className="min-w-[22px] max-w-[calc(100%_-_128px)]"
           >
+            <div className="relative h-0 w-full">
+              <div className=" absolute inset-0 z-0 h-full w-full">
+                <svg className="h-fit w-full z-0 overflow-visible">
+                  <path fill="black" fillOpacity={1} d={previewBgPath}></path>
+                </svg>
+              </div>
+            </div>
             <LexicalContentEditable
               value={textValue}
               onChange={handleTextChange}
@@ -744,12 +837,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               ref={editorRef}
               className="absolute top-20"
               style={{
-                fontFamily: selectedTextFont,
+                position: 'relative',
+                zIndex: 10,
+                fontFamily: toRenderTextFont,
                 textAlign: "center",
                 width: "100%",
                 height: textValue.trim() === "" ? "22px" : "auto",
-                fontSize: "20px",
-                fontWeight: "600",
+                fontSize: "22px",
+                fontWeight: "500",
                 textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
                 border: "none",
                 resize: "none",
@@ -770,8 +865,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 overflowWrap: "break-word",
                 zIndex: -999,
                 color: "white",
-                fontSize: "20px",
-                fontWeight: 600,
+                fontSize: "22px",
+                fontWeight: "500",
                 lineHeight: "22px",
               }}
             ></span>
@@ -848,10 +943,34 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 </g>
               </svg>
             </motion.div>
+            <motion.div
+              whileTap={{ opacity: 0.7, scale: 0.9 }}
+              whileHover={{ opacity: 0.9 }}
+              onClick={() => {
+                setIsChoosingColor(true);
+                setIsChoosingFont(false);
+              }}
+              className="bg-insanedark/70  flex justify-center items-center cursor-pointer p-1 rounded-lg select-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  d="M8 2.25c-.618 0-1.169.39-1.373.974l-3.335 9.528a.75.75 0 0 0 1.416.496L5.845 10h4.31l1.137 3.248a.75.75 0 0 0 1.416-.496L9.373 3.224A1.455 1.455 0 0 0 8 2.25M9.63 8.5L8 3.842L6.37 8.5z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </motion.div>
           </div>
         </div>
         {isChoosingColor && (
           <ColorChooser
+            colorSavedIndex={colorSavedIndex}
             setColor={setColor}
             textColors={textColors}
             storyProperties={storyProperties}
@@ -859,7 +978,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         )}
         {isChoosingFont && (
           <FontChooser
-            setSelectedTextFont={setSelectedTextFont}
+            fontSavedIndex={fontSavedIndex}
             setToRenderTextFont={setToRenderTextFont}
             textFonts={textFonts}
             storyProperties={storyProperties}
