@@ -227,7 +227,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     const stage = stageRef.current;
     const layer = layerRef.current;
     if (stage && layer) {
-      layer.destroyChildren();
+      layer.clear();
 
       var textMeasure = new Konva.Text({
         text: pos.text,
@@ -274,8 +274,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         lineHeight: textMeasure.fontSize(),
         width: textMeasure.width(),
         align: "center",
-        padding: pos.padding.top,
-        cornerRadius: 10,
+        padding: 8,
+        cornerRadius: 8,
       });
 
       const konvaPath = new Konva.Path({
@@ -661,10 +661,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       $getRoot().getTextContent()
     );
     const layer = layerRef.current;
-
+    const width = playgroundRef.current.offsetWidth + 1;
     var textMeasure = new Konva.Text({
       text: makeLineBreakerMeasurer()?.join("\n"),
-      width: storyProperties.width - 128,
+      width: width,
       align: "center",
       fontFamily: toRenderTextFont,
       fontSize: 22,
@@ -683,8 +683,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         lineHeight: textMeasure.fontSize(),
         width: textMeasure.width(),
         align: "center",
-        padding: 10,
-        cornerRadius: 10,
+        padding: 8,
+        cornerRadius: 8,
       })
     );
     setTextValue(editorStateTextString);
@@ -828,8 +828,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               <div className=" absolute inset-0 z-0 h-full w-full">
                 <svg
                   className="h-fit w-full z-0 overflow-visible"
-                  viewBox="80 -15 40 50"
-                  preserveAspectRatio="xMidYMid meet"
                 >
                   <path fill="black" fillOpacity={1} d={previewBgPath}></path>
                 </svg>

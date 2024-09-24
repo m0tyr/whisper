@@ -15,16 +15,14 @@ import Konva from "konva";
 import "../../../app/globals.css";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-} from "@radix-ui/react-dropdown-menu";
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import getFeaturedStickers from "@/lib/actions/stories.actions";
 import { useQueryFeaturedStickers } from "@/hooks/queries/useQueryFeaturedStickers";
 
-import { Grid } from "@giphy/react-components";
-import { GiphyFetch } from "@giphy/js-fetch-api";
 import GifPlugin from "./GifPlugin/GifPlugin";
 import TextPlugin from "./TextPlugin/TextPlugin";
 import { TextInstance } from "@/lib/types/stories.types";
@@ -147,7 +145,7 @@ const StoryCreate = () => {
       transformerInstancesRef.current[parseInt(id)].nodes(nodes);
       transformerInstancesRef.current[parseInt(id)].getLayer()?.batchDraw();
     }
-};
+  };
   const handleLabelNodeDblClick = (node: Konva.Label) => {
     setisAddingNewText(false);
     setIsInTextContext(true);
@@ -175,7 +173,9 @@ const StoryCreate = () => {
     if (stage && layer && textNode && textInstancesRef) {
       textCustomInstancesRef?.current?.forEach((textInstances) => {
         textInstances.textInstances.forEach((text) => {
-          text.on("click", () => handleLabelNodeClick(textInstances.textInstances));
+          text.on("click", () =>
+            handleLabelNodeClick(textInstances.textInstances)
+          );
           text.on("dblclick", () => handleLabelNodeDblClick(text));
           text.on("dragmove", () => {
             if (text) {
@@ -741,19 +741,50 @@ const StoryCreate = () => {
 
                     <DropdownMenuContent
                       align="center"
-                      className="w-[180px] drop-shadow-xl p-2 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]"
+                      className="w-[210px] drop-shadow-xl p-2 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]"
                     >
-                      <DropdownMenuGroup className="text-white text-[14px] flex flex-col gap-3 m-1">
-                        <DropdownMenuItem>Enregistrer</DropdownMenuItem>
-
-                        <DropdownMenuItem>Bloquer</DropdownMenuItem>
-
-                        <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                          Signaler
+                      <DropdownMenuGroup className="text-white text-[12px] flex flex-col gap-0.5 m-1">
+                        <DropdownMenuItem>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                          >
+                            <g
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                            >
+                              <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                              <path d="M5 13V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2h-5.5M2 19h7m-3-3l3 3l-3 3" />
+                            </g>
+                          </svg>
+                          <div className="ml-2 text-[14px]">
+                            Importer un media
+                          </div>
                         </DropdownMenuItem>
-
-                        <DropdownMenuItem className="!text-[rgb(255,48,64)]">
-                          Supprimer
+                        <DropdownMenuItem>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="33"
+                            height="33"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M8 7H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                            />
+                          </svg>
+                          <div className="ml-2 text-[14px]">
+                            Sauvegarder dans les brouillons
+                          </div>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
