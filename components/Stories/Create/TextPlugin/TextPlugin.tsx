@@ -123,38 +123,32 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     padding = 0,
     cornerRadius = 0,
   }: BackgroundShapeParams): string {
-    console.log("number of element", lines.length, "and are : ", lines);
-    // Set initial positions for each line based on alignment
+
+    lineHeight = 22 + 2;
+
     lines.forEach((line, index) => {
-      // Center the line horizontally by default
       line.cx = width / 2;
 
-      // Adjust position based on alignment
       if (align === "right") {
         line.cx = width - line.width / 2;
       } else if (align === "left") {
         line.cx = line.width / 2;
       }
 
-      // If alignment is justify and it's not the last line in a paragraph, stretch the line to full width
       if (align === "justify" && !line.lastInParagraph) {
         line.width = width;
       }
 
-      // For justified lines, adjust the center position
       if (align === "justify") {
         line.cx = line.width / 2;
       }
     });
 
-    // Initialize the path string with the starting point
     let path = `M ${lines[0]?.cx ?? 0} ${-padding}`;
 
-    // Draw the right side of the shape
     lines.forEach((line, index) => {
       const { cx } = line;
       const prevLine = lines[index - 1];
-      // Draw line to the current point based on line width comparison with the previous line
       if (prevLine && prevLine.width > line.width) {
         path += ` L ${cx + line.width / 2 + padding} ${
           index * lineHeight + padding
@@ -165,7 +159,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         }`;
       }
 
-      // Draw line to the next point
       const nextLine = lines[index + 1];
       if (nextLine && nextLine.width > line.width) {
         path += ` L ${cx + line.width / 2 + padding} ${
@@ -178,13 +171,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       }
     });
 
-    // Draw the left side of the shape by iterating backward
     for (let i = lines.length - 1; i >= 0; i--) {
       const line = lines[i];
       const { cx } = line;
       const nextLine = lines[i + 1];
 
-      // Draw line to the current point based on line width comparison with the next line
       if (nextLine && nextLine.width > line.width) {
         path += ` L ${cx - line.width / 2 - padding} ${
           (i + 1) * lineHeight - padding
@@ -195,7 +186,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         }`;
       }
 
-      // Draw line to the previous point
       const prevLine = lines[i - 1];
       if (prevLine && prevLine.width > line.width) {
         path += ` L ${cx - line.width / 2 - padding} ${
@@ -208,10 +198,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       }
     }
 
-    // Close the path
     path += " Z";
 
-    // Parse and round the corners of the path using external functions
     const parsedPath = parsePath(path);
     return roundCommands(parsedPath, cornerRadius).path;
   }
@@ -826,9 +814,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           >
             <div className="relative h-0 w-full">
               <div className=" absolute inset-0 z-0 h-full w-full">
-                <svg
-                  className="h-fit w-full z-0 overflow-visible"
-                >
+                <svg className="h-fit w-full z-0 overflow-visible">
                   <path fill="black" fillOpacity={1} d={previewBgPath}></path>
                 </svg>
               </div>

@@ -20,6 +20,7 @@ const FontChooser: React.FC<FontChooserProps> = ({
   storyProperties,
 }) => {
   const [fontIndex, setFontIndex] = useState(fontSavedIndex as number);
+  
   useEffect(() => {
     setToRenderTextFont(textFonts.current?.[fontIndex].renderedFont as string)
   }, [fontIndex])
