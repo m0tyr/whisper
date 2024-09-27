@@ -101,7 +101,7 @@ const StoryCreate = () => {
   const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
   const textInstancesRef = useRef<Konva.Text[]>([]);
   const textCustomInstancesRef = useRef<TextInstance[]>([]);
-  const [toRenderTextFont, setToRenderTextFont] = useState("Arial");
+  const [toRenderTextFont, setToRenderTextFont] = useState("system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif");
   const [textValue, setTextValue] = useState("");
   const [textNode, setTextNode] = useState<Konva.Text | null>(null);
 
@@ -741,7 +741,7 @@ const StoryCreate = () => {
 
                     <DropdownMenuContent
                       align="center"
-                      className="w-[210px] drop-shadow-xl p-2 rounded-2xl bg-[#181818] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]"
+                      className="w-[210px] drop-shadow-xl p-0.5 rounded-2xl bg-[#181818]/65 backdrop-blur-[12px] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]"
                     >
                       <DropdownMenuGroup className="text-white text-[12px] flex flex-col gap-0.5 m-1">
                         <DropdownMenuItem>

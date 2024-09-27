@@ -6,7 +6,7 @@
  *
  */
 
-import type {LexicalEditor, Spread} from 'lexical';
+import type { LexicalEditor, Spread } from "lexical";
 
 import {
   type DOMConversionMap,
@@ -20,7 +20,7 @@ import {
   TextNode,
   $getNodeByKey,
   $isTextNode,
-} from 'lexical';
+} from "lexical";
 
 export type SerializedMentionNode = Spread<
   {
@@ -30,14 +30,13 @@ export type SerializedMentionNode = Spread<
   SerializedTextNode
 >;
 
-
 function convertMentionElement(
-  domNode: HTMLElement,
+  domNode: HTMLElement
 ): DOMConversionOutput | null {
   const textContent = domNode.textContent;
-  const id = domNode.id
+  const id = domNode.id;
   if (textContent !== null) {
-    const node = $createMentionNode(textContent,id);
+    const node = $createMentionNode(textContent, id, isStoriesBasedText);
     return {
       node,
     };
@@ -45,24 +44,33 @@ function convertMentionElement(
 
   return null;
 }
-
+let isStoriesBasedText = false;
 const mentionStyle = "color: #1da1f2;";
-export  class MentionNode extends TextNode {
+export class MentionNode extends TextNode {
   getStart() {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
   __mention: string;
   __user_id: string;
 
   static getType(): string {
-    return 'mention';
+    return "mention";
   }
 
   static clone(node: MentionNode): MentionNode {
-    return new MentionNode(node.__mention,node.__user_id, node.__text, node.__key);
+    return new MentionNode(
+      node.__mention,
+      node.__user_id,
+      node.__text,
+      node.__key
+    );
   }
   static importJSON(serializedNode: SerializedMentionNode): MentionNode {
-    const node = $createMentionNode(serializedNode.mentionName, serializedNode.id);
+    const node = $createMentionNode(
+      serializedNode.mentionName,
+      serializedNode.id,
+      isStoriesBasedText
+    );
     node.setTextContent(serializedNode.text);
     node.setFormat(serializedNode.format);
     node.setDetail(serializedNode.detail);
@@ -71,7 +79,7 @@ export  class MentionNode extends TextNode {
     return node;
   }
 
-  constructor(mentionName: string,id: string , text?: string, key?: NodeKey) {
+  constructor(mentionName: string, id: string, text?: string, key?: NodeKey) {
     super(text ?? mentionName, key);
     this.__mention = mentionName;
     this.__user_id = id;
@@ -81,15 +89,19 @@ export  class MentionNode extends TextNode {
     return {
       ...super.exportJSON(),
       mentionName: this.__mention,
-      id : this.__user_id,
-      type: 'mention',
+      id: this.__user_id,
+      type: "mention",
       version: 1,
     };
   }
 
   createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config);
-    dom.style.cssText = mentionStyle;
+    if (isStoriesBasedText) {
+      dom.className = "mention-node";
+    } else {
+      dom.style.cssText = mentionStyle;
+    }
     return dom;
   }
   setMention(mention: string): void {
@@ -103,19 +115,19 @@ export  class MentionNode extends TextNode {
         node.setMention(newName);
       }
     });
-  }
+  };
 
   exportDOM(): DOMExportOutput {
-    const element = document.createElement('span');
-    element.setAttribute('data-lexical-mention', 'true');
+    const element = document.createElement("span");
+    element.setAttribute("data-lexical-mention", "true");
     element.textContent = this.__text;
-    return {element};
+    return { element };
   }
 
   static importDOM(): DOMConversionMap | null {
     return {
       span: (domNode: HTMLElement) => {
-        if (!domNode.hasAttribute('data-lexical-mention')) {
+        if (!domNode.hasAttribute("data-lexical-mention")) {
           return null;
         }
         return {
@@ -135,18 +147,23 @@ export  class MentionNode extends TextNode {
   }
 }
 
-export function $createMentionNode(mentionName: string,id :string): MentionNode {
-  const mentionNode = new MentionNode("@"+mentionName, id);
-  mentionNode.setMode('segmented').toggleDirectionless();
+export function $createMentionNode(
+  mentionName: string,
+  id: string,
+  isFromStories: boolean
+): MentionNode {
+  const mentionNode = new MentionNode("@" + mentionName, id);
+  isStoriesBasedText = isFromStories;
+  mentionNode.setMode("segmented").toggleDirectionless();
   return $applyNodeReplacement(mentionNode);
 }
 
-export function $mentionNodeAuto(mentionName = '',id :string):MentionNode{
-  return $applyNodeReplacement(new MentionNode(mentionName,id));
+export function $mentionNodeAuto(mentionName = "", id: string): MentionNode {
+  return $applyNodeReplacement(new MentionNode(mentionName, id));
 }
 
 export function $isMentionNode(
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is MentionNode {
   return node instanceof MentionNode;
 }

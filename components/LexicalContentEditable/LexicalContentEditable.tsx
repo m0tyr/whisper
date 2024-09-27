@@ -47,7 +47,7 @@ const initialConfig = {
 };
 
 const LexicalContentEditable = React.forwardRef((props: any, ref: any) => {
-  const { watchtext, placeholder, style, isAlwaysFocus } = props;
+  const { watchtext, placeholder, style, isRequestingFromStories } = props;
 
   const onChange = () => {};
   window.onload = function () {
@@ -72,7 +72,7 @@ const LexicalContentEditable = React.forwardRef((props: any, ref: any) => {
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <MentionsPlugin />
+      <MentionsPlugin isRequestingFromStories={isRequestingFromStories} />
       <EditorCapturePlugin ref={ref} />
       <HistoryPlugin />
       <LinkPlugin validateUrl={validateUrl} />

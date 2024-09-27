@@ -263,7 +263,9 @@ module.exports = {
       },
       fontFamily: {
         code2001: ['var(--font-code2001)'],
-        andalos: ['var(--font-andalos)']
+        andalos: ['var(--font-andalos)'],
+        helvetica: ['var(--font-helvetica)']
+
       }
     },
   },

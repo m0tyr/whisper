@@ -35,6 +35,17 @@ const peristiwa = localfont({
   variable: '--font-andalos'
 })
 
+const helvetica = localfont({
+  src: [
+    {
+      path : '../../public/fonts/Helvetica.ttf',
+      weight: 'normal'
+    }
+  ],
+  variable: '--font-helvetica'
+})
+
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -43,7 +54,8 @@ export default async function RootLayout({
   const session = await auth();
   const fonts = [
     code2001.variable,
-    peristiwa.variable
+    peristiwa.variable,
+    helvetica.variable
   ]
 
   const fontClasses = fonts.join(' ');

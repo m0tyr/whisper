@@ -118,7 +118,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                 <div className='col-span-2 ml-2 '>
                                     <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                     <div className="relative">
-                                        <LexicalContentEditable ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."} />
+                                        <LexicalContentEditable isRequestingFromStories={false} ref={editorRef} watchtext={WatchText} placeholder={"Répondre à " + whisper_to_reply.author.username + "..."} />
                                     </div>
                                     <FormField
                                         control={form.control}
@@ -199,7 +199,7 @@ const PostComposer: React.FC<PostComposerProps> = ({ whisper_to_reply, user, han
                                 <div className='col-span-2 ml-2 '>
                                     <span className="text-white text-small-semibold !text-[15px] mb-1">{user?.username}</span>
                                     <div className="relative">
-                                        <LexicalContentEditable ref={editorRef} watchtext={WatchText} placeholder={"Commencer un whisper..."} />
+                                        <LexicalContentEditable isRequestingFromStories={false} ref={editorRef} watchtext={WatchText} placeholder={"Commencer un whisper..."} />
                                     </div>
                                     <FormField
                                         control={form.control}

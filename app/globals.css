@@ -27,6 +27,15 @@
 }
 
 @font-face {
+  font-family: 'helvetica';  
+  src: local("helvetica"),
+  url('/public/fonts/Helvetica.ttf') format('truetype');   
+  font-weight: normal;  
+  font-style: normal;  
+}
+
+
+@font-face {
   font-family: 'andalosRegular';  
   src: local("AndalosRegular"),
   url('/public/fonts/AndalosRegular-rv8V7.otf') format('opentype');   
@@ -40,6 +49,9 @@
   justify-content: center;
   align-items: center;
   gap: 16px;
+}
+.mention-node {
+  text-decoration: underline;
 }
 
 .drawer-shadow  {

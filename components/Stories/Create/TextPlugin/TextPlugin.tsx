@@ -87,6 +87,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const [color, setColor] = useState<string>("");
   const [fontSavedIndex, setFontSavedIndex] = useState<number | null>(0);
   const [colorSavedIndex, setColorSavedIndex] = useState<number | null>(0);
+  const [isChoosingFont, setIsChoosingFont] = useState(false);
+  const [isChoosingColor, setIsChoosingColor] = useState(false);
+  const [isTextBackgroundSelected, setIsTextBackgroundSelected] =
+    useState(false);
 
   const textColors = useRef<TextColors[]>([
     { renderedColor: "rgb(255 255 255)", name: "white" },
@@ -98,7 +102,12 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   ]);
 
   const textFonts = useRef<TextFonts[]>([
-    { variable: "Arial", renderedFont: "Arial", name: "Simple" },
+    {
+      variable: "Whisper Font",
+      renderedFont:
+        "system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif",
+      name: "Basic",
+    },
     { variable: "Chakra Petch", renderedFont: "Chakra Petch", name: "Dirty" },
     {
       variable: "var(--font-code2001)",
@@ -112,9 +121,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     },
   ]);
 
-  const [isChoosingFont, setIsChoosingFont] = useState(false);
-  const [isChoosingColor, setIsChoosingColor] = useState(false);
-
   function generateBackgroundShape({
     lines,
     lineHeight,
@@ -123,8 +129,25 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     padding = 0,
     cornerRadius = 0,
   }: BackgroundShapeParams): string {
+    lineHeight = lineHeight;
 
-    lineHeight = 22 + 2;
+    for (let i = 0; i < lines.length; i++) {
+      let group = [lines[i]];
+
+      while (
+        i + 1 < lines.length &&
+        Math.abs(lines[i + 1].width - lines[i].width) <= 10
+      ) {
+        group.push(lines[i + 1]);
+        i++;
+      }
+
+      const maxWidth = Math.max(...group.map((line) => line.width));
+
+      group.forEach((line) => {
+        line.width = maxWidth;
+      });
+    }
 
     lines.forEach((line, index) => {
       line.cx = width / 2;
@@ -221,7 +244,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         text: pos.text,
         fontFamily: toRenderTextFont,
         fontSize: 22,
-        fontStyle: "500",
+        fontStyle: "600",
+        letterSpacing: -0.5,
         textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
         fill: "#ffffff",
         visible: false,
@@ -230,7 +254,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       // Add textMeasure to the layer temporarily to measure text lines
       layer.add(textMeasure);
 
-      var top = 0;
+      var top = 1;
       var shapes: (Text | Rect)[] = [];
 
       textMeasure.textArr.forEach((line) => {
@@ -238,7 +262,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           text: line.text,
           fontFamily: toRenderTextFont,
           fontSize: 22,
-          fontStyle: "500",
+          fontStyle: "600",
+          letterSpacing: -0.5,
           textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
           fill: "#ffffff",
           x: 0,
@@ -259,7 +284,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         lines: JSON.parse(
           JSON.stringify(textMeasure.textArr as unknown as Line[])
         ),
-        lineHeight: textMeasure.fontSize(),
+        lineHeight: 23 + 0.75,
         width: textMeasure.width(),
         align: "center",
         padding: 8,
@@ -386,7 +411,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const handleFinishEditing = () => {
     const temp = JSON.stringify(editorRef.current.getEditorState());
     const datas = JSON.parse(temp);
-    console.log(datas);
     const stage = stageRef.current;
     const layer = layerRef.current;
     const padding = 5;
@@ -529,7 +553,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     }
   }, []);
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    console.log(e.target.value);
     setTextValue(e.target.value);
   };
 
@@ -562,6 +585,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         const text = Array.from(node.textContent ?? "");
         text.forEach((char) => {
           const span = document.createElement("span");
+          span.style.fontFamily = toRenderTextFont;
           span.textContent = char;
           textNodes.push(span);
           nodes.push(span);
@@ -617,7 +641,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     let previousTop = elements[0].getBoundingClientRect().top;
     elements.forEach((element) => {
       const rect = element.getBoundingClientRect();
-      console.log(element);
       if (rect.top > previousTop) {
         lines.push(currentLine);
         const lineHeight =
@@ -637,6 +660,60 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     return lines;
   }
 
+  function generatePreviewBgPath() {
+  
+    setTimeout(() => {
+      const layer = layerRef.current;
+      let width;
+      let lineHeightFix = 0;
+      const playgroundElement = playgroundRef.current;
+
+      if (toRenderTextFont === textFonts.current[1].renderedFont) {
+        lineHeightFix = 1;
+        width = playgroundElement.offsetWidth + 2;
+      } else if (toRenderTextFont === textFonts.current[2].renderedFont) {
+        lineHeightFix = 1;
+        width = playgroundElement.offsetWidth + 2;
+      } else if (toRenderTextFont === textFonts.current[3].renderedFont) {
+        lineHeightFix = 2;
+        width = playgroundElement.offsetWidth + 3;
+      } else {
+        width = playgroundElement.offsetWidth + 1;
+      }
+      console.log(width);
+
+      var textMeasure = new Konva.Text({
+        text: makeLineBreakerMeasurer()?.join("\n"),
+        width: width,
+        align: "center",
+        fontFamily: toRenderTextFont,
+        fontSize: 22,
+        fontStyle: "600",
+        letterSpacing: -0.5,
+        lineHeight: 23 + lineHeightFix,
+        textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
+        fill: "#ffffff",
+        visible: false,
+      });
+
+      layer?.add(textMeasure);
+      console.log(textMeasure.textArr);
+
+      setPreviewBgPath(
+        generateBackgroundShape({
+          lines: JSON.parse(
+            JSON.stringify(textMeasure.textArr as unknown as Line[])
+          ),
+          lineHeight: 23 + lineHeightFix,
+          width: textMeasure.width(),
+          align: "center",
+          padding: 8,
+          cornerRadius: 8,
+        })
+      );
+    }, 0);
+  }
+
   const onContentChange = () => {
     const stringifiedEditorState = JSON.stringify(
       editorRef.current.getEditorState().toJSON()
@@ -648,34 +725,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     const editorStateTextString = parsedEditorState.read(() =>
       $getRoot().getTextContent()
     );
-    const layer = layerRef.current;
-    const width = playgroundRef.current.offsetWidth + 1;
-    var textMeasure = new Konva.Text({
-      text: makeLineBreakerMeasurer()?.join("\n"),
-      width: width,
-      align: "center",
-      fontFamily: toRenderTextFont,
-      fontSize: 22,
-      fontStyle: "500",
-      textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
-      fill: "#ffffff",
-      visible: false,
-    });
-    layer?.add(textMeasure);
-
-    setPreviewBgPath(
-      generateBackgroundShape({
-        lines: JSON.parse(
-          JSON.stringify(textMeasure.textArr as unknown as Line[])
-        ),
-        lineHeight: textMeasure.fontSize(),
-        width: textMeasure.width(),
-        align: "center",
-        padding: 8,
-        cornerRadius: 8,
-      })
-    );
     setTextValue(editorStateTextString);
+    if (isTextBackgroundSelected) {
+      generatePreviewBgPath();
+    }
   };
 
   const makeLineBreakerMeasurer = () => {
@@ -686,6 +739,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       const tempSpanContent = document.createElement("span");
 
       pElementToConvert.childNodes.forEach((node: any) => {
+        console.log(node)
+        if (node instanceof HTMLElement && node.id === 'mention-node') {
+          console.log("key to win");
+        }
         if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
           // If the node is a <span>, clone its text content and append it to the new <span>
           const textNode = document.createTextNode(node.textContent || "");
@@ -719,7 +776,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         while (torender.firstChild) {
           torender.removeChild(torender.firstChild);
         }
-        console.log(lines);
         return lines;
       } else {
         console.error("Element with ID 'content' not found.");
@@ -728,6 +784,12 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       console.error("Element not found");
     }
   };
+
+  useEffect(() => {
+    if (isTextBackgroundSelected) {
+      generatePreviewBgPath();
+    }
+  }, [playgroundRef.current, toRenderTextFont]);
 
   useEffect(() => {
     if (color) {
@@ -796,7 +858,13 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       });
     }
   }, [toRenderTextFont, editorRef.current]);
-
+  useEffect(() => {
+    if (isTextBackgroundSelected) {
+      generatePreviewBgPath();
+    } else {
+      setPreviewBgPath("");
+    }
+  }, [isTextBackgroundSelected]);
   return (
     <>
       <div
@@ -820,6 +888,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               </div>
             </div>
             <LexicalContentEditable
+            isRequestingFromStories={true}
               value={textValue}
               onChange={handleTextChange}
               watchtext={onContentChange}
@@ -832,31 +901,34 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 textAlign: "center",
                 width: "100%",
                 height: textValue.trim() === "" ? "22px" : "auto",
+                letterSpacing: "-0.5px",
                 fontSize: "22px",
-                fontWeight: "500",
+                fontWeight: "600",
                 textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
                 border: "none",
                 resize: "none",
                 background: "transparent",
                 outline: "none",
                 boxShadow: "none",
-                lineHeight: "22px",
+                lineHeight: "23px",
               }}
             />
             <span
               id="to-render"
               style={{
+                fontFamily: toRenderTextFont,
+                textAlign: "center",
                 display: "inline-block",
                 width: "100%",
-                textAlign: "center",
+                letterSpacing: "-0.5px",
                 verticalAlign: "baseline",
                 marginTop: "72px",
                 overflowWrap: "break-word",
                 zIndex: -999,
                 color: "white",
                 fontSize: "22px",
-                fontWeight: "500",
-                lineHeight: "22px",
+                fontWeight: "600",
+                lineHeight: "23px",
               }}
             ></span>
           </div>
@@ -936,10 +1008,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               whileTap={{ opacity: 0.7, scale: 0.9 }}
               whileHover={{ opacity: 0.9 }}
               onClick={() => {
-                setIsChoosingColor(true);
-                setIsChoosingFont(false);
+                setIsTextBackgroundSelected(!isTextBackgroundSelected);
               }}
-              className="bg-insanedark/70  flex justify-center items-center cursor-pointer p-1 rounded-lg select-none"
+              className={` ${
+                isTextBackgroundSelected ? "bg-insanedark/70" : ""
+              } flex justify-center items-center cursor-pointer p-1 rounded-lg select-none`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -948,7 +1021,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 viewBox="0 0 16 16"
               >
                 <path
-                  fill="currentColor"
+                  fill={`${
+                    isTextBackgroundSelected ? "currentColor" : "white"
+                  }`}
                   fill-rule="evenodd"
                   d="M8 2.25c-.618 0-1.169.39-1.373.974l-3.335 9.528a.75.75 0 0 0 1.416.496L5.845 10h4.31l1.137 3.248a.75.75 0 0 0 1.416-.496L9.373 3.224A1.455 1.455 0 0 0 8 2.25M9.63 8.5L8 3.842L6.37 8.5z"
                   clip-rule="evenodd"

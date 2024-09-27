@@ -20,10 +20,14 @@ const FontChooser: React.FC<FontChooserProps> = ({
   storyProperties,
 }) => {
   const [fontIndex, setFontIndex] = useState(fontSavedIndex as number);
-  
+
   useEffect(() => {
-    setToRenderTextFont(textFonts.current?.[fontIndex].renderedFont as string)
-  }, [fontIndex])
+    if (fontSavedIndex !== fontIndex) {
+      setToRenderTextFont(
+        textFonts.current?.[fontIndex].renderedFont as string
+      );
+    }
+  }, [fontIndex]);
   return (
     <>
       <div className="absolute bottom-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
@@ -33,29 +37,29 @@ const FontChooser: React.FC<FontChooserProps> = ({
           containerRef={storyProperties}
           itemsCarousel={textFonts}
         >
-            {textFonts?.current?.map((font, index) => (
-              <div className="flex flex-col gap-1">
-                <motion.div
-                  key={index}
-                  style={{
-                    fontFamily: font.variable,
-                    scale: index === fontIndex ? '115%' : '100%'
-                  }}
-                  onClick={() => {
-                    setToRenderTextFont(font.renderedFont);
-                  }}
-                  className="min-w-12 w-fit px-2 h-12 transition-all duration-300 rounded-lg bg-[rgb(168,168,168,.3)] whitespace-nowrap border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[22px] text-center justify-center items-center"
-                  whileTap={{ scale: 0.97 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 700,
-                    damping: 20,
-                  }}
-                >
-                  {font.name}
-                </motion.div>
-              </div>
-            ))}
+          {textFonts?.current?.map((font, index) => (
+            <div className="flex flex-col gap-1">
+              <motion.div
+                key={index}
+                style={{
+                  fontFamily: font.variable,
+                  scale: index === fontIndex ? "115%" : "100%",
+                }}
+                onClick={() => {
+                  setToRenderTextFont(font.renderedFont);
+                }}
+                className="min-w-12 w-fit px-2 h-12 transition-all duration-300 rounded-lg bg-[rgb(168,168,168,.3)] whitespace-nowrap border border-[rgb(18,18,18,.65)] flex cursor-pointer text-[22px] text-center justify-center items-center"
+                whileTap={{ scale: 0.97 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 700,
+                  damping: 20,
+                }}
+              >
+                {font.name}
+              </motion.div>
+            </div>
+          ))}
         </ItemChooserCarousel>
       </div>
     </>
