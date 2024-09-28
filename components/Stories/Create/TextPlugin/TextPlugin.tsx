@@ -47,8 +47,17 @@ interface TextPluginProps {
 
 interface Line {
   cx: number;
+  text: string;
   width: number;
   lastInParagraph?: boolean;
+  mentionNodesRegistered?: number;
+  mentionNodesAnchorPosition?: MentionAnchorData[];
+}
+
+interface MentionAnchorData {
+  start: number;
+  end: number;
+  numberOfLetter: number;
 }
 
 interface BackgroundShapeParams {
@@ -91,6 +100,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const [isChoosingColor, setIsChoosingColor] = useState(false);
   const [isTextBackgroundSelected, setIsTextBackgroundSelected] =
     useState(false);
+
+  const [foundMentionNode, setFoundMentionNode] = useState<any[]>([]);
+
 
   const textColors = useRef<TextColors[]>([
     { renderedColor: "rgb(255 255 255)", name: "white" },
@@ -264,6 +276,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           fontSize: 22,
           fontStyle: "600",
           letterSpacing: -0.5,
+          textDecoration: "underline",
           textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
           fill: "#ffffff",
           x: 0,
@@ -661,7 +674,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   }
 
   function generatePreviewBgPath() {
-  
     setTimeout(() => {
       const layer = layerRef.current;
       let width;
@@ -696,9 +708,31 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         visible: false,
       });
 
+      let computedLines: Line[] = []
+
       layer?.add(textMeasure);
       console.log(textMeasure.textArr);
-
+      textMeasure.textArr.forEach((line) => {
+        foundMentionNode.forEach((node) => {
+          console.log(node, line.text, line.text.includes(node))
+          if (line.text.includes(node)) {
+            const lineWithMention: Line = {
+              cx: 0,
+              text: line.text,
+              width: line.width,
+              lastInParagraph: line.lastInParagraph, 
+              mentionNodesRegistered: 5, 
+              mentionNodesAnchorPosition: [
+                { start: 3, end: 7 , numberOfLetter: 4 },
+                { start: 2, end: 4 , numberOfLetter: 2 },
+              ],
+            };
+            computedLines.push(lineWithMention)
+          }
+        })
+        computedLines.push(line as unknown as Line)
+      });
+      console.log(computedLines)
       setPreviewBgPath(
         generateBackgroundShape({
           lines: JSON.parse(
@@ -734,14 +768,13 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const makeLineBreakerMeasurer = () => {
     const PlaygroundText = document.getElementById("text-playground");
     const pElementToConvert = document.querySelector("p");
-
+    let foundMentionNode: any[] = [];
     if (pElementToConvert) {
       const tempSpanContent = document.createElement("span");
 
       pElementToConvert.childNodes.forEach((node: any) => {
-        console.log(node)
-        if (node instanceof HTMLElement && node.id === 'mention-node') {
-          console.log("key to win");
+        if (node instanceof HTMLElement && node.className === "mention-node") {
+          foundMentionNode.push(node.textContent)
         }
         if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
           // If the node is a <span>, clone its text content and append it to the new <span>
@@ -776,6 +809,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         while (torender.firstChild) {
           torender.removeChild(torender.firstChild);
         }
+        setFoundMentionNode(foundMentionNode)
+        console.log(lines, foundMentionNode)
         return lines;
       } else {
         console.error("Element with ID 'content' not found.");
@@ -888,7 +923,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               </div>
             </div>
             <LexicalContentEditable
-            isRequestingFromStories={true}
+              isRequestingFromStories={true}
               value={textValue}
               onChange={handleTextChange}
               watchtext={onContentChange}
