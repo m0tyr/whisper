@@ -55,6 +55,7 @@ interface Line {
 }
 
 interface MentionAnchorData {
+  word: string;
   start: number;
   end: number;
   numberOfLetter: number;
@@ -102,7 +103,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     useState(false);
 
   const [foundMentionNode, setFoundMentionNode] = useState<any[]>([]);
-
 
   const textColors = useRef<TextColors[]>([
     { renderedColor: "rgb(255 255 255)", name: "white" },
@@ -708,31 +708,38 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         visible: false,
       });
 
-      let computedLines: Line[] = []
+      let computedLines: Line[] = [];
 
       layer?.add(textMeasure);
       console.log(textMeasure.textArr);
       textMeasure.textArr.forEach((line) => {
-        foundMentionNode.forEach((node) => {
-          console.log(node, line.text, line.text.includes(node))
-          if (line.text.includes(node)) {
-            const lineWithMention: Line = {
-              cx: 0,
-              text: line.text,
-              width: line.width,
-              lastInParagraph: line.lastInParagraph, 
-              mentionNodesRegistered: 5, 
-              mentionNodesAnchorPosition: [
-                { start: 3, end: 7 , numberOfLetter: 4 },
-                { start: 2, end: 4 , numberOfLetter: 2 },
-              ],
-            };
-            computedLines.push(lineWithMention)
+        const lineWithMention: Line = {
+          cx: 0,
+          text: line.text,
+          width: line.width,
+          lastInParagraph: line.lastInParagraph,
+          mentionNodesAnchorPosition: [],
+        };
+        let foundMentionInsideLine = 0;
+        foundMentionNode.forEach((text) => {
+          
+          if (line.text.includes(text)) {
+            const startIndex = line.text.indexOf(text);
+            const endIndex = startIndex + text.length;
+
+            lineWithMention.mentionNodesAnchorPosition?.push({
+              word: text,
+              start: startIndex,
+              end: endIndex,
+              numberOfLetter: text.length,
+            });
+            foundMentionInsideLine += 1;
           }
-        })
-        computedLines.push(line as unknown as Line)
+        });
+        lineWithMention.mentionNodesRegistered = foundMentionInsideLine;
+        computedLines.push(lineWithMention);
       });
-      console.log(computedLines)
+      console.log(computedLines);
       setPreviewBgPath(
         generateBackgroundShape({
           lines: JSON.parse(
@@ -774,7 +781,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
       pElementToConvert.childNodes.forEach((node: any) => {
         if (node instanceof HTMLElement && node.className === "mention-node") {
-          foundMentionNode.push(node.textContent)
+          foundMentionNode.push(node.textContent);
         }
         if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
           // If the node is a <span>, clone its text content and append it to the new <span>
@@ -809,8 +816,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         while (torender.firstChild) {
           torender.removeChild(torender.firstChild);
         }
-        setFoundMentionNode(foundMentionNode)
-        console.log(lines, foundMentionNode)
+        setFoundMentionNode(foundMentionNode);
+        console.log(lines, foundMentionNode);
         return lines;
       } else {
         console.error("Element with ID 'content' not found.");
