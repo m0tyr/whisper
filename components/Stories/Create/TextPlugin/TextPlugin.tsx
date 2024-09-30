@@ -247,126 +247,222 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     y: number;
     angle: any;
   }) {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
-    if (stage && layer) {
-      layer.clear();
+    setTimeout(() => {
+      const stage = stageRef.current;
+      const layer = layerRef.current;
+      if (stage && layer) {
+        layer.clear();
 
-      var textMeasure = new Konva.Text({
-        text: pos.text,
-        fontFamily: toRenderTextFont,
-        fontSize: 22,
-        fontStyle: "600",
-        letterSpacing: -0.5,
-        textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
-        fill: "#ffffff",
-        visible: false,
-      });
-
-      // Add textMeasure to the layer temporarily to measure text lines
-      layer.add(textMeasure);
-
-      var top = 1;
-      var shapes: (Text | Rect)[] = [];
-
-      textMeasure.textArr.forEach((line) => {
-        var text = new Konva.Text({
-          text: line.text,
+        var textMeasure = new Konva.Text({
+          text: pos.text,
           fontFamily: toRenderTextFont,
           fontSize: 22,
           fontStyle: "600",
           letterSpacing: -0.5,
-          textDecoration: "underline",
           textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
           fill: "#ffffff",
-          x: 0,
-          y: top,
+          visible: false,
         });
 
-        // Measure text dimensions
-        var textWidth = text.width();
-        var textHeight = text.height();
-        text.x((textMeasure.width() - textWidth) / 2);
-        shapes.push(text);
+        // Add textMeasure to the layer temporarily to measure text lines
+        layer.add(textMeasure);
 
-        // Update the top position for the next line
-        top += textHeight + 2;
-      });
+        var top = 1;
+        var shapes: (Text | Rect)[] = [];
+        const text = convertLinesWithMention(textMeasure);
+        console.log(text);
+        text.forEach((line) => {
+          if (line.mentionNodesAnchorPosition)
+            if (line.mentionNodesAnchorPosition?.length > 0) {
+              let currentX = 0;
+              const lineMeasurement = new Konva.Text({
+                text: line.text,
+                fontFamily: toRenderTextFont,
+                fontSize: 22,
+                fontStyle: "600",
+                letterSpacing: -0.5,
+                fill: "#ffffff",
+                visible: false,
+                x: 0,
+                y: top,
+              });
+              line.mentionNodesAnchorPosition.forEach((mentionLine) => {
+                const beforeMention = line.text.substring(0, mentionLine.start);
+                const mentionText = line.text.substring(
+                  mentionLine.start,
+                  mentionLine.end
+                );
+                const afterMention = line.text.substring(mentionLine.end);
 
-      const path = generateBackgroundShape({
-        lines: JSON.parse(
-          JSON.stringify(textMeasure.textArr as unknown as Line[])
-        ),
-        lineHeight: 23 + 0.75,
-        width: textMeasure.width(),
-        align: "center",
-        padding: 8,
-        cornerRadius: 8,
-      });
+                if (beforeMention) {
+                  const beforeText = new Konva.Text({
+                    text: beforeMention,
+                    fontFamily: toRenderTextFont,
+                    fontSize: 22,
+                    fontStyle: "600",
+                    letterSpacing: -0.5,
+                    fill: "#ffffff",
+                    x: currentX,
+                    y: top,
+                  });
+                  const beforeTextWidth = beforeText.width();
+                  beforeText.x(
+                    (textMeasure.width() - lineMeasurement.width()) / 2 +
+                      currentX
+                  );
+                  shapes.push(beforeText);
+                  currentX += beforeTextWidth;
+                }
 
-      const konvaPath = new Konva.Path({
-        data: path,
-        fill: "#000",
-        stroke: "#000",
-      });
+                // Create the Konva.Text object for the mention (underlined)
+                const mention = new Konva.Text({
+                  text: mentionText,
+                  fontFamily: toRenderTextFont,
+                  fontSize: 22,
+                  fontStyle: "600",
+                  letterSpacing: -0.5,
+                  textDecoration: "underline", // Underline the mention
+                  fill: "#ffffff",
+                  x: currentX, // Position at current X
+                  y: top,
+                });
 
-      // Group all shapes into a single group
-      var group = new Konva.Group({
-        x: pos.x - (pos.padding.left - pos.margin.left),
-        y: pos.y - (pos.padding.top - pos.margin.top),
-        rotation: pos.angle,
-        draggable: true,
-      });
+                // Measure the mention text width
+                const mentionTextWidth = mention.width();
+                mention.x(
+                  (textMeasure.width() - lineMeasurement.width()) / 2 + currentX
+                );
+                shapes.push(mention); // Add it to the shapes array
 
-      const transformer = new Konva.Transformer({
-        nodes: [group],
-        anchorStroke: "#212121",
-        anchorFill: "#434343",
-        borderStroke: "#f1f1f1",
-        draggable: true,
-        anchorStyleFunc: (anchor) => {
-          anchor.cornerRadius(10);
-          anchor.fill("#2d2d2d");
-          anchor.stroke("#212121");
-          if (anchor.hasName("top-center") || anchor.hasName("bottom-center")) {
-            anchor.height(6);
-            anchor.offsetY(3);
-            anchor.width(30);
-            anchor.offsetX(15);
-          }
-          if (anchor.hasName("middle-left") || anchor.hasName("middle-right")) {
-            anchor.height(30);
-            anchor.offsetY(15);
-            anchor.width(6);
-            anchor.offsetX(3);
-          }
-        },
-        keepRatio: true,
-        enabledAnchors: [
-          "top-left",
-          "top-right",
-          "bottom-left",
-          "bottom-right",
-        ],
-        rotateEnabled: true,
-        resizeEnabled: true,
-        rotationSnaps: [0, 90, -90, 180, -180],
-        rotationSnapTolerance: 10,
-      });
+                // Update current X position
+                currentX += mentionTextWidth;
 
-      group.add(konvaPath);
-      // Add each shape to the group
-      shapes.forEach((shape) => group.add(shape));
-      // Add the group to the layer
-      layer.add(group);
+                // Create the Konva.Text object for the text after the mention (normal style)
+                if (afterMention) {
+                  const afterText = new Konva.Text({
+                    text: afterMention,
+                    fontFamily: toRenderTextFont,
+                    fontSize: 22,
+                    fontStyle: "600",
+                    letterSpacing: -0.5,
+                    fill: "#ffffff",
+                    x: currentX, // Position at current X
+                    y: top,
+                  });
 
-      layer.add(transformer);
+                  const afterTextWidth = afterText.width();
+                  afterText.x(
+                    (textMeasure.width() - lineMeasurement.width()) / 2 +
+                      currentX
+                  );
+                  shapes.push(afterText); // Add it to the shapes array
 
-      transformerInstancesRef?.current?.push(transformer as Konva.Transformer);
+                  // Update current X position
+                  currentX += afterTextWidth;
+                }
+              });
+            } else {
+              var textWithNoMention = new Konva.Text({
+                text: line.text,
+                fontFamily: toRenderTextFont,
+                fontSize: 22,
+                fontStyle: "600",
+                letterSpacing: -0.5,
+                fill: "#ffffff",
+                x: 0,
+                y: top,
+              });
+              textWithNoMention.x(
+                (textMeasure.width() - textWithNoMention.width()) / 2
+              );
+              shapes.push(textWithNoMention);
+            }
 
-      // Draw the layer
-      layer.draw();
-    }
+          top += 22 + 2;
+        });
+
+        // Group all shapes into a single group
+        var group = new Konva.Group({
+          x: pos.x - (pos.padding.left - pos.margin.left),
+          y: pos.y - (pos.padding.top - pos.margin.top),
+          rotation: pos.angle,
+          draggable: true,
+        });
+        if (isTextBackgroundSelected) {
+          const path = generateBackgroundShape({
+            lines: JSON.parse(
+              JSON.stringify(textMeasure.textArr as unknown as Line[])
+            ),
+            lineHeight: 23 + 0.75,
+            width: textMeasure.width(),
+            align: "center",
+            padding: 8,
+            cornerRadius: 8,
+          });
+
+          const konvaPath = new Konva.Path({
+            data: path,
+            fill: "#000",
+            stroke: "#000",
+          });
+          group.add(konvaPath);
+        }
+
+        const transformer = new Konva.Transformer({
+          nodes: [group],
+          anchorStroke: "#212121",
+          anchorFill: "#434343",
+          borderStroke: "#f1f1f1",
+          draggable: true,
+          anchorStyleFunc: (anchor) => {
+            anchor.cornerRadius(10);
+            anchor.fill("#2d2d2d");
+            anchor.stroke("#212121");
+            if (
+              anchor.hasName("top-center") ||
+              anchor.hasName("bottom-center")
+            ) {
+              anchor.height(6);
+              anchor.offsetY(3);
+              anchor.width(30);
+              anchor.offsetX(15);
+            }
+            if (
+              anchor.hasName("middle-left") ||
+              anchor.hasName("middle-right")
+            ) {
+              anchor.height(30);
+              anchor.offsetY(15);
+              anchor.width(6);
+              anchor.offsetX(3);
+            }
+          },
+          keepRatio: true,
+          enabledAnchors: [
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+          ],
+          rotateEnabled: true,
+          resizeEnabled: true,
+          rotationSnaps: [0, 90, -90, 180, -180],
+          rotationSnapTolerance: 10,
+        });
+
+        shapes.forEach((shape) => group.add(shape));
+        layer.add(group);
+
+        layer.add(transformer);
+
+        transformerInstancesRef?.current?.push(
+          transformer as Konva.Transformer
+        );
+
+        // Draw the layer
+        layer.draw();
+      }
+    }, 0);
   }
 
   function whenFontIsLoaded(
@@ -673,6 +769,38 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     return lines;
   }
 
+  function convertLinesWithMention(textInstance: Konva.Text) {
+    let computedLines: Line[] = [];
+
+    textInstance.textArr.forEach((line) => {
+      const lineWithMention: Line = {
+        cx: 0,
+        text: line.text,
+        width: line.width,
+        lastInParagraph: line.lastInParagraph,
+        mentionNodesAnchorPosition: [],
+      };
+      let foundMentionInsideLine = 0;
+      foundMentionNode.forEach((text) => {
+        if (line.text.includes(text)) {
+          const startIndex = line.text.indexOf(text);
+          const endIndex = startIndex + text.length;
+
+          lineWithMention.mentionNodesAnchorPosition?.push({
+            word: text,
+            start: startIndex,
+            end: endIndex,
+            numberOfLetter: text.length,
+          });
+          foundMentionInsideLine += 1;
+        }
+      });
+      lineWithMention.mentionNodesRegistered = foundMentionInsideLine;
+      computedLines.push(lineWithMention);
+    });
+    return computedLines;
+  }
+
   function generatePreviewBgPath() {
     setTimeout(() => {
       const layer = layerRef.current;
@@ -692,7 +820,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       } else {
         width = playgroundElement.offsetWidth + 1;
       }
-      console.log(width);
 
       var textMeasure = new Konva.Text({
         text: makeLineBreakerMeasurer()?.join("\n"),
@@ -707,39 +834,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         fill: "#ffffff",
         visible: false,
       });
-
-      let computedLines: Line[] = [];
-
       layer?.add(textMeasure);
-      console.log(textMeasure.textArr);
-      textMeasure.textArr.forEach((line) => {
-        const lineWithMention: Line = {
-          cx: 0,
-          text: line.text,
-          width: line.width,
-          lastInParagraph: line.lastInParagraph,
-          mentionNodesAnchorPosition: [],
-        };
-        let foundMentionInsideLine = 0;
-        foundMentionNode.forEach((text) => {
-          
-          if (line.text.includes(text)) {
-            const startIndex = line.text.indexOf(text);
-            const endIndex = startIndex + text.length;
-
-            lineWithMention.mentionNodesAnchorPosition?.push({
-              word: text,
-              start: startIndex,
-              end: endIndex,
-              numberOfLetter: text.length,
-            });
-            foundMentionInsideLine += 1;
-          }
-        });
-        lineWithMention.mentionNodesRegistered = foundMentionInsideLine;
-        computedLines.push(lineWithMention);
-      });
-      console.log(computedLines);
       setPreviewBgPath(
         generateBackgroundShape({
           lines: JSON.parse(
