@@ -527,6 +527,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       const textWidth = calculateTextWidth(textValue, "Arial");
 
       if (textNode === null) {
+        makeLineBreakerMeasurer();
         buildCustomText({
           text: makeLineBreakerMeasurer()?.join("\n"),
           x: storyProperties.width / 2,
@@ -822,7 +823,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       }
 
       var textMeasure = new Konva.Text({
-        text: makeLineBreakerMeasurer()?.join("\n"),
+        text: makeLineBreakerMeasurer()?.join("\n") ,
         width: width,
         align: "center",
         fontFamily: toRenderTextFont,
@@ -867,59 +868,59 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     }
   };
 
-  const makeLineBreakerMeasurer = () => {
-    const PlaygroundText = document.getElementById("text-playground");
-    const pElementToConvert = document.querySelector("p");
-    let foundMentionNode: any[] = [];
-    if (pElementToConvert) {
-      const tempSpanContent = document.createElement("span");
-
-      pElementToConvert.childNodes.forEach((node: any) => {
-        if (node instanceof HTMLElement && node.className === "mention-node") {
-          foundMentionNode.push(node.textContent);
-        }
-        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
-          // If the node is a <span>, clone its text content and append it to the new <span>
-          const textNode = document.createTextNode(node.textContent || "");
-          tempSpanContent.appendChild(textNode);
-        } else if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          node.tagName === "BR"
+  const makeLineBreakerMeasurer = ()  => {
+      const PlaygroundText = document.getElementById("text-playground");
+      const pElementToConvert = document.querySelector("p");
+      let foundMentionNode: any[] = [];
+      if (pElementToConvert) {
+        const tempSpanContent = document.createElement("span");
+        pElementToConvert.childNodes.forEach((node: any) => {
+          if (
+            node instanceof HTMLElement &&
+            node.className === "mention-node"
+          ) {
+            foundMentionNode.push(node.textContent);
+          }
+          if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
+            // If the node is a <span>, clone its text content and append it to the new <span>
+            const textNode = document.createTextNode(node.textContent || "");
+            tempSpanContent.appendChild(textNode);
+          } else if (
+            node.nodeType === Node.ELEMENT_NODE &&
+            node.tagName === "BR"
+          ) {
+            // If the node is a <br>, append a <br> element to the new <span>
+            const br = document.createElement("br");
+            tempSpanContent.appendChild(br);
+          }
+        });
+        tempSpanContent.style.textAlign = "center";
+        tempSpanContent.style.position = "absolute";
+        tempSpanContent.id = "temp-content";
+        PlaygroundText?.appendChild(tempSpanContent);
+        const content = document.getElementById("temp-content");
+        const torender = document.getElementById("to-render");
+        if (
+          content &&
+          torender &&
+          tempSpanContent &&
+          tempSpanContent.parentNode
         ) {
-          // If the node is a <br>, append a <br> element to the new <span>
-          const br = document.createElement("br");
-          tempSpanContent.appendChild(br);
+          const spans = generateTextNodes(content, torender);
+          const lines = splitLines(spans);
+          tempSpanContent.parentNode.removeChild(tempSpanContent);
+          while (torender.firstChild) {
+            torender.removeChild(torender.firstChild);
+          }
+          setFoundMentionNode(foundMentionNode);
+          console.log(foundMentionNode)
+          return lines;
+        } else {
+          console.error("Element with ID 'content' not found.");
         }
-      });
-      tempSpanContent.style.textAlign = "center";
-      tempSpanContent.style.position = "absolute";
-      tempSpanContent.id = "temp-content";
-      PlaygroundText?.appendChild(tempSpanContent);
-      const content = document.getElementById("temp-content");
-      const torender = document.getElementById("to-render");
-      // Check if the element exists
-      if (
-        content &&
-        torender &&
-        tempSpanContent &&
-        tempSpanContent.parentNode
-      ) {
-        // Call the function only if content is not null
-        const spans = generateTextNodes(content, torender);
-        const lines = splitLines(spans);
-        tempSpanContent.parentNode.removeChild(tempSpanContent);
-        while (torender.firstChild) {
-          torender.removeChild(torender.firstChild);
-        }
-        setFoundMentionNode(foundMentionNode);
-        console.log(lines, foundMentionNode);
-        return lines;
       } else {
-        console.error("Element with ID 'content' not found.");
+        console.error("Element not found");
       }
-    } else {
-      console.error("Element not found");
-    }
   };
 
   useEffect(() => {
