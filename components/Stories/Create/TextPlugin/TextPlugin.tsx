@@ -1,6 +1,6 @@
 import LexicalContentEditable from "@/components/LexicalContentEditable/LexicalContentEditable";
-import { TextColors, TextFonts, TextInstance } from "@/lib/types/stories.types";
-import { parsePath, roundCommands, roundCorners } from "svg-round-corners";
+import { MentionInstance, TextColors, TextFonts } from "@/lib/types/stories.types";
+import { parsePath, roundCommands } from "svg-round-corners";
 import Konva from "konva";
 import { Rect } from "konva/lib/shapes/Rect";
 import { Text } from "konva/lib/shapes/Text";
@@ -41,8 +41,8 @@ interface TextPluginProps {
   textNode: Konva.Text | null;
   setTextNode: (node: Konva.Text | null) => void;
   transformerInstancesRef: RefObject<Konva.Transformer[]>;
-  textInstancesRef: RefObject<Konva.Text[]>;
-  textCustomInstancesRef: RefObject<TextInstance[]>;
+  textInstancesRef: RefObject<Konva.Group[]>;
+  onTextInstancesChange: (finalInstance: Konva.Group[], mentionFinalInstance: MentionInstance) => void;
 }
 
 interface Line {
@@ -89,6 +89,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   setTextNode,
   transformerInstancesRef,
   textInstancesRef,
+  onTextInstancesChange,
 }) => {
   const editorRef: any = useRef<LexicalEditor | null>();
   const playgroundRef: any = useRef<HTMLDivElement | null>();
@@ -271,6 +272,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         var shapes: (Text | Rect)[] = [];
         const text = convertLinesWithMention(textMeasure);
         console.log(text);
+        var mentionTextNode: Konva.Text[] = [];
         text.forEach((line) => {
           if (line.mentionNodesAnchorPosition)
             if (line.mentionNodesAnchorPosition?.length > 0) {
@@ -314,19 +316,18 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                   currentX += beforeTextWidth;
                 }
 
-                // Create the Konva.Text object for the mention (underlined)
                 const mention = new Konva.Text({
                   text: mentionText,
                   fontFamily: toRenderTextFont,
                   fontSize: 22,
                   fontStyle: "600",
                   letterSpacing: -0.5,
-                  textDecoration: "underline", // Underline the mention
+                  textDecoration: "underline",
                   fill: "#ffffff",
-                  x: currentX, // Position at current X
+                  x: currentX,
                   y: top,
                 });
-
+                mentionTextNode.push(mention)
                 // Measure the mention text width
                 const mentionTextWidth = mention.width();
                 mention.x(
@@ -458,8 +459,15 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         transformerInstancesRef?.current?.push(
           transformer as Konva.Transformer
         );
+        textInstancesRef?.current?.push(
+          group
+        )
+        const mentionInstanceLinked: MentionInstance = {
+          fromGroup: group,
+          mentionInstances: mentionTextNode
+        };
+        onTextInstancesChange(textInstancesRef?.current as Konva.Group[], mentionInstanceLinked)
 
-        // Draw the layer
         layer.draw();
       }
     }, 0);
@@ -518,26 +526,25 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   };
 
   const handleFinishEditing = () => {
-    const temp = JSON.stringify(editorRef.current.getEditorState());
-    const datas = JSON.parse(temp);
     const stage = stageRef.current;
     const layer = layerRef.current;
     const padding = 5;
     if (stage && layer && editorRef.current) {
       const textWidth = calculateTextWidth(textValue, "Arial");
-
       if (textNode === null) {
-        makeLineBreakerMeasurer();
-        buildCustomText({
-          text: makeLineBreakerMeasurer()?.join("\n"),
-          x: storyProperties.width / 2,
-          y: storyProperties.height / 2,
-          angle: 0,
-          padding: { left: 8, top: 8, right: 8, bottom: 8 },
-          margin: { left: 5, top: 0, right: 5, bottom: 0 },
-        });
-        setIsInTextContext(false);
-        setIsInBaseContext(true);
+        setTimeout(() => {
+          const textBuild = makeLineBreakerMeasurer()?.join("\n");
+          buildCustomText({
+            text: textBuild,
+            x: storyProperties.width / 2,
+            y: storyProperties.height / 2,
+            angle: 0,
+            padding: { left: 8, top: 8, right: 8, bottom: 8 },
+            margin: { left: 5, top: 0, right: 5, bottom: 0 },
+          });
+          setIsInTextContext(false);
+          setIsInBaseContext(true);
+        }, 0);
       } else {
         if (isAddingNewText) {
           const newText = new Konva.Text({
@@ -623,8 +630,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             rotationSnaps: [0, 90, -90, 180, -180],
             rotationSnapTolerance: 10,
           });
-          textInstancesRef?.current?.push(newText);
-          transformerInstancesRef?.current?.push(
+/*           textInstancesRef?.current?.push(newText);
+ */          transformerInstancesRef?.current?.push(
             transformer as Konva.Transformer
           );
           layer.add(newText);
@@ -742,7 +749,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     return nodes;
   }
 
-  // Utility function to split text into lines
   function splitLines(elements: HTMLElement[]): string[] {
     const lines: string[] = [];
     if (elements.length === 0) return lines;
@@ -782,11 +788,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         mentionNodesAnchorPosition: [],
       };
       let foundMentionInsideLine = 0;
-      foundMentionNode.forEach((text) => {
+      findMentionNodeInText().forEach((text) => {
         if (line.text.includes(text)) {
           const startIndex = line.text.indexOf(text);
           const endIndex = startIndex + text.length;
-
           lineWithMention.mentionNodesAnchorPosition?.push({
             word: text,
             start: startIndex,
@@ -823,7 +828,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       }
 
       var textMeasure = new Konva.Text({
-        text: makeLineBreakerMeasurer()?.join("\n") ,
+        text: makeLineBreakerMeasurer()?.join("\n"),
         width: width,
         align: "center",
         fontFamily: toRenderTextFont,
@@ -868,59 +873,63 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     }
   };
 
-  const makeLineBreakerMeasurer = ()  => {
-      const PlaygroundText = document.getElementById("text-playground");
-      const pElementToConvert = document.querySelector("p");
-      let foundMentionNode: any[] = [];
-      if (pElementToConvert) {
-        const tempSpanContent = document.createElement("span");
-        pElementToConvert.childNodes.forEach((node: any) => {
-          if (
-            node instanceof HTMLElement &&
-            node.className === "mention-node"
-          ) {
-            foundMentionNode.push(node.textContent);
-          }
-          if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
-            // If the node is a <span>, clone its text content and append it to the new <span>
-            const textNode = document.createTextNode(node.textContent || "");
-            tempSpanContent.appendChild(textNode);
-          } else if (
-            node.nodeType === Node.ELEMENT_NODE &&
-            node.tagName === "BR"
-          ) {
-            // If the node is a <br>, append a <br> element to the new <span>
-            const br = document.createElement("br");
-            tempSpanContent.appendChild(br);
-          }
-        });
-        tempSpanContent.style.textAlign = "center";
-        tempSpanContent.style.position = "absolute";
-        tempSpanContent.id = "temp-content";
-        PlaygroundText?.appendChild(tempSpanContent);
-        const content = document.getElementById("temp-content");
-        const torender = document.getElementById("to-render");
-        if (
-          content &&
-          torender &&
-          tempSpanContent &&
-          tempSpanContent.parentNode
-        ) {
-          const spans = generateTextNodes(content, torender);
-          const lines = splitLines(spans);
-          tempSpanContent.parentNode.removeChild(tempSpanContent);
-          while (torender.firstChild) {
-            torender.removeChild(torender.firstChild);
-          }
-          setFoundMentionNode(foundMentionNode);
-          console.log(foundMentionNode)
-          return lines;
-        } else {
-          console.error("Element with ID 'content' not found.");
+  const findMentionNodeInText = (): string[] => {
+    const pElementToConvert = document.querySelector("p");
+    let foundMentionNodeToRegister: any[] = [];
+    if (pElementToConvert) {
+      pElementToConvert.childNodes.forEach((node: any) => {
+        if (node instanceof HTMLElement && node.className === "mention-node") {
+          foundMentionNodeToRegister.push(node.textContent);
         }
+      });
+    }
+    return foundMentionNodeToRegister;
+  };
+
+  const makeLineBreakerMeasurer = () => {
+    const PlaygroundText = document.getElementById("text-playground");
+    const pElementToConvert = document.querySelector("p");
+    if (pElementToConvert) {
+      const tempSpanContent = document.createElement("span");
+      pElementToConvert.childNodes.forEach((node: any) => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "SPAN") {
+          // If the node is a <span>, clone its text content and append it to the new <span>
+          const textNode = document.createTextNode(node.textContent || "");
+          tempSpanContent.appendChild(textNode);
+        } else if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.tagName === "BR"
+        ) {
+          // If the node is a <br>, append a <br> element to the new <span>
+          const br = document.createElement("br");
+          tempSpanContent.appendChild(br);
+        }
+      });
+      tempSpanContent.style.textAlign = "center";
+      tempSpanContent.style.position = "absolute";
+      tempSpanContent.id = "temp-content";
+      PlaygroundText?.appendChild(tempSpanContent);
+      const content = document.getElementById("temp-content");
+      const torender = document.getElementById("to-render");
+      if (
+        content &&
+        torender &&
+        tempSpanContent &&
+        tempSpanContent.parentNode
+      ) {
+        const spans = generateTextNodes(content, torender);
+        const lines = splitLines(spans);
+        tempSpanContent.parentNode.removeChild(tempSpanContent);
+        while (torender.firstChild) {
+          torender.removeChild(torender.firstChild);
+        }
+        return lines;
       } else {
-        console.error("Element not found");
+        console.error("Element with ID 'content' not found.");
       }
+    } else {
+      console.error("Element not found");
+    }
   };
 
   useEffect(() => {

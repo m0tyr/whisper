@@ -1,7 +1,8 @@
 import Konva from "konva";
 
-export type TextInstance = {
-  textInstances: Konva.Label[];
+export type MentionInstance = {
+  fromGroup: Konva.Group;
+  mentionInstances: Konva.Text[];
 };
 
 export type TextFonts = {

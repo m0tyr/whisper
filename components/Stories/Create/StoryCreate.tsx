@@ -25,7 +25,8 @@ import { useQueryFeaturedStickers } from "@/hooks/queries/useQueryFeaturedSticke
 
 import GifPlugin from "./GifPlugin/GifPlugin";
 import TextPlugin from "./TextPlugin/TextPlugin";
-import { TextInstance } from "@/lib/types/stories.types";
+import { Group } from "konva/lib/Group";
+import { MentionInstance } from "@/lib/types/stories.types";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -99,9 +100,15 @@ const StoryCreate = () => {
   const stageRef = useRef<Konva.Stage | null>(null);
   const layerRef = useRef<Konva.Layer | null>(null);
   const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
-  const textInstancesRef = useRef<Konva.Text[]>([]);
-  const textCustomInstancesRef = useRef<TextInstance[]>([]);
-  const [toRenderTextFont, setToRenderTextFont] = useState("system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif");
+  const mentionInstancesRef = useRef<MentionInstance[]>([]);
+  const textInstancesRef = useRef<Konva.Group[]>([]);
+
+  const [textInstancesState, setTextInstancesState] = useState<Konva.Group[]>(
+    []
+  );
+  const [toRenderTextFont, setToRenderTextFont] = useState(
+    "system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif"
+  );
   const [textValue, setTextValue] = useState("");
   const [textNode, setTextNode] = useState<Konva.Text | null>(null);
 
@@ -117,7 +124,7 @@ const StoryCreate = () => {
     }
   };
 
-  const handleTextNodeClick = (node: Konva.Text) => {
+  const handleTextNodeClick = (node: Konva.Group) => {
     if (transformerInstancesRef.current) {
       const id = node.id();
       console.log(
@@ -130,23 +137,10 @@ const StoryCreate = () => {
     }
   };
 
-  const handleTextNodeDblClick = (node: Konva.Text) => {
-    setTextValue(node.text());
+  const handleTextNodeDblClick = (node: Konva.Group) => {
+    /*     setTextValue(node.text());
     setToRenderTextFont(node.fontFamily());
-    setTextNode(node);
-    setisAddingNewText(false);
-    setIsInTextContext(true);
-    setIsInBaseContext(false);
-  };
-
-  const handleLabelNodeClick = (nodes: Konva.Label[]) => {
-    if (transformerInstancesRef.current) {
-      const id = nodes[0].id();
-      transformerInstancesRef.current[parseInt(id)].nodes(nodes);
-      transformerInstancesRef.current[parseInt(id)].getLayer()?.batchDraw();
-    }
-  };
-  const handleLabelNodeDblClick = (node: Konva.Label) => {
+    setTextNode(node); */
     setisAddingNewText(false);
     setIsInTextContext(true);
     setIsInBaseContext(false);
@@ -165,101 +159,6 @@ const StoryCreate = () => {
       }
     };
   }, []);
-
-  useEffect(() => {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
-
-    if (stage && layer && textNode && textInstancesRef) {
-      textCustomInstancesRef?.current?.forEach((textInstances) => {
-        textInstances.textInstances.forEach((text) => {
-          text.on("click", () =>
-            handleLabelNodeClick(textInstances.textInstances)
-          );
-          text.on("dblclick", () => handleLabelNodeDblClick(text));
-          text.on("dragmove", () => {
-            if (text) {
-              const nodePos = text.getPosition();
-              const nodeWidth = text.width();
-              const nodeHeight = text.height();
-
-              const centerX = storyProperties.width / 2;
-              const centerY = storyProperties.height / 2;
-
-              if (Math.abs(nodePos.x + nodeWidth / 2 - centerX) < 10) {
-                text.x(centerX - nodeWidth / 2);
-              }
-
-              if (Math.abs(nodePos.y + nodeHeight / 2 - centerY) < 10) {
-                text.y(centerY - nodeHeight / 2);
-              }
-            }
-          });
-        });
-      });
-      textInstancesRef?.current?.forEach((text) => {
-        text.on("click", () => handleTextNodeClick(text));
-        text.on("dblclick", () => handleTextNodeDblClick(text));
-        text.on("dragmove", () => {
-          if (text) {
-            const nodePos = text.getPosition();
-            const nodeWidth = text.width();
-            const nodeHeight = text.height();
-
-            const centerX = storyProperties.width / 2;
-            const centerY = storyProperties.height / 2;
-
-            if (Math.abs(nodePos.x + nodeWidth / 2 - centerX) < 10) {
-              text.x(centerX - nodeWidth / 2);
-            }
-
-            if (Math.abs(nodePos.y + nodeHeight / 2 - centerY) < 10) {
-              text.y(centerY - nodeHeight / 2);
-            }
-          }
-        });
-      });
-
-      // Add listeners for textNode
-      textNode.on("click", () => handleTextNodeClick(textNode));
-      textNode.on("dblclick", () => handleTextNodeDblClick(textNode));
-      textNode.on("dragmove", () => {
-        if (textNode) {
-          const nodePos = textNode.getPosition();
-          const nodeWidth = textNode.width();
-          const nodeHeight = textNode.height();
-
-          const centerX = storyProperties.width / 2;
-          const centerY = storyProperties.height / 2;
-
-          if (Math.abs(nodePos.x + nodeWidth / 2 - centerX) < 10) {
-            textNode.x(centerX - nodeWidth / 2);
-          }
-
-          if (Math.abs(nodePos.y + nodeHeight / 2 - centerY) < 10) {
-            textNode.y(centerY - nodeHeight / 2);
-          }
-        }
-      });
-    }
-
-    return () => {
-      if (textInstancesRef.current) {
-        textInstancesRef.current.forEach((text) => {
-          text.off("click dblclick dragmove");
-        });
-      }
-
-      if (textNode) {
-        textNode.off("click dblclick dragmove");
-      }
-    };
-  }, [
-    textNode,
-    textInstancesRef,
-    storyProperties.width,
-    storyProperties.height,
-  ]);
 
   const AddTextOrModify = (isAddingNewText?: boolean) => {
     setisAddingNewText(true);
@@ -301,6 +200,69 @@ const StoryCreate = () => {
   const makeGIFSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchValue(value);
+  };
+  // This useEffect will now be triggered when the state is updated
+  useEffect(() => {
+    console.log(textInstancesState); // This will log the updated textInstancesRef contents
+  }, [textInstancesState]);
+
+  const handleTextInstancesUpdate = (
+    newInstances: Group[],
+    newMentionInstances: MentionInstance
+  ) => {
+    textInstancesRef.current = newInstances;
+    setTextInstancesState(newInstances);
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    console.log(newMentionInstances, newMentionInstances.mentionInstances);
+   
+    if (stage && layer && textInstancesRef) {
+      newInstances.forEach((text) => {
+        text.on("click", () => handleTextNodeClick(text));
+        text.on("dblclick", () => handleTextNodeDblClick(text));
+        text.on("dragmove", () => {
+          if (text) {
+           
+            const nodePos = text.getPosition();
+            newMentionInstances.mentionInstances.forEach((mention) => {
+              if (mention) {
+                const mentionNodePos = mention.getPosition();
+                const computedMentionPos = 
+                {
+                  x: mentionNodePos.x + nodePos.x,
+                  y: nodePos.y + mentionNodePos.y
+                }
+                console.log(computedMentionPos);
+              }
+            });
+            const nodeWidth = text.width();
+            const nodeHeight = text.height();
+            const centerX = storyProperties.width / 2;
+            const centerY = storyProperties.height / 2;
+
+            if (Math.abs(nodePos.x + nodeWidth / 2 - centerX) < 10) {
+              text.x(centerX - nodeWidth / 2);
+            }
+
+            if (Math.abs(nodePos.y + nodeHeight / 2 - centerY) < 10) {
+              text.y(centerY - nodeHeight / 2);
+            }
+          }
+        });
+      });
+    }
+
+    return () => {
+      if (textInstancesRef.current) {
+        textInstancesRef.current.forEach((text) => {
+          text.off("click dblclick dragmove");
+        });
+      }
+
+      if (textNode) {
+        textNode.off("click dblclick dragmove");
+      }
+    };
   };
   return (
     <>
@@ -678,7 +640,7 @@ const StoryCreate = () => {
               setTextNode={setTextNode}
               transformerInstancesRef={transformerInstancesRef}
               textInstancesRef={textInstancesRef}
-              textCustomInstancesRef={textCustomInstancesRef}
+              onTextInstancesChange={handleTextInstancesUpdate}
             />
           )}
           <>
