@@ -1,5 +1,9 @@
 import LexicalContentEditable from "@/components/LexicalContentEditable/LexicalContentEditable";
-import { MentionInstance, TextColors, TextFonts } from "@/lib/types/stories.types";
+import {
+  MentionInstance,
+  TextColors,
+  TextFonts,
+} from "@/lib/types/stories.types";
 import { parsePath, roundCommands } from "svg-round-corners";
 import Konva from "konva";
 import { Rect } from "konva/lib/shapes/Rect";
@@ -20,6 +24,7 @@ import FontChooser from "./FontChooser/FontChooser";
 import ColorChooser from "./ColorChooser/ColorChooser";
 import { motion } from "framer-motion";
 import { $patchStyleText } from "@lexical/selection";
+import { Tween } from "konva/lib/Tween";
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -42,7 +47,10 @@ interface TextPluginProps {
   setTextNode: (node: Konva.Text | null) => void;
   transformerInstancesRef: RefObject<Konva.Transformer[]>;
   textInstancesRef: RefObject<Konva.Group[]>;
-  onTextInstancesChange: (finalInstance: Konva.Group[], mentionFinalInstance: MentionInstance) => void;
+  onTextInstancesChange: (
+    finalInstance: Konva.Group[],
+    mentionFinalInstance: MentionInstance
+  ) => void;
 }
 
 interface Line {
@@ -265,7 +273,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           visible: false,
         });
 
-        // Add textMeasure to the layer temporarily to measure text lines
         layer.add(textMeasure);
 
         var top = 1;
@@ -327,7 +334,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                   x: currentX,
                   y: top,
                 });
-                mentionTextNode.push(mention)
+                mentionTextNode.push(mention);
                 // Measure the mention text width
                 const mentionTextWidth = mention.width();
                 mention.x(
@@ -388,6 +395,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           y: pos.y - (pos.padding.top - pos.margin.top),
           rotation: pos.angle,
           draggable: true,
+          id: `${transformerInstancesRef?.current?.length}`,
         });
         if (isTextBackgroundSelected) {
           const path = generateBackgroundShape({
@@ -412,61 +420,71 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         const transformer = new Konva.Transformer({
           nodes: [group],
           anchorStroke: "#212121",
-          anchorFill: "#434343",
-          borderStroke: "#f1f1f1",
+          borderStroke: "#f1f1f100",
+          anchorFill: "#212121",
           draggable: true,
           anchorStyleFunc: (anchor) => {
-            anchor.cornerRadius(10);
-            anchor.fill("#2d2d2d");
+            anchor.cornerRadius(30);
             anchor.stroke("#212121");
-            if (
-              anchor.hasName("top-center") ||
-              anchor.hasName("bottom-center")
-            ) {
-              anchor.height(6);
-              anchor.offsetY(3);
-              anchor.width(30);
-              anchor.offsetX(15);
-            }
-            if (
-              anchor.hasName("middle-left") ||
-              anchor.hasName("middle-right")
-            ) {
-              anchor.height(30);
-              anchor.offsetY(15);
-              anchor.width(6);
-              anchor.offsetX(3);
+            if (anchor.hasName("rotater")) {
+              anchor.width(28);
+              anchor.height(28);
+              anchor.offsetX(isTextBackgroundSelected ? 9 : 8.5);
+              anchor.offsetY(-11.5);
             }
           },
           keepRatio: true,
-          enabledAnchors: [
-            "top-left",
-            "top-right",
-            "bottom-left",
-            "bottom-right",
-          ],
+          enabledAnchors: ["rotater"],
           rotateEnabled: true,
           resizeEnabled: true,
           rotationSnaps: [0, 90, -90, 180, -180],
-          rotationSnapTolerance: 10,
+          rotationSnapTolerance: 15,
         });
+
+        layer.add(transformer);
+
+        const dataPathShapes: any = {
+          rotater: {
+            path: `<svg id="Layer_1" data-name="Layer 1" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'>
+              <path fill="currentColor" d="M16.25 18.48V15a.75.75 0 1 0-1.5 0v4c0 .97.78 1.75 1.75 1.75h4a.75.75 0 1 0 0-1.5h-2.6a8.75 8.75 0 0 0-2.07-15.53.75.75 0 1 0-.49 1.42 7.25 7.25 0 0 1 .91 13.34zM8.75 5.52V9a.75.75 0 0 0 1.5 0V5c0-.97-.78-1.75-1.75-1.75h-4a.75.75 0 0 0 0 1.5h2.6a8.75 8.75 0 0 0 2.18 15.57.75.75 0 0 0 .47-1.43 7.25 7.25 0 0 1-1-13.37z"></path>   
+            </svg>`,
+            shape: transformer.findOne(".rotater"),
+          }
+        };
+      for (var path in dataPathShapes) {
+        var shape = dataPathShapes[path].shape;
+        var selector = path.replace('_', '-');
+        if (shape) {
+          console.log(textMeasure.width());
+          var icon = new Konva.Path({
+            fill: "white",
+            data: dataPathShapes[path].path,
+            name: selector + '-icon',
+            scaleX: 0.7,
+            scaleY: 0.7,
+            x: selector === 'rotater' ? isTextBackgroundSelected ? textMeasure.width() / 2 - 3.5 + 8 : textMeasure.width() / 2 - 3.5 : 0,
+            y:  shape.y() + 17,
+          });
+          transformer.add(icon);
+        }
+      }
+
 
         shapes.forEach((shape) => group.add(shape));
         layer.add(group);
 
-        layer.add(transformer);
-
         transformerInstancesRef?.current?.push(
           transformer as Konva.Transformer
         );
-        textInstancesRef?.current?.push(
-          group
-        )
+        textInstancesRef?.current?.push(group);
         const mentionInstanceLinked: MentionInstance = {
           fromGroup: group,
-          mentionInstances: mentionTextNode
+          mentionInstances: mentionTextNode,
         };
-        onTextInstancesChange(textInstancesRef?.current as Konva.Group[], mentionInstanceLinked)
+        onTextInstancesChange(
+          textInstancesRef?.current as Konva.Group[],
+          mentionInstanceLinked
+        );
 
         layer.draw();
       }
@@ -630,8 +648,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             rotationSnaps: [0, 90, -90, 180, -180],
             rotationSnapTolerance: 10,
           });
-/*           textInstancesRef?.current?.push(newText);
- */          transformerInstancesRef?.current?.push(
+          /*           textInstancesRef?.current?.push(newText);
+           */ transformerInstancesRef?.current?.push(
             transformer as Konva.Transformer
           );
           layer.add(newText);

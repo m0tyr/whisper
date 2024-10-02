@@ -127,13 +127,50 @@ const StoryCreate = () => {
   const handleTextNodeClick = (node: Konva.Group) => {
     if (transformerInstancesRef.current) {
       const id = node.id();
-      console.log(
-        transformerInstancesRef.current[parseInt(id)],
-        transformerInstancesRef.current.length,
-        parseInt(id)
-      );
-      transformerInstancesRef.current[parseInt(id)].nodes([node]);
-      transformerInstancesRef.current[parseInt(id)].getLayer()?.batchDraw();
+      const transformer = transformerInstancesRef.current[parseInt(id)];
+
+      transformer.nodes([node]);
+
+      const { x, y } = node.getClientRect();
+      transformer.x(x + node.width() / 2);
+      transformer.y(y + node.height() / 2);
+
+      transformer.scaleY(0);
+
+      if (!layerRef.current?.children.includes(transformer)) {
+        layerRef.current?.add(transformer);
+      }
+      node.to({
+        opacity: 0.75,
+        duration: 0.2,
+        onFinish: () => {
+            node.to({
+              opacity: 1,
+              duration: 0.2
+            });
+        }
+      });
+      const bounceTween = new Konva.Tween({
+        node: transformer,
+        duration: 0.2,
+        scaleY: 1.2,
+        easing: Konva.Easings.ElasticEaseIn,
+        onFinish: () => {
+          new Konva.Tween({
+            node: transformer,
+            duration: 0.1,
+            scaleY: 1,
+            easing: Konva.Easings.EaseInOut,
+            onFinish: () => {
+              transformer.getLayer()?.batchDraw();
+            },
+          }).play();
+        },
+      });
+
+      bounceTween.play();
+
+      layerRef.current?.batchDraw();
     }
   };
 
@@ -141,6 +178,7 @@ const StoryCreate = () => {
     /*     setTextValue(node.text());
     setToRenderTextFont(node.fontFamily());
     setTextNode(node); */
+
     setisAddingNewText(false);
     setIsInTextContext(true);
     setIsInBaseContext(false);
@@ -215,23 +253,21 @@ const StoryCreate = () => {
     const stage = stageRef.current;
     const layer = layerRef.current;
     console.log(newMentionInstances, newMentionInstances.mentionInstances);
-   
+
     if (stage && layer && textInstancesRef) {
       newInstances.forEach((text) => {
         text.on("click", () => handleTextNodeClick(text));
         text.on("dblclick", () => handleTextNodeDblClick(text));
         text.on("dragmove", () => {
           if (text) {
-           
             const nodePos = text.getPosition();
             newMentionInstances.mentionInstances.forEach((mention) => {
               if (mention) {
                 const mentionNodePos = mention.getPosition();
-                const computedMentionPos = 
-                {
+                const computedMentionPos = {
                   x: mentionNodePos.x + nodePos.x,
-                  y: nodePos.y + mentionNodePos.y
-                }
+                  y: nodePos.y + mentionNodePos.y,
+                };
                 console.log(computedMentionPos);
               }
             });

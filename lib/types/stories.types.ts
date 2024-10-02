@@ -11,6 +11,7 @@ export type TextFonts = {
   name: string;
 };
 
+
 export type TextColors = {
   renderedColor: string;
   name: string;
