@@ -27,6 +27,7 @@ import GifPlugin from "./GifPlugin/GifPlugin";
 import TextPlugin from "./TextPlugin/TextPlugin";
 import { Group } from "konva/lib/Group";
 import { MentionInstance } from "@/lib/types/stories.types";
+import ToolBar from "./ToolBar/ToolBar";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -102,7 +103,10 @@ const StoryCreate = () => {
   const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
   const mentionInstancesRef = useRef<MentionInstance[]>([]);
   const textInstancesRef = useRef<Konva.Group[]>([]);
-
+  const [selectedItemCoord, setSelectedItemCoord] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
   const [textInstancesState, setTextInstancesState] = useState<Konva.Group[]>(
     []
   );
@@ -118,6 +122,7 @@ const StoryCreate = () => {
       if (transformerInstancesRef.current) {
         transformerInstancesRef.current.forEach((element) => {
           element.nodes([]);
+          setSelectedItemCoord({ x: 0, y: 0 });
           element.getLayer()?.batchDraw();
         });
       }
@@ -131,44 +136,37 @@ const StoryCreate = () => {
 
       transformer.nodes([node]);
 
-      const { x, y } = node.getClientRect();
+      const { x, y, width } = node.getClientRect();
+      const rotation = node.rotation()
       transformer.x(x + node.width() / 2);
       transformer.y(y + node.height() / 2);
-
-      transformer.scaleY(0);
+      if (rotation < 91 && rotation > 89 ) {
+        setSelectedItemCoord({
+          x: x + 12,
+          y: y + node.height() / 2 - 85,
+        });
+      } else if (rotation > -91 && rotation < -89 ) {
+        setSelectedItemCoord({
+          x: x - node.height(),
+          y: y + node.height() / 2 - 85,
+        });
+      } else {
+        setSelectedItemCoord({ x: x + width / 3 + 12, y : y + node.height() / 2 - 85 });
+      }
 
       if (!layerRef.current?.children.includes(transformer)) {
         layerRef.current?.add(transformer);
       }
       node.to({
         opacity: 0.75,
-        duration: 0.2,
+        duration: 0.15,
         onFinish: () => {
-            node.to({
-              opacity: 1,
-              duration: 0.2
-            });
-        }
-      });
-      const bounceTween = new Konva.Tween({
-        node: transformer,
-        duration: 0.2,
-        scaleY: 1.2,
-        easing: Konva.Easings.ElasticEaseIn,
-        onFinish: () => {
-          new Konva.Tween({
-            node: transformer,
-            duration: 0.1,
-            scaleY: 1,
-            easing: Konva.Easings.EaseInOut,
-            onFinish: () => {
-              transformer.getLayer()?.batchDraw();
-            },
-          }).play();
+          node.to({
+            opacity: 1,
+            duration: 0.055,
+          });
         },
       });
-
-      bounceTween.play();
 
       layerRef.current?.batchDraw();
     }
@@ -256,10 +254,81 @@ const StoryCreate = () => {
 
     if (stage && layer && textInstancesRef) {
       newInstances.forEach((text) => {
+        text.on("transform", () => {
+          const rotation = text.rotation();
+          if (rotation !== 0) {
+            setSelectedItemCoord({
+              x: 0,
+              y: 0,
+            });
+          }
+        });
+        text.on("transformend", () => {
+          const boundingBox = text.getClientRect();
+          const { x, y, width } = text.getClientRect();
+          const newY = boundingBox.y - boundingBox.height / 5;
+          const rotation = text.rotation();
+          console.log(rotation)
+          if (rotation === 0 || rotation === 180 || rotation === -180) {
+            setSelectedItemCoord({
+              x: x + width / 3 + 12,
+              y:  y + text.height() / 2 - 85,
+            });
+          } else if (rotation < 91 && rotation > 89 ) {
+            setSelectedItemCoord({
+              x: x + 12,
+              y: newY,
+            });
+          } else if ( rotation > -91 && rotation < -89 ) {
+            setSelectedItemCoord({
+              x: x - text.height(),
+              y: newY,
+            });
+          } else {
+            setSelectedItemCoord({
+              x: x + width / 3 + 12,
+              y: newY, 
+            });
+          }
+          console.log(x + width / 3 + 12, newY, "x" ,x )
+          });
         text.on("click", () => handleTextNodeClick(text));
         text.on("dblclick", () => handleTextNodeDblClick(text));
+        text.on("dragend", () => {
+          const { x, y, width } = text.getClientRect();
+          const rotation = text.rotation();
+          const boundingBox = text.getClientRect();
+          const newY = boundingBox.y - boundingBox.height / 5;
+          console.log(boundingBox.width)
+          if (rotation === 0 || rotation === 180 || rotation === -180) {
+            setSelectedItemCoord({
+              x: x + width / 3 + 12, 
+              y: y + text.height() / 2 - 85,
+            });
+          } else if (rotation < 91 && rotation > 89 ) {
+            setSelectedItemCoord({
+              x: x + 12,
+              y: newY,
+            });
+          } else if ( rotation > -91 && rotation < -89 ) {
+            setSelectedItemCoord({
+              x: x - text.height(),
+              y: newY,
+            });
+          } else {
+            setSelectedItemCoord({
+              x: x + width / 3 + 12, 
+              y: newY, 
+            });
+          }
+        });
+
         text.on("dragmove", () => {
           if (text) {
+            setSelectedItemCoord({
+              x: 0,
+              y: 0,
+            });
             const nodePos = text.getPosition();
             newMentionInstances.mentionInstances.forEach((mention) => {
               if (mention) {
@@ -851,6 +920,12 @@ const StoryCreate = () => {
                     </svg>
                   </motion.div>
                 </div>
+                {selectedItemCoord.x !== 0 && selectedItemCoord.y !== 0 ? (
+                  <ToolBar
+                    x={selectedItemCoord.x}
+                    y={selectedItemCoord.y}
+                  />
+                ) : null}
               </div>
               <Stage
                 ref={stageRef}

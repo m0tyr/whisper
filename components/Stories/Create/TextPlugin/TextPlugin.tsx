@@ -424,9 +424,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           anchorFill: "#212121",
           draggable: true,
           anchorStyleFunc: (anchor) => {
-            anchor.cornerRadius(30);
             anchor.stroke("#212121");
             if (anchor.hasName("rotater")) {
+              anchor.cornerRadius(30);
               anchor.width(28);
               anchor.height(28);
               anchor.offsetX(isTextBackgroundSelected ? 9 : 8.5);
@@ -460,10 +460,10 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             fill: "white",
             data: dataPathShapes[path].path,
             name: selector + '-icon',
-            scaleX: 0.7,
-            scaleY: 0.7,
-            x: selector === 'rotater' ? isTextBackgroundSelected ? textMeasure.width() / 2 - 3.5 + 8 : textMeasure.width() / 2 - 3.5 : 0,
-            y:  shape.y() + 17,
+            scaleX: selector === 'rotater' ? 0.7 : 1,
+            scaleY: selector === 'rotater' ? 0.7 : 1,
+            x: selector === 'rotater' ? isTextBackgroundSelected ? textMeasure.width() / 2 - 3.5 + 8 : textMeasure.width() / 2 - 3.5 : textMeasure.width() / 2 ,
+            y: selector === 'rotater' ? shape.y() + 17 : shape.y() - 70,
           });
           transformer.add(icon);
         }
