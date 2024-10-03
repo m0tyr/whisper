@@ -137,22 +137,13 @@ const StoryCreate = () => {
       transformer.nodes([node]);
 
       const { x, y, width } = node.getClientRect();
-      const rotation = node.rotation()
       transformer.x(x + node.width() / 2);
       transformer.y(y + node.height() / 2);
-      if (rotation < 91 && rotation > 89 ) {
+      const calNode = calculateCenteredCoords(node);
         setSelectedItemCoord({
-          x: x + 12,
-          y: y + node.height() / 2 - 85,
+          x: calNode.x,
+          y: calNode.y,
         });
-      } else if (rotation > -91 && rotation < -89 ) {
-        setSelectedItemCoord({
-          x: x - node.height(),
-          y: y + node.height() / 2 - 85,
-        });
-      } else {
-        setSelectedItemCoord({ x: x + width / 3 + 12, y : y + node.height() / 2 - 85 });
-      }
 
       if (!layerRef.current?.children.includes(transformer)) {
         layerRef.current?.add(transformer);
@@ -237,10 +228,33 @@ const StoryCreate = () => {
     const value = event.target.value;
     setSearchValue(value);
   };
-  // This useEffect will now be triggered when the state is updated
-  useEffect(() => {
-    console.log(textInstancesState); // This will log the updated textInstancesRef contents
-  }, [textInstancesState]);
+
+  function calculateCenteredCoords(node: Group) {
+    const boundingBox = node.getClientRect();
+    const rotation = node.rotation(); // Get the current rotation angle of the node
+
+    const centerX = boundingBox.x / 2 + boundingBox.width;
+    let centerY;
+
+    if (rotation === 0 || rotation === 180 || rotation === -180) {
+      // No or full rotation, adjust the Y-coordinate as per your original logic
+      centerY = boundingBox.y + node.height() / 2 - 85;
+    } else {
+      // Rotation is not 0 or 180, calculate based on the rotation angle
+      // Convert the rotation to radians for trigonometric functions
+      const radians = (rotation * Math.PI) / 180;
+  
+      // Calculate new X and Y offsets using trigonometry based on the height and rotation
+      const rotatedHeight = boundingBox.height / 5 * Math.cos(radians);
+  
+      // Adjust Y coordinate using the rotated height
+      centerY = boundingBox.y + rotatedHeight / 5 - 85;
+    }
+      return {
+        x: centerX,
+        y: centerY, // Adjust y based on your toolbar offset logic
+      };
+  }
 
   const handleTextInstancesUpdate = (
     newInstances: Group[],
@@ -264,65 +278,16 @@ const StoryCreate = () => {
           }
         });
         text.on("transformend", () => {
-          const boundingBox = text.getClientRect();
-          const { x, y, width } = text.getClientRect();
-          const newY = boundingBox.y - boundingBox.height / 5;
-          const rotation = text.rotation();
-          console.log(rotation)
-          if (rotation === 0 || rotation === 180 || rotation === -180) {
-            setSelectedItemCoord({
-              x: x + width / 3 + 12,
-              y:  y + text.height() / 2 - 85,
-            });
-          } else if (rotation < 91 && rotation > 89 ) {
-            setSelectedItemCoord({
-              x: x + 12,
-              y: newY,
-            });
-          } else if ( rotation > -91 && rotation < -89 ) {
-            setSelectedItemCoord({
-              x: x - text.height(),
-              y: newY,
-            });
-          } else {
-            setSelectedItemCoord({
-              x: x + width / 3 + 12,
-              y: newY, 
-            });
-          }
-          console.log(x + width / 3 + 12, newY, "x" ,x )
-          });
-        text.on("click", () => handleTextNodeClick(text));
-        text.on("dblclick", () => handleTextNodeDblClick(text));
-        text.on("dragend", () => {
-          const { x, y, width } = text.getClientRect();
-          const rotation = text.rotation();
-          const boundingBox = text.getClientRect();
-          const newY = boundingBox.y - boundingBox.height / 5;
-          console.log(boundingBox.width)
-          if (rotation === 0 || rotation === 180 || rotation === -180) {
-            setSelectedItemCoord({
-              x: x + width / 3 + 12, 
-              y: y + text.height() / 2 - 85,
-            });
-          } else if (rotation < 91 && rotation > 89 ) {
-            setSelectedItemCoord({
-              x: x + 12,
-              y: newY,
-            });
-          } else if ( rotation > -91 && rotation < -89 ) {
-            setSelectedItemCoord({
-              x: x - text.height(),
-              y: newY,
-            });
-          } else {
-            setSelectedItemCoord({
-              x: x + width / 3 + 12, 
-              y: newY, 
-            });
-          }
+          const newCoords = calculateCenteredCoords(text);
+          setSelectedItemCoord(newCoords);
         });
 
+        text.on("dragend", () => {
+          const newCoords = calculateCenteredCoords(text);
+          setSelectedItemCoord(newCoords);
+        });
+        text.on("click", () => handleTextNodeClick(text));
+        text.on("dblclick", () => handleTextNodeDblClick(text));
         text.on("dragmove", () => {
           if (text) {
             setSelectedItemCoord({
@@ -921,10 +886,7 @@ const StoryCreate = () => {
                   </motion.div>
                 </div>
                 {selectedItemCoord.x !== 0 && selectedItemCoord.y !== 0 ? (
-                  <ToolBar
-                    x={selectedItemCoord.x}
-                    y={selectedItemCoord.y}
-                  />
+                  <ToolBar x={selectedItemCoord.x} y={selectedItemCoord.y} />
                 ) : null}
               </div>
               <Stage
