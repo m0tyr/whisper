@@ -26,7 +26,7 @@ import { useQueryFeaturedStickers } from "@/hooks/queries/useQueryFeaturedSticke
 import GifPlugin from "./GifPlugin/GifPlugin";
 import TextPlugin from "./TextPlugin/TextPlugin";
 import { Group } from "konva/lib/Group";
-import { MentionInstance } from "@/lib/types/stories.types";
+import { MentionInstance, TextInstances } from "@/lib/types/stories.types";
 import ToolBar from "./ToolBar/ToolBar";
 
 const StoryCreate = () => {
@@ -102,14 +102,12 @@ const StoryCreate = () => {
   const layerRef = useRef<Konva.Layer | null>(null);
   const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
   const mentionInstancesRef = useRef<MentionInstance[]>([]);
-  const textInstancesRef = useRef<Konva.Group[]>([]);
+  const textInstancesRef = useRef<TextInstances[]>([]);
   const [selectedItemCoord, setSelectedItemCoord] = useState<{
     x: number;
     y: number;
   }>({ x: 0, y: 0 });
-  const [textInstancesState, setTextInstancesState] = useState<Konva.Group[]>(
-    []
-  );
+  const selectedItemCoordRef = useRef({ x: 0, y: 0 }); // To access synchronously
   const [toRenderTextFont, setToRenderTextFont] = useState(
     "system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif"
   );
@@ -128,22 +126,34 @@ const StoryCreate = () => {
       }
     }
   };
+  useEffect(() => {
+    selectedItemCoordRef.current = selectedItemCoord;
+  }, [selectedItemCoord]);
 
-  const handleTextNodeClick = (node: Konva.Group) => {
+  const handleTextNodeClick = (
+    node: Konva.Group,
+    width: number,
+    height: number
+  ) => {
     if (transformerInstancesRef.current) {
+      transformerInstancesRef.current.forEach((element) => {
+        element.nodes([]);
+        setSelectedItemCoord({ x: 0, y: 0 });
+        element.getLayer()?.batchDraw();
+      });
       const id = node.id();
       const transformer = transformerInstancesRef.current[parseInt(id)];
 
       transformer.nodes([node]);
 
-      const { x, y, width } = node.getClientRect();
+      const { x, y } = node.getClientRect();
       transformer.x(x + node.width() / 2);
       transformer.y(y + node.height() / 2);
-      const calNode = calculateCenteredCoords(node);
-        setSelectedItemCoord({
-          x: calNode.x,
-          y: calNode.y,
-        });
+      const calNode = calculateCenteredCoords(node, width, height);
+      setSelectedItemCoord({
+        x: calNode.x,
+        y: calNode.y,
+      });
 
       if (!layerRef.current?.children.includes(transformer)) {
         layerRef.current?.add(transformer);
@@ -228,47 +238,84 @@ const StoryCreate = () => {
     const value = event.target.value;
     setSearchValue(value);
   };
+  function getNodePositionAtRotationZero(
+    node: Konva.Group,
+    width: number,
+    height: number
+  ) {
+    const rotation = (node.rotation() * Math.PI) / 180;
+    const unrotatedX =
+      node.x() +
+      (width / 2) * Math.cos(rotation) +
+      (height / 2) * Math.sin(-rotation) -
+      width / 2 +
+      3.75;
+    console.log(node.x(), width, height, rotation);
+    return unrotatedX;
+  }
 
-  function calculateCenteredCoords(node: Group) {
+  function calculateCenteredCoords(
+    node: Konva.Group,
+    width: number,
+    height: number
+  ) {
     const boundingBox = node.getClientRect();
     const rotation = node.rotation(); // Get the current rotation angle of the node
 
-    const centerX = boundingBox.x / 2 + boundingBox.width;
+    const centerX =
+      getNodePositionAtRotationZero(node, width, height) + width / 2;
+
+    console.log(getNodePositionAtRotationZero(node, width, height));
     let centerY;
 
     if (rotation === 0 || rotation === 180 || rotation === -180) {
-      // No or full rotation, adjust the Y-coordinate as per your original logic
-      centerY = boundingBox.y + node.height() / 2 - 85;
+      centerY = boundingBox.y - 60;
     } else {
-      // Rotation is not 0 or 180, calculate based on the rotation angle
-      // Convert the rotation to radians for trigonometric functions
       const radians = (rotation * Math.PI) / 180;
-  
-      // Calculate new X and Y offsets using trigonometry based on the height and rotation
-      const rotatedHeight = boundingBox.height / 5 * Math.cos(radians);
-  
-      // Adjust Y coordinate using the rotated height
-      centerY = boundingBox.y + rotatedHeight / 5 - 85;
+
+      const rotatedHeight = (height / 6) * Math.cos(radians);
+
+      centerY = boundingBox.y + rotatedHeight / 6 - 60;
     }
-      return {
-        x: centerX,
-        y: centerY, // Adjust y based on your toolbar offset logic
-      };
+    return {
+      x: centerX,
+      y: rotation === 0 ? centerY - 28 : centerY,
+    };
   }
 
   const handleTextInstancesUpdate = (
-    newInstances: Group[],
+    newInstances: TextInstances[],
     newMentionInstances: MentionInstance
   ) => {
+    transformerInstancesRef.current.forEach((element) => {
+      element.nodes([]);
+      setSelectedItemCoord({ x: 0, y: 0 });
+      element.getLayer()?.batchDraw();
+    });
+    const id = newInstances[newInstances.length - 1].textsGroup.id();
+    const transformer = transformerInstancesRef.current[parseInt(id)];
+    transformer.nodes([newInstances[newInstances.length - 1].textsGroup]);
+    const calNode = calculateCenteredCoords(
+      newInstances[newInstances.length - 1].textsGroup,
+      newInstances[newInstances.length - 1].width,
+      newInstances[newInstances.length - 1].height
+    );
+    setSelectedItemCoord({
+      x: calNode.x,
+      y: calNode.y,
+    });
     textInstancesRef.current = newInstances;
-    setTextInstancesState(newInstances);
     const stage = stageRef.current;
     const layer = layerRef.current;
     console.log(newMentionInstances, newMentionInstances.mentionInstances);
 
     if (stage && layer && textInstancesRef) {
-      newInstances.forEach((text) => {
+      newInstances.forEach((instance) => {
+        const text = instance.textsGroup;
         text.on("transform", () => {
+          const id = text.id();
+          const transformer = transformerInstancesRef.current[parseInt(id)];
+          transformer.visible(false);
           const rotation = text.rotation();
           if (rotation !== 0) {
             setSelectedItemCoord({
@@ -278,15 +325,28 @@ const StoryCreate = () => {
           }
         });
         text.on("transformend", () => {
-          const newCoords = calculateCenteredCoords(text);
+          const id = text.id();
+          const transformer = transformerInstancesRef.current[parseInt(id)];
+          transformer.visible(true);
+          const newCoords = calculateCenteredCoords(
+            text,
+            instance.width,
+            instance.height
+          );
           setSelectedItemCoord(newCoords);
         });
 
         text.on("dragend", () => {
-          const newCoords = calculateCenteredCoords(text);
+          const newCoords = calculateCenteredCoords(
+            text,
+            instance.width,
+            instance.height
+          );
           setSelectedItemCoord(newCoords);
         });
-        text.on("click", () => handleTextNodeClick(text));
+        text.on("click", () =>
+          handleTextNodeClick(text, instance.width, instance.height)
+        );
         text.on("dblclick", () => handleTextNodeDblClick(text));
         text.on("dragmove", () => {
           if (text) {
@@ -294,6 +354,14 @@ const StoryCreate = () => {
               x: 0,
               y: 0,
             });
+            transformerInstancesRef.current.forEach((element) => {
+              element.nodes([]);
+              setSelectedItemCoord({ x: 0, y: 0 });
+              element.getLayer()?.batchDraw();
+            });
+            const id = text.id();
+            const transformer = transformerInstancesRef.current[parseInt(id)];
+            transformer.nodes([text]);
             const nodePos = text.getPosition();
             newMentionInstances.mentionInstances.forEach((mention) => {
               if (mention) {
@@ -324,7 +392,8 @@ const StoryCreate = () => {
 
     return () => {
       if (textInstancesRef.current) {
-        textInstancesRef.current.forEach((text) => {
+        textInstancesRef.current.forEach((instance) => {
+          const text = instance.textsGroup;
           text.off("click dblclick dragmove");
         });
       }
@@ -885,9 +954,6 @@ const StoryCreate = () => {
                     </svg>
                   </motion.div>
                 </div>
-                {selectedItemCoord.x !== 0 && selectedItemCoord.y !== 0 ? (
-                  <ToolBar x={selectedItemCoord.x} y={selectedItemCoord.y} />
-                ) : null}
               </div>
               <Stage
                 ref={stageRef}
@@ -896,6 +962,9 @@ const StoryCreate = () => {
               >
                 <Layer ref={layerRef}></Layer>
               </Stage>
+              {selectedItemCoord.x !== 0 && selectedItemCoord.y !== 0 ? (
+                <ToolBar x={selectedItemCoord.x} y={selectedItemCoord.y} />
+              ) : null}
               {!hasPassedTemplateStep && (
                 <div className="w-full flex absolute h-full justify-center items-center flex-col rounded-lg z-50 bg-[rgb(0,0,0,0.4)]">
                   <motion.div

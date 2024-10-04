@@ -3,6 +3,7 @@ import {
   MentionInstance,
   TextColors,
   TextFonts,
+  TextInstances,
 } from "@/lib/types/stories.types";
 import { parsePath, roundCommands } from "svg-round-corners";
 import Konva from "konva";
@@ -46,9 +47,9 @@ interface TextPluginProps {
   textNode: Konva.Text | null;
   setTextNode: (node: Konva.Text | null) => void;
   transformerInstancesRef: RefObject<Konva.Transformer[]>;
-  textInstancesRef: RefObject<Konva.Group[]>;
+  textInstancesRef: RefObject<TextInstances[]>;
   onTextInstancesChange: (
-    finalInstance: Konva.Group[],
+    finalInstance: TextInstances[],
     mentionFinalInstance: MentionInstance
   ) => void;
 }
@@ -429,8 +430,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               anchor.cornerRadius(30);
               anchor.width(28);
               anchor.height(28);
-              anchor.offsetX(isTextBackgroundSelected ? 9 : 8.5);
-              anchor.offsetY(-11.5);
+              anchor.offsetX(isTextBackgroundSelected ? 11 : 10.5);
+              anchor.offsetY(-16.5);
             }
           },
           keepRatio: true,
@@ -462,8 +463,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             name: selector + '-icon',
             scaleX: selector === 'rotater' ? 0.7 : 1,
             scaleY: selector === 'rotater' ? 0.7 : 1,
-            x: selector === 'rotater' ? isTextBackgroundSelected ? textMeasure.width() / 2 - 3.5 + 8 : textMeasure.width() / 2 - 3.5 : textMeasure.width() / 2 ,
-            y: selector === 'rotater' ? shape.y() + 17 : shape.y() - 70,
+            x: selector === 'rotater' ? isTextBackgroundSelected ? textMeasure.width() / 2 - 5 + 8 : textMeasure.width() / 2 - 5 : textMeasure.width() / 2 ,
+            y: selector === 'rotater' ? shape.y() + 22 : shape.y() - 70,
           });
           transformer.add(icon);
         }
@@ -476,13 +477,13 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         transformerInstancesRef?.current?.push(
           transformer as Konva.Transformer
         );
-        textInstancesRef?.current?.push(group);
+        textInstancesRef?.current?.push({textsGroup: group, width: textMeasure.width(), height: textMeasure.height()});
         const mentionInstanceLinked: MentionInstance = {
           fromGroup: group,
           mentionInstances: mentionTextNode,
         };
         onTextInstancesChange(
-          textInstancesRef?.current as Konva.Group[],
+          textInstancesRef?.current as TextInstances[],
           mentionInstanceLinked
         );
 

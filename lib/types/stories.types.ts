@@ -5,6 +5,12 @@ export type MentionInstance = {
   mentionInstances: Konva.Text[];
 };
 
+export type TextInstances =  {
+  textsGroup: Konva.Group;
+  width: number;
+  height: number;
+}
+
 export type TextFonts = {
   variable: string;
   renderedFont: string;
