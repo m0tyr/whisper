@@ -430,7 +430,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               anchor.cornerRadius(30);
               anchor.width(28);
               anchor.height(28);
-              anchor.offsetX(isTextBackgroundSelected ? 11 : 10.5);
+              anchor.offsetX(14.2);
               anchor.offsetY(-16.5);
             }
           },
@@ -450,26 +450,27 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               <path fill="currentColor" d="M16.25 18.48V15a.75.75 0 1 0-1.5 0v4c0 .97.78 1.75 1.75 1.75h4a.75.75 0 1 0 0-1.5h-2.6a8.75 8.75 0 0 0-2.07-15.53.75.75 0 1 0-.49 1.42 7.25 7.25 0 0 1 .91 13.34zM8.75 5.52V9a.75.75 0 0 0 1.5 0V5c0-.97-.78-1.75-1.75-1.75h-4a.75.75 0 0 0 0 1.5h2.6a8.75 8.75 0 0 0 2.18 15.57.75.75 0 0 0 .47-1.43 7.25 7.25 0 0 1-1-13.37z"></path>   
             </svg>`,
             shape: transformer.findOne(".rotater"),
-          }
+          },
         };
-      for (var path in dataPathShapes) {
-        var shape = dataPathShapes[path].shape;
-        var selector = path.replace('_', '-');
-        if (shape) {
-          console.log(textMeasure.width());
-          var icon = new Konva.Path({
-            fill: "white",
-            data: dataPathShapes[path].path,
-            name: selector + '-icon',
-            scaleX: selector === 'rotater' ? 0.7 : 1,
-            scaleY: selector === 'rotater' ? 0.7 : 1,
-            x: selector === 'rotater' ? isTextBackgroundSelected ? textMeasure.width() / 2 - 5 + 8 : textMeasure.width() / 2 - 5 : textMeasure.width() / 2 ,
-            y: selector === 'rotater' ? shape.y() + 22 : shape.y() - 70,
-          });
-          transformer.add(icon);
+        for (var path in dataPathShapes) {
+          var shape = dataPathShapes[path].shape;
+          var selector = path.replace("_", "-");
+          if (shape) {
+            console.log(textMeasure.width());
+            var icon = new Konva.Path({
+              fill: "white",
+              data: dataPathShapes[path].path,
+              name: selector + "-icon",
+              scaleX: selector === "rotater" ? 0.7 : 1,
+              scaleY: selector === "rotater" ? 0.7 : 1,
+              x: isTextBackgroundSelected
+                ? textMeasure.width() / 2 
+                : textMeasure.width() / 2 - 9,
+              y: shape.y() + 22,
+            });
+            transformer.add(icon);
+          }
         }
-      }
-
 
         shapes.forEach((shape) => group.add(shape));
         layer.add(group);
@@ -477,7 +478,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         transformerInstancesRef?.current?.push(
           transformer as Konva.Transformer
         );
-        textInstancesRef?.current?.push({textsGroup: group, width: textMeasure.width(), height: textMeasure.height()});
+        textInstancesRef?.current?.push({
+          textsGroup: group,
+          width: textMeasure.width(),
+          height: textMeasure.height(),
+        });
         const mentionInstanceLinked: MentionInstance = {
           fromGroup: group,
           mentionInstances: mentionTextNode,

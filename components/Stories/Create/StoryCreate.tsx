@@ -248,8 +248,7 @@ const StoryCreate = () => {
       node.x() +
       (width / 2) * Math.cos(rotation) +
       (height / 2) * Math.sin(-rotation) -
-      width / 2 +
-      3.75;
+      width / 2;
     console.log(node.x(), width, height, rotation);
     return unrotatedX;
   }
