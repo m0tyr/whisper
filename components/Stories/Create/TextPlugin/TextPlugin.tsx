@@ -188,7 +188,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       }
     });
 
-    let path = `M ${lines[0]?.cx ?? 0} ${-(padding)}`;
+    let path = `M ${lines[0]?.cx ?? 0} ${-(padding / 3)}`;
 
     lines.forEach((line, index) => {
       const { cx } = line;
@@ -199,14 +199,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         }`;
       } else {
         path += ` L ${cx + line.width / 2 + padding} ${
-          index * lineHeight - padding 
+          index * lineHeight - padding / 3
         }`;
       }
 
       const nextLine = lines[index + 1];
       if (nextLine && nextLine.width > line.width) {
         path += ` L ${cx + line.width / 2 + padding} ${
-          (index + 1) * lineHeight - padding 
+          (index + 1) * lineHeight - padding / 3
         }`;
       } else {
         path += ` L ${cx + line.width / 2 + padding} ${
@@ -222,7 +222,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
       if (nextLine && nextLine.width > line.width) {
         path += ` L ${cx - line.width / 2 - padding} ${
-          (i + 1) * lineHeight - padding 
+          (i + 1) * lineHeight - padding / 3 
         }`;
       } else {
         path += ` L ${cx - line.width / 2 - padding} ${
@@ -237,7 +237,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         }`;
       } else {
         path += ` L ${cx - line.width / 2 - padding } ${
-          i * lineHeight - padding 
+          i * lineHeight - padding / 3
         }`;
       }
     }
@@ -374,7 +374,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                     shadowOpacity: 0.3,
                     fill: color,
                     x: currentX, // Position at current X
-                    y: top,
+                    y: top
                   });
 
                   const afterTextWidth = afterText.width();
