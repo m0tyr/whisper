@@ -26,6 +26,7 @@ import ColorChooser from "./ColorChooser/ColorChooser";
 import { motion } from "framer-motion";
 import { $patchStyleText } from "@lexical/selection";
 import { Tween } from "konva/lib/Tween";
+import RangeSelector from "../RangeSelector/RangeSelector";
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -104,15 +105,13 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const playgroundRef: any = useRef<HTMLDivElement | null>();
   const [isFontLoaded, setIsFontLoaded] = useState(false);
   const [previewBgPath, setPreviewBgPath] = useState("");
-  const [color, setColor] = useState<string>("");
+  const [color, setColor] = useState<string>("rgb(255 255 255)");
   const [fontSavedIndex, setFontSavedIndex] = useState<number | null>(0);
   const [colorSavedIndex, setColorSavedIndex] = useState<number | null>(0);
   const [isChoosingFont, setIsChoosingFont] = useState(false);
   const [isChoosingColor, setIsChoosingColor] = useState(false);
   const [isTextBackgroundSelected, setIsTextBackgroundSelected] =
-    useState(false);
-
-  const [foundMentionNode, setFoundMentionNode] = useState<any[]>([]);
+    useState(true);
 
   const textColors = useRef<TextColors[]>([
     { renderedColor: "rgb(255 255 255)", name: "white" },
@@ -189,29 +188,29 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       }
     });
 
-    let path = `M ${lines[0]?.cx ?? 0} ${-padding}`;
+    let path = `M ${lines[0]?.cx ?? 0} ${-(padding)}`;
 
     lines.forEach((line, index) => {
       const { cx } = line;
       const prevLine = lines[index - 1];
       if (prevLine && prevLine.width > line.width) {
         path += ` L ${cx + line.width / 2 + padding} ${
-          index * lineHeight + padding
+          index * lineHeight + padding 
         }`;
       } else {
         path += ` L ${cx + line.width / 2 + padding} ${
-          index * lineHeight - padding
+          index * lineHeight - padding 
         }`;
       }
 
       const nextLine = lines[index + 1];
       if (nextLine && nextLine.width > line.width) {
         path += ` L ${cx + line.width / 2 + padding} ${
-          (index + 1) * lineHeight - padding
+          (index + 1) * lineHeight - padding 
         }`;
       } else {
         path += ` L ${cx + line.width / 2 + padding} ${
-          (index + 1) * lineHeight + padding
+          (index + 1) * lineHeight + padding 
         }`;
       }
     });
@@ -223,22 +222,22 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
       if (nextLine && nextLine.width > line.width) {
         path += ` L ${cx - line.width / 2 - padding} ${
-          (i + 1) * lineHeight - padding
+          (i + 1) * lineHeight - padding 
         }`;
       } else {
         path += ` L ${cx - line.width / 2 - padding} ${
-          (i + 1) * lineHeight + padding
+          (i + 1) * lineHeight + padding 
         }`;
       }
 
       const prevLine = lines[i - 1];
       if (prevLine && prevLine.width > line.width) {
         path += ` L ${cx - line.width / 2 - padding} ${
-          i * lineHeight + padding
+          i * lineHeight + padding 
         }`;
       } else {
-        path += ` L ${cx - line.width / 2 - padding} ${
-          i * lineHeight - padding
+        path += ` L ${cx - line.width / 2 - padding } ${
+          i * lineHeight - padding 
         }`;
       }
     }
@@ -246,7 +245,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     path += " Z";
 
     const parsedPath = parsePath(path);
-    return roundCommands(parsedPath, cornerRadius).path;
+    return roundCommands(parsedPath, 4).path;
   }
 
   function buildCustomText(pos: {
@@ -266,32 +265,39 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         var textMeasure = new Konva.Text({
           text: pos.text,
           fontFamily: toRenderTextFont,
-          fontSize: 22,
+          fontSize: rangeValue,
           fontStyle: "600",
           letterSpacing: -0.5,
-          textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
+          shadowColor: "rgba(0, 0, 0, 1)",
+          shadowBlur: 1.5,
+          shadowOffset: { x: 0, y: 2 },
+          shadowOpacity: 0.3,
           fill: "#ffffff",
           visible: false,
         });
 
         layer.add(textMeasure);
 
-        var top = 1;
+        var top = 3;
         var shapes: (Text | Rect)[] = [];
         const text = convertLinesWithMention(textMeasure);
-        console.log(text);
         var mentionTextNode: Konva.Text[] = [];
-        text.forEach((line) => {
+        text.forEach((line,index) => {
+          
           if (line.mentionNodesAnchorPosition)
             if (line.mentionNodesAnchorPosition?.length > 0) {
               let currentX = 0;
               const lineMeasurement = new Konva.Text({
                 text: line.text,
                 fontFamily: toRenderTextFont,
-                fontSize: 22,
+                fontSize: rangeValue,
                 fontStyle: "600",
                 letterSpacing: -0.5,
-                fill: "#ffffff",
+                shadowColor: "rgba(0, 0, 0, 1)",
+                shadowBlur: 1.5,
+                shadowOffset: { x: 0, y: 2 },
+                shadowOpacity: 0.3,
+                fill: color,
                 visible: false,
                 x: 0,
                 y: top,
@@ -308,10 +314,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                   const beforeText = new Konva.Text({
                     text: beforeMention,
                     fontFamily: toRenderTextFont,
-                    fontSize: 22,
+                    fontSize: rangeValue,
                     fontStyle: "600",
                     letterSpacing: -0.5,
-                    fill: "#ffffff",
+                    shadowColor: "rgba(150, 150, 150, 1)",
+                    shadowBlur: 2,
+                    shadowOffset: { x: 0, y: 1 },
+                    shadowOpacity: 0.3,
+                    fill: color,
                     x: currentX,
                     y: top,
                   });
@@ -327,11 +337,15 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 const mention = new Konva.Text({
                   text: mentionText,
                   fontFamily: toRenderTextFont,
-                  fontSize: 22,
+                  fontSize: rangeValue,
                   fontStyle: "600",
                   letterSpacing: -0.5,
                   textDecoration: "underline",
-                  fill: "#ffffff",
+                  shadowColor: "rgba(150, 150, 150, 1)",
+                  shadowBlur: 2,
+                  shadowOffset: { x: 0, y: 1 },
+                  shadowOpacity: 0.3,
+                  fill: color,
                   x: currentX,
                   y: top,
                 });
@@ -351,10 +365,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                   const afterText = new Konva.Text({
                     text: afterMention,
                     fontFamily: toRenderTextFont,
-                    fontSize: 22,
+                    fontSize: rangeValue,
                     fontStyle: "600",
                     letterSpacing: -0.5,
-                    fill: "#ffffff",
+                    shadowColor: "rgba(150, 150, 150, 1)",
+                    shadowBlur: 2,
+                    shadowOffset: { x: 0, y: 1 },
+                    shadowOpacity: 0.3,
+                    fill: color,
                     x: currentX, // Position at current X
                     y: top,
                   });
@@ -374,10 +392,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               var textWithNoMention = new Konva.Text({
                 text: line.text,
                 fontFamily: toRenderTextFont,
-                fontSize: 22,
+                fontSize: rangeValue,
                 fontStyle: "600",
                 letterSpacing: -0.5,
-                fill: "#ffffff",
+                shadowColor: "rgba(0, 0, 0, 1)",
+                shadowBlur: 1.5,
+                shadowOffset: { x: 0, y: 2 },
+                shadowOpacity: 0.3,
+                fill: color,
                 x: 0,
                 y: top,
               });
@@ -386,8 +408,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               );
               shapes.push(textWithNoMention);
             }
-
-          top += 22 + 2;
+            top += parseInt(rangeValue.toString()) + 2;
         });
 
         // Group all shapes into a single group
@@ -403,7 +424,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             lines: JSON.parse(
               JSON.stringify(textMeasure.textArr as unknown as Line[])
             ),
-            lineHeight: 23 + 0.75,
+            lineHeight: parseInt(rangeValue.toString()) + 0.75,
             width: textMeasure.width(),
             align: "center",
             padding: 8,
@@ -456,7 +477,6 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           var shape = dataPathShapes[path].shape;
           var selector = path.replace("_", "-");
           if (shape) {
-            console.log(textMeasure.width());
             var icon = new Konva.Path({
               fill: "white",
               data: dataPathShapes[path].path,
@@ -464,7 +484,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               scaleX: selector === "rotater" ? 0.7 : 1,
               scaleY: selector === "rotater" ? 0.7 : 1,
               x: isTextBackgroundSelected
-                ? textMeasure.width() / 2 
+                ? textMeasure.width() / 2
                 : textMeasure.width() / 2 - 9,
               y: shape.y() + 22,
             });
@@ -850,27 +870,31 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       } else {
         width = playgroundElement.offsetWidth + 1;
       }
-
+      console.log(rangeValue)
       var textMeasure = new Konva.Text({
         text: makeLineBreakerMeasurer()?.join("\n"),
         width: width,
         align: "center",
         fontFamily: toRenderTextFont,
-        fontSize: 22,
+        fontSize: parseInt(rangeValue.toString(), 10),  // Ensure `fontSize` is a number
         fontStyle: "600",
         letterSpacing: -0.5,
-        lineHeight: 23 + lineHeightFix,
-        textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
+        lineHeight: parseFloat(rangeValue.toString()) + lineHeightFix,  // Ensure `lineHeight` is a number
+        shadowColor: "rgba(150, 150, 150, 1)",
+        shadowBlur: 2,
+        shadowOffset: { x: 0, y: 1 },
+        shadowOpacity: 0.3,
         fill: "#ffffff",
         visible: false,
-      });
+    });
+    console.log(textMeasure.lineHeight(),textMeasure.fontSize())
       layer?.add(textMeasure);
       setPreviewBgPath(
         generateBackgroundShape({
           lines: JSON.parse(
             JSON.stringify(textMeasure.textArr as unknown as Line[])
           ),
-          lineHeight: 23 + lineHeightFix,
+          lineHeight: parseFloat(rangeValue.toString()) + lineHeightFix,
           width: textMeasure.width(),
           align: "center",
           padding: 8,
@@ -1036,6 +1060,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       setPreviewBgPath("");
     }
   }, [isTextBackgroundSelected]);
+
+  const [rangeValue, setRangeValue] = useState(22);
+  const handleRangeChange = (e: any) => {
+    setRangeValue(e.target.value);
+  };
   return (
     <>
       <div
@@ -1073,15 +1102,15 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 width: "100%",
                 height: textValue.trim() === "" ? "22px" : "auto",
                 letterSpacing: "-0.5px",
-                fontSize: "22px",
+                fontSize: `${rangeValue}px`,
                 fontWeight: "600",
-                textShadow: "rgba(150, 150, 150, 0.3) 0px 1px 2px",
+                textShadow: "rgba(0, 0, 0, 0.3) 0px 2px 1.5px",
                 border: "none",
                 resize: "none",
                 background: "transparent",
                 outline: "none",
                 boxShadow: "none",
-                lineHeight: "23px",
+                lineHeight: `${rangeValue}px`,
               }}
             />
             <span
@@ -1097,9 +1126,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 overflowWrap: "break-word",
                 zIndex: -999,
                 color: "white",
-                fontSize: "22px",
+                fontSize: `${rangeValue}px`,
                 fontWeight: "600",
-                lineHeight: "23px",
+                lineHeight: `${rangeValue}px`,
               }}
             ></span>
           </div>
@@ -1219,6 +1248,12 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             storyProperties={storyProperties}
           />
         )}
+        <RangeSelector
+          rangeValue={rangeValue}
+          handleRangeChange={handleRangeChange}
+          minValue={12}
+          maxValue={60}
+        />
       </div>
     </>
   );

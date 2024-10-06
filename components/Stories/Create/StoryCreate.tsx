@@ -40,7 +40,7 @@ const StoryCreate = () => {
     height: 0,
   });
 
-  const [hasPassedTemplateStep, setHasPassedTemplateStep] = useState(false);
+  const [hasPassedTemplateStep, setHasPassedTemplateStep] = useState(true);
   const [isInDrawingContext, setIsInDrawingContext] = useState(false);
   const [isInTextContext, setIsInTextContext] = useState(false);
   const [isAddingNewText, setisAddingNewText] = useState(false);
@@ -249,7 +249,6 @@ const StoryCreate = () => {
       (width / 2) * Math.cos(rotation) +
       (height / 2) * Math.sin(-rotation) -
       width / 2;
-    console.log(node.x(), width, height, rotation);
     return unrotatedX;
   }
 
@@ -264,7 +263,6 @@ const StoryCreate = () => {
     const centerX =
       getNodePositionAtRotationZero(node, width, height) + width / 2;
 
-    console.log(getNodePositionAtRotationZero(node, width, height));
     let centerY;
 
     if (rotation === 0 || rotation === 180 || rotation === -180) {
@@ -306,7 +304,6 @@ const StoryCreate = () => {
     textInstancesRef.current = newInstances;
     const stage = stageRef.current;
     const layer = layerRef.current;
-    console.log(newMentionInstances, newMentionInstances.mentionInstances);
 
     if (stage && layer && textInstancesRef) {
       newInstances.forEach((instance) => {
@@ -369,7 +366,6 @@ const StoryCreate = () => {
                   x: mentionNodePos.x + nodePos.x,
                   y: nodePos.y + mentionNodePos.y,
                 };
-                console.log(computedMentionPos);
               }
             });
             const nodeWidth = text.width();

@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Stage, Layer, Line as KonvaLine } from "react-konva";
+import RangeSelector from "../RangeSelector/RangeSelector";
 
 type Line = {
   tool: string;
@@ -142,36 +143,7 @@ const DrawPlugin: React.FC<DrawPluginProps> = ({ width, height }) => {
             </div>
           </div>
 
-          <div className="absolute z-[60] top-[30%] left-0 translate-x-1/2">
-            <div className="wrapper">
-              <input
-                type="range"
-                min="5"
-                max="200"
-                value={rangeValue}
-                onChange={handleRangeChange}
-              />
-            </div>
-          </div>
-          <div className="absolute h-[16rem] w-[1.5rem]  top-[30%] left-0 translate-x-1/2 ">
-            <div
-              style={{
-                borderLeft: "14px solid transparent",
-                borderRight: "14px solid transparent",
-                borderTop: "250px solid rgb(168,168,168,.3)",
-              }}
-              className=" h-full w-full relative"
-            >
-              <div
-                style={{
-                  borderLeft: "12px solid transparent",
-                  borderRight: "12px solid transparent",
-                  borderTop: "250px solid rgb(18,18,18,.65 )",
-                }}
-                className=" h-full w-full absolute top-[-249px] left-[-12px]"
-              ></div>
-            </div>
-          </div>
+          <RangeSelector rangeValue={rangeValue} handleRangeChange={handleRangeChange} minValue={5} maxValue={200} />
         </>
       )}
 
