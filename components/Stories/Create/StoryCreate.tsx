@@ -157,29 +157,7 @@ const StoryCreate = () => {
         computedHeight
       );
      
-      const box = node.getClientRect();
-      const xc = box.x + box.width / 2;
-      const yc = box.y + box.height / 2;
-      const tween = new Konva.Tween({
-        node: node,
-        duration: 0.1,
-        x: xc,
-        y: yc,
-        scaleX: 0.95,
-        scaleY: 0.95,
-        onFinish: () => {
-          tween.reverse();
-        },
-      });
-      var cir = new Konva.Circle({
-        x: xc,
-        y: yc,
-        fill: "red",
-        width: 100,
-        height: 50,
-      });
-      layerRef.current?.add(cir);
-      tween.play();
+ 
       setSelectedItemCoord({
         x: calNode.x,
         y: calNode.y,
@@ -360,7 +338,19 @@ const StoryCreate = () => {
           );
           setSelectedItemCoord(newCoords);
         });
-        text.on("click", () => {
+        text.on("click", (evt) => {
+          text.to({
+            duration: 0.2,
+            scaleX: 0.95,
+            scaleY: 0.95,
+            onFinish: function() {
+              text.to({
+                duration: 0.2,
+                scaleX: 1,
+                scaleY: 1
+              });
+            }
+          });
           handleTextNodeClick(text, instance.width, instance.height);
         });
         text.on("dblclick", () => handleTextNodeDblClick(text));

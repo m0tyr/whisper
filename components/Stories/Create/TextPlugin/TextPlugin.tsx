@@ -445,6 +445,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           borderStroke: "#f1f1f100",
           anchorFill: "#212121",
           draggable: true,
+          centeredScaling: true,
           anchorStyleFunc: (anchor) => {
             anchor.stroke("#212121");
             if (anchor.hasName("rotater")) {
