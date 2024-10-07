@@ -28,6 +28,7 @@ import TextPlugin from "./TextPlugin/TextPlugin";
 import { Group } from "konva/lib/Group";
 import { MentionInstance, TextInstances } from "@/lib/types/stories.types";
 import ToolBar from "./ToolBar/ToolBar";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -132,8 +133,8 @@ const StoryCreate = () => {
 
   const handleTextNodeClick = (
     node: Konva.Group,
-    width: number,
-    height: number
+    computedWidth: number,
+    computedHeight: number
   ) => {
     if (transformerInstancesRef.current) {
       transformerInstancesRef.current.forEach((element) => {
@@ -146,10 +147,39 @@ const StoryCreate = () => {
 
       transformer.nodes([node]);
 
-      const { x, y } = node.getClientRect();
+      const { x, y, width, height } = node.getClientRect();
+      console.log(x, y, width, height);
       transformer.x(x + node.width() / 2);
       transformer.y(y + node.height() / 2);
-      const calNode = calculateCenteredCoords(node, width, height);
+      const calNode = calculateCenteredCoords(
+        node,
+        computedWidth,
+        computedHeight
+      );
+     
+      const box = node.getClientRect();
+      const xc = box.x + box.width / 2;
+      const yc = box.y + box.height / 2;
+      const tween = new Konva.Tween({
+        node: node,
+        duration: 0.1,
+        x: xc,
+        y: yc,
+        scaleX: 0.95,
+        scaleY: 0.95,
+        onFinish: () => {
+          tween.reverse();
+        },
+      });
+      var cir = new Konva.Circle({
+        x: xc,
+        y: yc,
+        fill: "red",
+        width: 100,
+        height: 50,
+      });
+      layerRef.current?.add(cir);
+      tween.play();
       setSelectedItemCoord({
         x: calNode.x,
         y: calNode.y,
@@ -158,16 +188,6 @@ const StoryCreate = () => {
       if (!layerRef.current?.children.includes(transformer)) {
         layerRef.current?.add(transformer);
       }
-      node.to({
-        opacity: 0.75,
-        duration: 0.15,
-        onFinish: () => {
-          node.to({
-            opacity: 1,
-            duration: 0.055,
-          });
-        },
-      });
 
       layerRef.current?.batchDraw();
     }
@@ -340,9 +360,9 @@ const StoryCreate = () => {
           );
           setSelectedItemCoord(newCoords);
         });
-        text.on("click", () =>
-          handleTextNodeClick(text, instance.width, instance.height)
-        );
+        text.on("click", () => {
+          handleTextNodeClick(text, instance.width, instance.height);
+        });
         text.on("dblclick", () => handleTextNodeDblClick(text));
         text.on("dragmove", () => {
           if (text) {

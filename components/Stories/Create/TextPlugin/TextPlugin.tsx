@@ -278,7 +278,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
         layer.add(textMeasure);
 
-        var top = 3;
+        var top = pos.padding.top / 2;
         var shapes: (Text | Rect)[] = [];
         const text = convertLinesWithMention(textMeasure);
         var mentionTextNode: Konva.Text[] = [];
@@ -408,7 +408,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               );
               shapes.push(textWithNoMention);
             }
-            top += parseInt(rangeValue.toString()) + 2;
+            top += parseInt(rangeValue.toString()) ;
         });
 
         // Group all shapes into a single group
