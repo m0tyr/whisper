@@ -41,7 +41,7 @@ const StoryCreate = () => {
     height: 0,
   });
 
-  const [hasPassedTemplateStep, setHasPassedTemplateStep] = useState(true);
+  const [hasPassedTemplateStep, setHasPassedTemplateStep] = useState(false);
   const [isInDrawingContext, setIsInDrawingContext] = useState(false);
   const [isInTextContext, setIsInTextContext] = useState(false);
   const [isAddingNewText, setisAddingNewText] = useState(false);
@@ -156,8 +156,7 @@ const StoryCreate = () => {
         computedWidth,
         computedHeight
       );
-     
- 
+
       setSelectedItemCoord({
         x: calNode.x,
         y: calNode.y,
@@ -244,9 +243,8 @@ const StoryCreate = () => {
     const rotation = (node.rotation() * Math.PI) / 180;
     const unrotatedX =
       node.x() +
-      (width / 2) * Math.cos(rotation) +
-      (height / 2) * Math.sin(-rotation) -
-      width / 2;
+      (width / 2 - node.offsetX()) * Math.cos(rotation) +
+      (height / 2 - node.offsetY()) * Math.sin(-rotation);
     return unrotatedX;
   }
 
@@ -256,10 +254,9 @@ const StoryCreate = () => {
     height: number
   ) {
     const boundingBox = node.getClientRect();
-    const rotation = node.rotation(); // Get the current rotation angle of the node
+    const rotation = node.rotation();
 
-    const centerX =
-      getNodePositionAtRotationZero(node, width, height) + width / 2;
+    const centerX = getNodePositionAtRotationZero(node, width, height);
 
     let centerY;
 
@@ -338,19 +335,48 @@ const StoryCreate = () => {
           );
           setSelectedItemCoord(newCoords);
         });
-        text.on("click", (evt) => {
-          text.to({
-            duration: 0.2,
-            scaleX: 0.95,
-            scaleY: 0.95,
-            onFinish: function() {
-              text.to({
-                duration: 0.2,
-                scaleX: 1,
-                scaleY: 1
-              });
-            }
-          });
+        text.on("click", () => {
+          if (transformerInstancesRef.current) {
+            transformerInstancesRef.current.forEach((element) => {
+              element.nodes([]);
+              setSelectedItemCoord({ x: 0, y: 0 });
+              element.getLayer()?.batchDraw();
+            });
+            const id = text.id();
+            const transformer = transformerInstancesRef.current[parseInt(id)];
+            transformer.to({
+              duration: 0.05,
+              easing: Konva.Easings.EaseInOut,
+              opacity: 0.7,
+              scaleX: 0.95,
+              scaleY: 0.95,
+              onFinish: function () {
+                transformer.to({
+                  duration: 0.15,
+                  easing: Konva.Easings.EaseInOut,
+                  opacity: 1,
+                  scaleX: 1,
+                  scaleY: 1,
+                });
+              },
+            });
+            text.to({
+              duration: 0.05,
+              easing: Konva.Easings.EaseInOut,
+              opacity: 0.7,
+              scaleX: 0.95,
+              scaleY: 0.95,
+              onFinish: function () {
+                text.to({
+                  duration: 0.15,
+                  easing: Konva.Easings.EaseInOut,
+                  opacity: 1,
+                  scaleX: 1,
+                  scaleY: 1,
+                });
+              },
+            });
+          }
           handleTextNodeClick(text, instance.width, instance.height);
         });
         text.on("dblclick", () => handleTextNodeDblClick(text));

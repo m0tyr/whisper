@@ -111,16 +111,51 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const [isChoosingFont, setIsChoosingFont] = useState(false);
   const [isChoosingColor, setIsChoosingColor] = useState(false);
   const [isTextBackgroundSelected, setIsTextBackgroundSelected] =
-    useState(true);
+    useState(false);
 
-  const textColors = useRef<TextColors[]>([
-    { renderedColor: "rgb(255 255 255)", name: "white" },
-    { renderedColor: "rgb(220 38 38)", name: "red" },
-    { renderedColor: "rgb(0 0 0)", name: "black" },
-    { renderedColor: "rgb(0 149 246)", name: "blue" },
-    { renderedColor: "rgb(250 204 21)", name: "yellow" },
-    { renderedColor: "rgb(22 163 74)", name: "green" },
-  ]);
+ const textColors = useRef<TextColors[]>([
+  { renderedColor: "rgb(255 255 255)", name: "white" },
+  { renderedColor: "rgb(220 38 38)", name: "red" },
+  { renderedColor: "rgb(0 0 0)", name: "black" },
+  { renderedColor: "rgb(0 149 246)", name: "blue" },
+  { renderedColor: "rgb(250 204 21)", name: "yellow" },
+  { renderedColor: "rgb(22 163 74)", name: "green" },
+  { renderedColor: "rgb(128 128 128)", name: "gray" },
+  { renderedColor: "rgb(255 165 0)", name: "orange" },
+  { renderedColor: "rgb(75 0 130)", name: "indigo" },
+  { renderedColor: "rgb(238 130 238)", name: "violet" },
+  { renderedColor: "rgb(128 0 128)", name: "purple" },
+  { renderedColor: "rgb(255 182 193)", name: "pink" },
+  { renderedColor: "rgb(255 69 0)", name: "orangered" },
+  { renderedColor: "rgb(64 224 208)", name: "turquoise" },
+  { renderedColor: "rgb(47 79 79)", name: "darkslategray" },
+  { renderedColor: "rgb(165 42 42)", name: "brown" },
+  { renderedColor: "rgb(255 20 147)", name: "deeppink" },
+  { renderedColor: "rgb(255 215 0)", name: "gold" },
+  { renderedColor: "rgb(60 179 113)", name: "mediumseagreen" },
+  { renderedColor: "rgb(0 191 255)", name: "deepskyblue" },
+  { renderedColor: "rgb(102 205 170)", name: "mediumaquamarine" },
+  { renderedColor: "rgb(210 105 30)", name: "chocolate" },
+  { renderedColor: "rgb(85 107 47)", name: "darkolivegreen" },
+  { renderedColor: "rgb(128 0 0)", name: "maroon" },
+  { renderedColor: "rgb(72 61 139)", name: "darkslateblue" },
+  { renderedColor: "rgb(50 205 50)", name: "limegreen" },
+  { renderedColor: "rgb(255 99 71)", name: "tomato" },
+  { renderedColor: "rgb(245 222 179)", name: "wheat" },
+  { renderedColor: "rgb(240 230 140)", name: "khaki" },
+  { renderedColor: "rgb(127 255 0)", name: "chartreuse" },
+  { renderedColor: "rgb(255 218 185)", name: "peachpuff" },
+  { renderedColor: "rgb(154 205 50)", name: "yellowgreen" },
+  { renderedColor: "rgb(70 130 180)", name: "steelblue" },
+  { renderedColor: "rgb(255 240 245)", name: "lavenderblush" },
+  { renderedColor: "rgb(244 164 96)", name: "sandybrown" },
+  { renderedColor: "rgb(230 230 250)", name: "lavender" },
+  { renderedColor: "rgb(0 255 127)", name: "springgreen" },
+  { renderedColor: "rgb(0 128 128)", name: "teal" },
+  { renderedColor: "rgb(25 25 112)", name: "midnightblue" },
+  { renderedColor: "rgb(255 222 173)", name: "navajowhite" },
+]);
+
 
   const textFonts = useRef<TextFonts[]>([
     {
@@ -195,7 +230,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       const prevLine = lines[index - 1];
       if (prevLine && prevLine.width > line.width) {
         path += ` L ${cx + line.width / 2 + padding} ${
-          index * lineHeight + padding 
+          index * lineHeight + padding
         }`;
       } else {
         path += ` L ${cx + line.width / 2 + padding} ${
@@ -210,7 +245,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         }`;
       } else {
         path += ` L ${cx + line.width / 2 + padding} ${
-          (index + 1) * lineHeight + padding 
+          (index + 1) * lineHeight + padding
         }`;
       }
     });
@@ -222,21 +257,21 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
       if (nextLine && nextLine.width > line.width) {
         path += ` L ${cx - line.width / 2 - padding} ${
-          (i + 1) * lineHeight - padding / 3 
+          (i + 1) * lineHeight - padding / 3
         }`;
       } else {
         path += ` L ${cx - line.width / 2 - padding} ${
-          (i + 1) * lineHeight + padding 
+          (i + 1) * lineHeight + padding
         }`;
       }
 
       const prevLine = lines[i - 1];
       if (prevLine && prevLine.width > line.width) {
         path += ` L ${cx - line.width / 2 - padding} ${
-          i * lineHeight + padding 
+          i * lineHeight + padding
         }`;
       } else {
-        path += ` L ${cx - line.width / 2 - padding } ${
+        path += ` L ${cx - line.width / 2 - padding} ${
           i * lineHeight - padding / 3
         }`;
       }
@@ -282,8 +317,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         var shapes: (Text | Rect)[] = [];
         const text = convertLinesWithMention(textMeasure);
         var mentionTextNode: Konva.Text[] = [];
-        text.forEach((line,index) => {
-          
+        text.forEach((line, index) => {
           if (line.mentionNodesAnchorPosition)
             if (line.mentionNodesAnchorPosition?.length > 0) {
               let currentX = 0;
@@ -374,7 +408,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                     shadowOpacity: 0.3,
                     fill: color,
                     x: currentX, // Position at current X
-                    y: top
+                    y: top,
                   });
 
                   const afterTextWidth = afterText.width();
@@ -408,7 +442,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               );
               shapes.push(textWithNoMention);
             }
-            top += parseInt(rangeValue.toString()) ;
+          top += parseInt(rangeValue.toString()) + 0.75;
         });
 
         // Group all shapes into a single group
@@ -417,6 +451,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           y: pos.y - (pos.padding.top - pos.margin.top),
           rotation: pos.angle,
           draggable: true,
+
           id: `${transformerInstancesRef?.current?.length}`,
         });
         if (isTextBackgroundSelected) {
@@ -441,13 +476,12 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
         const transformer = new Konva.Transformer({
           nodes: [group],
-          anchorStroke: "#212121",
+          anchorStroke: "#21212100",
           borderStroke: "#f1f1f100",
-          anchorFill: "#212121",
+          anchorFill: "#21212100",
           draggable: true,
-          centeredScaling: true,
           anchorStyleFunc: (anchor) => {
-            anchor.stroke("#212121");
+            anchor.stroke("#21212100");
             if (anchor.hasName("rotater")) {
               anchor.cornerRadius(30);
               anchor.width(28);
@@ -464,6 +498,11 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           rotationSnapTolerance: 15,
         });
 
+        shapes.forEach((shape) => group.add(shape));
+        group.offsetX(textMeasure.width() / 2);
+        group.offsetY(textMeasure.height() / 2);
+        layer.add(group);
+
         layer.add(transformer);
 
         const dataPathShapes: any = {
@@ -478,23 +517,33 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           var shape = dataPathShapes[path].shape;
           var selector = path.replace("_", "-");
           if (shape) {
+            var bgCircle = new Konva.Circle({
+              radius: Math.max(shape.width(), shape.height()) / 2, // Set radius to fit the shape
+              fill: "#212121", // Set background color
+              listening: false,
+              x: shape.x() + 14,
+              y: shape.y() + 44,
+              offsetX: shape.width() / 2, // Center horizontally
+              offsetY: shape.height() / 2, // Center vertically
+            });
+
             var icon = new Konva.Path({
               fill: "white",
               data: dataPathShapes[path].path,
+              listening: false,
               name: selector + "-icon",
               scaleX: selector === "rotater" ? 0.7 : 1,
               scaleY: selector === "rotater" ? 0.7 : 1,
-              x: isTextBackgroundSelected
-                ? textMeasure.width() / 2
-                : textMeasure.width() / 2 - 9,
-              y: shape.y() + 22,
+              x: shape.x() + 1, // Set x to the shape's x position
+              y: shape.y() + 32, // Set y to the shape's y position
+              offsetX: shape.width() / 2,
+              offsetY: shape.height() / 2,
             });
+
+            transformer.add(bgCircle);
             transformer.add(icon);
           }
         }
-
-        shapes.forEach((shape) => group.add(shape));
-        layer.add(group);
 
         transformerInstancesRef?.current?.push(
           transformer as Konva.Transformer
@@ -871,24 +920,24 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       } else {
         width = playgroundElement.offsetWidth + 1;
       }
-      console.log(rangeValue)
+      console.log(rangeValue);
       var textMeasure = new Konva.Text({
         text: makeLineBreakerMeasurer()?.join("\n"),
         width: width,
         align: "center",
         fontFamily: toRenderTextFont,
-        fontSize: parseInt(rangeValue.toString(), 10),  // Ensure `fontSize` is a number
+        fontSize: parseInt(rangeValue.toString(), 10), // Ensure `fontSize` is a number
         fontStyle: "600",
         letterSpacing: -0.5,
-        lineHeight: parseFloat(rangeValue.toString()) + lineHeightFix,  // Ensure `lineHeight` is a number
+        lineHeight: parseFloat(rangeValue.toString()) + lineHeightFix, // Ensure `lineHeight` is a number
         shadowColor: "rgba(150, 150, 150, 1)",
         shadowBlur: 2,
         shadowOffset: { x: 0, y: 1 },
         shadowOpacity: 0.3,
         fill: "#ffffff",
         visible: false,
-    });
-    console.log(textMeasure.lineHeight(),textMeasure.fontSize())
+      });
+      console.log(textMeasure.lineHeight(), textMeasure.fontSize());
       layer?.add(textMeasure);
       setPreviewBgPath(
         generateBackgroundShape({
