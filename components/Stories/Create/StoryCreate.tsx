@@ -32,6 +32,8 @@ import { Shape, ShapeConfig } from "konva/lib/Shape";
 
 const StoryCreate = () => {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [storyProperties, setStoryProperties] = useState({
     width: 0,
     height: 0,
@@ -76,8 +78,31 @@ const StoryCreate = () => {
     };
   };
 
-  const handleChooseTemplate = () => {
-    setHasPassedTemplateStep(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (selectedFile) {
+      console.log("File selected through useEffect: ", selectedFile);
+    }
+  }, [selectedFile]);
+
+  const handleChooseTemplate = (chooseKey: string) => {
+    if (chooseKey === "from-media") {
+      if (fileInputRef.current) {
+        console.log("Triggering file input click..."); // Debugging log
+        fileInputRef.current.click(); // Triggering file input
+      } else {
+        console.error("File input ref is not available.");
+      }
+    } else if (chooseKey === "from-base-model") {
+      setHasPassedTemplateStep(true);
+    }
+  };
+
+  const handleFileChange = () => {
+    if (fileInputRef.current && fileInputRef.current.files) {
+      setSelectedFile(fileInputRef.current.files[0]);
+    }
   };
 
   const handleDrawingContext = () => {
@@ -102,7 +127,6 @@ const StoryCreate = () => {
   const stageRef = useRef<Konva.Stage | null>(null);
   const layerRef = useRef<Konva.Layer | null>(null);
   const transformerInstancesRef = useRef<Konva.Transformer[]>([]);
-  const mentionInstancesRef = useRef<MentionInstance[]>([]);
   const textInstancesRef = useRef<TextInstances[]>([]);
   const [selectedItemCoord, setSelectedItemCoord] = useState<{
     x: number;
@@ -1001,10 +1025,20 @@ const StoryCreate = () => {
                   <motion.div
                     whileTap={{ scale: 0.97 }}
                     whileHover={{ opacity: 0.8 }}
-                    className=" cursor-pointer select-none"
-                    onClick={handleChooseTemplate}
+                    className=" cursor-pointer select-none relative"
+                    onClick={() => handleChooseTemplate("from-media")}
                   >
-                    <span className="tracking-tighter">Ajoutez un media</span>
+                    <span className="tracking-tighter cursor-pointer">
+                      Ajoutez un media
+                    </span>
+                    <input
+                      className="hidden"
+                      onChange={handleFileChange}
+                      ref={fileInputRef}
+                      id="file"
+                      accept="image/jpeg,image/png,video/mp4,video/quicktime"
+                      type="file"
+                    />
                   </motion.div>
                   <span className="tracking-tighter select-none pointer-events-none">
                     {" "}
@@ -1014,7 +1048,7 @@ const StoryCreate = () => {
                     whileTap={{ scale: 0.97 }}
                     whileHover={{ opacity: 0.8 }}
                     className=" cursor-pointer select-none"
-                    onClick={handleChooseTemplate}
+                    onClick={() => handleChooseTemplate("from-base-model")}
                   >
                     <span className="tracking-tighter">
                       {" "}
