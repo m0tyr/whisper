@@ -26,11 +26,16 @@ import { useQueryFeaturedStickers } from "@/hooks/queries/useQueryFeaturedSticke
 import GifPlugin from "./GifPlugin/GifPlugin";
 import TextPlugin from "./TextPlugin/TextPlugin";
 import { Group } from "konva/lib/Group";
-import { MentionInstance, TextInstances } from "@/lib/types/stories.types";
+import {
+  MentionInstance,
+  StoryMediaData,
+  TextInstances,
+} from "@/lib/types/stories.types";
 import ToolBar from "./ToolBar/ToolBar";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
-import ImageAdjustement from "./ImageAdjustement/ImageAdjustement";
+import ImageAdjustement from "./MediaAdjustement/MediaAdjustement";
 import image from "next/image";
+import MediaAdjustement from "./MediaAdjustement/MediaAdjustement";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -82,6 +87,7 @@ const StoryCreate = () => {
   };
 
   const [StoryMediaUrl, setStoryMediaUrl] = useState<string | null>(null);
+  const [StoryMediaData, setStoryMediaData] = useState<StoryMediaData>();
   const [StoryMediaKonvaImg, setStoryMediaKonvaImg] =
     useState<Konva.Image | null>(null);
 
@@ -110,7 +116,11 @@ const StoryCreate = () => {
       image.onload = () => {
         const originalWidth = image.width;
         const originalHeight = image.height;
-
+        setStoryMediaData({
+          width: image.width,
+          height: image.height,
+          size: fileRead.size,
+        });
         const scaleX = storyProperties.width / originalWidth;
         const scaleY = storyProperties.height / originalHeight;
         const scale = Math.max(scaleX, scaleY);
@@ -140,35 +150,31 @@ const StoryCreate = () => {
     }
   };
 
-  const DismissAdjustement  = () => {
+  const DismissAdjustement = () => {
     setisAdjustingImage(false);
-  }
-
+  };
 
   useEffect(() => {
     if (StoryMediaKonvaImg) {
       const originalWidth = StoryMediaKonvaImg.width();
       const originalHeight = StoryMediaKonvaImg.height();
-  
-      
+
       const scaleX = storyProperties.width / originalWidth;
       const scaleY = storyProperties.height / originalHeight;
       const scale = Math.max(scaleX, scaleY);
 
       let newWidth = originalWidth * scale;
       let newHeight = originalHeight * scale;
-  
+
       const x = (storyProperties.width - newWidth) / 2;
       const y = (storyProperties.height - newHeight) / 2;
-  
+
       StoryMediaKonvaImg.width(newWidth);
       StoryMediaKonvaImg.height(newHeight);
       StoryMediaKonvaImg.x(x);
       StoryMediaKonvaImg.y(y);
     }
   }, [storyProperties, StoryMediaKonvaImg]);
-  
-
 
   const handleDrawingContext = () => {
     setIsInDrawingContext(!isInDrawingContext);
@@ -523,7 +529,6 @@ const StoryCreate = () => {
       }
     };
   };
-
 
   return (
     <>
@@ -1154,12 +1159,16 @@ const StoryCreate = () => {
           </>
         </div>
       </div>
-       {isAdjustingImage ? (
-        <ImageAdjustement
-          image={StoryMediaUrl as string}
+      {isAdjustingImage ? (
+        <MediaAdjustement
+          mediaUrl={StoryMediaUrl as string}
           DismissAdjustement={DismissAdjustement}
+          mediaWidth={StoryMediaData?.width as number}
+          mediaHeight={StoryMediaData?.height as number}
+          maximumWidthReach={storyProperties.width}
+          maximumHeightReach={storyProperties.height}
         />
-      ) : null} 
+      ) : null}
     </>
   );
 };

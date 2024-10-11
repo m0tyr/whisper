@@ -22,3 +22,9 @@ export type TextColors = {
   renderedColor: string;
   name: string;
 };
+
+export type StoryMediaData = {
+  width: number;
+  height: number;
+  size: number;
+}
