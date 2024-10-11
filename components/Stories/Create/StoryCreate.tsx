@@ -29,6 +29,8 @@ import { Group } from "konva/lib/Group";
 import { MentionInstance, TextInstances } from "@/lib/types/stories.types";
 import ToolBar from "./ToolBar/ToolBar";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
+import ImageAdjustement from "./ImageAdjustement/ImageAdjustement";
+import image from "next/image";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -47,6 +49,7 @@ const StoryCreate = () => {
   const [isInDrawingContext, setIsInDrawingContext] = useState(false);
   const [isInTextContext, setIsInTextContext] = useState(false);
   const [isAddingNewText, setisAddingNewText] = useState(false);
+  const [isAdjustingImage, setisAdjustingImage] = useState(false);
   const [isInBaseContext, setIsInBaseContext] = useState(true);
   const [isInWidgetContext, setIsInWidgetContext] = useState(false);
   const [isInWidgetBaseContext, setIsInWidgetBaseContext] = useState(false);
@@ -78,19 +81,14 @@ const StoryCreate = () => {
     };
   };
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    if (selectedFile) {
-      console.log("File selected through useEffect: ", selectedFile);
-    }
-  }, [selectedFile]);
+  const [StoryMediaUrl, setStoryMediaUrl] = useState<string | null>(null);
+  const [StoryMediaKonvaImg, setStoryMediaKonvaImg] =
+    useState<Konva.Image | null>(null);
 
   const handleChooseTemplate = (chooseKey: string) => {
     if (chooseKey === "from-media") {
       if (fileInputRef.current) {
-        console.log("Triggering file input click..."); // Debugging log
-        fileInputRef.current.click(); // Triggering file input
+        fileInputRef.current.click();
       } else {
         console.error("File input ref is not available.");
       }
@@ -100,10 +98,77 @@ const StoryCreate = () => {
   };
 
   const handleFileChange = () => {
-    if (fileInputRef.current && fileInputRef.current.files) {
-      setSelectedFile(fileInputRef.current.files[0]);
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    if (fileInputRef.current && fileInputRef.current.files && stage && layer) {
+      const fileRead = fileInputRef.current.files[0] as File;
+      const cachedBlobUrl = URL.createObjectURL(fileRead);
+
+      const image = new window.Image();
+      image.src = cachedBlobUrl;
+
+      image.onload = () => {
+        const originalWidth = image.width;
+        const originalHeight = image.height;
+
+        const scaleX = storyProperties.width / originalWidth;
+        const scaleY = storyProperties.height / originalHeight;
+        const scale = Math.max(scaleX, scaleY);
+
+        const newWidth = originalWidth * scale;
+        const newHeight = originalHeight * scale;
+
+        const x = (storyProperties.width - newWidth) / 2;
+        const y = (storyProperties.height - newHeight) / 2;
+
+        const konvaImage = new Konva.Image({
+          image: image,
+          x: x,
+          y: y,
+          width: newWidth,
+          height: newHeight,
+          draggable: true,
+          listening: false,
+          cornerRadius: 20,
+        });
+        setStoryMediaUrl(cachedBlobUrl);
+        setisAdjustingImage(true);
+        setStoryMediaKonvaImg(konvaImage);
+        layer.add(konvaImage);
+        layer.draw();
+      };
     }
   };
+
+  const DismissAdjustement  = () => {
+    setisAdjustingImage(false);
+  }
+
+
+  useEffect(() => {
+    if (StoryMediaKonvaImg) {
+      const originalWidth = StoryMediaKonvaImg.width();
+      const originalHeight = StoryMediaKonvaImg.height();
+  
+      
+      const scaleX = storyProperties.width / originalWidth;
+      const scaleY = storyProperties.height / originalHeight;
+      const scale = Math.max(scaleX, scaleY);
+
+      let newWidth = originalWidth * scale;
+      let newHeight = originalHeight * scale;
+  
+      const x = (storyProperties.width - newWidth) / 2;
+      const y = (storyProperties.height - newHeight) / 2;
+  
+      StoryMediaKonvaImg.width(newWidth);
+      StoryMediaKonvaImg.height(newHeight);
+      StoryMediaKonvaImg.x(x);
+      StoryMediaKonvaImg.y(y);
+    }
+  }, [storyProperties, StoryMediaKonvaImg]);
+  
+
 
   const handleDrawingContext = () => {
     setIsInDrawingContext(!isInDrawingContext);
@@ -458,6 +523,8 @@ const StoryCreate = () => {
       }
     };
   };
+
+
   return (
     <>
       <AnimatePresence>
@@ -1087,6 +1154,12 @@ const StoryCreate = () => {
           </>
         </div>
       </div>
+       {isAdjustingImage ? (
+        <ImageAdjustement
+          image={StoryMediaUrl as string}
+          DismissAdjustement={DismissAdjustement}
+        />
+      ) : null} 
     </>
   );
 };
