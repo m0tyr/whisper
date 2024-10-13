@@ -1,6 +1,6 @@
 import { Modal } from "@/components/Modal/Modal";
 import Konva from "konva";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 
 interface MediaAdjustementProps {
@@ -22,8 +22,15 @@ const MediaAdjustement = ({
 }: MediaAdjustementProps) => {
   console.log(mediaWidth, mediaHeight);
   const mediaAdjustStageRef = useRef<Konva.Stage | null>(null);
+  const [blueDivSize, setBlueDivSize] = useState({
+    width: 0,
+    height: 0,
+    top: 0,
+    left: 0,
+  });
+  const mediaRef = useRef<HTMLImageElement | null>(null);
   const mediaAdjustLayerRef = useRef<Konva.Layer | null>(null);
-  useEffect(() => {
+  /*   useEffect(() => {
     const mediaAdjustStage = mediaAdjustStageRef.current;
     const mediaAdjustLayer = mediaAdjustLayerRef.current;
     if (mediaAdjustLayer && mediaAdjustStage) {
@@ -82,7 +89,42 @@ const MediaAdjustement = ({
         mediaAdjustLayer.draw();
       };
     }
-  }, []);
+  }, []); */
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (mediaRef.current) {
+        const { width: imgRenderedWidth, height: imgRenderedHeight } =
+          mediaRef.current.getBoundingClientRect();
+
+        const scaleWidth = imgRenderedWidth / mediaWidth;
+        const scaleHeight = imgRenderedHeight / mediaHeight;
+
+        const scale = Math.min(scaleWidth, scaleHeight);
+
+        const blueDivWidth = maximumWidthReach * scale;
+        const blueDivHeight = imgRenderedHeight;
+
+        const blueDivLeft = (imgRenderedWidth - blueDivWidth) / 2;
+        const blueDivTop = (imgRenderedHeight - blueDivHeight) / 2;
+
+        setBlueDivSize({
+          width: blueDivWidth,
+          height: blueDivHeight,
+          top: blueDivTop,
+          left: blueDivLeft,
+        });
+      }
+    };
+
+    // Appeler handleResize quand l'image est chargée et lors de tout redimensionnement
+    if (mediaRef.current?.complete) {
+      handleResize();
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [mediaWidth, mediaHeight, maximumWidthReach, maximumHeightReach]);
 
   return (
     <>
@@ -107,19 +149,40 @@ const MediaAdjustement = ({
           </div>
 
           {/* Stage container */}
-          <div className="w-full h-full flex justify-center items-center overflow-hidden p-6">
-            <Stage
-              ref={mediaAdjustStageRef}
-              width={mediaWidth}
-              height={mediaHeight}
-            >
-              <Layer ref={mediaAdjustLayerRef}></Layer>
-            </Stage>
+          <div
+            ref={mediaRef}
+            className="w-full h-full relative flex justify-center items-center overflow-hidden p-6"
+          >
+            <img
+              src={mediaUrl}
+              alt=""
+              className="object-contain w-full h-full rounded-md"
+            />
+
+            <div
+              className="absolute"
+              style={{
+                width: `${maximumWidthReach - 100}px`,
+                height: `93.333367%`,
+                backgroundColor: "rgba(0, 0, 255, 0.5)",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            ></div>
           </div>
         </div>
       </div>
     </>
   );
 };
-
+{
+  /*  <Stage
+              ref={mediaAdjustStageRef}
+              width={mediaWidth}
+              height={mediaHeight}
+            >
+              <Layer ref={mediaAdjustLayerRef}></Layer>
+            </Stage> */
+}
 export default MediaAdjustement;
