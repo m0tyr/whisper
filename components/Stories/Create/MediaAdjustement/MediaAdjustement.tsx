@@ -126,6 +126,75 @@ const MediaAdjustement = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [mediaWidth, mediaHeight, maximumWidthReach, maximumHeightReach]);
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (mediaRef.current) {
+        const { width: divRenderedWidth, height: divRenderedHeight } =
+          mediaRef.current.getBoundingClientRect();
+
+        const scaleWidth = divRenderedWidth / mediaWidth;
+        const scaleHeight = divRenderedHeight / mediaHeight;
+
+        const scale = Math.min(scaleWidth, scaleHeight);
+
+        const blueDivWidth = maximumWidthReach * scale;
+        const blueDivHeight = divRenderedHeight;
+
+        const blueDivLeft = (divRenderedWidth - blueDivWidth) / 2;
+        const blueDivTop = (divRenderedHeight - blueDivHeight) / 2;
+
+        setBlueDivSize({
+          width: blueDivWidth,
+          height: blueDivHeight,
+          top: blueDivTop,
+          left: blueDivLeft,
+        });
+      }
+    };
+
+    if (imageLoaded) {
+      handleResize();
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [
+    mediaWidth,
+    mediaHeight,
+    maximumWidthReach,
+    maximumHeightReach,
+    imageLoaded,
+  ]);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+  function adjustProportionalHeight(
+    mediaWidth: number, 
+    mediaHeight: number, 
+    maxWidth: number, 
+    maxHeight: number
+  ): { width: number, height: number } {
+    const mediaRatio = mediaHeight / mediaWidth;
+  
+    let finalWidth = Math.min(maxWidth, mediaWidth);
+  
+    let finalHeight = finalWidth * mediaRatio;
+  
+    // Si la hauteur dépasse la hauteur maximale, ajuster la hauteur et recalculer la largeur
+    if (finalHeight > maxHeight) {
+      finalHeight = maxHeight;
+      finalWidth = finalHeight / mediaRatio;
+    }
+  
+    return {
+      width: finalWidth,
+      height: finalHeight
+    };
+  }
+
   return (
     <>
       <Modal OnClickOutsideAction={DismissAdjustement} />
@@ -135,7 +204,7 @@ const MediaAdjustement = ({
           if (e.target === e.currentTarget) DismissAdjustement();
         }}
       >
-        <div className="w-[80%] h-[80%] flex flex-col relative bg-good-gray border border-border rounded-2xl">
+        <div className="w-[95%] h-[95%] flex flex-col relative bg-good-gray border border-border rounded-2xl">
           {/* Header with title and cancel */}
           <div className="flex justify-between items-center">
             <div className="flex justify-start items-start py-6 px-8">
@@ -149,27 +218,96 @@ const MediaAdjustement = ({
           </div>
 
           {/* Stage container */}
-          <div
-            ref={mediaRef}
-            className="w-full h-full relative flex justify-center items-center overflow-hidden p-6"
-          >
+          <div className="w-full h-full relative flex justify-center items-center overflow-y-scroll">
+            {/* Div with background image */}
             <img
               src={mediaUrl}
-              alt=""
-              className="object-contain w-full h-full rounded-md"
-            />
-
-            <div
-              className="absolute"
+              ref={mediaRef}
               style={{
-                width: `${maximumWidthReach - 100}px`,
-                height: `93.333367%`,
-                backgroundColor: "rgba(0, 0, 255, 0.5)",
+                position: 'absolute',
+                top: 0,
+                width: `${((maximumHeightReach * mediaWidth) / mediaHeight)}px`, // Maintain aspect ratio
+                height: `${maximumHeightReach}px`, // Ensure it stretches vertically
+                opacity: 1, // Reduced opacity for the background image
+              }}
+              className="rounded-md"
+              onLoad={handleImageLoad}
+            />
+            {/* Transparent div acting as a highlight (showing full-opacity image) */}
+            <div
+              className="absolute border-2 rounded-sm border-border bg-transparent cursor-grab"
+              style={{
+                width: `${(maximumWidthReach * 73.47) / 100}px`,
+                height: "calc(100% - 48px)",
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
+                backdropFilter: "none", // Remove backdrop filter effect
               }}
-            ></div>
+            >
+              {/* Div with crosshair-like lines */}
+              <div className="border-0 border-[rgba(255,255,255,.3)]">
+                <div
+                  style={{
+                    position: "absolute",
+                    height: "100%",
+                    left: "33%",
+                    top: "0%",
+                    width: "1px",
+                    backgroundColor: "rgba(255,255,255,.3)",
+                    boxShadow: "0 0 4px 0 rgba(0,0,0,.25)",
+                  }}
+                ></div>
+                <div
+                  style={{
+                    position: "absolute",
+                    height: "100%",
+                    right: "33%",
+                    top: "0%",
+                    width: "1px",
+                    backgroundColor: "rgba(255,255,255,.3)",
+                    boxShadow: "0 0 4px 0 rgba(0,0,0,.25)",
+                  }}
+                ></div>
+                <div
+                  style={{
+                    position: "absolute",
+                    height: "1px",
+                    left: "0%",
+                    top: "33%",
+                    width: "100%",
+                    backgroundColor: "rgba(255,255,255,.3)",
+                    boxShadow: "0 0 4px 0 rgba(0,0,0,.25)",
+                  }}
+                ></div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "33%",
+                    height: "1px",
+                    left: "0%",
+                    width: "100%",
+                    backgroundColor: "rgba(255,255,255,.3)",
+                    boxShadow: "0 0 4px 0 rgba(0,0,0,.25)",
+                  }}
+                ></div>
+              </div>
+
+             {/*  <div
+                style={{
+                  backgroundImage: `url(${mediaUrl})`,
+                  backgroundPosition: "center center",
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "cover",
+                  width: `${(maximumHeightReach * mediaWidth) / mediaHeight}px`, // Maintain aspect ratio
+                  height: `${
+                    (maximumHeightReach * mediaHeight) / mediaWidth
+                  }px`, // Ensure it stretches vertically
+                  opacity: 1, // Fully opaque background for the highlight area
+                }}
+                className="rounded-sm"
+              ></div> */}
+            </div>
           </div>
         </div>
       </div>
