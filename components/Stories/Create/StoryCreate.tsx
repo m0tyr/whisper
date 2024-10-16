@@ -1243,7 +1243,7 @@ const StoryCreate = () => {
         </div>
         {isAdjustingImage ? (
           <>
-            <div className="absolute top-0 left-0 p-3 flex flex-row gap-3 z-50">
+            <div className="absolute top-0 left-0 p-3 flex flex-col gap-2 z-50">
               <motion.div
                 whileTap={{ backgroundColor: "rgb(40,40,40)" }}
                 className=" cursor-pointer w-10 h-10 rounded-full bg-good-gray flex justify-center items-center"
@@ -1256,30 +1256,54 @@ const StoryCreate = () => {
                 >
                   <path
                     fill="currentColor"
-                    d="M10.843 13.069L6.232 8.384a.546.546 0 0 1 0-.768l4.61-4.685a.552.552 0 0 0 0-.771a.53.53 0 0 0-.759 0l-4.61 4.684a1.65 1.65 0 0 0 0 2.312l4.61 4.684a.53.53 0 0 0 .76 0a.552.552 0 0 0 0-.771"
+                    d="M7.293 8L3.146 3.854a.5.5 0 1 1 .708-.708L8 7.293l4.146-4.147a.5.5 0 0 1 .708.708L8.707 8l4.147 4.146a.5.5 0 0 1-.708.708L8 8.707l-4.146 4.147a.5.5 0 0 1-.708-.708z"
                   />
                 </svg>
               </motion.div>
-              <div className=" shadow-xl cursor-pointer w-[165px] max-h-[255px] p-2 bg-good-gray rounded-2xl flex flex-col gap-2 justify-center items-center">
-                <motion.div
-                  whileTap={{ backgroundColor: "rgb(40,40,40)" }}
-                  className="bg-[rgb(20,20,20)] rounded-xl h-[55px] w-full flex justify-center items-center"
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger className=" select-none cursor-pointer border-none outline-none">
+                  <motion.div
+                    whileTap={{ backgroundColor: "rgb(40,40,40)" }}
+                    className=" cursor-pointer w-10 h-10 rounded-full border-none outline-none bg-good-gray flex justify-center items-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 20 20"
+                      className="border-none outline-none "
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M5 2a3 3 0 0 0-3 3v3.5a.5.5 0 0 0 1 0V5a2 2 0 0 1 2-2h3.5a.5.5 0 0 0 0-1H5Zm6.5 0a.5.5 0 0 0 0 1H15a2 2 0 0 1 2 2v3.5a.5.5 0 0 0 1 0V5a3 3 0 0 0-3-3h-3.5Zm-9 9a.5.5 0 0 1 .5.5V15a2 2 0 0 0 2 2h3.5a.5.5 0 0 1 0 1H5a3 3 0 0 1-3-3v-3.5a.5.5 0 0 1 .5-.5Zm15.5.5a.5.5 0 0 0-1 0V15a2 2 0 0 1-2 2h-3.5a.5.5 0 0 0 0 1H15a3 3 0 0 0 3-3v-3.5Z"
+                      />
+                    </svg>
+                  </motion.div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  side="right"
+                  className="w-[150px] min-w-0 shadow-2xl p-1.5 rounded-2xl bg-[rgb(24,24,24)] border-none text-small-semibold !text-[15px]"
                 >
-                  <span className=" tracking-tighter select-none font-semibold">Original</span>
-                </motion.div>
-                <motion.div
-                  whileTap={{ backgroundColor: "rgb(40,40,40)" }}
-                  className="bg-[rgb(20,20,20)] rounded-xl h-[55px] w-full flex justify-center items-center"
-                >
-                  <span className=" tracking-tighter select-none font-semibold">Fit to Story</span>
-                </motion.div>
-                <motion.div
-                  whileTap={{ backgroundColor: "rgb(40,40,40)" }}
-                  className="bg-[rgb(20,20,20)] rounded-xl h-[55px] w-full flex justify-center items-center"
-                >
-                  <span className=" tracking-tighter select-none font-semibold">2:3 </span>
-                </motion.div>
-              </div>
+                  <DropdownMenuGroup className="text-white  text-[12px] flex flex-col gap-2 m-1">
+                    <DropdownMenuItem className="bg-[rgb(30,30,30)] p-3 flex justify-center items-center">
+                      <span className=" tracking-tighter font-semibold">
+                        Original
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="bg-[rgb(30,30,30)] p-3 flex justify-center items-center">
+                      <span className=" tracking-tighter font-semibold">
+                        Fit to Story
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="bg-[rgb(30,30,30)] p-3 flex justify-center items-center">
+                      <span className=" tracking-tighter font-semibold">
+                        2:3
+                      </span>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             <img
               src={StoryMediaUrl as string}
