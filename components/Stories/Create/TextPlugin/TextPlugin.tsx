@@ -113,49 +113,48 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const [isTextBackgroundSelected, setIsTextBackgroundSelected] =
     useState(false);
 
- const textColors = useRef<TextColors[]>([
-  { renderedColor: "rgb(255 255 255)", name: "white" },
-  { renderedColor: "rgb(220 38 38)", name: "red" },
-  { renderedColor: "rgb(0 0 0)", name: "black" },
-  { renderedColor: "rgb(0 149 246)", name: "blue" },
-  { renderedColor: "rgb(250 204 21)", name: "yellow" },
-  { renderedColor: "rgb(22 163 74)", name: "green" },
-  { renderedColor: "rgb(128 128 128)", name: "gray" },
-  { renderedColor: "rgb(255 165 0)", name: "orange" },
-  { renderedColor: "rgb(75 0 130)", name: "indigo" },
-  { renderedColor: "rgb(238 130 238)", name: "violet" },
-  { renderedColor: "rgb(128 0 128)", name: "purple" },
-  { renderedColor: "rgb(255 182 193)", name: "pink" },
-  { renderedColor: "rgb(255 69 0)", name: "orangered" },
-  { renderedColor: "rgb(64 224 208)", name: "turquoise" },
-  { renderedColor: "rgb(47 79 79)", name: "darkslategray" },
-  { renderedColor: "rgb(165 42 42)", name: "brown" },
-  { renderedColor: "rgb(255 20 147)", name: "deeppink" },
-  { renderedColor: "rgb(255 215 0)", name: "gold" },
-  { renderedColor: "rgb(60 179 113)", name: "mediumseagreen" },
-  { renderedColor: "rgb(0 191 255)", name: "deepskyblue" },
-  { renderedColor: "rgb(102 205 170)", name: "mediumaquamarine" },
-  { renderedColor: "rgb(210 105 30)", name: "chocolate" },
-  { renderedColor: "rgb(85 107 47)", name: "darkolivegreen" },
-  { renderedColor: "rgb(128 0 0)", name: "maroon" },
-  { renderedColor: "rgb(72 61 139)", name: "darkslateblue" },
-  { renderedColor: "rgb(50 205 50)", name: "limegreen" },
-  { renderedColor: "rgb(255 99 71)", name: "tomato" },
-  { renderedColor: "rgb(245 222 179)", name: "wheat" },
-  { renderedColor: "rgb(240 230 140)", name: "khaki" },
-  { renderedColor: "rgb(127 255 0)", name: "chartreuse" },
-  { renderedColor: "rgb(255 218 185)", name: "peachpuff" },
-  { renderedColor: "rgb(154 205 50)", name: "yellowgreen" },
-  { renderedColor: "rgb(70 130 180)", name: "steelblue" },
-  { renderedColor: "rgb(255 240 245)", name: "lavenderblush" },
-  { renderedColor: "rgb(244 164 96)", name: "sandybrown" },
-  { renderedColor: "rgb(230 230 250)", name: "lavender" },
-  { renderedColor: "rgb(0 255 127)", name: "springgreen" },
-  { renderedColor: "rgb(0 128 128)", name: "teal" },
-  { renderedColor: "rgb(25 25 112)", name: "midnightblue" },
-  { renderedColor: "rgb(255 222 173)", name: "navajowhite" },
-]);
-
+  const textColors = useRef<TextColors[]>([
+    { renderedColor: "rgb(255 255 255)", name: "white" },
+    { renderedColor: "rgb(220 38 38)", name: "red" },
+    { renderedColor: "rgb(0 0 0)", name: "black" },
+    { renderedColor: "rgb(0 149 246)", name: "blue" },
+    { renderedColor: "rgb(250 204 21)", name: "yellow" },
+    { renderedColor: "rgb(22 163 74)", name: "green" },
+    { renderedColor: "rgb(128 128 128)", name: "gray" },
+    { renderedColor: "rgb(255 165 0)", name: "orange" },
+    { renderedColor: "rgb(75 0 130)", name: "indigo" },
+    { renderedColor: "rgb(238 130 238)", name: "violet" },
+    { renderedColor: "rgb(128 0 128)", name: "purple" },
+    { renderedColor: "rgb(255 182 193)", name: "pink" },
+    { renderedColor: "rgb(255 69 0)", name: "orangered" },
+    { renderedColor: "rgb(64 224 208)", name: "turquoise" },
+    { renderedColor: "rgb(47 79 79)", name: "darkslategray" },
+    { renderedColor: "rgb(165 42 42)", name: "brown" },
+    { renderedColor: "rgb(255 20 147)", name: "deeppink" },
+    { renderedColor: "rgb(255 215 0)", name: "gold" },
+    { renderedColor: "rgb(60 179 113)", name: "mediumseagreen" },
+    { renderedColor: "rgb(0 191 255)", name: "deepskyblue" },
+    { renderedColor: "rgb(102 205 170)", name: "mediumaquamarine" },
+    { renderedColor: "rgb(210 105 30)", name: "chocolate" },
+    { renderedColor: "rgb(85 107 47)", name: "darkolivegreen" },
+    { renderedColor: "rgb(128 0 0)", name: "maroon" },
+    { renderedColor: "rgb(72 61 139)", name: "darkslateblue" },
+    { renderedColor: "rgb(50 205 50)", name: "limegreen" },
+    { renderedColor: "rgb(255 99 71)", name: "tomato" },
+    { renderedColor: "rgb(245 222 179)", name: "wheat" },
+    { renderedColor: "rgb(240 230 140)", name: "khaki" },
+    { renderedColor: "rgb(127 255 0)", name: "chartreuse" },
+    { renderedColor: "rgb(255 218 185)", name: "peachpuff" },
+    { renderedColor: "rgb(154 205 50)", name: "yellowgreen" },
+    { renderedColor: "rgb(70 130 180)", name: "steelblue" },
+    { renderedColor: "rgb(255 240 245)", name: "lavenderblush" },
+    { renderedColor: "rgb(244 164 96)", name: "sandybrown" },
+    { renderedColor: "rgb(230 230 250)", name: "lavender" },
+    { renderedColor: "rgb(0 255 127)", name: "springgreen" },
+    { renderedColor: "rgb(0 128 128)", name: "teal" },
+    { renderedColor: "rgb(25 25 112)", name: "midnightblue" },
+    { renderedColor: "rgb(255 222 173)", name: "navajowhite" },
+  ]);
 
   const textFonts = useRef<TextFonts[]>([
     {
@@ -1299,6 +1298,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           />
         )}
         <RangeSelector
+          rangeStyle="horizontal-dark-1"
           rangeValue={rangeValue}
           handleRangeChange={handleRangeChange}
           minValue={12}

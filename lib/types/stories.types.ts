@@ -24,7 +24,9 @@ export type TextColors = {
 };
 
 export type StoryMediaData = {
+  mediaImg: HTMLImageElement | undefined;
   width: number;
   height: number;
-  size: number;
+  x: number;
+  y: number;
 }

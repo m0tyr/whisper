@@ -204,14 +204,14 @@
     width: 100%;
   }
   
-  .wrapper {
+  .horizontal-dark-1 {
     position: relative;
     height: 17.5rem;
     width: 1.64rem;
   }
   
-  .wrapper::before,
-  .wrapper::after {
+  .horizontal-dark-1::before,
+  .horizontal-dark-1::after {
     display: block;
     position: absolute;
     z-index: 99;
@@ -225,7 +225,7 @@
   }
   
   
-  input[type="range"] {
+  #horizontal-dark-1 {
     -webkit-appearance: none;
     position: absolute;
     background-color: transparent;
@@ -241,7 +241,7 @@
     cursor: pointer;
   }
   
-  input[type="range"][step] {
+  #horizontal-dark-1[step] {
     background-color: transparent;
     background-image: repeating-linear-gradient(
       to right,
@@ -251,7 +251,7 @@
     );
   }
   
-  input[type="range"]::-webkit-slider-thumb {
+  #horizontal-dark-1::-webkit-slider-thumb {
     appearance: none;
     width: 1.75rem;
     height: 1.75rem;
@@ -259,11 +259,49 @@
     background-color: #181818;
     border-radius: 100rem;
   }
-  input[type="range"]::-webkit-slider-thumb:hover {
+  
+  #horizontal-dark-1::-webkit-slider-thumb:hover {
     background-color: #242424;
   }
   
-  input[type="range"]::-moz-range-thumb {
+  #horizontal-dark-1::-moz-range-thumb {
+    border: none;
+    width: 0;
+    box-shadow: -20rem 0 0 20rem rgba(255, 255, 255, 0.2);
+  }
+
+  #vertical-mini-white-1 {
+    -webkit-appearance: none;
+    background-color: rgb(200,200,200,0.7);
+    margin: 0;
+    padding: 0;
+    width: fit-content;
+    height: 0.15rem;
+    border-radius: 100rem;
+    overflow: visible;
+    cursor: pointer;
+  }
+  
+  #vertical-mini-white-1[step] {
+    background-color: transparent;
+    background-image: repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.2) calc(12.5% - 1px),
+      #05051a 12.5%
+    );
+  }
+  
+  #vertical-mini-white-1::-webkit-slider-thumb {
+    appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border: 0.6px solid #ffffff;
+    background-color: #eaeaea;
+    border-radius: 100rem;
+  }
+  
+  #vertical-mini-white-1::-moz-range-thumb {
     border: none;
     width: 0;
     box-shadow: -20rem 0 0 20rem rgba(255, 255, 255, 0.2);

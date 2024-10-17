@@ -6,7 +6,7 @@ type Line = {
   tool: string;
   points: number[];
   color: string;
-  strokeWidth: number; 
+  strokeWidth: number;
 };
 
 interface DrawPluginProps {
@@ -32,7 +32,7 @@ const DrawPlugin: React.FC<DrawPluginProps> = ({ width, height }) => {
         tool,
         points: [pos.x, pos.y],
         color: currentColor,
-        strokeWidth: rangeValue / 10, 
+        strokeWidth: rangeValue / 10,
       },
     ]);
   };
@@ -143,7 +143,13 @@ const DrawPlugin: React.FC<DrawPluginProps> = ({ width, height }) => {
             </div>
           </div>
 
-          <RangeSelector rangeValue={rangeValue} handleRangeChange={handleRangeChange} minValue={5} maxValue={200} />
+          <RangeSelector
+            rangeStyle="horizontal-dark-1"
+            rangeValue={rangeValue}
+            handleRangeChange={handleRangeChange}
+            minValue={5}
+            maxValue={200}
+          />
         </>
       )}
 
@@ -160,7 +166,7 @@ const DrawPlugin: React.FC<DrawPluginProps> = ({ width, height }) => {
               key={i}
               points={line.points}
               stroke={line.color}
-              strokeWidth={line.tool === 'eraser' ? 60 : line.strokeWidth}
+              strokeWidth={line.tool === "eraser" ? 60 : line.strokeWidth}
               tension={0.1}
               lineCap="round"
               lineJoin="round"
