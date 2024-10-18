@@ -410,7 +410,13 @@ const MediaAdjustement = ({
         alt=""
       />
       <img
-        className=" absolute flex justify-center items-center backdrop-blur-3xl z-[-50] select-none pointer-events-none"
+        style={{
+          position: "absolute",
+          maxWidth: "max-content",
+          width: `${storyProperties?.width}px`,
+          height: `${storyProperties?.height}px`,
+        }}
+        className="flex justify-center items-center blur-2xl z-[-50] select-none pointer-events-none"
         src={StoryMediaUrl}
         width={storyProperties.width}
         height={storyProperties.height}
