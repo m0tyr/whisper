@@ -96,10 +96,27 @@ const MediaAdjustement = ({
     }
   };
   const handleAddMediaToStory = () => {
+    const scaleFactor = 1 + rangeValue / 100;
+
+    const oldWidth = StoryMediaData.width;
+    const oldHeight = StoryMediaData.height;
+
+    const correctWidth = Math.max(10, oldWidth * scaleFactor);
+    const correctHeight = Math.max(10, oldHeight * scaleFactor);
+
+    const deltaHeight = correctHeight - oldHeight;
+
+    const x = finalStoryMediaDataForKonvaImg.x;
+    const y = finalStoryMediaDataForKonvaImg.y - deltaHeight / 2;
+
     const finalData = {
       ...StoryMediaData,
-      x: finalStoryMediaDataForKonvaImg.x,
+      width: correctWidth,
+      height: correctHeight,
+      x: x,
+      y: y,
     };
+
     AddMediaToStory(finalData);
   };
 
@@ -390,6 +407,13 @@ const MediaAdjustement = ({
           width: `${finalStoryMediaDataForKonvaImg?.width}px`,
           height: `${finalStoryMediaDataForKonvaImg?.height}px`,
         }}
+        alt=""
+      />
+      <img
+        className=" absolute flex justify-center items-center backdrop-blur-3xl z-[-50] select-none pointer-events-none"
+        src={StoryMediaUrl}
+        width={storyProperties.width}
+        height={storyProperties.height}
         alt=""
       />
     </>
