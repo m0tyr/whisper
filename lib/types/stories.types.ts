@@ -32,7 +32,8 @@ export type StoryMediaData = {
 }
 
 export type StoryKonvaMediaData = {
-  konvaImg: Konva.Image | null;
+  konvaMedia: Konva.Image | null;
+  konvabgFillMedia?: Konva.Image | null;
   hasBgFill: boolean;
   isVideo: boolean;
 }

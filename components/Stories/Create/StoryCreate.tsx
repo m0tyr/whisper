@@ -125,11 +125,18 @@ const StoryCreate = () => {
   const AddMediaToStory = (value: StoryMediaData) => {
     const stage = stageRef.current;
     const layer = layerRef.current;
+
     if (stage && layer) {
+      const hasBgFill =
+        StoryMediaData.width > value.width ||
+        StoryMediaData.height > value.height;
+
+      // Ajouter une image Konva principale
       Konva.Image.fromURL(StoryMediaUrl, function (imageNode) {
         console.log(StoryMediaData);
         console.log(value);
         const x = (storyProperties.width - value.width) / 2 + value.x;
+
         imageNode.setAttrs({
           x: x,
           y: value.y,
@@ -137,10 +144,41 @@ const StoryCreate = () => {
           height: value.height,
           listening: false,
         });
-        setStoryKonvaMedia({ konvaImg: imageNode, hasBgFill: true, isVideo: false });
         layer.add(imageNode);
-        layer.draw();
+        layer.batchDraw(); 
+
+        if (hasBgFill) {
+          Konva.Image.fromURL(StoryMediaUrl, function (bgImageNode) {
+            bgImageNode.setAttrs({
+              x: 0,
+              y: 0,
+              width: storyProperties.width,
+              height: storyProperties.height,
+              listening: false,
+            });
+
+            bgImageNode.filters([Konva.Filters.Blur]);
+            bgImageNode.blurRadius(20);
+
+            layer.add(bgImageNode);
+            layer.batchDraw(); 
+
+            setStoryKonvaMedia({
+              konvaMedia: imageNode,
+              konvabgFillMedia: bgImageNode,
+              hasBgFill: true,
+              isVideo: false,
+            });
+          });
+        } else {
+          setStoryKonvaMedia({
+            konvaMedia: imageNode,
+            hasBgFill: false,
+            isVideo: false,
+          });
+        }
       });
+
       setisAdjustingImage(false);
       setIsInBaseContext(true);
     }
@@ -936,7 +974,9 @@ const StoryCreate = () => {
               width: storyProperties.width,
               height: storyProperties.height,
             }}
-            className={` ${!isInBaseContext ? 'bg-transparent' : 'bg-border'} flex absolute  rounded-lg`}
+            className={` ${
+              !isInBaseContext ? "bg-transparent" : "bg-border"
+            } flex absolute  rounded-lg`}
           >
             <>
               <div
@@ -1120,7 +1160,9 @@ const StoryCreate = () => {
               >
                 <Layer ref={layerRef}></Layer>
               </Stage>
-              {isInBaseContext && selectedItemCoord.x !== 0 && selectedItemCoord.y !== 0 ? (
+              {isInBaseContext &&
+              selectedItemCoord.x !== 0 &&
+              selectedItemCoord.y !== 0 ? (
                 <ToolBar x={selectedItemCoord.x} y={selectedItemCoord.y} />
               ) : null}
               {!hasPassedTemplateStep && (
@@ -1163,9 +1205,9 @@ const StoryCreate = () => {
               <motion.div
                 whileTap={{ scale: 0.97 }}
                 whileHover={{ opacity: 0.8 }}
-                className= {` ${
+                className={` ${
                   isInBaseContext ? "" : "hidden"
-                } cursor-pointer select-none w-full absolute bottom-0 pb-4 flex justify-center items-center gap-2 flex-row`} 
+                } cursor-pointer select-none w-full absolute bottom-0 pb-4 flex justify-center items-center gap-2 flex-row`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
