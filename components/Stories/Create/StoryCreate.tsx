@@ -125,64 +125,72 @@ const StoryCreate = () => {
   const AddMediaToStory = (value: StoryMediaData) => {
     const stage = stageRef.current;
     const layer = layerRef.current;
-
+  
     if (stage && layer) {
       const hasBgFill =
-        StoryMediaData.width > value.width ||
-        StoryMediaData.height > value.height;
-
-      // Ajouter une image Konva principale
-      Konva.Image.fromURL(StoryMediaUrl, function (imageNode) {
-        console.log(StoryMediaData);
-        console.log(value);
+        StoryMediaData.width > value.width || StoryMediaData.height > value.height;
+  
+      if (hasBgFill) {
+        const bgImage = new window.Image();
+        bgImage.src = StoryMediaUrl;
+        bgImage.onload = function () {
+          const bgImageNode = new Konva.Image({
+            x: 0,
+            y: 0,
+            width: StoryMediaData.width,
+            height: storyProperties.height,
+            image: bgImage,
+            blurRadius: 140,
+            opacity: 0.45,
+            listening: false,
+          });
+  
+          bgImageNode.cache();
+          bgImageNode.filters([Konva.Filters.Blur]);
+          layer.add(bgImageNode);
+          bgImageNode.moveToBottom();
+          layer.batchDraw();
+  
+          setStoryKonvaMedia((prevState) => ({
+            konvaMedia: prevState?.konvaMedia || null,
+            konvabgFillMedia: bgImageNode,
+            hasBgFill: prevState?.hasBgFill ?? false,
+            isVideo: false,
+          }));
+        };
+      }
+  
+      const mainImage = new window.Image();
+      mainImage.src = StoryMediaUrl;
+      mainImage.onload = function () {
         const x = (storyProperties.width - value.width) / 2 + value.x;
-
-        imageNode.setAttrs({
+  
+        const imageNode = new Konva.Image({
           x: x,
           y: value.y,
           width: value.width,
           height: value.height,
+          image: mainImage,
           listening: false,
         });
+  
         layer.add(imageNode);
-        layer.batchDraw(); 
-
-        if (hasBgFill) {
-          Konva.Image.fromURL(StoryMediaUrl, function (bgImageNode) {
-            bgImageNode.setAttrs({
-              x: 0,
-              y: 0,
-              width: storyProperties.width,
-              height: storyProperties.height,
-              listening: false,
-            });
-
-            bgImageNode.filters([Konva.Filters.Blur]);
-            bgImageNode.blurRadius(20);
-
-            layer.add(bgImageNode);
-            layer.batchDraw(); 
-
-            setStoryKonvaMedia({
-              konvaMedia: imageNode,
-              konvabgFillMedia: bgImageNode,
-              hasBgFill: true,
-              isVideo: false,
-            });
-          });
-        } else {
-          setStoryKonvaMedia({
-            konvaMedia: imageNode,
-            hasBgFill: false,
-            isVideo: false,
-          });
-        }
-      });
-
+        imageNode.moveToTop();
+        layer.batchDraw();
+  
+        setStoryKonvaMedia((prevState) => ({
+          konvabgFillMedia: prevState?.konvabgFillMedia || null,
+          konvaMedia: imageNode,
+          hasBgFill: prevState?.hasBgFill ?? false,
+          isVideo: false,
+        }));
+      };
+  
       setisAdjustingImage(false);
       setIsInBaseContext(true);
     }
   };
+  
 
   const handleFileChange = () => {
     const stage = stageRef.current;

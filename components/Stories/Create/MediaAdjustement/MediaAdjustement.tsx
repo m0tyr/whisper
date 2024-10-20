@@ -28,8 +28,8 @@ const MediaAdjustement = ({
   clearMediaImport,
   AddMediaToStory,
 }: MediaAdjustementProps) => {
-  const [isOriginalSizing, setOriginalSizing] = useState(false)
-  const [isFitToStorySizing, setFitToStorySizing] = useState(false)
+  const [isOriginalSizing, setOriginalSizing] = useState(false);
+  const [isFitToStorySizing, setFitToStorySizing] = useState(false);
   const mediaSelectionZone = useRef<HTMLDivElement | null>(null);
 
   const [finalStoryMediaDataForKonvaImg, setFinalStoryMediaDataForKonvaImg] =
@@ -65,16 +65,21 @@ const MediaAdjustement = ({
     };
   }, [storyProperties]);
 
-  const [dragRange, setDragRange] = useState<[number, number]>([0, 500]);
+  const [dragRange, setDragRange] = useState<[number, number]>([0, 1500]);
+
   useEffect(() => {
     if (StoryMediaData?.width) {
-      const newDragRange: [number, number] = [
-        -(finalStoryMediaDataForKonvaImg.width - storyProperties.width) / 2,
-        (finalStoryMediaDataForKonvaImg.width - storyProperties.width) / 2,
-      ];
+      const imgWidth = finalStoryMediaDataForKonvaImg.width;
+      const storyWidth = storyProperties.width;
+
+      const newDragRange: [number, number] =
+        imgWidth < storyWidth
+          ? [0, 0]
+          : [-(imgWidth - storyWidth) / 2, (imgWidth - storyWidth) / 2];
+
       setDragRange(newDragRange);
     } else {
-      setDragRange([0, 500]); // Default fallback range
+      setDragRange([0, 1500]); // Default fallback range
     }
   }, [finalStoryMediaDataForKonvaImg?.width, storyProperties.width]);
 
@@ -100,8 +105,8 @@ const MediaAdjustement = ({
   const handleAddMediaToStory = () => {
     const scaleFactor = 1 + rangeValue / 100;
 
-    const oldWidth = finalStoryMediaDataForKonvaImg.width;
-    const oldHeight = finalStoryMediaDataForKonvaImg.height;
+    const oldWidth = StoryMediaData.width;
+    const oldHeight = StoryMediaData.height;
 
     const correctWidth = Math.max(10, oldWidth * scaleFactor);
     const correctHeight = Math.max(10, oldHeight * scaleFactor);
@@ -109,12 +114,12 @@ const MediaAdjustement = ({
     const deltaHeight = correctHeight - oldHeight;
 
     const x = finalStoryMediaDataForKonvaImg.x;
-    const y = finalStoryMediaDataForKonvaImg.y/*  - deltaHeight / 2 */;
+    const y = finalStoryMediaDataForKonvaImg.y - deltaHeight / 2;
 
     const finalData = {
       ...StoryMediaData,
-      width: oldWidth,
-      height: oldHeight,
+      width: correctWidth,
+      height: correctHeight,
       x: x,
       y: y,
     };
@@ -146,12 +151,12 @@ const MediaAdjustement = ({
   const resizeToFitToStory = () => {
     const { width: storyWidth, height: storyHeight } = storyProperties;
     const { width: mediaWidth, height: mediaHeight } = StoryMediaData;
-  
+
     const storyAspectRatio = storyWidth / storyHeight;
     const mediaAspectRatio = mediaWidth / mediaHeight;
-  
+
     let newWidth, newHeight, newX, newY;
-  
+
     if (mediaAspectRatio > storyAspectRatio) {
       // Media is wider than the story, fit by width
       newWidth = storyWidth;
@@ -161,11 +166,11 @@ const MediaAdjustement = ({
       newHeight = storyHeight;
       newWidth = storyHeight * mediaAspectRatio;
     }
-  
+
     // Center the media by adjusting x and y positions
     newX = (storyWidth - newWidth) / 2;
     newY = (storyHeight - newHeight) / 2;
-  
+
     setFinalStoryMediaDataForKonvaImg({
       ...finalStoryMediaDataForKonvaImg,
       width: newWidth,
@@ -174,7 +179,7 @@ const MediaAdjustement = ({
       y: newY,
     });
   };
-  
+
   const resizeToOriginal = () => {
     setFinalStoryMediaDataForKonvaImg({
       ...finalStoryMediaDataForKonvaImg,
