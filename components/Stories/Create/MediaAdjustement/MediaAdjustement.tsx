@@ -28,6 +28,8 @@ const MediaAdjustement = ({
   clearMediaImport,
   AddMediaToStory,
 }: MediaAdjustementProps) => {
+  const [isOriginalSizing, setOriginalSizing] = useState(false)
+  const [isFitToStorySizing, setFitToStorySizing] = useState(false)
   const mediaSelectionZone = useRef<HTMLDivElement | null>(null);
 
   const [finalStoryMediaDataForKonvaImg, setFinalStoryMediaDataForKonvaImg] =
@@ -98,8 +100,8 @@ const MediaAdjustement = ({
   const handleAddMediaToStory = () => {
     const scaleFactor = 1 + rangeValue / 100;
 
-    const oldWidth = StoryMediaData.width;
-    const oldHeight = StoryMediaData.height;
+    const oldWidth = finalStoryMediaDataForKonvaImg.width;
+    const oldHeight = finalStoryMediaDataForKonvaImg.height;
 
     const correctWidth = Math.max(10, oldWidth * scaleFactor);
     const correctHeight = Math.max(10, oldHeight * scaleFactor);
@@ -107,12 +109,12 @@ const MediaAdjustement = ({
     const deltaHeight = correctHeight - oldHeight;
 
     const x = finalStoryMediaDataForKonvaImg.x;
-    const y = finalStoryMediaDataForKonvaImg.y - deltaHeight / 2;
+    const y = finalStoryMediaDataForKonvaImg.y/*  - deltaHeight / 2 */;
 
     const finalData = {
       ...StoryMediaData,
-      width: correctWidth,
-      height: correctHeight,
+      width: oldWidth,
+      height: oldHeight,
       x: x,
       y: y,
     };
@@ -144,26 +146,35 @@ const MediaAdjustement = ({
   const resizeToFitToStory = () => {
     const { width: storyWidth, height: storyHeight } = storyProperties;
     const { width: mediaWidth, height: mediaHeight } = StoryMediaData;
-
+  
     const storyAspectRatio = storyWidth / storyHeight;
     const mediaAspectRatio = mediaWidth / mediaHeight;
-
-    let newWidth, newHeight;
-
+  
+    let newWidth, newHeight, newX, newY;
+  
     if (mediaAspectRatio > storyAspectRatio) {
+      // Media is wider than the story, fit by width
       newWidth = storyWidth;
       newHeight = storyWidth / mediaAspectRatio;
     } else {
+      // Media is taller than the story, fit by height
       newHeight = storyHeight;
       newWidth = storyHeight * mediaAspectRatio;
     }
-
+  
+    // Center the media by adjusting x and y positions
+    newX = (storyWidth - newWidth) / 2;
+    newY = (storyHeight - newHeight) / 2;
+  
     setFinalStoryMediaDataForKonvaImg({
       ...finalStoryMediaDataForKonvaImg,
       width: newWidth,
       height: newHeight,
+      x: newX,
+      y: newY,
     });
   };
+  
   const resizeToOriginal = () => {
     setFinalStoryMediaDataForKonvaImg({
       ...finalStoryMediaDataForKonvaImg,

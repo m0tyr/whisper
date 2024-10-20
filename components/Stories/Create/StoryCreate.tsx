@@ -27,6 +27,7 @@ import GifPlugin from "./GifPlugin/GifPlugin";
 import TextPlugin from "./TextPlugin/TextPlugin";
 import {
   MentionInstance,
+  StoryKonvaMediaData,
   StoryMediaData,
   TextInstances,
 } from "@/lib/types/stories.types";
@@ -55,8 +56,8 @@ const StoryCreate = () => {
     x: 0,
     y: 0,
   });
-  const [StoryMediaKonvaImg, setStoryMediaKonvaImg] =
-    useState<Konva.Image | null>(null);
+  const [StoryKonvaMedia, setStoryKonvaMedia] =
+    useState<StoryKonvaMediaData | null>(null);
 
   const stageRef = useRef<Konva.Stage | null>(null);
   const layerRef = useRef<Konva.Layer | null>(null);
@@ -136,7 +137,7 @@ const StoryCreate = () => {
           height: value.height,
           listening: false,
         });
-        setStoryMediaKonvaImg(imageNode);
+        setStoryKonvaMedia({ konvaImg: imageNode, hasBgFill: true, isVideo: false });
         layer.add(imageNode);
         layer.draw();
       });
@@ -935,12 +936,14 @@ const StoryCreate = () => {
               width: storyProperties.width,
               height: storyProperties.height,
             }}
-            className={` ${
-              isInBaseContext ? "" : "hidden"
-            } flex relative bg-border rounded-lg`}
+            className={` ${!isInBaseContext ? 'bg-transparent' : 'bg-border'} flex absolute  rounded-lg`}
           >
             <>
-              <div className="absolute top-0 flex z-40 flex-row w-full  justify-between">
+              <div
+                className={` ${
+                  isInBaseContext ? "" : "hidden"
+                } absolute top-0 flex z-40 flex-row w-full  justify-between`}
+              >
                 <motion.div
                   whileTap={{ opacity: 0.75 }}
                   whileHover={{ opacity: 0.9 }}
@@ -1117,7 +1120,7 @@ const StoryCreate = () => {
               >
                 <Layer ref={layerRef}></Layer>
               </Stage>
-              {selectedItemCoord.x !== 0 && selectedItemCoord.y !== 0 ? (
+              {isInBaseContext && selectedItemCoord.x !== 0 && selectedItemCoord.y !== 0 ? (
                 <ToolBar x={selectedItemCoord.x} y={selectedItemCoord.y} />
               ) : null}
               {!hasPassedTemplateStep && (
@@ -1160,7 +1163,9 @@ const StoryCreate = () => {
               <motion.div
                 whileTap={{ scale: 0.97 }}
                 whileHover={{ opacity: 0.8 }}
-                className=" cursor-pointer select-none w-full absolute bottom-0 pb-4 flex justify-center items-center gap-2 flex-row"
+                className= {` ${
+                  isInBaseContext ? "" : "hidden"
+                } cursor-pointer select-none w-full absolute bottom-0 pb-4 flex justify-center items-center gap-2 flex-row`} 
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

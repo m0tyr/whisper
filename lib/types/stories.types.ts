@@ -30,3 +30,9 @@ export type StoryMediaData = {
   x: number;
   y: number;
 }
+
+export type StoryKonvaMediaData = {
+  konvaImg: Konva.Image | null;
+  hasBgFill: boolean;
+  isVideo: boolean;
+}

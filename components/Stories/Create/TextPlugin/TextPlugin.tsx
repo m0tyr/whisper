@@ -317,6 +317,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         const text = convertLinesWithMention(textMeasure);
         var mentionTextNode: Konva.Text[] = [];
         text.forEach((line, index) => {
+          line.text = line.text.trimEnd(); 
+          console.log(line.text)
           if (line.mentionNodesAnchorPosition)
             if (line.mentionNodesAnchorPosition?.length > 0) {
               let currentX = 0;
@@ -446,8 +448,8 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
         // Group all shapes into a single group
         var group = new Konva.Group({
-          x: pos.x - (pos.padding.left - pos.margin.left),
-          y: pos.y - (pos.padding.top - pos.margin.top),
+          x: pos.x,
+          y: pos.y,
           rotation: pos.angle,
           draggable: true,
 
@@ -627,6 +629,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
       if (textNode === null) {
         setTimeout(() => {
           const textBuild = makeLineBreakerMeasurer()?.join("\n");
+          console.log(textBuild)
           buildCustomText({
             text: textBuild,
             x: storyProperties.width / 2,
@@ -1123,7 +1126,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
         }}
         className=" flex relative bg-border rounded-lg w-full "
       >
-        <div className="flex flex-col justify-center items-center w-full  h-full z-50 bg-[rgb(0,0,0,0.4)]">
+        <div className="flex flex-col justify-center items-center w-full  h-full z-50 bg-[rgb(0,0,0,0.65)]">
           <div
             ref={playgroundRef}
             id="text-playground"

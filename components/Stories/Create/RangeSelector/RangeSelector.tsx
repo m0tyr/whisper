@@ -43,7 +43,7 @@ const RangeSelector: React.FC<RangeSelectorProps> = ({
         </div>
       </div>
       {rangeStyle === "horizontal-dark-1" ? (
-        <div className="absolute h-[16rem] w-[1.5rem]  top-[30%] left-0 translate-x-1/2 ">
+        <div className="absolute h-[16rem] w-[1.5rem] z-[51]  top-[30%] left-0 translate-x-1/2 ">
           <div
             style={{
               borderLeft: "14px solid transparent",
