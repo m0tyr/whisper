@@ -141,7 +141,7 @@ const StoryCreate = () => {
             height: storyProperties.height,
             image: bgImage,
             blurRadius: 140,
-            opacity: 0.45,
+            opacity: 0.75,
             listening: false,
           });
   
