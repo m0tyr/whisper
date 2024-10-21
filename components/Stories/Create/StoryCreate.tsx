@@ -661,13 +661,12 @@ const StoryCreate = () => {
           text.off("click dblclick dragmove");
         });
       }
-
-      
     };
   };
 
   return (
     <>
+      <AnimatePresence>
         {isInWidgetContext && (
           <DrawerPlugin
             storyContainerProperties={storyContainerProperties}
@@ -679,6 +678,7 @@ const StoryCreate = () => {
             setIsInWidgetBaseContext={setIsInWidgetBaseContext}
           />
         )}
+      </AnimatePresence>
       <div
         className={` min-h-screen w-full flex items-center justify-center relative`}
       >
@@ -733,7 +733,7 @@ const StoryCreate = () => {
             type="file"
           />
 
-          <div
+          <motion.div
             style={{
               width: storyProperties.width,
               height: storyProperties.height,
@@ -741,6 +741,10 @@ const StoryCreate = () => {
             className={` ${!isInBaseContext ? "bg-transparent" : "bg-border"} ${
               isInWidgetContext ? "opacity-50" : ""
             } flex absolute  rounded-lg`}
+            transition={{
+              duration: 0.475,
+              ease: [0.55, 0.79, 0.16, 0.99],
+            }}
           >
             <>
               <div
@@ -1014,7 +1018,7 @@ const StoryCreate = () => {
                 <span className=" text-[13px] ">Ajoutez à votre story</span>
               </motion.div>
             </>
-          </div>
+          </motion.div>
         </div>
       </div>
     </>

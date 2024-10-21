@@ -22,6 +22,12 @@ export type TextColors = {
   name: string;
 };
 
+export type TextBgTypes = {
+  renderedBackgroundType: string;
+  name: string;
+};
+
+
 export type Line =  {
   cx: number;
   text: string;

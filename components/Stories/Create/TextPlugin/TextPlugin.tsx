@@ -2,6 +2,7 @@ import LexicalContentEditable from "@/components/LexicalContentEditable/LexicalC
 import {
   Line,
   MentionInstance,
+  TextBgTypes,
   TextColors,
   TextFonts,
   TextInstances,
@@ -29,6 +30,7 @@ import { $patchStyleText } from "@lexical/selection";
 import { Tween } from "konva/lib/Tween";
 import RangeSelector from "../RangeSelector/RangeSelector";
 import { useStoryTextPlugin } from "@/hooks/useStoryTextPlugin";
+import TextBackground from "./TextBackgroundChooser/TextBackgroundChooser";
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -79,9 +81,16 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const [previewBgPath, setPreviewBgPath] = useState("");
   const [color, setColor] = useState<string>("rgb(255 255 255)");
   const [fontSavedIndex, setFontSavedIndex] = useState<number | null>(0);
+  const [backgroundSavedIndex, setBackgroundSavedIndex] = useState<
+    number | null
+  >(0);
+  const [toRenderTextBackground, setToRenderTextBackground] = useState<
+    string | null
+  >(null);
   const [colorSavedIndex, setColorSavedIndex] = useState<number | null>(0);
   const [isChoosingFont, setIsChoosingFont] = useState(false);
   const [isChoosingColor, setIsChoosingColor] = useState(false);
+  const [isChoosingBgTypes, setIsChoosingBgTypes] = useState(false);
   const [isTextBackgroundSelected, setIsTextBackgroundSelected] =
     useState(false);
   const [rangeValue, setRangeValue] = useState(22);
@@ -92,6 +101,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
   const {
     textColors,
     textFonts,
+    textBgTypes,
     generateBackgroundShape,
     convertLinesWithMention,
     generatePreviewBgPath,
@@ -134,7 +144,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
 
         layer.add(textMeasure);
 
-        var top = pos.padding.top / 2;
+        var top = pos.padding.top;
         var shapes: (Text | Rect)[] = [];
         const text = convertLinesWithMention(textMeasure);
         var mentionTextNode: Konva.Text[] = [];
@@ -285,7 +295,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             lineHeight: parseInt(rangeValue.toString()) + 0.75,
             width: textMeasure.width(),
             align: "center",
-            padding: 8,
+            padding: pos.padding.top * 2,
             cornerRadius: 8,
           });
 
@@ -390,11 +400,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
     }, 0);
   }
 
-
   const handleFinishEditing = () => {
     const stage = stageRef.current;
     const layer = layerRef.current;
-    const padding = 5;
     if (stage && layer && editorRef.current) {
       setTimeout(() => {
         const textBuild = makeLineBreakerMeasurer()?.join("\n");
@@ -404,7 +412,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
           x: storyProperties.width / 2,
           y: storyProperties.height / 2,
           angle: 0,
-          padding: { left: 8, top: 8, right: 8, bottom: 8 },
+          padding: { left: 3, top: 3, right: 3, bottom: 3 },
           margin: { left: 5, top: 0, right: 5, bottom: 0 },
         });
         setIsInTextContext(false);
@@ -595,12 +603,21 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             Terminer
           </button>
         </div>
-        <div className="absolute bottom-[60px] right-0 text-[13px] z-[51] w-full overflow-x-hidden">
+        <motion.div
+          className={` absolute  right-0 text-[13px] z-[51] w-full overflow-x-hidden`}
+          initial={{ bottom: "60px" }}
+          animate={{ bottom: isChoosingBgTypes ? "100px" : "60px" }}
+          transition={{
+            duration: 0.475,
+            ease: [0.55, 0.79, 0.16, 0.99],
+          }}
+        >
           <div className="flex flex-row w-full justify-center items-center gap-2 mb-5">
             <motion.div
               whileTap={{ opacity: 0.7, scale: 0.9 }}
               whileHover={{ opacity: 0.9 }}
               onClick={() => {
+                setIsChoosingBgTypes(false);
                 setIsChoosingColor(false);
                 setIsChoosingFont(true);
               }}
@@ -624,6 +641,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               whileTap={{ opacity: 0.7, scale: 0.9 }}
               whileHover={{ opacity: 0.9 }}
               onClick={() => {
+                setIsChoosingBgTypes(false);
                 setIsChoosingColor(true);
                 setIsChoosingFont(false);
               }}
@@ -665,7 +683,9 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               whileTap={{ opacity: 0.7, scale: 0.9 }}
               whileHover={{ opacity: 0.9 }}
               onClick={() => {
-                setIsTextBackgroundSelected(!isTextBackgroundSelected);
+                setIsChoosingBgTypes(true);
+                setIsChoosingColor(false);
+                setIsChoosingFont(false);
               }}
               className={` ${
                 isTextBackgroundSelected ? "bg-insanedark/70" : ""
@@ -688,7 +708,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
               </svg>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
         {isChoosingColor && (
           <ColorChooser
             colorSavedIndex={colorSavedIndex}
@@ -702,6 +722,14 @@ const TextPlugin: React.FC<TextPluginProps> = ({
             fontSavedIndex={fontSavedIndex}
             setToRenderTextFont={setToRenderTextFont}
             textFonts={textFonts}
+            storyProperties={storyProperties}
+          />
+        )}
+        {isChoosingBgTypes && (
+          <TextBackground
+            backgroundSavedIndex={backgroundSavedIndex}
+            setToRenderTextBackground={setToRenderTextBackground}
+            textBgTypes={textBgTypes}
             storyProperties={storyProperties}
           />
         )}

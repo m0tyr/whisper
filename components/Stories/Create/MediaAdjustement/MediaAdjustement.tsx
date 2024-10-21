@@ -433,7 +433,6 @@ const MediaAdjustement = ({
             opacity: "100%",
             position: "absolute",
             maxWidth: "max-content",
-            borderRadius: "5px",
             width: `${finalStoryMediaDataForKonvaImg?.width}px`,
             height: `${finalStoryMediaDataForKonvaImg?.height}px`,
           }}
@@ -446,7 +445,6 @@ const MediaAdjustement = ({
             opacity: "100%",
             position: "absolute",
             maxWidth: "max-content",
-            borderRadius: "5px",
             width: `${finalStoryMediaDataForKonvaImg?.width}px`,
             height: `${finalStoryMediaDataForKonvaImg?.height}px`,
           }}

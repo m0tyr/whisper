@@ -3,6 +3,7 @@ import {
   TextColors,
   TextFonts,
   Line,
+  TextBgTypes,
 } from "@/lib/types/stories.types";
 import Konva from "konva";
 import { RefObject, useRef } from "react";
@@ -21,8 +22,19 @@ export const useStoryTextPlugin = ({
   layerRef,
   playgroundRef,
   setPreviewBgPath,
-  rangeValue
+  rangeValue,
 }: UseStoryTextPluginProps) => {
+
+  const textBgTypes = useRef<TextBgTypes[]>([
+    {renderedBackgroundType: 'line_by_line', name: 'Follow Text Curve'},
+    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
+    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
+    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
+    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
+  ]);
+
+
+
   const textColors = useRef<TextColors[]>([
     { renderedColor: "rgb(255 255 255)", name: "white" },
     { renderedColor: "rgb(220 38 38)", name: "red" },
@@ -94,8 +106,7 @@ export const useStoryTextPlugin = ({
     padding = 0,
     cornerRadius = 0,
   }: BackgroundShapeParams): string {
-    lineHeight = lineHeight;
-
+ 
     for (let i = 0; i < lines.length; i++) {
       let group = [lines[i]];
 
@@ -424,14 +435,15 @@ export const useStoryTextPlugin = ({
     }
   };
   return {
-    textColors: textColors, 
-    textFonts: textFonts, 
-    generateBackgroundShape, 
-    generateTextNodes, 
-    splitLines, 
-    convertLinesWithMention, 
-    generatePreviewBgPath, 
-    findMentionNodeInText, 
-    makeLineBreakerMeasurer
-};
+    textColors: textColors,
+    textFonts: textFonts,
+    textBgTypes: textBgTypes,
+    generateBackgroundShape,
+    generateTextNodes,
+    splitLines,
+    convertLinesWithMention,
+    generatePreviewBgPath,
+    findMentionNodeInText,
+    makeLineBreakerMeasurer,
+  };
 };

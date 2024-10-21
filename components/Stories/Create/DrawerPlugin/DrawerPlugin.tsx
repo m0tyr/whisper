@@ -65,7 +65,6 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
   }
 
   return (
-    <AnimatePresence>
       <div className="min-h-screen absolute top-0 w-full flex items-center justify-center">
         <div
           className="flex items-center justify-center relative overflow-hidden"
@@ -403,7 +402,6 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
           </div>
         </div>
       </div>
-    </AnimatePresence>
   );
 };
 
