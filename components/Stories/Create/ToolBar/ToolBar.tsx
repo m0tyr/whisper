@@ -27,7 +27,7 @@ const ToolBar = ({ x, y }: ToolBarProps) => {
         <div className="flex flex-row p-[2px] h-[34px] justify-center items-center bg-[#2D2D2D] shadow-[0px_0px_0px_1px_rgba(33,33,36,.04),0px_7px_8px_-4px_rgba(33,33,36,.75)] rounded-2xl">
           <motion.div
             whileHover={{ backgroundColor: "#21212140" }}
-            whileTap={{ scale : 0.98}}
+            whileTap={{ backgroundColor: "#404040"}}
             transition={{ duration: 0.15 }}
             className="cursor-pointer w-[32px] h-[32px] flex justify-center items-center rounded-full"
           >
@@ -62,7 +62,7 @@ const ToolBar = ({ x, y }: ToolBarProps) => {
           </motion.div>
           <motion.div
             whileHover={{ backgroundColor: "#21212140" }}
-            whileTap={{ scale : 0.98}}
+            whileTap={{ backgroundColor: "#404040"}}
             transition={{ duration: 0.15 }}
             className="cursor-pointer w-[32px] h-[32px] flex justify-center items-center rounded-full"
           >

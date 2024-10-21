@@ -173,7 +173,7 @@ function ItemChooserCarousel({
           </button>
         </div>
       )}
-      <div className="z-[49] absolute w-full h-14 bg-[linear-gradient(90deg,rgba(27,27,27,1)_0%,rgba(27,27,27,0.5)_20%,rgba(255,255,255,0)_50%,rgba(27,27,27,0.5)_80%,rgba(27,27,27,1)_100%)]"></div>
+      <div className="z-[49] absolute w-full h-14 bg-[linear-gradient(90deg,rgba(16,16,16,1)_0%,rgba(16,16,16,0.5)_20%,rgba(255,255,255,0)_50%,rgba(16,16,16,0.5)_80%,rgba(16,16,16,1)_100%)]"></div>
       <motion.div
         ref={LayoutContainerRef}
         animate={{ x: animationContainerValue }}

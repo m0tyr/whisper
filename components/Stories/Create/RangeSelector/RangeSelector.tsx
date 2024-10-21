@@ -48,7 +48,7 @@ const RangeSelector: React.FC<RangeSelectorProps> = ({
             style={{
               borderLeft: "14px solid transparent",
               borderRight: "14px solid transparent",
-              borderTop: "250px solid rgb(168,168,168,.3)",
+              borderTop: "250px solid rgb(200,200,200,.3)",
             }}
             className=" h-full w-full relative"
           >
@@ -56,7 +56,7 @@ const RangeSelector: React.FC<RangeSelectorProps> = ({
               style={{
                 borderLeft: "12px solid transparent",
                 borderRight: "12px solid transparent",
-                borderTop: "250px solid rgb(18,18,18,.65 )",
+                borderTop: "250px solid rgb(8,8,8,.65 )",
               }}
               className=" h-full w-full absolute top-[-249px] left-[-12px]"
             ></div>

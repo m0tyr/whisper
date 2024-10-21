@@ -23,7 +23,7 @@ import {
 import getFeaturedStickers from "@/lib/actions/stories.actions";
 import { useQueryFeaturedStickers } from "@/hooks/queries/useQueryFeaturedStickers";
 
-import GifPlugin from "./GifPlugin/GifPlugin";
+import GifPlugin from "./DrawerPlugin/GifPlugin/GifPlugin";
 import TextPlugin from "./TextPlugin/TextPlugin";
 import {
   MentionInstance,
@@ -34,6 +34,7 @@ import {
 import ToolBar from "./ToolBar/ToolBar";
 import MediaAdjustement from "./MediaAdjustement/MediaAdjustement";
 import { listeners } from "process";
+import DrawerPlugin from "./DrawerPlugin/DrawerPlugin";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -53,6 +54,7 @@ const StoryCreate = () => {
     mediaImg: undefined,
     width: 0,
     height: 0,
+    isVideo: false,
     x: 0,
     y: 0,
   });
@@ -72,7 +74,6 @@ const StoryCreate = () => {
     "system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif"
   );
   const [textValue, setTextValue] = useState("");
-  const [textNode, setTextNode] = useState<Konva.Text | null>(null);
 
   const [hasPassedTemplateStep, setHasPassedTemplateStep] = useState(false);
   const [isInDrawingContext, setIsInDrawingContext] = useState(false);
@@ -125,72 +126,150 @@ const StoryCreate = () => {
   const AddMediaToStory = (value: StoryMediaData) => {
     const stage = stageRef.current;
     const layer = layerRef.current;
-  
+
     if (stage && layer) {
       const hasBgFill =
-        StoryMediaData.width > value.width || StoryMediaData.height > value.height;
-  
-      if (hasBgFill) {
-        const bgImage = new window.Image();
-        bgImage.src = StoryMediaUrl;
-        bgImage.onload = function () {
-          const bgImageNode = new Konva.Image({
-            x: 0,
-            y: 0,
-            width: StoryMediaData.width,
-            height: storyProperties.height,
-            image: bgImage,
-            blurRadius: 140,
-            opacity: 0.75,
+        StoryMediaData.width > value.width ||
+        StoryMediaData.height > value.height;
+
+      if (!value.isVideo) {
+        if (hasBgFill) {
+          const bgImage = new window.Image();
+          bgImage.src = StoryMediaUrl;
+          bgImage.onload = function () {
+            const bgImageNode = new Konva.Image({
+              x: 0,
+              y: 0,
+              width: StoryMediaData.width,
+              height: storyProperties.height,
+              image: bgImage,
+              blurRadius: 140,
+              opacity: 0.75,
+              listening: false,
+            });
+
+            bgImageNode.zIndex(-100);
+            bgImageNode.cache();
+            bgImageNode.filters([Konva.Filters.Blur]);
+            layer.add(bgImageNode);
+            bgImageNode.moveToBottom();
+            layer.batchDraw();
+
+            setStoryKonvaMedia((prevState) => ({
+              konvaMedia: prevState?.konvaMedia || null,
+              konvabgFillMedia: bgImageNode,
+              hasBgFill: prevState?.hasBgFill ?? false,
+              isVideo: value.isVideo,
+            }));
+          };
+        }
+        const mainImage = new window.Image();
+        mainImage.src = StoryMediaUrl;
+        mainImage.onload = function () {
+          const x = (storyProperties.width - value.width) / 2 + value.x;
+
+          const imageNode = new Konva.Image({
+            x: x,
+            y: value.y,
+            width: value.width,
+            height: value.height,
+            image: mainImage,
             listening: false,
           });
-  
-          bgImageNode.cache();
-          bgImageNode.filters([Konva.Filters.Blur]);
-          layer.add(bgImageNode);
-          bgImageNode.moveToBottom();
+          imageNode.zIndex(-99);
+
+          layer.add(imageNode);
+          imageNode.moveToBottom();
+          imageNode.moveUp();
           layer.batchDraw();
-  
+
           setStoryKonvaMedia((prevState) => ({
-            konvaMedia: prevState?.konvaMedia || null,
-            konvabgFillMedia: bgImageNode,
+            konvabgFillMedia: prevState?.konvabgFillMedia || null,
+            konvaMedia: imageNode,
             hasBgFill: prevState?.hasBgFill ?? false,
-            isVideo: false,
+            isVideo: value.isVideo,
           }));
         };
-      }
-  
-      const mainImage = new window.Image();
-      mainImage.src = StoryMediaUrl;
-      mainImage.onload = function () {
-        const x = (storyProperties.width - value.width) / 2 + value.x;
-  
-        const imageNode = new Konva.Image({
-          x: x,
-          y: value.y,
-          width: value.width,
-          height: value.height,
-          image: mainImage,
-          listening: false,
+
+        setisAdjustingImage(false);
+        setIsInBaseContext(true);
+      } else {
+        if (hasBgFill) {
+          const bgVideo = document.createElement("video");
+          bgVideo.src = StoryMediaUrl;
+
+          bgVideo.addEventListener("loadedmetadata", () => {
+            bgVideo.currentTime = 0;
+
+            bgVideo.addEventListener("seeked", () => {
+              bgVideo.play();
+
+              const bgVideoNode = new Konva.Image({
+                x: 0,
+                y: 0,
+                width: StoryMediaData.width,
+                height: storyProperties.height,
+                image: bgVideo,
+                blurRadius: 140,
+                opacity: 0.75,
+                listening: false,
+              });
+
+              bgVideoNode.cache();
+              bgVideoNode.filters([Konva.Filters.Blur]);
+              layer.add(bgVideoNode);
+              bgVideoNode.moveToBottom();
+              layer.batchDraw();
+
+              setStoryKonvaMedia((prevState) => ({
+                konvaMedia: prevState?.konvaMedia || null,
+                konvabgFillMedia: bgVideoNode,
+                hasBgFill: prevState?.hasBgFill ?? false,
+                isVideo: value.isVideo,
+              }));
+            });
+          });
+        }
+
+        const mainVideo = document.createElement("video");
+        mainVideo.src = StoryMediaUrl;
+        mainVideo.loop = true;
+        mainVideo.play();
+
+        mainVideo.addEventListener("loadedmetadata", () => {
+          const x = (storyProperties.width - value.width) / 2 + value.x;
+          const videoNode = new Konva.Image({
+            x: x,
+            y: value.y,
+            width: value.width,
+            height: value.height,
+            image: mainVideo,
+            listening: false,
+          });
+
+          layer.add(videoNode);
+          videoNode.moveToBottom();
+          videoNode.moveUp();
+          layer.batchDraw();
+
+          const anim = new Konva.Animation(() => {
+            layer.batchDraw();
+          }, layer);
+          anim.start();
+
+          setStoryKonvaMedia((prevState) => ({
+            konvabgFillMedia: prevState?.konvabgFillMedia || null,
+            konvaMedia: videoNode,
+            hasBgFill: prevState?.hasBgFill ?? false,
+            isVideo: value.isVideo,
+          }));
         });
-  
-        layer.add(imageNode);
-        imageNode.moveToTop();
-        layer.batchDraw();
-  
-        setStoryKonvaMedia((prevState) => ({
-          konvabgFillMedia: prevState?.konvabgFillMedia || null,
-          konvaMedia: imageNode,
-          hasBgFill: prevState?.hasBgFill ?? false,
-          isVideo: false,
-        }));
-      };
-  
-      setisAdjustingImage(false);
-      setIsInBaseContext(true);
+
+        setisAdjustingImage(false);
+        setIsInBaseContext(true);
+      }
     }
   };
-  
 
   const handleFileChange = () => {
     const stage = stageRef.current;
@@ -198,36 +277,67 @@ const StoryCreate = () => {
     if (fileInputRef.current && fileInputRef.current.files && stage && layer) {
       const fileRead = fileInputRef.current.files[0] as File;
       const cachedBlobUrl = URL.createObjectURL(fileRead);
+      const mimeType = fileRead.type;
+      if (mimeType.includes("image")) {
+        const image = new window.Image();
+        image.src = cachedBlobUrl;
 
-      const image = new window.Image();
-      image.src = cachedBlobUrl;
+        image.onload = () => {
+          const originalWidth = image.width;
+          const originalHeight = image.height;
 
-      image.onload = () => {
-        const originalWidth = image.width;
-        const originalHeight = image.height;
+          const scaleX = storyProperties.width / originalWidth;
+          const scaleY = storyProperties.height / originalHeight;
+          const scale = Math.max(scaleX, scaleY);
 
-        const scaleX = storyProperties.width / originalWidth;
-        const scaleY = storyProperties.height / originalHeight;
-        const scale = Math.max(scaleX, scaleY);
+          const newWidth = originalWidth * scale;
+          const newHeight = originalHeight * scale;
 
-        const newWidth = originalWidth * scale;
-        const newHeight = originalHeight * scale;
+          const x = (storyProperties.width - newWidth) / 2;
+          const y = (storyProperties.height - newHeight) / 2;
+          setStoryMediaData({
+            mediaImg: image,
+            width: newWidth,
+            height: newHeight,
+            isVideo: false,
+            x: x,
+            y: y,
+          });
+          setStoryMediaUrl(cachedBlobUrl);
+          setisAdjustingImage(true);
+          setIsInBaseContext(false);
+          setHasPassedTemplateStep(true);
+        };
+      } else if (mimeType.includes("video")) {
+        const video = document.createElement("video");
+        video.src = cachedBlobUrl;
+        video.addEventListener("loadedmetadata", () => {
+          const originalWidth = video.videoWidth;
+          const originalHeight = video.videoHeight;
 
-        const x = (storyProperties.width - newWidth) / 2;
-        const y = (storyProperties.height - newHeight) / 2;
-        console.log("test");
-        setStoryMediaData({
-          mediaImg: image,
-          width: newWidth,
-          height: newHeight,
-          x: x,
-          y: y,
+          const scaleX = storyProperties.width / originalWidth;
+          const scaleY = storyProperties.height / originalHeight;
+          const scale = Math.max(scaleX, scaleY);
+
+          const newWidth = originalWidth * scale;
+          const newHeight = originalHeight * scale;
+
+          const x = (storyProperties.width - newWidth) / 2;
+          const y = (storyProperties.height - newHeight) / 2;
+          setStoryMediaData({
+            mediaImg: video,
+            width: newWidth,
+            height: newHeight,
+            isVideo: true,
+            x: x,
+            y: y,
+          });
+          setStoryMediaUrl(cachedBlobUrl);
+          setisAdjustingImage(true);
+          setIsInBaseContext(false);
+          setHasPassedTemplateStep(true);
         });
-        setStoryMediaUrl(cachedBlobUrl);
-        setisAdjustingImage(true);
-        setIsInBaseContext(false);
-        setHasPassedTemplateStep(true);
-      };
+      }
     }
   };
 
@@ -236,6 +346,7 @@ const StoryCreate = () => {
       mediaImg: undefined,
       width: 0,
       height: 0,
+      isVideo: false,
       x: 0,
       y: 0,
     });
@@ -341,40 +452,6 @@ const StoryCreate = () => {
     setIsInTextContext(!isInTextContext);
   };
 
-  const [isDragging, setIsDragging] = useState(false);
-  const drawerRef = useRef<HTMLDivElement>(null);
-  const [isExtendedDrawer, setIsExtendedDrawer] = useState(false);
-  function getTranslateYValue(transform: string) {
-    const match = transform.match(/translateY\((-?\d+(\.\d+)?)px\)/);
-    return match ? parseFloat(match[1]) : 0;
-  }
-
-  const [visibleAreaBeforeScroll, setVisibleAreaBeforeScroll] = useState(0);
-
-  useEffect(() => {
-    const transformValue = getTranslateYValue(
-      drawerRef.current?.style.transform || ""
-    );
-    if (isDragging) {
-      setVisibleAreaBeforeScroll(storyProperties.height - transformValue);
-      return;
-    }
-    if (isExtendedDrawer) {
-      setVisibleAreaBeforeScroll(storyProperties.height - 46);
-      return;
-    } else if (!isExtendedDrawer) {
-      setVisibleAreaBeforeScroll(storyProperties.height / 1.66667 - 46);
-    }
-  }, [isDragging, storyProperties.height, drawerRef.current?.style.transform]);
-
-  const { data, refetch } = useQueryFeaturedStickers();
-
-  const [searchValue, setSearchValue] = useState("");
-
-  const makeGIFSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setSearchValue(value);
-  };
   function getNodePositionAtRotationZero(
     node: Konva.Group,
     width: number,
@@ -419,6 +496,7 @@ const StoryCreate = () => {
     useState(false);
   const [isSelectionHittingYCenter, setIsSelectionHittingYCenter] =
     useState(false);
+  const [isDraggingText, setIsDraggingText] = useState(false);
 
   const handleTextInstancesUpdate = (
     newInstances: TextInstances[],
@@ -473,6 +551,7 @@ const StoryCreate = () => {
         });
 
         text.on("dragend", () => {
+          setIsDraggingText(false);
           const newCoords = calculateCenteredCoords(
             text,
             instance.width,
@@ -533,6 +612,7 @@ const StoryCreate = () => {
               x: 0,
               y: 0,
             });
+            setIsDraggingText(true);
             transformerInstancesRef.current.forEach((element) => {
               element.nodes([]);
               setSelectedItemCoord({ x: 0, y: 0 });
@@ -582,355 +662,23 @@ const StoryCreate = () => {
         });
       }
 
-      if (textNode) {
-        textNode.off("click dblclick dragmove");
-      }
+      
     };
   };
 
   return (
     <>
-      <AnimatePresence>
         {isInWidgetContext && (
-          <div className=" min-h-screen absolute top-0 w-full flex items-center justify-center ">
-            <div
-              style={{
-                width: storyContainerProperties.width,
-                height: storyContainerProperties.height,
-              }}
-              className="absolute inset-0 bg-transparent z-[59]"
-              onClick={() => {
-                setIsInWidgetContext(false);
-                setIsInWidgetGifContext(false);
-                setIsExtendedDrawer(false);
-              }}
-            />
-            <div
-              className="flex items-center justify-center relative overflow-hidden"
-              style={{
-                width: storyContainerProperties.width,
-                height: storyContainerProperties.height,
-              }}
-            >
-              <div
-                style={{
-                  width: storyProperties.width,
-                  height: storyProperties.height,
-                }}
-                className=" flex relative  rounded-lg overflow-hidden "
-              >
-                <motion.div
-                  ref={drawerRef}
-                  initial={{ y: 1000 }}
-                  animate={{
-                    y: isExtendedDrawer ? 0 : storyProperties.height / 2.5,
-                  }}
-                  exit={{ y: 1200 }}
-                  drag="y"
-                  dragConstraints={{
-                    top: isExtendedDrawer ? 0 : storyProperties.height / 2.5,
-                    bottom: isExtendedDrawer ? 0 : storyProperties.height / 2.5,
-                  }}
-                  onDragStart={() => setIsDragging(true)}
-                  onDragEnd={(event, info) => {
-                    setIsDragging(false);
-                    if (drawerRef.current) {
-                      const translateY = getTranslateYValue(
-                        drawerRef.current?.style.transform || ""
-                      );
-                      if (translateY >= storyProperties.height / 1.66667) {
-                        setIsInWidgetContext(false);
-                        setIsExtendedDrawer(false);
-                        setIsInWidgetGifContext(false);
-                        return;
-                      }
-                      if (
-                        translateY <= storyProperties.height / 4 &&
-                        !isExtendedDrawer
-                      ) {
-                        setIsExtendedDrawer(true);
-                        return;
-                      }
-                      if (
-                        translateY <= storyProperties.height / 2.6667 &&
-                        translateY >= storyProperties.height / 7.33337 &&
-                        isExtendedDrawer
-                      ) {
-                        setIsExtendedDrawer(false);
-                        return;
-                      }
-                    }
-                  }}
-                  transition={{
-                    duration: 0.475,
-                    ease: [0.55, 0.79, 0.16, 0.99],
-                  }}
-                  style={{
-                    width: storyProperties.width,
-                  }}
-                  className="backdrop-blur-[12px] bg-[#2d2d2d]/60 drawer-shadow flex flex-col flex-grow rounded-t-2xl z-[61] overflow-hidden h-[150%]"
-                >
-                  <div className="flex p-3 items-stretch ">
-                    <div className=" mx-auto w-12 h-1 cursor-grab active:cursor-grabbing flex-shrink-0 rounded-full bg-zinc-300 " />
-                  </div>
-                  {isInWidgetGifContext && (
-                    <div
-                      style={{
-                        width: storyProperties.width,
-                        height: "40px",
-                      }}
-                      className="flex flex-row shadow-xl pr-[6px] bg-[#2d2d2d]"
-                    >
-                      <motion.div
-                        whileTap={{ scale: 0.98, opacity: 0.6 }}
-                        onClick={() => {
-                          setIsInWidgetGifContext(false);
-                          setIsInWidgetBaseContext(true);
-                        }}
-                        className="flex justify-center items-center ml-2 mr-1 py-1 rounded-full hover:opacity-80 cursor-pointer h-[35px]"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fill="currentColor"
-                            fill-rule="evenodd"
-                            d="M7.222 9.897c2.3-2.307 4.548-4.559 6.744-6.754a.65.65 0 0 0 0-.896c-.311-.346-.803-.316-1.027-.08c-2.276 2.282-4.657 4.667-7.143 7.156c-.197.162-.296.354-.296.574c0 .221.099.418.296.592l7.483 7.306a.749.749 0 0 0 1.044-.029c.358-.359.22-.713.058-.881a3407.721 3407.721 0 0 1-7.16-6.988Z"
-                          />
-                        </svg>
-                      </motion.div>
-                      <label
-                        className={`bg-[#181818] z-[51] px-3 py-1.5 flex w-full h-[35px]  rounded-xl
-                        border-x-[1px] border-y-[1px] border-x-border border-y-border`}
-                      >
-                        <input
-                          id="search"
-                          autoComplete="off"
-                          placeholder="Rechercher"
-                          type="search"
-                          onChange={(e) => makeGIFSearch(e)}
-                          className="search-cancel:bg-[url(https://picsum.photos/16/16)] placeholder:text-[13px] placeholder:font-[150] placeholder:text-white placeholder:opacity-50 w-full h-full outline-none bg-[#181818] font-light text-[13px] "
-                        />
-                      </label>
-                    </div>
-                  )}
-                  <div className=" items-stretch flex flex-col flex-shrink-0 overflow-visible relative align-baseline">
-                    <div
-                      className={`overflow-y-auto ${
-                        isInWidgetGifContext ? "flex justify-end" : ""
-                      } `}
-                      id="style-4"
-                      style={{
-                        height: isInWidgetGifContext
-                          ? visibleAreaBeforeScroll - 23.333337
-                          : visibleAreaBeforeScroll,
-                      }}
-                    >
-                      {isInWidgetBaseContext && (
-                        <>
-                          <div className="w-full h-2 bg-transparent"></div>
-                          <div className="flex translate-x-0 touch-pan-y">
-                            <motion.div className="max-w-md mx-auto gap-4 grid-cols-auto">
-                              <div className="flex flex-row justify-center items-center gap-3">
-                                <motion.div
-                                  whileTap={{ scale: 0.97, rotate: "2deg" }}
-                                  style={{ rotate: "-2deg" }}
-                                  className="text-[20px] cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-xl bg-white rotate-[3deg] px-1.5 py-0.5 text-black"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <g
-                                      fill="none"
-                                      stroke="#52489C"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                    >
-                                      <circle cx="12" cy="10" r="3" />
-                                      <path d="M12 2a8 8 0 0 0-8 8c0 1.892.402 3.13 1.5 4.5L12 22l6.5-7.5c1.098-1.37 1.5-2.608 1.5-4.5a8 8 0 0 0-8-8Z" />
-                                    </g>
-                                  </svg>
-                                  <span className="text-[20px]  tracking-tight font-[450] ">
-                                    LOCALISATION
-                                  </span>
-                                </motion.div>
-                                <motion.div
-                                  whileTap={{ scale: 0.98, rotate: "-3deg" }}
-                                  style={{ rotate: "3deg" }}
-                                  className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <g
-                                      fill="none"
-                                      stroke="#22C55E"
-                                      stroke-width="2"
-                                    >
-                                      <circle cx="12" cy="12" r="4" />
-                                      <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10c2.252 0 4.33-.744 6.001-2"
-                                      />
-                                      <path
-                                        stroke-linecap="round"
-                                        d="M16 8v4c0 1 .6 3 3 3s3-2 3-3"
-                                      />
-                                    </g>
-                                  </svg>
-                                  <span className="text-[20px]  tracking-tight font-[450] ">
-                                    MENTION
-                                  </span>
-                                </motion.div>
-                              </div>
-
-                              <div className="flex flex-row justify-center items-center gap-3">
-                                <motion.div
-                                  whileTap={{ scale: 0.98, rotate: "-3deg" }}
-                                  style={{ rotate: "3deg" }}
-                                  className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <g
-                                      fill="none"
-                                      stroke="#465C69"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                    >
-                                      <path d="m6.233 5.834l.445-2.226A2 2 0 0 1 8.64 2h6.72a2 2 0 0 1 1.962 1.608l.445 2.226a1.879 1.879 0 0 0 1.387 1.454A3.758 3.758 0 0 1 22 10.934V18a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-7.066a3.758 3.758 0 0 1 2.846-3.646a1.879 1.879 0 0 0 1.387-1.454Z" />
-                                      <circle cx="12" cy="14" r="4" />
-                                      <path d="M11 6h2" />
-                                    </g>
-                                  </svg>
-                                  <span className="text-[20px]  tracking-tight font-[450] ">
-                                    PHOTO
-                                  </span>
-                                </motion.div>
-                                <motion.div
-                                  whileTap={{ scale: 0.98, rotate: "3deg" }}
-                                  style={{ rotate: "-3deg" }}
-                                  className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                    className=" rotate-45"
-                                  >
-                                    <path
-                                      fill="none"
-                                      stroke="#A8201A"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M9 12h6m0-6h1a6 6 0 0 1 0 12h-1m-6 0H8A6 6 0 0 1 8 6h1"
-                                    />
-                                  </svg>
-                                  <span className="text-[20px]  tracking-tight font-[450] ">
-                                    LIEN
-                                  </span>
-                                </motion.div>
-                              </div>
-                              <div className="flex flex-row justify-center items-center gap-3">
-                                <motion.div
-                                  whileTap={{ scale: 0.98, rotate: "3deg" }}
-                                  style={{ rotate: "-4deg" }}
-                                  className="text-[18px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      fill="none"
-                                      stroke="#ED254E"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M10 3L6 21M18 3l-4 18M4 8h17M3 16h17"
-                                    />
-                                  </svg>
-                                  <span className="text-[18px]  tracking-tight font-[450] ">
-                                    HASHTAG
-                                  </span>
-                                </motion.div>
-                                <motion.div
-                                  whileTap={{
-                                    scale: 0.93,
-                                    rotate: "-2deg",
-                                    opacity: 0.76667,
-                                    background:
-                                      "linear-gradient(95deg, rgb(153,51,255), rgb(97,87,255))",
-                                  }}
-                                  style={{
-                                    rotate: "1deg",
-                                    background:
-                                      "linear-gradient(45deg, rgb(153,51,255), rgb(97,87,255))",
-                                    animation:
-                                      "gradientAnimation 5s ease infinite",
-                                  }}
-                                  onClick={() => {
-                                    setIsInWidgetGifContext(true);
-                                    setIsInWidgetBaseContext(false);
-                                  }}
-                                  className="text-[18px] cursor-pointer w-fit rounded-[10px] px-1.5 py-0.5 text-white tracking-tight font-[450] drop-shadow-glow"
-                                >
-                                  GIF
-                                </motion.div>
-                              </div>
-                            </motion.div>
-                          </div>
-                          <div className="grid grid-cols-3 gap-2 p-5 translate-x-0 touch-pan-y">
-                            {data?.map((src, index) => (
-                              <div
-                                key={index}
-                                className="mt-1.5 w-full h-fit rounded-lg bg-black"
-                              >
-                                <img
-                                  className="rounded-lg"
-                                  src={src}
-                                  alt={`Image ${index + 1}`}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                          <div className="w-full h-2 bg-transparent"></div>
-                        </>
-                      )}
-                      {isInWidgetGifContext && (
-                        <GifPlugin
-                          width={storyProperties.width}
-                          searchValue={searchValue}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </div>
+          <DrawerPlugin
+            storyContainerProperties={storyContainerProperties}
+            storyProperties={storyProperties}
+            isInWidgetGifContext={isInWidgetGifContext}
+            isInWidgetBaseContext={isInWidgetBaseContext}
+            setIsInWidgetContext={setIsInWidgetContext}
+            setIsInWidgetGifContext={setIsInWidgetGifContext}
+            setIsInWidgetBaseContext={setIsInWidgetBaseContext}
+          />
         )}
-      </AnimatePresence>
       <div
         className={` min-h-screen w-full flex items-center justify-center relative`}
       >
@@ -960,8 +708,6 @@ const StoryCreate = () => {
               setToRenderTextFont={setToRenderTextFont}
               textValue={textValue}
               setTextValue={setTextValue}
-              textNode={textNode}
-              setTextNode={setTextNode}
               transformerInstancesRef={transformerInstancesRef}
               textInstancesRef={textInstancesRef}
               onTextInstancesChange={handleTextInstancesUpdate}
@@ -977,20 +723,30 @@ const StoryCreate = () => {
               clearMediaImport={clearMediaImport}
             />
           )}
+
+          <input
+            className="hidden"
+            onChange={handleFileChange}
+            ref={fileInputRef}
+            id="file"
+            accept="image/jpeg,image/png,video/mp4,video/quicktime"
+            type="file"
+          />
+
           <div
             style={{
               width: storyProperties.width,
               height: storyProperties.height,
             }}
-            className={` ${
-              !isInBaseContext ? "bg-transparent" : "bg-border"
+            className={` ${!isInBaseContext ? "bg-transparent" : "bg-border"} ${
+              isInWidgetContext ? "opacity-50" : ""
             } flex absolute  rounded-lg`}
           >
             <>
               <div
-                className={` ${
-                  isInBaseContext ? "" : "hidden"
-                } absolute top-0 flex z-40 flex-row w-full  justify-between`}
+                className={` ${isInBaseContext ? "" : "hidden"} ${
+                  isDraggingText ? "hidden" : ""
+                }  absolute top-0 flex z-40 flex-row w-full  justify-between`}
               >
                 <motion.div
                   whileTap={{ opacity: 0.75 }}
@@ -1044,28 +800,55 @@ const StoryCreate = () => {
                       className="w-[210px] drop-shadow-xl p-0.5 rounded-2xl bg-[#181818]/65 backdrop-blur-[12px] border-x-[0.2333333px] border-b-[0.2333333px]  border-x-border border-y-border  text-small-semibold !text-[15px]"
                     >
                       <DropdownMenuGroup className="text-white text-[12px] flex flex-col gap-0.5 m-1">
-                        <DropdownMenuItem>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="22"
-                            height="22"
-                            viewBox="0 0 24 24"
-                          >
-                            <g
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                        {StoryKonvaMedia ? (
+                          <DropdownMenuItem>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="22"
+                              height="22"
+                              viewBox="0 0 24 24"
                             >
-                              <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                              <path d="M5 13V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2h-5.5M2 19h7m-3-3l3 3l-3 3" />
-                            </g>
-                          </svg>
-                          <div className="ml-2 text-[14px]">
-                            Importer un media
-                          </div>
-                        </DropdownMenuItem>
+                              <g
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                              >
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                <path d="M5 13V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2h-5.5M2 19h7m-3-3l3 3l-3 3" />
+                              </g>
+                            </svg>
+                            <div className="ml-2 text-[14px]">
+                              Changer de media
+                            </div>
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => handleChooseTemplate("from-media")}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="22"
+                              height="22"
+                              viewBox="0 0 24 24"
+                            >
+                              <g
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                              >
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                                <path d="M5 13V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2h-5.5M2 19h7m-3-3l3 3l-3 3" />
+                              </g>
+                            </svg>
+                            <div className="ml-2 text-[14px]">
+                              Importer un media
+                            </div>
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -1184,14 +967,6 @@ const StoryCreate = () => {
                     <span className="tracking-tighter cursor-pointer">
                       Ajoutez un media
                     </span>
-                    <input
-                      className="hidden"
-                      onChange={handleFileChange}
-                      ref={fileInputRef}
-                      id="file"
-                      accept="image/jpeg,image/png,video/mp4,video/quicktime"
-                      type="file"
-                    />
                   </motion.div>
                   <span className="tracking-tighter select-none pointer-events-none">
                     {" "}
@@ -1213,9 +988,9 @@ const StoryCreate = () => {
               <motion.div
                 whileTap={{ scale: 0.97 }}
                 whileHover={{ opacity: 0.8 }}
-                className={` ${
-                  isInBaseContext ? "" : "hidden"
-                } cursor-pointer select-none w-full absolute bottom-0 pb-4 flex justify-center items-center gap-2 flex-row`}
+                className={` ${isInBaseContext ? "" : "hidden"} ${
+                  isDraggingText ? "hidden" : ""
+                }  cursor-pointer select-none w-full absolute bottom-0 pb-4 flex justify-center items-center gap-2 flex-row`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

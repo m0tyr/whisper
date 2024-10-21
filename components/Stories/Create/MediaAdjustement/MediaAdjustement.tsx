@@ -28,6 +28,7 @@ const MediaAdjustement = ({
   clearMediaImport,
   AddMediaToStory,
 }: MediaAdjustementProps) => {
+  const [hasMoveFromInitialZone, setHasMoveFromInitialZone] = useState(false);
   const [isOriginalSizing, setOriginalSizing] = useState(true);
   const [isFitToStorySizing, setFitToStorySizing] = useState(false);
   const [hasScalingFactor, setHasScalingFactor] = useState(false);
@@ -50,18 +51,16 @@ const MediaAdjustement = ({
     const x = (storyProperties.width - newWidth) / 2;
     const y = (storyProperties.height - newHeight) / 2;
 
-    // Update StoryMediaData with new values
     setStoryMediaData({
       mediaImg: StoryMediaData.mediaImg,
       width: newWidth,
       height: newHeight,
+      isVideo: StoryMediaData.isVideo,
       x: x,
       y: y,
     });
 
-    // Cleanup function to run on unmount
     return () => {
-      // Perform any cleanup if necessary here
       console.log("Component unmounted, effect deactivated.");
     };
   }, [storyProperties]);
@@ -72,7 +71,6 @@ const MediaAdjustement = ({
     if (StoryMediaData?.width) {
       const imgWidth = finalStoryMediaDataForKonvaImg.width;
       const storyWidth = storyProperties.width;
-
       const newDragRange: [number, number] =
         imgWidth < storyWidth
           ? [0, 0]
@@ -88,6 +86,7 @@ const MediaAdjustement = ({
 
   const recordMediaCoord = () => {
     if (mediaSelectionZone.current) {
+      setHasMoveFromInitialZone(true);
       const style = window.getComputedStyle(mediaSelectionZone.current);
       const transform = style.transform;
       let translateX = 0;
@@ -114,11 +113,11 @@ const MediaAdjustement = ({
 
     const deltaHeight = correctHeight - oldHeight;
 
-    const x = finalStoryMediaDataForKonvaImg.x;
+    const x = hasMoveFromInitialZone ? finalStoryMediaDataForKonvaImg.x : 0;
 
     if (hasScalingFactor) {
       const y = finalStoryMediaDataForKonvaImg.y - deltaHeight / 2;
-
+      console.log(y);
       const finalData = {
         ...StoryMediaData,
         width: correctWidth,
@@ -146,7 +145,8 @@ const MediaAdjustement = ({
     }
 
     if (isFitToStorySizing) {
-      const y = finalStoryMediaDataForKonvaImg.y;
+      const y =
+        (storyProperties.height - finalStoryMediaDataForKonvaImg.height) / 2;
 
       const finalData = {
         ...StoryMediaData,
@@ -162,12 +162,12 @@ const MediaAdjustement = ({
   };
 
   useEffect(() => {
-    const scaleFactor = 1 + rangeValue / 100; // Scale from 0.0 (min) to 2.0 (max)
+    const scaleFactor = 1 + rangeValue / 100;
 
     setFinalStoryMediaDataForKonvaImg((prevData) => {
       setHasScalingFactor(rangeValue !== 0);
-      const newWidth = Math.max(10, StoryMediaData.width * scaleFactor); // Prevent zero/negative width
-      const newHeight = Math.max(10, StoryMediaData.height * scaleFactor); // Prevent zero/negative height
+      const newWidth = Math.max(10, StoryMediaData.width * scaleFactor);
+      const newHeight = Math.max(10, StoryMediaData.height * scaleFactor);
 
       return {
         ...prevData,
@@ -180,75 +180,52 @@ const MediaAdjustement = ({
   const handleRangeChange = (e: { target: { value: any } }) => {
     const newValue = Number(e.target.value);
     setRangeValue(newValue);
-    console.log("Range Value Changed:", newValue); // Debugging line
   };
 
   const resizeToFitToStory = () => {
     setOriginalSizing(false);
     setFitToStorySizing(true);
+    setHasScalingFactor(false);
+
     const { width: storyWidth, height: storyHeight } = storyProperties;
     const { width: mediaWidth, height: mediaHeight } = StoryMediaData;
 
     const storyAspectRatio = storyWidth / storyHeight;
     const mediaAspectRatio = mediaWidth / mediaHeight;
 
-    let newWidth, newHeight, newX, newY;
+    let newWidth, newHeight;
 
     if (mediaAspectRatio > storyAspectRatio) {
-      // Media is wider than the story, fit by width
       newWidth = storyWidth;
       newHeight = storyWidth / mediaAspectRatio;
     } else {
-      // Media is taller than the story, fit by height
       newHeight = storyHeight;
       newWidth = storyHeight * mediaAspectRatio;
     }
 
-    // Center the media by adjusting x and y positions
-    newX = (storyWidth - newWidth) / 2;
-    newY = (storyHeight - newHeight) / 2;
+    const scaleFactor = newWidth / mediaWidth;
+    const newRangeValue = (scaleFactor - 1) * 100;
 
+    setRangeValue(newRangeValue);
     setFinalStoryMediaDataForKonvaImg({
       ...finalStoryMediaDataForKonvaImg,
       width: newWidth,
       height: newHeight,
-      x: newX,
-      y: newY,
     });
   };
 
   const resizeToOriginal = () => {
     setOriginalSizing(true);
     setFitToStorySizing(false);
+    setHasScalingFactor(false);
+    setRangeValue(0);
     setFinalStoryMediaDataForKonvaImg({
       ...finalStoryMediaDataForKonvaImg,
       width: StoryMediaData.width,
       height: StoryMediaData.height,
     });
   };
-  const resizeToFitToTwoToThree = () => {
-    const { width: mediaWidth, height: mediaHeight } = StoryMediaData;
 
-    const targetAspectRatio = 2 / 3;
-
-    const mediaAspectRatio = mediaWidth / mediaHeight;
-
-    let newWidth, newHeight;
-
-    if (mediaAspectRatio > targetAspectRatio) {
-      newWidth = mediaHeight * targetAspectRatio;
-      newHeight = mediaHeight;
-    } else {
-      newHeight = mediaWidth / targetAspectRatio;
-      newWidth = mediaWidth;
-    }
-
-    setFinalStoryMediaDataForKonvaImg({
-      ...finalStoryMediaDataForKonvaImg,
-      width: newWidth,
-      height: newHeight,
-    });
-  };
   return (
     <>
       <div
@@ -382,14 +359,6 @@ const MediaAdjustement = ({
                         Fit to Story
                       </span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={resizeToFitToTwoToThree}
-                      className="bg-[rgb(30,30,30,0.7)] p-3 flex justify-center items-center"
-                    >
-                      <span className=" tracking-tighter font-semibold">
-                        2:3
-                      </span>
-                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -452,31 +421,38 @@ const MediaAdjustement = ({
           </motion.div>
         </>
       </div>
-      <img
-        src={StoryMediaUrl as string}
-        className="pointer-events-none  select-none"
-        style={{
-          opacity: "100%",
-          position: "absolute",
-          maxWidth: "max-content",
-          width: `${finalStoryMediaDataForKonvaImg?.width}px`,
-          height: `${finalStoryMediaDataForKonvaImg?.height}px`,
-        }}
-        alt=""
-      />
-      <img
-        style={{
-          position: "absolute",
-          maxWidth: "max-content",
-          width: `${storyProperties?.width}px`,
-          height: `${storyProperties?.height}px`,
-        }}
-        className="flex justify-center items-center blur-2xl z-[-50] select-none pointer-events-none"
-        src={StoryMediaUrl}
-        width={storyProperties.width}
-        height={storyProperties.height}
-        alt=""
-      />
+      {StoryMediaData.isVideo ? (
+        <video
+          loop
+          autoPlay
+          playsInline
+          muted
+          src={StoryMediaUrl as string}
+          className="pointer-events-none  select-none"
+          style={{
+            opacity: "100%",
+            position: "absolute",
+            maxWidth: "max-content",
+            borderRadius: "5px",
+            width: `${finalStoryMediaDataForKonvaImg?.width}px`,
+            height: `${finalStoryMediaDataForKonvaImg?.height}px`,
+          }}
+        />
+      ) : (
+        <img
+          src={StoryMediaUrl as string}
+          className="pointer-events-none  select-none"
+          style={{
+            opacity: "100%",
+            position: "absolute",
+            maxWidth: "max-content",
+            borderRadius: "5px",
+            width: `${finalStoryMediaDataForKonvaImg?.width}px`,
+            height: `${finalStoryMediaDataForKonvaImg?.height}px`,
+          }}
+          alt=""
+        />
+      )}
     </>
   );
 };
