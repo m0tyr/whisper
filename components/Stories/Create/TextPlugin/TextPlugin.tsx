@@ -31,6 +31,7 @@ import { Tween } from "konva/lib/Tween";
 import RangeSelector from "../RangeSelector/RangeSelector";
 import { useStoryTextPlugin } from "@/hooks/useStoryTextPlugin";
 import TextBackground from "./TextBackgroundChooser/TextBackgroundChooser";
+import { Switch } from "@/components/ui/switch";
 
 interface TextPluginProps {
   stageRef: RefObject<Konva.Stage | null>;
@@ -687,9 +688,7 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 setIsChoosingColor(false);
                 setIsChoosingFont(false);
               }}
-              className={` ${
-                isTextBackgroundSelected ? "bg-insanedark/70" : ""
-              } flex justify-center items-center cursor-pointer p-1 rounded-lg select-none`}
+              className={` flex justify-center bg-insanedark/70 items-center cursor-pointer p-1 rounded-lg select-none`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -707,6 +706,16 @@ const TextPlugin: React.FC<TextPluginProps> = ({
                 />
               </svg>
             </motion.div>
+            {isChoosingBgTypes ? (
+              <div className="flex justify-center items-center">
+                <Switch
+                  checked={isTextBackgroundSelected}
+                  onCheckedChange={() => {
+                    setIsTextBackgroundSelected(!isTextBackgroundSelected);
+                  }}
+                />
+              </div>
+            ) : null}
           </div>
         </motion.div>
         {isChoosingColor && (

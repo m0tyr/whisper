@@ -24,6 +24,7 @@ export type TextColors = {
 
 export type TextBgTypes = {
   renderedBackgroundType: string;
+  previewRender: string;
   name: string;
 };
 

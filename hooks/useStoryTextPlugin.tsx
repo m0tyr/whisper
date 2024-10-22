@@ -25,12 +25,25 @@ export const useStoryTextPlugin = ({
   rangeValue,
 }: UseStoryTextPluginProps) => {
 
+
+  const lines = ['abc', 'defghikl', 'mnop'];
+
+const lineObjects: Line[] = lines.map((lineText, index) => ({
+  cx: index * 100,
+  text: lineText,
+  width: lineText.length * 10, 
+  lastInParagraph: index === lines.length - 1,
+}));
+
   const textBgTypes = useRef<TextBgTypes[]>([
-    {renderedBackgroundType: 'line_by_line', name: 'Follow Text Curve'},
-    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
-    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
-    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
-    {renderedBackgroundType: 'block', name: 'Rectangle Block'},
+    {renderedBackgroundType: 'line_by_line', name: 'Follow Text Curve', previewRender: generateBackgroundShape({
+      lines: lineObjects,
+      lineHeight: 20,
+      width: 86,
+      align: 'center',
+      padding: 5,
+      cornerRadius: 5
+    })},
   ]);
 
 

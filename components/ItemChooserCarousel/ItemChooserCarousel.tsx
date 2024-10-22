@@ -15,6 +15,7 @@ function ItemChooserCarousel({
   itemsCarousel,
   setindex,
   index,
+  desiredSize,
   isDisplayingTextBackgroundTypes
 }: {
   children: ReactNode;
@@ -22,6 +23,7 @@ function ItemChooserCarousel({
   setindex: Dispatch<SetStateAction<number>>;
   itemsCarousel: any;
   index: number;
+  desiredSize: number;
   isDisplayingTextBackgroundTypes?: boolean;
 }) {
   const LayoutContainerRef = useRef<HTMLDivElement>(null);
@@ -132,7 +134,7 @@ function ItemChooserCarousel({
   return (
     <>
       {showLeftButton && !OverflowStories && (
-        <div className="absolute z-50 left-0 h-[96px] w-9 cursor-pointer">
+        <div className={`absolute z-50 left-0 h-[${desiredSize}px] w-9 cursor-pointer`}>
           <button
             onClick={scrollLeft}
             className="absolute top-1/2 transform -translate-y-1/2 bg-border shadow-[0_7px_12px_0_rgba(0,0,0,0.3)] text-white ml-1.5 px-1 py-1 rounded-full"
@@ -154,7 +156,7 @@ function ItemChooserCarousel({
         </div>
       )}
       {showRightButton && !OverflowStories && (
-        <div className="absolute z-50 right-0 h-[96px] w-9 cursor-pointer overflow-hidden">
+        <div className={`absolute z-50 right-0 h-[${desiredSize}px] w-9 cursor-pointer overflow-hidden`}>
           <button
             onClick={scrollRight}
             className="absolute z-50 top-1/2 transform -translate-y-1/2 bg-border shadow-[0_7px_12px_0_rgba(0,0,0,0.3)] text-white mr-1.5 px-1 py-1 rounded-full"
@@ -175,7 +177,7 @@ function ItemChooserCarousel({
           </button>
         </div>
       )}
-      <div className="z-[49] absolute w-full h-[96px] bg-[linear-gradient(90deg,rgba(16,16,16,1)_0%,rgba(16,16,16,0.5)_20%,rgba(255,255,255,0)_50%,rgba(16,16,16,0.5)_80%,rgba(16,16,16,1)_100%)]"></div>
+      <div className={`z-[49] absolute w-full h-[${desiredSize}px] bg-[linear-gradient(90deg,rgba(16,16,16,0)_0%,rgba(16,16,16,0)_20%,rgba(255,255,255,0)_50%,rgba(16,16,16,0)_80%,rgba(16,16,16,0)_100%)]`}></div>
       <motion.div
         ref={LayoutContainerRef}
         animate={{ x: animationContainerValue }}
@@ -188,7 +190,7 @@ function ItemChooserCarousel({
           duration: 0.2,
           ease: [0.4, 0, 0.2, 1],
         }}
-        className={`flex flex-row ${isDisplayingTextBackgroundTypes ? ' items-center' : 'items-end'}  gap-[4px] hide-scrollbar overflow-visible h-[96px] w-full`}
+        className={`flex flex-row ${isDisplayingTextBackgroundTypes ? ' items-center' : 'items-end'}  gap-[4px] hide-scrollbar overflow-visible h-[${desiredSize}px] w-full`}
       >
         {Children.map(children, (child, i) => (
           <div

@@ -19,14 +19,15 @@ const ColorChooser: React.FC<ColorChooserProps> = ({
   storyProperties,
 }) => {
   const [colorIndex, setColorIndex] = useState(colorSavedIndex as number);
-  
+
   useEffect(() => {
-    setColor(textColors?.current?.[colorIndex].renderedColor as string)
-  }, [colorIndex])
+    setColor(textColors?.current?.[colorIndex].renderedColor as string);
+  }, [colorIndex]);
 
   return (
     <div className="absolute bottom-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
       <ItemChooserCarousel
+        desiredSize={56}
         index={colorIndex}
         setindex={setColorIndex}
         containerRef={storyProperties}
@@ -36,7 +37,10 @@ const ColorChooser: React.FC<ColorChooserProps> = ({
           <div
             key={index}
             className={`cursor-pointer border transition-all duration-300 border-white rounded-lg h-12 w-12 justify-center items-center`}
-            style={{ backgroundColor: colorItem.renderedColor, scale: index === colorIndex ? '115%' : '100%' }}
+            style={{
+              backgroundColor: colorItem.renderedColor,
+              scale: index === colorIndex ? "115%" : "100%",
+            }}
             title={colorItem.name}
           ></div>
         ))}

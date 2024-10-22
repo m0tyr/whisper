@@ -32,6 +32,7 @@ const FontChooser: React.FC<FontChooserProps> = ({
     <>
       <div className="absolute bottom-4 right-0 text-[13px] z-[51] w-full overflow-x-hidden">
         <ItemChooserCarousel
+          desiredSize={56}
           index={fontIndex}
           setindex={setFontIndex}
           containerRef={storyProperties}
