@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import GifPlugin from "./GifPlugin/GifPlugin";
 import { useQueryFeaturedStickers } from "@/hooks/queries/useQueryFeaturedStickers";
 
@@ -17,6 +17,7 @@ interface DrawerPluginProps {
   setIsInWidgetContext: (value: boolean) => void;
   setIsInWidgetGifContext: (value: boolean) => void;
   setIsInWidgetBaseContext: (value: boolean) => void;
+  setIsInAddingMentionContext: (value: boolean) => void;
 }
 
 const DrawerPlugin: React.FC<DrawerPluginProps> = ({
@@ -27,6 +28,7 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
   setIsInWidgetContext,
   setIsInWidgetGifContext,
   setIsInWidgetBaseContext,
+  setIsInAddingMentionContext,
 }) => {
   const [visibleAreaBeforeScroll, setVisibleAreaBeforeScroll] = useState(0);
   const [isExtendedDrawer, setIsExtendedDrawer] = useState(false);
@@ -65,6 +67,7 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
   }
 
   return (
+    <>
       <div className="min-h-screen absolute top-0 w-full flex items-center justify-center">
         <div
           className="flex items-center justify-center relative overflow-hidden"
@@ -212,6 +215,11 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
                             <motion.div
                               whileTap={{ scale: 0.97, rotate: "2deg" }}
                               style={{ rotate: "-2deg" }}
+                              onClick={() => {
+                                setIsInAddingMentionContext(true);
+                                setIsInWidgetContext(false);
+                                setIsInWidgetBaseContext(false);
+                              }}
                               className="text-[20px] cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-xl bg-white rotate-[3deg] px-1.5 py-0.5 text-black"
                             >
                               <svg
@@ -233,38 +241,6 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
                               </svg>
                               <span className="text-[20px]  tracking-tight font-[450] ">
                                 LOCALISATION
-                              </span>
-                            </motion.div>
-                            <motion.div
-                              whileTap={{ scale: 0.98, rotate: "-3deg" }}
-                              style={{ rotate: "3deg" }}
-                              className="text-[20px]  cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-[10px] bg-white rotate-[3deg] px-1.5 py-0.5 text-black tracking-tight font-[450]"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                              >
-                                <g
-                                  fill="none"
-                                  stroke="#22C55E"
-                                  stroke-width="2"
-                                >
-                                  <circle cx="12" cy="12" r="4" />
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10c2.252 0 4.33-.744 6.001-2"
-                                  />
-                                  <path
-                                    stroke-linecap="round"
-                                    d="M16 8v4c0 1 .6 3 3 3s3-2 3-3"
-                                  />
-                                </g>
-                              </svg>
-                              <span className="text-[20px]  tracking-tight font-[450] ">
-                                MENTION
                               </span>
                             </motion.div>
                           </div>
@@ -402,6 +378,7 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
           </div>
         </div>
       </div>
+    </>
   );
 };
 

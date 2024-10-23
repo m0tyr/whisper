@@ -3,12 +3,12 @@ import { Grid } from "@giphy/react-components";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-interface TextPluginProps {
+interface GifPluginProps {
   width: number;
   searchValue: string;
 }
 
-const GifPlugin: React.FC<TextPluginProps> = ({ width, searchValue }) => {
+const GifPlugin: React.FC<GifPluginProps> = ({ width, searchValue }) => {
   const gf = new GiphyFetch("Guuxn8us0YtO7vOOeiKBl9Q2hWdY3140");
 
 

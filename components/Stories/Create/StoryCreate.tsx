@@ -35,6 +35,7 @@ import ToolBar from "./ToolBar/ToolBar";
 import MediaAdjustement from "./MediaAdjustement/MediaAdjustement";
 import { listeners } from "process";
 import DrawerPlugin from "./DrawerPlugin/DrawerPlugin";
+import MentionPlugin from "./DrawerPlugin/MentionPlugin/MentionPlugin";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -84,6 +85,8 @@ const StoryCreate = () => {
   const [isInWidgetContext, setIsInWidgetContext] = useState(false);
   const [isInWidgetBaseContext, setIsInWidgetBaseContext] = useState(false);
   const [isInWidgetGifContext, setIsInWidgetGifContext] = useState(false);
+  const [isInAddingMentionContext, setIsInAddingMentionContext] =
+    useState(false);
 
   const getStoryProperties = (windowWidth: number, windowHeight: number) => {
     const aspectRatio =
@@ -676,9 +679,11 @@ const StoryCreate = () => {
             setIsInWidgetContext={setIsInWidgetContext}
             setIsInWidgetGifContext={setIsInWidgetGifContext}
             setIsInWidgetBaseContext={setIsInWidgetBaseContext}
+            setIsInAddingMentionContext={setIsInAddingMentionContext}
           />
         )}
       </AnimatePresence>
+
       <div
         className={` min-h-screen w-full flex items-center justify-center relative`}
       >
@@ -689,6 +694,12 @@ const StoryCreate = () => {
             height: storyContainerProperties.height,
           }}
         >
+          {isInAddingMentionContext && (
+            <MentionPlugin
+              storyProperties={storyProperties}
+              stageRef={stageRef}
+            />
+          )}
           {isInDrawingContext && (
             <DrawPlugin
               width={storyProperties.width}
