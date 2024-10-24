@@ -576,14 +576,12 @@ const StoryCreate = () => {
             transformer.to({
               duration: 0.05,
               easing: Konva.Easings.EaseInOut,
-              opacity: 0.7,
               scaleX: 0.95,
               scaleY: 0.95,
               onFinish: function () {
                 transformer.to({
                   duration: 0.15,
                   easing: Konva.Easings.EaseInOut,
-                  opacity: 1,
                   scaleX: 1,
                   scaleY: 1,
                 });
@@ -592,7 +590,6 @@ const StoryCreate = () => {
             text.to({
               duration: 0.05,
               easing: Konva.Easings.EaseInOut,
-              opacity: 0.7,
               scaleX: 0.95,
               scaleY: 0.95,
               onFinish: function () {
