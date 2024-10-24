@@ -17,7 +17,7 @@ interface DrawerPluginProps {
   setIsInWidgetContext: (value: boolean) => void;
   setIsInWidgetGifContext: (value: boolean) => void;
   setIsInWidgetBaseContext: (value: boolean) => void;
-  setIsInAddingMentionContext: (value: boolean) => void;
+  setIsInAddingLocationContext: (value: boolean) => void;
 }
 
 const DrawerPlugin: React.FC<DrawerPluginProps> = ({
@@ -28,7 +28,7 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
   setIsInWidgetContext,
   setIsInWidgetGifContext,
   setIsInWidgetBaseContext,
-  setIsInAddingMentionContext,
+  setIsInAddingLocationContext,
 }) => {
   const [visibleAreaBeforeScroll, setVisibleAreaBeforeScroll] = useState(0);
   const [isExtendedDrawer, setIsExtendedDrawer] = useState(false);
@@ -156,7 +156,7 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
                     width: storyProperties.width,
                     height: "40px",
                   }}
-                  className="flex flex-row shadow-xl pr-[6px] bg-[#2d2d2d]"
+                  className="flex flex-row shadow-xl pr-[6px] "
                 >
                   <motion.div
                     whileTap={{ scale: 0.98, opacity: 0.6 }}
@@ -216,8 +216,7 @@ const DrawerPlugin: React.FC<DrawerPluginProps> = ({
                               whileTap={{ scale: 0.97, rotate: "2deg" }}
                               style={{ rotate: "-2deg" }}
                               onClick={() => {
-                                setIsInAddingMentionContext(true);
-                                setIsInWidgetContext(false);
+                                setIsInAddingLocationContext(true);
                                 setIsInWidgetBaseContext(false);
                               }}
                               className="text-[20px] cursor-pointer flex flex-row gap-1 justify-center items-center w-fit rounded-xl bg-white rotate-[3deg] px-1.5 py-0.5 text-black"

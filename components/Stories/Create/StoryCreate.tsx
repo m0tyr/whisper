@@ -35,7 +35,7 @@ import ToolBar from "./ToolBar/ToolBar";
 import MediaAdjustement from "./MediaAdjustement/MediaAdjustement";
 import { listeners } from "process";
 import DrawerPlugin from "./DrawerPlugin/DrawerPlugin";
-import MentionPlugin from "./DrawerPlugin/MentionPlugin/MentionPlugin";
+import LocationPlugin from "./DrawerPlugin/LocationPlugin/LocationPlugin";
 
 const StoryCreate = () => {
   const router = useRouter();
@@ -85,8 +85,8 @@ const StoryCreate = () => {
   const [isInWidgetContext, setIsInWidgetContext] = useState(false);
   const [isInWidgetBaseContext, setIsInWidgetBaseContext] = useState(false);
   const [isInWidgetGifContext, setIsInWidgetGifContext] = useState(false);
-  const [isInAddingMentionContext, setIsInAddingMentionContext] =
-    useState(false);
+  const [isInAddingLocationContext, setIsInAddingLocationContext] =
+    useState(true);
 
   const getStoryProperties = (windowWidth: number, windowHeight: number) => {
     const aspectRatio =
@@ -679,7 +679,7 @@ const StoryCreate = () => {
             setIsInWidgetContext={setIsInWidgetContext}
             setIsInWidgetGifContext={setIsInWidgetGifContext}
             setIsInWidgetBaseContext={setIsInWidgetBaseContext}
-            setIsInAddingMentionContext={setIsInAddingMentionContext}
+            setIsInAddingLocationContext={setIsInAddingLocationContext}
           />
         )}
       </AnimatePresence>
@@ -694,12 +694,16 @@ const StoryCreate = () => {
             height: storyContainerProperties.height,
           }}
         >
-          {isInAddingMentionContext && (
-            <MentionPlugin
-              storyProperties={storyProperties}
-              stageRef={stageRef}
-            />
-          )}
+          <AnimatePresence>
+            {isInAddingLocationContext && (
+              <LocationPlugin
+                storyProperties={storyProperties}
+                setIsInAddingLocationContext={setIsInAddingLocationContext}
+                setIsInWidgetBaseContext={setIsInWidgetBaseContext}
+              />
+            )}
+          </AnimatePresence>
+
           {isInDrawingContext && (
             <DrawPlugin
               width={storyProperties.width}
