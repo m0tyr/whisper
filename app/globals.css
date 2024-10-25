@@ -301,6 +301,7 @@
     border-radius: 100rem;
   }
   
+  
   #vertical-mini-white-1::-moz-range-thumb {
     border: none;
     width: 0;
@@ -356,6 +357,8 @@
     display: flex;
     width: 100%;
   }
+
+
 
   /* User card */
   .user-card {

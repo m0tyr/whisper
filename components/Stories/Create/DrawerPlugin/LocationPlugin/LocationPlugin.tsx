@@ -89,7 +89,7 @@ const LocationPlugin: React.FC<LocationPluginProps> = ({
             }] flex justify-center items-center mt-0.5 cursor-pointer`}
           >
             <motion.div
-              className="flex justify-center items-center bg-white rounded-lg pr-1"
+              className="flex justify-center items-center bg-white rounded-t-lg pr-1"
               whileTap={{
                 scale: 0.98,
               }}
@@ -116,7 +116,7 @@ const LocationPlugin: React.FC<LocationPluginProps> = ({
               </span>
             </motion.div>
           </div>
-          <div className="flex justify-center items-center p-5">
+          <div className="flex justify-center relative items-center  ">
             <CreateCustomLocation />
           </div>
         </div>
